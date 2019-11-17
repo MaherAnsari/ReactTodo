@@ -1,0 +1,15 @@
+{
+"short_name": "BIJAK",
+"name": "BIJAK",
+"icons": [
+  {
+    "src": "fhttps://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp",
+    "sizes": "64x64 32x32 24x24 16x16",
+    "type": "image/x-icon"
+  }
+],
+"start_url": ".",
+"display": "standalone",
+"theme_color": "#000000",
+"background_color": "#ffffff"
+}
