@@ -87,7 +87,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname", "business_name", "mobile", "Info", "commodity", "status"],
+            tableHeadData: ["id", "fullname", "business_name", "mobile", "Info", "commodity","role" ,"status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -103,12 +103,12 @@ class UserListTable extends Component {
 
         }
     }
-    componentWillReceiveProps() {
+    // componentWillReceiveProps() {
 
-        if (this.state.tableBodyData != this.props.tableData) {
-            this.setState({ tableBodyData: this.pros.tableData });
-        }
-    }
+    //     if (this.state.tableBodyData != this.props.tableData) {
+    //         this.setState({ tableBodyData: this.pros.tableData });
+    //     }
+    // }
 
     async handelFilter(event) {
         let searchedTxt = event.target.value;
@@ -139,7 +139,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality + " , " + obj.district;
+        return obj.locality?obj.locality:"-" + " , " + obj.district?obj.district:"-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -218,6 +218,28 @@ class UserListTable extends Component {
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
+    getRole(row){
+        if(row.role == "ca"){
+            return "buyer";
+        }else if(row.role == 'la'){
+            return "supplier";
+        }else if(row.role == 'broker'){
+            return "broker";
+        }else{
+            return "NA";
+        }
+    }
+    getBackgroundColor(obj){
+        if(obj.role == "ca"){
+            return "#f94141";
+        }else if(obj.role == 'la'){
+            return "#82af82";
+        }else if(obj.role == 'broker'){
+            return "#7070fd";
+        }else{
+            return "#e5e8ec";
+        }
+    }
     render() {
         const { classes } = this.props;
         return (
@@ -239,7 +261,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow  >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i == 0 ? '50px' : '125px', paddingLeft: i == 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i == 0 ? '50px' : '120px', paddingLeft: i == 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                     <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>
@@ -254,22 +276,30 @@ class UserListTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.fullname}
+                                            <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.fullname}</div>
+                                                </Tooltip>
+        
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                {row.business_name}
+                                            <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.business_name}</div>
+                                                </Tooltip>
+                                               
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
+                                          
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
                                                 <Tooltip title={this.getInfoSTring(row)} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{this.getInfoSTring(row)}</div>
                                                     </Tooltip>
                                                     </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                <Tooltip title={row.default_commodity.join()} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity.join()}</div>
+                                                <Tooltip title={row.default_commodity ? row.default_commodity.join():""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join():""}</div>
                                                 </Tooltip>
                                             </TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{background: this.getBackgroundColor(row)}}>{this.getRole(row)}</TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                                 <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />

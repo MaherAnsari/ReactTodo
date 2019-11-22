@@ -63,6 +63,9 @@ class MandiDataContainer extends React.Component {
         }
      
       }
+
+ 
+    
    
     handleClose(event) {
         this.setState({open :false,showAddModal:false,dataList:null});

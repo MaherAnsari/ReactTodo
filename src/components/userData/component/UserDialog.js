@@ -10,6 +10,8 @@ import userListService from '../../../app/userListService/userListService';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
+import MenuItem from '@material-ui/core/MenuItem';
+import Utils from '../../../app/common/utils';
 
 const styles = theme => ({
     heading: {
@@ -60,27 +62,112 @@ class UserDialog extends Component {
         super(props);
         this.state = {
             open: this.props.openModal,
-            dataObj: this.props.data,
-            "stateList": [],
-            requiredKey:['fullname','business_name','locality','district','state'],
-            payload:{}
+            dataObj: {
+                "mobile": "",
+                "profile_completed": true,
+                "fullname": "",
+                "business_name": "",
+                "locality": "",
+                "district": "",
+                "state": "",
+                "role": "ca",
+                "default_commodity": [],
+                "bijak_verified": false,
+                "bijak_assured": false,
+                "exposure_cutoff_limit": 100,
+                "active": true,
+                "rating": 5
+            },
+            requiredKey: ['fullname', 'mobile', 'role'],
+            roleList: ['la', 'ca', 'broker'],
+            isUpdate: false,
+            payload: {},
+            stateList:[
+                "Andaman and Nicobar Islands",
+                "Andhra Pradesh",
+                "Arunachal Pradesh",
+                "Assam",
+                "Bihar",
+                "Chandigarh",
+                "Chhattisgarh",
+                "Dadra and Nagar Haveli",
+                "Daman and Diu",
+                "Goa",
+                "Gujarat",
+                "Haryana",
+                "Himachal Pradesh",
+                "Jammu and Kashmir",
+                "Jharkhand",
+                "Karnataka",
+                "Kerala",
+                "Ladakh",
+                "Lakshadweep",
+                "Madhya Pradesh",
+                "Maharashtra",
+                "Manipur",
+                "Meghalaya",
+                "Mizoram",
+                "Nagaland",
+                "National Capital Territory of Delhi",
+                "Odisha",
+                "Puducherry",
+                "Punjab",
+                "Rajasthan",
+                "Sikkim",
+                "Tamil Nadu",
+                "Telangana",
+                "Tripura",
+                "Uttar Pradesh",
+                "Uttarakhand",
+                "West Bengal"
+                ],
+                "districtMap":Utils.getDistrictData()  ,
+                "districtList":[]
+          
         }
 
     }
-
-    componentWillReceiveProps() {
-        if (this.props !== this.state) {
-            this.setState({ open: this.props.openModal });
+    componentDidMount() {
+        if (this.props.data) {
+            let data = this.props.data;
+            let arr = ['state','district','locality','business_name','business_name_hindi','fullname_hindi']
+            for(let i = 0 ;i<arr.length;i++){
+                if(data.hasOwnProperty(arr[i]) && (!data[arr[i]] || data[arr[i]] == "null")){
+                    data[arr[i]]="";
+                }
+            }
+            let list =[];
+           
+                let val = data['state'];
+                if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
+                     list = this.state.districtMap[val.toLowerCase()];
+                    
+                }
+               
+            
+            this.setState({ dataObj: this.props.data,districtList:list, isUpdate:true });
         }
+        // console.log(this.state.dataObj);
+
     }
+
+    // componentWillReceiveProps() {
+    //     if (this.props !== this.state) {
+    //         this.setState({ open: this.props.openModal });
+    //     }
+    // }
 
 
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-        if(id == "default_commodity"){
+        if (id == "mobile" ) {
+          if(event.target.value.length <= 10){
+            data[id] = event.target.value;
+          }
+        } else if (id == "default_commodity") {
             data[id] = event.target.value.split(',');
-        }else{
+        } else {
             data[id] = event.target.value;
         }
         this.setState({ dataObj: data });
@@ -96,16 +183,29 @@ class UserDialog extends Component {
     }
 
     handelConfirmUpdate = async () => {
-
-        let resp = await userListService.addUserData(this.state.dataObj.id, this.state.payload);
-        this.setState({ showConfirmDialog: false, alertData: {} });
+        let id = this.state.dataObj.id;
+        let obj = this.state.dataObj;
+        let reqObj = {}
+        if(this.state.isUpdate){
+             delete obj.mobile;
+             delete obj.createdtime;
+             delete obj.updatedtime;
+            reqObj ={'data':obj};
+        }else{
+            id = null;
+            reqObj['data'] =[];
+            reqObj['data'][0] = obj;
+        }
+        let resp = await userListService.addUserData(this.state.isUpdate,id, reqObj);
+        
         if (resp.data.status === 1) {
-            alert("Succesfully submitted");
+          
             this.props.onEditModalClosed();
+
         } else {
             alert("Opps there was an error, while adding");
         }
-        
+        this.setState({ showConfirmDialog: false, alertData: {} });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -115,32 +215,20 @@ class UserDialog extends Component {
     }
 
 
-    handleStateChange = event => {
-        let data = this.state.dataObj;
-        data['state'] = event.target.value;
-        this.setState({ dataObj: data });
-    };
-
 
     handleAddClick(event) {
         let data = this.state.dataObj;
-        let reqObj = {"data":{}};
-        let reqArr =  this.state.requiredKey;
-        for(let i=0;i<reqArr.length;i++){
-            if(!data[reqArr[i]] &&  data[reqArr[i]] == ""){
+        let reqArr = this.state.requiredKey;
+        for (let i = 0; i < reqArr.length; i++) {
+            if (!data[reqArr[i]] && data[reqArr[i]] == "") {
                 alert("All fields are required");
                 return;
             }
-            reqObj.data[reqArr[i]] = data[reqArr[i]];
         }
-        reqObj.data['bijak_verified']=data['bijak_verified'];
-        reqObj.data['bijak_assured']=data['bijak_assured'];
-        reqObj.data['default_commodity']=data['default_commodity'];
-        reqObj.data['active']=data['active'];
 
-        let dialogText = "Are you sure  to update ?"
+        let dialogText = this.state.isUpdate ? "Are you sure  to update ?":"Are you sure to add ?";
 
-        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true ,payload:reqObj});
+        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, payload: data });
 
     }
     handleCheckbox(id, event) {
@@ -149,6 +237,22 @@ class UserDialog extends Component {
         obj[id] = !obj[id];
         this.setState({ QueryObj: obj });
     }
+
+    handleStateChange = (id,event) => {
+        let data = this.state.dataObj;
+        data[id] = event.target.value;
+        this.setState({ dataObj: data });
+        if(id == "state" ){
+            let val = event.target.value;
+            this.state.dataObj.district="";
+            if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
+                let list = this.state.districtMap[val.toLowerCase()];
+                this.setState({districtList:list});
+            }
+           
+        }
+    };
+
     render() {
         const { classes } = this.props;
         return (<div> <Dialog style={{ zIndex: '1' }}
@@ -164,8 +268,9 @@ class UserDialog extends Component {
                         margin="dense"
                         id="mobile"
                         label="Mobile"
-                        type="text"
-                        disabled
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.mobile}
                         onChange={this.handleChange.bind(this)}
@@ -185,26 +290,41 @@ class UserDialog extends Component {
 
 
                 <div style={{ display: 'flex' }}>
+               
                     <TextField
-                        margin="dense"
-                        id="district"
-                        label="District"
-                        type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.district}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
-                    <TextField
+                        select
                         margin="dense"
                         id="state"
                         label="State"
                         type="text"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.state}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
+                        onChange={this.handleStateChange.bind(this,'state')}
+                        fullWidth>
+                        
+                        {this.state.stateList.map((option, i) => (
+                            <MenuItem key={i} value={option.toLowerCase()} selected={true}>
+                                {option.toLowerCase()}
+                            </MenuItem>
+                         ))}
+                         </TextField>
+                         <TextField
+                            select
+                            id="district"
+                            label="District"
+                            type="text"
+                            style={{ marginRight: '2%',marginTop:'5px',width:'48%' }}
+                            value={this.state.dataObj.state}
+                            onChange={this.handleStateChange.bind(this,'district')}
+
+                        >
+
+                            {this.state.districtList.map((option, i) => (
+                                <MenuItem key={i} value={option.district_name} selected={true}>
+                                    {option.district_name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                 </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
@@ -239,6 +359,70 @@ class UserDialog extends Component {
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     /></div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        select
+                        id="role"
+                        label="Role"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
+                        value={this.state.dataObj.role}
+                        onChange={this.handleStateChange.bind(this,'role')}
+
+                    >
+
+                        {this.state.roleList.map((option, i) => (
+                            <MenuItem key={i} value={option} selected={true}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        margin="dense"
+                        id="exposure_cutoff_limit"
+                        label="Cutoff Limit"
+                        type="number"
+                        style={{ marginRight: '2%', width: '23%' }}
+                        value={this.state.dataObj.exposure_cutoff_limit}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                    <TextField
+                        margin="dense"
+                        id="rating"
+                        label="Rating"
+                        type="number"
+                        style={{ marginRight: '2%', width: '23%' }}
+                        value={this.state.dataObj.rating}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                </div>
+
+               {this.state.isUpdate && <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
+                        id="business_name_hindi"
+                        label="Buisness Name (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.business_name_hindi}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                    <TextField
+                        margin="dense"
+                        id="fullname_hindi"
+                        label="Fullname (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.fullname_hindi}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                </div>}
+
+
                 <div style={{ display: 'flex', marginTop: '20px' }}>
                     <div style={{ marginRight: '2%', width: '38%' }}>
                         <Checkbox
@@ -257,14 +441,14 @@ class UserDialog extends Component {
                             tabIndex={-1}
                             disableRipple
                         />Is Bijak Assured</div>
-                      <div style={{ marginRight: '2%', width: '38%' }}>
+                    <div style={{ marginRight: '2%', width: '38%' }}>
                         <Checkbox
                             style={{ height: 24, width: 34 }}
                             checked={this.state.dataObj.active}
                             onClick={this.handleCheckbox.bind(this, "active")}
                             tabIndex={-1}
                             disableRipple
-                        />Is User Enable</div>   
+                        />Is User Enable</div>
                 </div>
 
 

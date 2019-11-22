@@ -77,7 +77,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["state", "district", "market"],
+      tableHeadData: ["state", "district", "market","market (Hindi)","district (Hindi)"],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
@@ -139,7 +139,7 @@ class MandiListTable extends Component {
   }
 
   onDeleteMandi(id, event) {
-    console.log(this.state.dataObj);
+    // console.log(this.state.dataObj);
     let dialogText = "Are you sure to delete ?"
 
     this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteId: id });
@@ -187,6 +187,8 @@ class MandiListTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.district}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.market}
                       </TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.market_hindi ? row.market_hindi:"-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
                         {row.businessAddedPlace ? <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
                           : <DoneAllIcon className="material-Icon" />}

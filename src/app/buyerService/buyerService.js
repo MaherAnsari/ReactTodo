@@ -23,15 +23,16 @@ let buyerService = {
             data: props
         });
     },
-    deleteMandi: async function (id) {
+    serchUser: async function (searchval) {
         return Api({
             method: 'get',
             headers: {
-    			"Authorization": Utils.getToken()
-    			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/'+id
+                "Authorization": Utils.getToken()
+            },
+            url: '/user/list?searchVal=' + searchval+'&role=ca'
         });
     },
+
 
 
 };

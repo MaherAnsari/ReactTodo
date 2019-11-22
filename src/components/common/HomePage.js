@@ -17,15 +17,16 @@ import Grid from '@material-ui/core/Grid';
 import { Route } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import cookie from "react-cookies";
-import Utils from '../../app/common/utils';
 import { withRouter } from 'react-router-dom';
 import MandiDataContainer from '../mandiData/MandiDataContainer';
 import UserDataContainer from '../userData/UserDataContainer';
 import BrokerContainer from '../broker/brokerContainer';
 import BuyerContainer from '../buyer/buyerContainer';
 import SupplierContainer from '../supplier/supplierContainer';
-
-
+import PriceContainer from '../price/priceContainer';
+import mandiDataService from '../../app/mandiDataService/mandiDataService';
+import CommodityContainer from '../commodityList/commodityContainer';
+import Utils from '../../app/common/utils';
 const drawerWidth = 250;
 
 const styles = theme => ({
@@ -38,7 +39,7 @@ const styles = theme => ({
     display: 'flex',
   },
   toolbarRoot: {
-    flexGrow: 1,
+    flexGrow: 1
 
   },
   appBar: {
@@ -74,9 +75,9 @@ const styles = theme => ({
   drawerPaper: {
     position: 'fixed',
     whiteSpace: 'nowrap',
-    // backgroundColor: '#005ce6',
+    backgroundColor: '#f5f5fa',
     borderRight: "0 !important",
-    backgroundImage: "#fff",
+    backgroundImage: "#f5f5fa !important",
     // backgroundImage: "linear-gradient(to left, #3c3f3f, #333535, #292c2c, #212323, #181a1a)",
     // backgroundImage: "linear-gradient(to right bottom, #478e89, #25828b, #00748c, #00668c, #005687)",
     width: drawerWidth,
@@ -107,7 +108,7 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    backgroundColor: "#f1f7f8",
+    backgroundColor: "#fff",
     padding: theme.spacing.unit * 3,
     // paddingLeft: theme.spacing.unit * 3,
     // paddingRight: theme.spacing.unit * 3,
@@ -174,6 +175,18 @@ class Home extends React.Component {
 
   componentWillMount() {
  
+  }
+ async componentDidMount(){
+
+    let rows = [];
+    let resp = await mandiDataService.getDistrictList();
+    // console.log(resp.data);
+    if (resp.data.status === 1 && resp.data.result) {
+        Utils.setDistrictData(resp.data.result.data )
+
+  }
+
+
   }
 
   handleDrawerOpen = () => {
@@ -305,12 +318,13 @@ class Home extends React.Component {
           classes={{
             paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
           }}
+          
           open={this.state.open}
 
         >
          
           {/* <Divider /> */}
-          <List id="binod">
+          <List id="binod" style={{padding:'0'}}>
             <ListItems 
                       globalModeOption={this.state.isSetGlobal} 
                       isdrawerOpen={this.state.open} 
@@ -324,12 +338,9 @@ class Home extends React.Component {
           <Route path='/home/buyer-list' exact component={BuyerContainer} />
           <Route path='/home/broker-list' exact component={BrokerContainer} />
           <Route path='/home/supplier-list' exact component={SupplierContainer} />
-
-
-
-
-
-        </main>
+          <Route path='/home/rate-list' exact component={PriceContainer} />
+          <Route path='/home/comodity-list' exact component={CommodityContainer} />
+         </main>
       </div>
     );
   }

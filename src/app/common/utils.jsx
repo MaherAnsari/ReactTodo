@@ -1,5 +1,6 @@
 import cookie from 'react-cookies';
 // to vget the current date
+let districtData= {};
 function getCurrentDate(data) {
     // DD-MM-YYY
     var today = new Date();
@@ -38,7 +39,13 @@ function getToken() {
     return "Bearer " + token;
 }
 
+function getDistrictData(){
+    return districtData;
+}
 
+function setDistrictData(data){
+    districtData =data;
+}
 
 
 
@@ -47,7 +54,9 @@ const Utils = {
     getToken,
     getCurrentDate,
     formateDate,
-    getCurrentTime
+    getCurrentTime,
+    getDistrictData,
+    setDistrictData
 
 }
 

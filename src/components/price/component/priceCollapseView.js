@@ -1,0 +1,230 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import mandiDataService from '../../../app/mandiDataService/mandiDataService';
+import ConfirmDialog from '../../../app/common/ConfirmDialog';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+const theme = createMuiTheme({
+  overrides: {
+    MuiTableCell: {
+      head: {
+        color: '#fff',
+        fontWeight: 600,
+        fontSize: '15px !important',
+        fontFamily: 'lato !important',
+        textTransform: 'uppercase'
+
+      },
+      body: {
+        color: 'rgba(0, 0, 0, 0.87)',
+        fontWeight: 500,
+        fontSize: '15px !important',
+        fontFamily: 'lato !important',
+        lineHeight: '1.5em',
+      }
+    },
+  }
+});
+
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    verticalAlign: "middle",
+    marginRight: theme.spacing.unit,
+    fontSize: 10,
+  },
+  tableCell: {
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    textAlign: 'center',
+    maxWidth: '200px'
+  },
+  titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
+  defaultTemplate: { height: '30vh', paddingTop: '10vh', },
+  defaultSpan: { display: 'grid', fontSize: '25px' },
+  defaultIcon: { fontSize: '65px', color: "#384952" },
+  editIcon: { fontSize: '20px', color: "#1e459c", paddingLeft: 3, cursor: 'pointer', marginRight: '2px', float: 'left' },
+  infoIcon: { color: '#d46262', fontSize: '18px', cursor: 'pointer' },
+  cellDiv: {
+    maxWidth: '180px',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden'
+  },
+  root: {
+    width: '100%',
+    minHeight: '80vh'
+  },
+  lightTooltip: {
+    fontSize: '14px',
+    maxWidth: 'none',
+  },
+});
+
+
+class PriceCollapseView extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+          tableHeadData: ["buyer", "broker", "commodity","rate","qunatity","unit"],
+          tableBodyData: this.props.tableData,
+          rawTableBodyData: [],
+          searchedText: "",
+          editableData: {},
+          showServerDialog: false,
+          deleteId: null
+    
+        }
+        // console.log(this.props.tableData);
+      }
+    
+    
+      async handelFilter(event) {
+        let searchedTxt = event.target.value;
+        // console.log(searchedTxt);
+        this.getData(searchedTxt);
+      }
+    
+      async getData(txt){
+        let rows = [];
+        
+        let resp = await mandiDataService.getMandiData(encodeURIComponent(txt));
+        // console.log(resp.data);
+        if (resp.data.status === 1 && resp.data.result) {
+          rows = resp.data.result.data;
+    
+    
+        }
+        this.setState({ tableBodyData: rows });
+      }
+    
+      handelConfirmUpdate = async () => {
+    
+        let rows = [];
+        let resp = await mandiDataService.deleteMandi(this.state.deleteId);
+        this.setState({ showConfirmDialog: false, alertData: {} });
+        if (resp.data.status === 1) {
+          alert("Succesfully Deleted");
+          this.getData('a');
+        } else {
+          alert("Opps there was an error, while deleted");
+        }
+       
+      }
+      onEditClicked(particularTaskData, event) {
+        this.setState({ editableData: JSON.parse(JSON.stringify(particularTaskData)), showServerDialog: true });
+      }
+    
+      onModalClosed(event) {
+    
+        this.setState({ editableData: {}, showServerDialog: false });
+        this.props.onEditModalClosed(event);
+      }
+      onModalCancel(event) {
+        this.setState({ editableData: {}, showServerDialog: false });
+      }
+    
+      getTableCellClass(classes, index) {
+        return classes.tableCell;
+      }
+    
+      onDeleteMandi(id, event) {
+        console.log(this.state.dataObj);
+        let dialogText = "Are you sure to delete ?"
+    
+        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteId: id });
+    
+      }
+      handelCancelUpdate = () => {
+        this.setState({ showConfirmDialog: false, alertData: {} });
+      }
+      handleDialogCancel(event) {
+        this.props.onEditModalCancel();
+      }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <MuiThemeProvider theme={theme}>
+        <Paper className={classes.root} >
+          {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
+          <div style={{ display: 'flex' }}>
+
+            <div style={{ width: '40%', marginLeft: '58%' }}>
+              <input
+                type="text"
+                placeholder="Search..."
+                className="search-input"
+                onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
+            </div>
+          </div>
+          <div >
+          <Table className='table-body'>
+              <TableHead>
+                <TableRow  >
+                  {this.state.tableHeadData.map((option, i) => (
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '150px' }}>{option}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              </Table> 
+                {this.state.tableBodyData.map((row, i) => {
+                  return (
+                 
+                      <div style={{width:'100%'}}>
+                      <ExpansionPanel style={{width:'100%'}}> 
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography className={classes.heading}>Expansion Panel 1</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+            sit amet blandit leo lobortis eget.
+          </Typography>
+        </ExpansionPanelDetails>
+      </ExpansionPanel></div>
+           
+                  );
+                })}
+         
+          
+          </div>
+          {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
+            {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
+              <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
+              {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
+                <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
+          </div>}
+          {this.state.showConfirmDialog ?
+            <ConfirmDialog
+              dialogText={this.state.dialogText}
+              dialogTitle={this.state.dialogTitle}
+              show={this.state.showConfirmDialog}
+              onConfirmed={this.handelConfirmUpdate}
+              onCanceled={this.handelCancelUpdate} /> : ""}
+        </Paper>
+      </MuiThemeProvider>
+    );
+  }
+}
+PriceCollapseView.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(PriceCollapseView);

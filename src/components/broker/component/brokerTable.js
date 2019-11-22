@@ -107,7 +107,7 @@ class BrokerTable extends Component {
         let searchedTxt = event.target.value;
         // console.log(searchedTxt);
         let rows = [];
-        let resp = await brokerService.getBrokerList(searchedTxt);
+        let resp = await brokerService.serchUser(searchedTxt);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             rows = resp.data.result.data;
@@ -201,10 +201,14 @@ class BrokerTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.fullname}
+                                            <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.fullname}</div>
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                {row.business_name}
+                                            <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.business_name}</div>
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -213,8 +217,8 @@ class BrokerTable extends Component {
                                                     </Tooltip>
                                                     </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                <Tooltip title={row.default_commodity.join()} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity.join()}</div>
+                                                <Tooltip title={row.default_commodity ? row.default_commodity.join():"-"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join():"-"}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >

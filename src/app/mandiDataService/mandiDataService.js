@@ -32,6 +32,16 @@ let mandiDataService = {
             url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/'+id
         });
     },
+    getDistrictList: async function (id) {
+        return Api({
+            method: 'get',
+            headers: {
+    			"Authorization": Utils.getToken()
+    			},
+            url: '/list/state/district'
+        });
+    },
+
 
 
 };

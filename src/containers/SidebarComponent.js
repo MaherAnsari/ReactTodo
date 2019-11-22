@@ -21,10 +21,12 @@ const styles = theme => ({
 
 const _items = [
   { name: 'Mandi Data',  route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#e6008a", children: [] },
-  { name: 'User List', route: '/user-list', iconClassName: 'account_circle', iconColor: "#e6008a", children: [] },
-  { name: 'Broker Data',  route: '/broker-list', iconClassName: 'work_outline', iconColor: "#e6008a", children: [] },
-  { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'account_circle', iconColor: "#e6008a", children: [] },
-  { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'account_circle', iconColor: "#e6008a", children: [] }
+  { name: 'User List', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#e6008a", children: [] },
+  { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
+  { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
+  { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
+  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#e6008a", children: [] },
+  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#e6008a", children: [] }
 
 ]
 
@@ -71,7 +73,7 @@ class VerticalItem extends React.Component {
         </li> */}
         {item.children && item.children.map(i => {
           return (
-            <li className="class_li" key={i.route} style={{ background: "#384952 !important", color: "white" }} onClick={() => this.onSelect(i.route)} >
+            <li className="class_li" key={i.route} style={{ background: "#384952 !important", color: "#f5f5fa" }} onClick={() => this.onSelect(i.route)} >
               {/* <i className={i.iconClassName} /> */}
               <Icon className="sideBarIcon">
                 {i.iconClassName}
@@ -112,7 +114,7 @@ class VerticalItem extends React.Component {
             {this.renderSubLevel(item)}
           </div>}
         </div> : <div>
-            <div className='item' style={{ background:active == item.route ?'#e5e8ec':''}}onClick={() => this.onSelect(item.route)}  >
+            <div className='item' style={{ background:active == item.route ?'#e5e8ec':'#f5f5fa'}}onClick={() => this.onSelect(item.route)}  >
               {/* <i className={item.iconClassName} /> */}
               <Icon className="sideBarIcon" style={{ color: item.iconColor }}>
                 {item.iconClassName}
@@ -148,16 +150,17 @@ class VerticalNavigation extends React.PureComponent {
 // console.log(activeRoute)
     return (
       <div className={`vertical-navigation-component ${additionalClass}`}>
-        <div className='nav-header'>
+        <div className='nav-header' style={{backgroundColor:'#e4e4e8'}}>
           <div>
             <img style={{
               // borderRadius: '50%',
-              height: '50px',
+              height: '60px',
               // border: '4px solid #dedede',
               // maxHeight: '80px',
               maxWidth: '200px',
-              marginBottom:'20px',
-              marginTop:'5px'
+              padding:'10px 10px 10px 10px'
+              // marginBottom:'20px',
+              // marginTop:'5px'
             }} src={isGlobalMode ? '' : 'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
           </div>
           {/* <Tooltip title={labname || ""} placement="right" >

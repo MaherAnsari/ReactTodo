@@ -66,7 +66,8 @@ const styles = theme => ({
     },
     root: {
         width: '100%',
-        minHeight: '80vh'
+        minHeight: '80vh',
+        marginTop:'20px'
     },
     lightTooltip: {
         fontSize: '15px',
@@ -107,7 +108,7 @@ class SupplierTable extends Component {
         let searchedTxt = event.target.value;
         // console.log(searchedTxt);
         let rows = [];
-        let resp = await supplierService.getSupplierList(searchedTxt);
+        let resp = await supplierService.serchUser(searchedTxt);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             rows = resp.data.result.data;
@@ -171,7 +172,7 @@ class SupplierTable extends Component {
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
-                    <div style={{ display: 'flex' }}>
+                    {/* <div style={{ display: 'flex' }}>
 
                         <div style={{ width: '40%', marginLeft: '58%' }}>
                             <input
@@ -180,7 +181,7 @@ class SupplierTable extends Component {
                                 className="search-input"
                                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
                         </div>
-                    </div>
+                    </div> */}
                     <div >
                         <Table className='table-body'>
                             <TableHead>
@@ -201,10 +202,15 @@ class SupplierTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.fullname}
+                                            <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.fullname}</div>
+                                                </Tooltip>
+                             
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                {row.business_name}
+                                            <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.business_name}</div>
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -213,8 +219,8 @@ class SupplierTable extends Component {
                                                     </Tooltip>
                                                     </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                <Tooltip title={row.default_commodity.join()} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity.join()}</div>
+                                                <Tooltip title={row.default_commodity ? row.default_commodity.join():""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join():""}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
@@ -241,7 +247,7 @@ class SupplierTable extends Component {
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                             <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
-                            {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
+                            {"Your search does not match any list"} </span> : <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                     </div>}
                     {this.state.showConfirmDialog ?

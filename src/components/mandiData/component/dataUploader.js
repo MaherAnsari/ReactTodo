@@ -10,7 +10,7 @@ import mandiDataService from '../../../app/mandiDataService/mandiDataService';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import Utils from '../../../app/common/utils';
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -63,7 +63,10 @@ class DataUploader extends Component {
             dataObj: {
                 'state': '',
                 'market': '',
-                'district': ''
+                'district': '',
+                'market_hindi':'',
+                'district_hindi':'',
+                'state_hindi':'-'
                
             },
             "stateList":[
@@ -104,7 +107,10 @@ class DataUploader extends Component {
                 "Uttar Pradesh",
                 "Uttarakhand",
                 "West Bengal"
-                ]
+                ],
+            "districtMap":Utils.getDistrictData()  ,
+            "districtList":[]
+
         }
 
     }
@@ -133,7 +139,7 @@ class DataUploader extends Component {
     }
 
     handelConfirmUpdate = async () => {
-        // console.log(param);
+        // console.log(this.state.dataObj);
         let resp = await mandiDataService.addMandiData(this.state.dataObj);
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
@@ -151,17 +157,27 @@ class DataUploader extends Component {
     }
 
 
-    handleStateChange  = event => {
+    handleStateChange  = (id,event) => {
         let data = this.state.dataObj;
-        data['state'] = event.target.value;
+        data[id] = event.target.value;
         this.setState({dataObj:data});
+        if(id == "state" ){
+            let val = event.target.value;
+            this.state.dataObj.district="";
+            if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
+                let list = this.state.districtMap[val.toLowerCase()];
+                this.setState({districtList:list});
+            }
+           
+        }
     };
 
 
     handleAddClick(event){
 
         let dialogText = "Are you sure to add ?"
-        if (this.state.dataObj.state && this.state.dataObj.state != "" && this.state.dataObj.market && this.state.dataObj.market != "" && this.state.dataObj.district && this.state.dataObj.district != "") {
+        if (this.state.dataObj.state && this.state.dataObj.state != "" && this.state.dataObj.market && this.state.dataObj.market != "" && this.state.dataObj.district && this.state.dataObj.district != ""
+        && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi != "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi != "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
             alert("All fields are required");
@@ -181,7 +197,7 @@ class DataUploader extends Component {
                     <TextField
                         margin="dense"
                         id="market"
-                        label="market"
+                        label="Market"
                         type="text"
                         style={{ marginRight: '2%' }}
                         value={this.state.dataObj.market}
@@ -192,11 +208,11 @@ class DataUploader extends Component {
                 <TextField
                             select
                             id="state"
-                            label="state"
+                            label="State"
                             type="text"
                             style={{ marginRight: '2%',width:'100%' }}
                             value={this.state.dataObj.state}
-                            onChange={this.handleStateChange.bind(this)}
+                            onChange={this.handleStateChange.bind(this,'state')}
 
                         >
 
@@ -219,13 +235,53 @@ class DataUploader extends Component {
                     </div>
 
                 <div >
-                    <TextField
+                <TextField
+                            select
+                            id="district"
+                            label="District"
+                            type="text"
+                            style={{ marginRight: '2%',width:'100%' }}
+                            value={this.state.dataObj.district}
+                            onChange={this.handleStateChange.bind(this,'district')}
+
+                        >
+
+                            {this.state.districtList.map((option, i) => (
+                                <MenuItem key={i} value={option.district_name} selected={true}>
+                                    {option.district_name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    {/* <TextField
                         margin="dense"
                         id="district"
-                        label="district"
+                        label="District"
                         type="text"
                         style={{ marginRight: '2%' }}
                         value={this.state.dataObj.district}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    /> */}
+                    </div>
+                       <div >
+                    <TextField
+                        margin="dense"
+                        id="district_hindi"
+                        label="District (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%' }}
+                        value={this.state.dataObj.district_hindi}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    /></div>
+                       <div >
+                    <TextField
+                        margin="dense"
+                        id="market_hindi"
+                        label="Market (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%' }}
+                        value={this.state.dataObj.market_hindi}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     /></div>

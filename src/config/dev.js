@@ -38,7 +38,8 @@ const request = function (options) {
     
         Auth.signOut()
           .then(data => {
-            window.location.href = window.location.origin + "/login"
+
+            window.location.href = window.location.origin 
             cookie.remove('token', { path: '/' })
             cookie.remove('username', { path: '/' });
            

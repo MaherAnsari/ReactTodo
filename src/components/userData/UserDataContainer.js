@@ -6,9 +6,10 @@ import Card from '@material-ui/core/Card';
 import  userListService  from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
 import UserListTable from './component/UserListTable';
+import UserDialog from './component/UserDialog';
 const styles = theme => ({
     root: {
-        width: '98%',
+        width: '100%',
         // marginTop: '30px',
         // height: '88vh',
         overflow: 'auto',
@@ -63,7 +64,8 @@ class UserDataContainer extends React.Component {
     }
    }
     handleClose(event) {
-        this.setState({open :false,showAddModal:false,blockList:null});
+        this.setState({open :false,showAddModal:false});
+        this.getData();
     }
     onModalCancel(event){
         this.setState({open :false,showAddModal:false});
@@ -80,10 +82,14 @@ class UserDataContainer extends React.Component {
                 {this.state.dataList ? <Card className={classes.card}>
                        <UserListTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
 
-
+                       <div className="updateBtndef">
+                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD USER</p></div>
+                    </div>
                 </Card>    :<Loader />}        
 
-
+                {this.state.showAddModal ? <UserDialog openModal={this.state.open}
+                     onEditModalClosed={this.handleClose.bind(this)}
+                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
             </div>
         );
     }

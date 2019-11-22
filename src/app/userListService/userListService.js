@@ -13,13 +13,13 @@ let userListService = {
             url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list'
         });
     },
-    addUserData: async function (id,props) {
+    addUserData: async function (isUpdate,id,props) {
         return Api({
             method: 'post',
             headers: {
     			"Authorization": Utils.getToken()
-    			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/detail/'+id,
+                },
+            url: isUpdate ? '/user/detail/'+id : '/user/detail',
             data: props
         });
     },
