@@ -140,7 +140,7 @@ onItemPanelExpanded( event , i, id ){
           <div >
             <div style={{ marginTop: "18px"
                           }}>
-            {this.state.expansionpanelHeaderData.filter((e)=>e["fullname"].indexOf(searchedText) > -1 ).map((row, i) => {
+            {this.state.expansionpanelHeaderData.map((row, i) => {
               return (
                 <div key={"expanpan"+ i} style={{ width: '100%',marginTop:'8px'}} >
                   <ExpansionPanel

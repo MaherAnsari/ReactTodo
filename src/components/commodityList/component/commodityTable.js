@@ -8,11 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-// import mandiDataService from '../../../app/mandiDataService/mandiDataService';
-// import DoneAllIcon from '@material-ui/icons/DoneAll';
-// import PersonIcon from '@material-ui/icons/Person';
-// import DeleteIcon from '@material-ui/icons/Delete';
+import Switch from '@material-ui/core/Switch';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
+import  commodityService  from '../../../app/commodityService/commodityService';
 
 const theme = createMuiTheme({
   overrides: {
@@ -69,6 +67,11 @@ const styles = theme => ({
     fontSize: '14px',
     maxWidth: 'none',
   },
+  toggle:{
+    marginTop:'12px',
+    fontSize:'15px',
+    color:'#000'
+  }
 });
 
 
@@ -79,7 +82,7 @@ class CommodityTable extends Component {
     this.state = {
       tableHeadData: ["name", "category", "weight"],
       tableBodyData: this.props.tableData,
-      dataList:this.props.tableData,
+      dataList: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
       editableData: {},
@@ -98,11 +101,11 @@ class CommodityTable extends Component {
     let updatedRow = [];
 
     for (let i = 0; i < initaialTableBodyData.length; i++) {
-      if (initaialTableBodyData[i].name.indexOf(searchedTxt) > -1 ) {
+      if (initaialTableBodyData[i].name.indexOf(searchedTxt) > -1) {
         updatedRow.push(initaialTableBodyData[i]);
       }
     }
-  
+
 
     this.setState({ tableBodyData: updatedRow });
   }
@@ -138,6 +141,29 @@ class CommodityTable extends Component {
   handleDialogCancel(event) {
     this.props.onEditModalCancel();
   }
+  handleChange(row,event){
+    console.log()
+    let obj = {"data":{
+      "name":row.name,
+      "active":!row.active
+    }}
+    this.updateCommodity(obj);
+  }
+
+
+  async updateCommodity(payload){
+    // let rows = [];
+    let resp = await commodityService.updateCommodity(payload);
+    // console.log(resp.data);
+    if (resp.data.status === 1) {
+      alert("Successfully Update");
+       this.props.onClose();
+    }else{
+      alert("Ooops! there was an error");
+    }
+ 
+  }
+
 
   render() {
     const { classes } = this.props;
@@ -160,7 +186,7 @@ class CommodityTable extends Component {
               <TableHead>
                 <TableRow  >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '150px' }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px' }}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -174,7 +200,14 @@ class CommodityTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
                       </TableCell>
-                     
+                      <div style={{display:'flex'}}> 
+                      <Switch
+                        checked={row.active}
+                        onChange={this.handleChange.bind(this,row)}
+                        value={row.active}
+                        color="primary"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                      /><p className={classes.toggle}>Active</p></div>
                     </TableRow>
                   );
                 })}

@@ -18,22 +18,6 @@ import Chip from '@material-ui/core/Chip';
 import commodityService from '../../../app/commodityService/commodityService';
 
 
-const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },
-    { title: 'The Lord of the Rings: The Return of the King', year: 2003 },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    { title: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
-    { title: 'Star Wars: Episode V - The Empire Strikes Back', year: 1980 },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 }]
-
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -45,7 +29,7 @@ const styles = theme => ({
     dialogPaper: {
         minWidth: '600px',
         // maxWidth: '700px',
-        minHeight: '500px',
+        minHeight: '600px',
         // maxHeight: '500px'
     },
     formAddBtn: {
@@ -146,7 +130,7 @@ class UserDialog extends Component {
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
 
-            
+
 
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
@@ -179,9 +163,9 @@ class UserDialog extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if ( nextProps.commodityList !== this.state.commodityList ) {
-            console.log( nextProps.commodityList )
-            this.setState({ commodityList : nextProps.commodityList });
+        if (nextProps.commodityList !== this.state.commodityList) {
+            console.log(nextProps.commodityList)
+            this.setState({ commodityList: nextProps.commodityList });
         }
     }
 
@@ -219,16 +203,16 @@ class UserDialog extends Component {
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
         let data = this.state.dataObj;
-        if( values.length >  0){
-            for(var i = 0; i < values.length; i++ ){
+        if (values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
                 commoditylist.push(values[i].name);
             }
         }
         data["default_commodity"] = commoditylist;
-        this.setState({ dataObj : data })
+        this.setState({ dataObj: data })
     }
 
-    
+
 
     onSubmitClick = () => {
         let dialogText = "Are you sure to add ?"
@@ -253,8 +237,8 @@ class UserDialog extends Component {
             reqObj['data'] = [];
             reqObj['data'][0] = obj;
         }
-        let resp = {};
-        // let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
+        // let resp = {};
+        let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
 
         if (resp.data.status === 1) {
 
@@ -335,15 +319,46 @@ class UserDialog extends Component {
                         fullWidth
                     />
                     <TextField
+                        select
+                        id="role"
+                        label="Role"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
+                        value={this.state.dataObj.role}
+                        onChange={this.handleStateChange.bind(this, 'role')}
+
+                    >
+
+                        {this.state.roleList.map((option, i) => (
+                            <MenuItem key={i} value={option} selected={true}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
                         margin="dense"
                         id="fullname"
                         label="Fullname"
                         type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
                         value={this.state.dataObj.fullname}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
+
+                    {this.state.isUpdate && <TextField
+                        margin="dense"
+                        id="fullname_hindi"
+                        label="Fullname (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.fullname_hindi}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />}
                 </div>
 
 
@@ -384,28 +399,7 @@ class UserDialog extends Component {
                         ))}
                     </TextField>
                 </div>
-                <div style={{ display: 'flex' }}>
-                    <TextField
-                        margin="dense"
-                        id="business_name"
-                        label="Buisness Name"
-                        type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.business_name}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="dense"
-                        id="locality"
-                        label="Locality"
-                        type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.locality}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
-                </div>
+              
                 <div style={{ display: 'flex' }}>
                     {/* <TextField
                         margin="dense"
@@ -443,22 +437,39 @@ class UserDialog extends Component {
                 </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
-                        select
-                        id="role"
-                        label="Role"
+                        margin="dense"
+                        id="business_name"
+                        label="Buisness Name"
                         type="text"
-                        style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
-                        value={this.state.dataObj.role}
-                        onChange={this.handleStateChange.bind(this, 'role')}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
+                        value={this.state.dataObj.business_name}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
 
-                    >
+                    {this.state.isUpdate && <TextField
+                        margin="dense"
+                        id="business_name_hindi"
+                        label="Buisness Name (Hindi)"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.business_name_hindi}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />}
 
-                        {this.state.roleList.map((option, i) => (
-                            <MenuItem key={i} value={option} selected={true}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </TextField>
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
+                        id="locality"
+                        label="Locality"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.locality}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
                     <TextField
                         margin="dense"
                         id="exposure_cutoff_limit"
@@ -481,28 +492,7 @@ class UserDialog extends Component {
                     />
                 </div>
 
-                {this.state.isUpdate && <div style={{ display: 'flex' }}>
-                    <TextField
-                        margin="dense"
-                        id="business_name_hindi"
-                        label="Buisness Name (Hindi)"
-                        type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.business_name_hindi}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="dense"
-                        id="fullname_hindi"
-                        label="Fullname (Hindi)"
-                        type="text"
-                        style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.fullname_hindi}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    />
-                </div>}
+
 
 
                 <div style={{ display: 'flex', marginTop: '20px' }}>

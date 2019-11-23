@@ -12,6 +12,16 @@ let commodityService = {
             },
             url: '/commodity/distinctlist/weight'
         });
+    },
+    updateCommodity: async function (param) {
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/commodity/update',
+            data: param
+        });
     }
 
 

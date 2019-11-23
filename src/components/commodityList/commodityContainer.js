@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import CommodityTable from './component/commodityTable';
 import  commodityService  from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
+import { IoTThingsGraph } from 'aws-sdk';
 
 const styles = theme => ({
     root: {
@@ -52,8 +53,9 @@ class CommodityContainer extends React.Component {
        this.getData();
     
     }
-    async getData(txt){
+    async getData(){
         // let rows = [];
+    
         let resp = await commodityService.getCommodityTable();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
@@ -68,8 +70,10 @@ class CommodityContainer extends React.Component {
     
    
     handleClose(event) {
-        this.setState({open :false,showAddModal:false,dataList:null});
-        this.getData('a');
+        this.setState({dataList:null},function(){
+            this.getData();
+        });
+       
     }
     onModalCancel(event){
         this.setState({open :false,showAddModal:false});
@@ -84,7 +88,7 @@ class CommodityContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <CommodityTable   tableData={this.state.dataList}   /> 
+                       <CommodityTable  onClose={this.handleClose.bind(this)} tableData={this.state.dataList}   /> 
                        {/* <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD LOCATION</p></div>
                     </div> */}
