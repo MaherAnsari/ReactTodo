@@ -26,6 +26,7 @@ import SupplierContainer from '../supplier/supplierContainer';
 import PriceContainer from '../price/priceContainer';
 import mandiDataService from '../../app/mandiDataService/mandiDataService';
 import CommodityContainer from '../commodityList/commodityContainer';
+import OrdersContainer from '../orders/OrdersContainer';
 import Utils from '../../app/common/utils';
 const drawerWidth = 250;
 
@@ -340,6 +341,7 @@ class Home extends React.Component {
           <Route path='/home/supplier-list' exact component={SupplierContainer} />
           <Route path='/home/rate-list' exact component={PriceContainer} />
           <Route path='/home/comodity-list' exact component={CommodityContainer} />
+          <Route path='/home/orders-list' exact component={OrdersContainer} />
          </main>
       </div>
     );
