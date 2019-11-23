@@ -53,7 +53,7 @@ class MandiDataContainer extends React.Component {
     
     }
     async getData(txt){
-        let rows = [];
+        // let rows = [];
         let resp = await mandiDataService.getMandiData(txt);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {

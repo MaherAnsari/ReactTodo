@@ -32,7 +32,7 @@ const styles = {
 class App extends Component {
   constructor(props) {
     super(props);
-
+  
     this.state = {
       isAuthenticated: false,
       user: '',
@@ -59,6 +59,9 @@ class App extends Component {
     this.setState({ isAuthenticated: props.isLoggedIn, user: props.email, componentName: props.view });
   }
 
+  componentDidMount(){
+    window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+  }
   componentWillMount() {
     // Utils.setDbName(this.state.providerName);
     Auth.currentAuthenticatedUser()

@@ -132,7 +132,7 @@ class UserDialog extends Component {
             let data = this.props.data;
             let arr = ['state','district','locality','business_name','business_name_hindi','fullname_hindi']
             for(let i = 0 ;i<arr.length;i++){
-                if(data.hasOwnProperty(arr[i]) && (!data[arr[i]] || data[arr[i]] == "null")){
+                if(data.hasOwnProperty(arr[i]) && (!data[arr[i]] || data[arr[i]] === "null")){
                     data[arr[i]]="";
                 }
             }
@@ -161,11 +161,11 @@ class UserDialog extends Component {
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-        if (id == "mobile" ) {
+        if (id === "mobile" ) {
           if(event.target.value.length <= 10){
             data[id] = event.target.value;
           }
-        } else if (id == "default_commodity") {
+        } else if (id === "default_commodity") {
             data[id] = event.target.value.split(',');
         } else {
             data[id] = event.target.value;
@@ -220,7 +220,7 @@ class UserDialog extends Component {
         let data = this.state.dataObj;
         let reqArr = this.state.requiredKey;
         for (let i = 0; i < reqArr.length; i++) {
-            if (!data[reqArr[i]] && data[reqArr[i]] == "") {
+            if (!data[reqArr[i]] && data[reqArr[i]] === "") {
                 alert("All fields are required");
                 return;
             }
@@ -242,7 +242,7 @@ class UserDialog extends Component {
         let data = this.state.dataObj;
         data[id] = event.target.value;
         this.setState({ dataObj: data });
-        if(id == "state" ){
+        if(id === "state" ){
             let val = event.target.value;
             this.state.dataObj.district="";
             if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
@@ -314,7 +314,7 @@ class UserDialog extends Component {
                             label="District"
                             type="text"
                             style={{ marginRight: '2%',marginTop:'5px',width:'48%' }}
-                            value={this.state.dataObj.state}
+                            value={this.state.dataObj.district}
                             onChange={this.handleStateChange.bind(this,'district')}
 
                         >

@@ -8,10 +8,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import mandiDataService from '../../../app/mandiDataService/mandiDataService';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import PersonIcon from '@material-ui/icons/Person';
-import DeleteIcon from '@material-ui/icons/Delete';
+// import mandiDataService from '../../../app/mandiDataService/mandiDataService';
+// import DoneAllIcon from '@material-ui/icons/DoneAll';
+// import PersonIcon from '@material-ui/icons/Person';
+// import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 
 const theme = createMuiTheme({

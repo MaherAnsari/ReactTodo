@@ -110,7 +110,7 @@ class MandiListTable extends Component {
 
   handelConfirmUpdate = async () => {
 
-    let rows = [];
+    // let rows = [];
     let resp = await mandiDataService.deleteMandi(this.state.deleteId);
     this.setState({ showConfirmDialog: false, alertData: {} });
     if (resp.data.status === 1) {

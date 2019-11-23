@@ -6,7 +6,6 @@ import { Auth } from "aws-amplify";
 // import Auth from '@aws-amplify/auth'
 import { Redirect } from "react-router-dom";
 import cookie from 'react-cookies';
-import Utils from '../../app/common/utils';
 import '../../assets/css/login.css';
 
 
@@ -282,7 +281,7 @@ class SignIn extends React.Component {
             Auth.signIn(this.state.user.username, this.state.user.password)
                 .then(user => {
                     if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-                        const { requiredAttributes } = user.challengeParam; // the array of required attributes, e.g ['email', 'phone_number']
+                        // const { requiredAttributes } = user.challengeParam; // the array of required attributes, e.g ['email', 'phone_number']
                         Auth.completeNewPassword(
                             user,               // the Cognito User Object
                             this.state.user.newpassword,       // the new password

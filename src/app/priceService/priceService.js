@@ -19,7 +19,7 @@ let priceService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/rate/list/buyer'
+            url: param ? '/rate/list/buyer/' +param : '/rate/list/buyer'
         });
     },
     getBroketList: async function (param) {

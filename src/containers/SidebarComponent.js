@@ -88,7 +88,7 @@ class VerticalItem extends React.Component {
 
   render() {
     const { item, active, isGlobalMode } = this.props
-    const { isHover ,activeRoute} = this.state
+    const { isHover } = this.state; //activeRoute
     let className = 'vertical-item-component';
     // console.log("_--------------_-----_--> " + isGlobalMode);
     if (isHover) className += ' is-hover'
@@ -114,7 +114,7 @@ class VerticalItem extends React.Component {
             {this.renderSubLevel(item)}
           </div>}
         </div> : <div>
-            <div className='item' style={{ background:active == item.route ?'#e5e8ec':'#f5f5fa'}}onClick={() => this.onSelect(item.route)}  >
+            <div className='item' style={{ background:active === item.route ?'#e5e8ec':'#f5f5fa'}}onClick={() => this.onSelect(item.route)}  >
               {/* <i className={item.iconClassName} /> */}
               <Icon className="sideBarIcon" style={{ color: item.iconColor }}>
                 {item.iconClassName}

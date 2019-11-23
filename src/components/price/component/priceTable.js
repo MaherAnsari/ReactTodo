@@ -60,7 +60,7 @@ const styles = theme => ({
   },
   root: {
     width: '100%',
-    minHeight: '80vh'
+    // minHeight: '80vh'
   },
   lightTooltip: {
     fontSize: '14px',
@@ -93,22 +93,22 @@ class PriceTable extends Component {
     this.getData(searchedTxt);
   }
 
-  async getData(txt){
-    let rows = [];
+  // async getData(txt){
+  //   let rows = [];
     
-    let resp = await mandiDataService.getMandiData(encodeURIComponent(txt));
-    // console.log(resp.data);
-    if (resp.data.status === 1 && resp.data.result) {
-      rows = resp.data.result.data;
+  //   let resp = await mandiDataService.getMandiData(encodeURIComponent(txt));
+  //   // console.log(resp.data);
+  //   if (resp.data.status === 1 && resp.data.result) {
+  //     rows = resp.data.result.data;
 
 
-    }
-    this.setState({ tableBodyData: rows });
-  }
+  //   }
+  //   this.setState({ tableBodyData: rows });
+  // }
 
   handelConfirmUpdate = async () => {
 
-    let rows = [];
+    // let rows = [];
     let resp = await mandiDataService.deleteMandi(this.state.deleteId);
     this.setState({ showConfirmDialog: false, alertData: {} });
     if (resp.data.status === 1) {
@@ -156,7 +156,7 @@ class PriceTable extends Component {
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
           {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
-          <div style={{ display: 'flex' }}>
+          {/* <div style={{ display: 'flex' }}>
 
             <div style={{ width: '40%', marginLeft: '58%' }}>
               <input
@@ -165,9 +165,9 @@ class PriceTable extends Component {
                 className="search-input"
                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
             </div>
-          </div>
+          </div> */}
           <div >
-            <Table className='table-body'>
+            <Table className='table-body' style={{marginBottom:'0px'}}>
               <TableHead>
                 <TableRow  >
                   {this.state.tableHeadData.map((option, i) => (

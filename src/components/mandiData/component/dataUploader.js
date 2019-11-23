@@ -161,7 +161,7 @@ class DataUploader extends Component {
         let data = this.state.dataObj;
         data[id] = event.target.value;
         this.setState({dataObj:data});
-        if(id == "state" ){
+        if(id === "state" ){
             let val = event.target.value;
             this.state.dataObj.district="";
             if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
@@ -176,8 +176,8 @@ class DataUploader extends Component {
     handleAddClick(event){
 
         let dialogText = "Are you sure to add ?"
-        if (this.state.dataObj.state && this.state.dataObj.state != "" && this.state.dataObj.market && this.state.dataObj.market != "" && this.state.dataObj.district && this.state.dataObj.district != ""
-        && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi != "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi != "") {
+        if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
+        && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
             alert("All fields are required");

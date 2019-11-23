@@ -9,14 +9,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Icon from '@material-ui/core/Icon';
 
-const styles = theme => ({
-
-  dialogPaper: {
-      minWidth: '600px',
-      // maxWidth: '700px',
-      minHeight: '500px',
-      // maxHeight: '500px'
-  }})
 class ConfirmDialog extends React.Component {
   state = {
     open: this.props.show,

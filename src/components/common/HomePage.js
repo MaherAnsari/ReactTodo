@@ -174,11 +174,11 @@ class Home extends React.Component {
 
 
   componentWillMount() {
- 
+    window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
   }
  async componentDidMount(){
 
-    let rows = [];
+    // let rows = [];
     let resp = await mandiDataService.getDistrictList();
     // console.log(resp.data);
     if (resp.data.status === 1 && resp.data.result) {

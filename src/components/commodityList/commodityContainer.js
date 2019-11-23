@@ -53,7 +53,7 @@ class CommodityContainer extends React.Component {
     
     }
     async getData(txt){
-        let rows = [];
+        // let rows = [];
         let resp = await commodityService.getCommodityTable();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {

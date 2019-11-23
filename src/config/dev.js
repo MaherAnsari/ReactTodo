@@ -1,8 +1,8 @@
 import axios from 'axios';
 import cookie from 'react-cookies';
 import { Auth } from "aws-amplify";
-import Utils from '../app/common/utils';
-let currentUrl = window.location.href;
+// import Utils from '../app/common/utils';
+// let currentUrl = window.location.href;
 let baseUrl =  'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/';
 
 
@@ -56,16 +56,38 @@ const request = function (options) {
       return response;
     }
     else{
-    
         return response;
-      
-     
     }   
 
   }
+
+  const onErrorOfAuthentication = function (error) {
+    try{
+    var errorStatus =   error.message === "Network Error" ?401: error.response.data.statusCode ;
+    var errorMsg = error.message || "Oops there is an error.";
+    if(parseInt(errorStatus,10) === 401 ){
+        Auth.signOut()
+            .then(data => {
+                // userAuth.resetAppOnLogout();
+                cookie.remove('token', { path: '/' })
+                cookie.remove('username', { path: '/' });
+                window.location.href = window.location.origin;
+                return;
+            })
+            .catch(err => console.log(err));
+        // localStorage.setItem('pepToken', null);
+        alert("Session expired. Please Login agian");
+        
+    }
+    return  { data:{ status: 0, result: undefined,  message: errorMsg}};
+}catch(er){
+    console.log(er)
+    return { data:{ status: 0, result: undefined,  message: "Oops an error occured" }};
+}
+}
   return client(options)
     .then(errorHandlingForApiResponse)
-  // .catch(onError);
+    .catch(onErrorOfAuthentication);
 }
 
 

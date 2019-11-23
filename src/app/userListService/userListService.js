@@ -8,7 +8,7 @@ let userListService = {
         return Api({
             method: 'get',
             headers: {
-                "Authorization": Utils.getToken()
+                // "Authorization": Utils.getToken()
             },
             url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list'
         });

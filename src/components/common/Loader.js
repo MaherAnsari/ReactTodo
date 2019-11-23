@@ -37,7 +37,7 @@ class Loader extends React.Component {
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.root}>
+            <div className={classes.root} style={{height:this.props.height ? this.props.height:"70vh" }}>
                 <div className={classes.branchdiv}>
                 {/* spokes , cylon */}
                     <ReactLoading type={'spokes'} color="#4b9a9c" />

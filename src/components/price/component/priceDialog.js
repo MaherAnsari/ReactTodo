@@ -50,10 +50,6 @@ const styles = theme => ({
         marginTop: '8%',
         padding: '25px',
         textAlign: 'center'
-    },
-    slash:{
-        fontSize:'20px',
-        marginTop:'px'
     }
 
 });
@@ -71,9 +67,8 @@ class PriceDialog extends Component {
                 "rate":0,
                 "qnt":0,
                 "unit":"quantil",
-                "commission_rate":0,
-                "commission_unit":"quantil",
-                "rate_unit":"quantil"
+                "commission_rate":"",
+                "commission_unit":"quantil"
             },
             commodityList:[],
             unitArr:["quantil","ton"]
@@ -128,8 +123,7 @@ class PriceDialog extends Component {
         let data = this.state.dataObj;
         data[id] = event.target.value;
         this.setState({dataObj:data});
-        // console.log(event.target.value);
-        if(id == 'buyerid'){
+        if(id === 'buyerid'){
             this.handleCommodity(event.target.value);
         }
     };
@@ -138,13 +132,14 @@ class PriceDialog extends Component {
     handleCommodity =(id) =>{
         let data =  this.props.buyerList;
         for(let i=0;i<data.length;i++){
-            if(data[i]['id'] == id){
+            if(data[i]['id'] === id){
                 this.setState({commodityList:data[i]['default_commodity']});
                 return;
             }
         }
      
     }
+
     handleAddClick(event){
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
         let dialogText = "Are you sure to add ?"
@@ -173,12 +168,11 @@ class PriceDialog extends Component {
                         style={{ marginRight: '2%', width: '100%', marginTop: '5px' }}
                         value={this.state.dataObj.buyerid}
                         onChange={this.handleStateChange.bind(this,'buyerid')}
-                    
+
                     >
-                         
 
                         {this.props.buyerList.map((option, i) => (
-                            <MenuItem key={i} value={option.id}  selected={true}>
+                            <MenuItem key={i} value={option.id} selected={true}>
                                 {option.fullname } {"("+option.business_name+")"}
                             </MenuItem>
                         ))}
@@ -215,7 +209,7 @@ class PriceDialog extends Component {
 
                     >
 
-                        {this.state.commodityList.map((option, i) => (
+                        {this.state.commodityList.map((option,i) => (
                             <MenuItem key={i} value={option} selected={true}>
                                 {option}
                             </MenuItem>
@@ -223,36 +217,17 @@ class PriceDialog extends Component {
                     </TextField>
                     </div>
                 
-                <div style={{display:'flex'}}>
+                <div >
                     <TextField
                         margin="dense"
                         id="rate"
                         label="Rate"
                         type="number"
-                        style={{ marginRight: '2%',width:'50%' }}
+                        style={{ marginRight: '2%' }}
                         value={this.state.dataObj.rate}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />
-                    
-                    <TextField
-                        select
-                        id="rate_unit"
-                        label="Rate Unit"
-                        type="text"
-                        style={{ marginRight: '2%',marginLeft: '2%', width: '30%', marginTop: '5px' }}
-                        value={this.state.dataObj.rate_unit}
-                        onChange={this.handleStateChange.bind(this,'rate_unit')}
-
-                    >
-
-                        {this.state.unitArr.map((option, i) => (
-                            <MenuItem key={i} value={option} selected={true}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    </div>
+                    /></div>
                    
                        <div style={{display:'flex'}}>
                        <TextField
@@ -265,12 +240,12 @@ class PriceDialog extends Component {
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                      <TextField
+                       <TextField
                         select
                         id="unit"
                         label="Unit"
                         type="text"
-                        style={{ marginRight: '2%', marginLeft: '2%',width: '30%', marginTop: '5px' }}
+                        style={{ marginRight: '2%', width: '30%', marginTop: '5px' }}
                         value={this.state.dataObj.unit}
                         onChange={this.handleStateChange.bind(this,'unit')}
 
@@ -294,12 +269,12 @@ class PriceDialog extends Component {
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         select
                         id="commission_unit"
                         label="commision Unit"
                         type="text"
-                        style={{ marginRight: '2%', marginLeft: '2%', width: '30%', marginTop: '5px' }}
+                        style={{ marginRight: '2%', width: '30%', marginTop: '5px' }}
                         value={this.state.dataObj.unit}
                         onChange={this.handleStateChange.bind(this,'commission_unit')}
 

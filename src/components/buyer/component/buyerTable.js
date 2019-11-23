@@ -98,7 +98,7 @@ class BrokerTable extends Component {
     }
     componentWillReceiveProps() {
 
-        if (this.state.tableBodyData != this.props.tableData) {
+        if (this.state.tableBodyData !== this.props.tableData) {
             this.setState({ tableBodyData: this.pros.tableData });
         }
     }
@@ -156,9 +156,9 @@ class BrokerTable extends Component {
         this.setState({ open: false, showUserModal: false });
         this.props.onClose();
     }
-    onModalCancel(event) {
-        this.setState({ open: false, showUserModal: false });
-    }
+    // onModalCancel(event) {
+    //     this.setState({ open: false, showUserModal: false });
+    // }
 
 
  
@@ -186,7 +186,7 @@ class BrokerTable extends Component {
                             <TableHead>
                                 <TableRow  >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i == 0 ? '50px' : '125px', paddingLeft: i == 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '50px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                     <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>

@@ -14,7 +14,6 @@ import PersonIcon from '@material-ui/icons/Person';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import Tooltip from '@material-ui/core/Tooltip';
 import BeenhereIcon from '@material-ui/icons/Beenhere';
-import OptionList from '../../../app/common/OptionList';
 import Button from '@material-ui/core/Button';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
@@ -130,16 +129,16 @@ class UserListTable extends Component {
         this.setState({ editableData: {}, showServerDialog: false });
         this.props.onEditModalClosed(event);
     }
-    onModalCancel(event) {
-        this.setState({ editableData: {}, showServerDialog: false });
-    }
+    // onModalCancel(event) {
+    //     this.setState({ editableData: {}, showServerDialog: false });
+    // }
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
     }
 
     getInfoSTring(obj) {
-        return obj.locality?obj.locality:"-" + " , " + obj.district?obj.district:"-";
+        return obj.locality?obj.locality:"- , " + obj.district?obj.district:"-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -208,33 +207,33 @@ class UserListTable extends Component {
         }
 
     }
-    getUserStatus(row) {
-        console.log(row);
-        row.active ? "Disable User" : "Enable User";
-    }
-    getUserLogo(row) {
-        row.active ? "block" : "check";
-    }
+    // getUserStatus(row) {
+    //     // console.log(row);
+    //     row.active ? "Disable User" : "Enable User";
+    // }
+    // getUserLogo(row) {
+    //     row.active ? "block" : "check";
+    // }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
     getRole(row){
-        if(row.role == "ca"){
+        if(row.role === "ca"){
             return "buyer";
-        }else if(row.role == 'la'){
+        }else if(row.role === 'la'){
             return "supplier";
-        }else if(row.role == 'broker'){
+        }else if(row.role === 'broker'){
             return "broker";
         }else{
             return "NA";
         }
     }
     getBackgroundColor(obj){
-        if(obj.role == "ca"){
+        if(obj.role === "ca"){
             return "#f94141";
-        }else if(obj.role == 'la'){
+        }else if(obj.role === 'la'){
             return "#82af82";
-        }else if(obj.role == 'broker'){
+        }else if(obj.role === 'broker'){
             return "#7070fd";
         }else{
             return "#e5e8ec";
@@ -261,7 +260,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow  >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i == 0 ? '50px' : '120px', paddingLeft: i == 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '50px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                     <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>
