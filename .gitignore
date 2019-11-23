@@ -1,0 +1,7 @@
+/build
+/node_modules
+/.vscode
+#awsmobilejs
+appsync-info.json
+aws-info.json
+project-info.json

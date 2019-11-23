@@ -13,6 +13,27 @@ import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
 
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commodityService from '../../../app/commodityService/commodityService';
+
+
+const top100Films = [
+    { title: 'The Shawshank Redemption', year: 1994 },
+    { title: 'The Godfather', year: 1972 },
+    { title: 'The Godfather: Part II', year: 1974 },
+    { title: 'The Dark Knight', year: 2008 },
+    { title: '12 Angry Men', year: 1957 },
+    { title: "Schindler's List", year: 1993 },
+    { title: 'Pulp Fiction', year: 1994 },
+    { title: 'The Lord of the Rings: The Return of the King', year: 2003 },
+    { title: 'The Good, the Bad and the Ugly', year: 1966 },
+    { title: 'Fight Club', year: 1999 },
+    { title: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
+    { title: 'Star Wars: Episode V - The Empire Strikes Back', year: 1980 },
+    { title: 'Forrest Gump', year: 1994 },
+    { title: 'Inception', year: 2010 }]
+
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -61,6 +82,7 @@ class UserDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            commodityList: [],
             open: this.props.openModal,
             dataObj: {
                 "mobile": "",
@@ -82,7 +104,7 @@ class UserDialog extends Component {
             roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
             payload: {},
-            stateList:[
+            stateList: [
                 "Andaman and Nicobar Islands",
                 "Andhra Pradesh",
                 "Arunachal Pradesh",
@@ -120,51 +142,72 @@ class UserDialog extends Component {
                 "Uttar Pradesh",
                 "Uttarakhand",
                 "West Bengal"
-                ],
-                "districtMap":Utils.getDistrictData()  ,
-                "districtList":[]
-          
-        }
+            ],
+            "districtMap": Utils.getDistrictData(),
+            "districtList": [],
 
+            
+
+        }
+        this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
     componentDidMount() {
         if (this.props.data) {
             let data = this.props.data;
-            let arr = ['state','district','locality','business_name','business_name_hindi','fullname_hindi']
-            for(let i = 0 ;i<arr.length;i++){
-                if(data.hasOwnProperty(arr[i]) && (!data[arr[i]] || data[arr[i]] === "null")){
-                    data[arr[i]]="";
+            let arr = ['state', 'district', 'locality', 'business_name', 'business_name_hindi', 'fullname_hindi']
+            for (let i = 0; i < arr.length; i++) {
+                if (data.hasOwnProperty(arr[i]) && (!data[arr[i]] || data[arr[i]] === "null")) {
+                    data[arr[i]] = "";
                 }
             }
-            let list =[];
-           
-                let val = data['state'];
-                if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
-                     list = this.state.districtMap[val.toLowerCase()];
-                    
-                }
-               
-            
-            this.setState({ dataObj: this.props.data,districtList:list, isUpdate:true });
-        }
-        // console.log(this.state.dataObj);
+            let list = [];
 
+            let val = data['state'];
+            if (this.state.districtMap.hasOwnProperty(val.toLowerCase())) {
+                list = this.state.districtMap[val.toLowerCase()];
+
+            }
+
+            // console.log(this.props.data);
+
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true });
+        }
+
+        // console.log(this.state.dataObj);
+        //getting the Commodity Names for ten drop Down 
+        this.getCommodityNames()
     }
 
-    // componentWillReceiveProps() {
-    //     if (this.props !== this.state) {
-    //         this.setState({ open: this.props.openModal });
-    //     }
-    // }
+    componentWillReceiveProps(nextProps) {
+        if ( nextProps.commodityList !== this.state.commodityList ) {
+            console.log( nextProps.commodityList )
+            this.setState({ commodityList : nextProps.commodityList });
+        }
+    }
+
+    async getCommodityNames(txt) {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ commodityList: resp.data.result.data });
+            } else {
+                this.setState({ commodityList: [] });
+            }
+        } catch (err) {
+            console.error(err)
+            this.setState({ commodityList: [] });
+        }
+    }
+
 
 
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-        if (id === "mobile" ) {
-          if(event.target.value.length <= 10){
-            data[id] = event.target.value;
-          }
+        if (id === "mobile") {
+            if (event.target.value.length <= 10) {
+                data[id] = event.target.value;
+            }
         } else if (id === "default_commodity") {
             data[id] = event.target.value.split(',');
         } else {
@@ -172,6 +215,20 @@ class UserDialog extends Component {
         }
         this.setState({ dataObj: data });
     }
+
+    handelAutoCompleteChange = (event, values) => {
+        var commoditylist = [];
+        let data = this.state.dataObj;
+        if( values.length >  0){
+            for(var i = 0; i < values.length; i++ ){
+                commoditylist.push(values[i].name);
+            }
+        }
+        data["default_commodity"] = commoditylist;
+        this.setState({ dataObj : data })
+    }
+
+    
 
     onSubmitClick = () => {
         let dialogText = "Are you sure to add ?"
@@ -186,20 +243,21 @@ class UserDialog extends Component {
         let id = this.state.dataObj.id;
         let obj = this.state.dataObj;
         let reqObj = {}
-        if(this.state.isUpdate){
-             delete obj.mobile;
-             delete obj.createdtime;
-             delete obj.updatedtime;
-            reqObj ={'data':obj};
-        }else{
+        if (this.state.isUpdate) {
+            delete obj.mobile;
+            delete obj.createdtime;
+            delete obj.updatedtime;
+            reqObj = { 'data': obj };
+        } else {
             id = null;
-            reqObj['data'] =[];
+            reqObj['data'] = [];
             reqObj['data'][0] = obj;
         }
-        let resp = await userListService.addUserData(this.state.isUpdate,id, reqObj);
-        
+        let resp = {};
+        // let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
+
         if (resp.data.status === 1) {
-          
+
             this.props.onEditModalClosed();
 
         } else {
@@ -226,7 +284,7 @@ class UserDialog extends Component {
             }
         }
 
-        let dialogText = this.state.isUpdate ? "Are you sure  to update ?":"Are you sure to add ?";
+        let dialogText = this.state.isUpdate ? "Are you sure  to update ?" : "Are you sure to add ?";
 
         this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, payload: data });
 
@@ -238,18 +296,18 @@ class UserDialog extends Component {
         this.setState({ QueryObj: obj });
     }
 
-    handleStateChange = (id,event) => {
+    handleStateChange = (id, event) => {
         let data = this.state.dataObj;
         data[id] = event.target.value;
         this.setState({ dataObj: data });
-        if(id === "state" ){
+        if (id === "state") {
             let val = event.target.value;
-            this.state.dataObj.district="";
-            if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
+            this.state.dataObj.district = "";
+            if (this.state.districtMap.hasOwnProperty(val.toLowerCase())) {
                 let list = this.state.districtMap[val.toLowerCase()];
-                this.setState({districtList:list});
+                this.setState({ districtList: list });
             }
-           
+
         }
     };
 
@@ -290,7 +348,7 @@ class UserDialog extends Component {
 
 
                 <div style={{ display: 'flex' }}>
-               
+
                     <TextField
                         select
                         margin="dense"
@@ -299,32 +357,32 @@ class UserDialog extends Component {
                         type="text"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.state}
-                        onChange={this.handleStateChange.bind(this,'state')}
+                        onChange={this.handleStateChange.bind(this, 'state')}
                         fullWidth>
-                        
+
                         {this.state.stateList.map((option, i) => (
                             <MenuItem key={i} value={option.toLowerCase()} selected={true}>
                                 {option.toLowerCase()}
                             </MenuItem>
-                         ))}
-                         </TextField>
-                         <TextField
-                            select
-                            id="district"
-                            label="District"
-                            type="text"
-                            style={{ marginRight: '2%',marginTop:'5px',width:'48%' }}
-                            value={this.state.dataObj.district}
-                            onChange={this.handleStateChange.bind(this,'district')}
+                        ))}
+                    </TextField>
+                    <TextField
+                        select
+                        id="district"
+                        label="District"
+                        type="text"
+                        style={{ marginRight: '2%', marginTop: '5px', width: '48%' }}
+                        value={this.state.dataObj.district}
+                        onChange={this.handleStateChange.bind(this, 'district')}
 
-                        >
+                    >
 
-                            {this.state.districtList.map((option, i) => (
-                                <MenuItem key={i} value={option.district_name} selected={true}>
-                                    {option.district_name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        {this.state.districtList.map((option, i) => (
+                            <MenuItem key={i} value={option.district_name} selected={true}>
+                                {option.district_name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
                 </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
@@ -349,7 +407,7 @@ class UserDialog extends Component {
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
-                    <TextField
+                    {/* <TextField
                         margin="dense"
                         id="default_commodity"
                         label="Default Commodity"
@@ -358,7 +416,31 @@ class UserDialog extends Component {
                         value={this.state.dataObj.default_commodity}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    /></div>
+                    /> */}
+
+                    <Autocomplete
+                        multiple
+                        id="fixed-tags-demo"
+                        options={this.state.commodityList}
+                        getOptionLabel={option => option.name}
+                        defaultValue={this.state.dataObj.default_commodity}
+                        onChange={this.handelAutoCompleteChange}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip label={option.name} {...getTagProps({ index })} />
+                            ))
+                        }
+                        style={{ width: "98%" }}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label="Default Commodity"
+                                placeholder="Search"
+                                fullWidth
+                            />
+                        )}
+                    />
+                </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
                         select
@@ -367,7 +449,7 @@ class UserDialog extends Component {
                         type="text"
                         style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
                         value={this.state.dataObj.role}
-                        onChange={this.handleStateChange.bind(this,'role')}
+                        onChange={this.handleStateChange.bind(this, 'role')}
 
                     >
 
@@ -399,7 +481,7 @@ class UserDialog extends Component {
                     />
                 </div>
 
-               {this.state.isUpdate && <div style={{ display: 'flex' }}>
+                {this.state.isUpdate && <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
                         id="business_name_hindi"
