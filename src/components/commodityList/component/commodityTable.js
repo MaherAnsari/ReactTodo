@@ -200,14 +200,14 @@ class CommodityTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
                       </TableCell>
-                      <div style={{display:'flex'}}> 
+                      {/* <div style={{display:'flex'}}> 
                       <Switch
                         checked={row.active}
                         onChange={this.handleChange.bind(this,row)}
                         value={row.active}
                         color="primary"
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
-                      /><p className={classes.toggle}>Active</p></div>
+                      /><p className={classes.toggle}>Active</p></div> */}
                     </TableRow>
                   );
                 })}

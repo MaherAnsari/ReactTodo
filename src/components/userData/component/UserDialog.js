@@ -401,7 +401,7 @@ class UserDialog extends Component {
                 </div>
               
                 <div style={{ display: 'flex' }}>
-                    {/* <TextField
+                    <TextField
                         margin="dense"
                         id="default_commodity"
                         label="Default Commodity"
@@ -410,9 +410,9 @@ class UserDialog extends Component {
                         value={this.state.dataObj.default_commodity}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    /> */}
+                    />
 
-                    <Autocomplete
+                    {/* <Autocomplete
                         multiple
                         id="fixed-tags-demo"
                         options={this.state.commodityList}
@@ -433,7 +433,7 @@ class UserDialog extends Component {
                                 fullWidth
                             />
                         )}
-                    />
+                    /> */}
                 </div>
                 <div style={{ display: 'flex' }}>
                     <TextField

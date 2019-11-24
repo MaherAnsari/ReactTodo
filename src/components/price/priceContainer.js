@@ -43,7 +43,7 @@ class PriceContainer extends React.Component {
             open: false,
             showAddModal: false,
             dataList: null,
-            buyerList: [],
+            buyerList: null,
             brokerList: [],
             commodityList: [],
             showLoader: true
@@ -54,9 +54,10 @@ class PriceContainer extends React.Component {
 
 
     componentDidMount() {
+        this.getBuyerList();
         this.getPriceList();
         this.getBrokerList();
-        this.getBuyerList();
+        
         this.getCommodityList();
 
     }
@@ -120,7 +121,7 @@ class PriceContainer extends React.Component {
                 {this.state.dataList ?
                     <Card className={classes.card}>
                         {/* <PriceTable   tableData={this.state.dataList}   />  */}
-                      { this.state.buyerList && this.state.buyerList.length > 0 &&
+                      { this.state.buyerList &&
                        <PriceCollapseView
                             tableData={this.state.dataList}
                             expansionpanelHeaderData={ this.state.buyerList} />}

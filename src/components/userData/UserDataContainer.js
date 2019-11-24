@@ -7,6 +7,8 @@ import  userListService  from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
 import UserListTable from './component/UserListTable';
 import UserDialog from './component/UserDialog';
+import commodityService from '../../app/commodityService/commodityService';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -41,7 +43,8 @@ class UserDataContainer extends React.Component {
             open: false,
             showAddModal:false,
             dataList:null,
-            showLoader:true
+            showLoader:true,
+            commodityList:null
           
         };
     }
@@ -50,8 +53,23 @@ class UserDataContainer extends React.Component {
 
     async componentDidMount() {
        this.getData();
+    //    this.getCommodityNames();
     
     }
+
+    // async getCommodityNames() {
+    //     try {
+    //         let resp = await commodityService.getCommodityTable();
+    //         if (resp.data.status === 1 && resp.data.result) {
+    //             this.setState({ commodityList: resp.data.result.data });
+    //         } else {
+    //             this.setState({ commodityList: [] });
+    //         }
+    //     } catch (err) {
+    //         console.error(err)
+    //         this.setState({ commodityList: [] });
+    //     }
+    // }
 
    async getData(){
        this.setState({dataList:null});
@@ -80,7 +98,7 @@ class UserDataContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <UserListTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
+                       <UserListTable  tableData={this.state.dataList}  onClose={this.getData.bind(this)}   /> 
 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD USER</p></div>

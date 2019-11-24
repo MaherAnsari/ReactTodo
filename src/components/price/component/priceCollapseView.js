@@ -82,15 +82,30 @@ class PriceCollapseView extends Component {
       expanded: "",
       itemExpanded:"",
       searchedText: "",
-      expansionpanelHeaderData: this.props.expansionpanelHeaderData || [],
+      expansionpanelHeaderData: this.props.expansionpanelHeaderData ,
       expansionpanelBodyData:  [],
-      specificBuyerList : undefined
+      specificBuyerList : undefined,
+      dataList:this.props.expansionpanelHeaderData 
     }
   }
 
-  handelFilter( event ){
-    this.setState({ searchedText : event.target.value });
+  
+  handelFilter(event) {
+    let searchedTxt = event.target.value;
+    this.setState({ searchedText: searchedTxt });
+    let initaialTableBodyData = this.state.dataList;
+    let updatedRow = [];
+
+    for (let i = 0; i < initaialTableBodyData.length; i++) {
+      if (initaialTableBodyData[i].fullname.indexOf(searchedTxt) > -1) {
+        updatedRow.push(initaialTableBodyData[i]);
+      }
+    }
+
+
+    this.setState({ expansionpanelHeaderData: updatedRow });
   }
+
 
 
   onPanelExpanded( event , i, id ){
@@ -138,7 +153,7 @@ onItemPanelExpanded( event , i, id ){
             </div>
           </div>
           <div >
-            <div style={{ marginTop: "18px"
+          {this.state.expansionpanelHeaderData.length > 0 ? <div style={{ marginTop: "18px"
                           }}>
             {this.state.expansionpanelHeaderData.map((row, i) => {
               return (
@@ -185,7 +200,7 @@ onItemPanelExpanded( event , i, id ){
                   </div>
               );
             })}
-          </div>
+          </div> :< NoDataAvailable style={{height:'50vh'}}/> }
           </div>
           {/* {this.state.expansionpanelHeaderData.length == 0 ?  < NoDataAvailable style={{height:'25vh'}}/>:""} */}
           {/* {this.state.expansionpanelHeaderData.length > 0 ? "" : <div className={classes.defaultTemplate}>
