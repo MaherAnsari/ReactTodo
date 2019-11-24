@@ -1,0 +1,27 @@
+.orderList{
+    height: 50px;
+    background: #060a3b;
+    color: #fff;
+    padding: 13px;
+    font-size: 20px;
+    display: flex;
+    border-radius: 8px;
+}
+.commodityName{
+    width: 25%;
+    display: flex;
+    font-size: 18px;
+    padding:10;
+    margin-top: 20px;
+}
+.commodityDetail{
+    margin-left: 5%;
+    text-align: left;
+    margin-top: 5px;
+    font-weight: 700;
+}
+.detailCard{
+    width: 90%;
+    margin-left: 5%;
+    font-family: lato;
+}

@@ -1,6 +1,45 @@
 import cookie from 'react-cookies';
 // to vget the current date
 let districtData= {};
+let stateList = [
+    "Andaman and Nicobar Islands",
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chandigarh",
+    "Chhattisgarh",
+    "Dadra and Nagar Haveli",
+    "Daman and Diu",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jammu and Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Ladakh",
+    "Lakshadweep",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "National Capital Territory of Delhi",
+    "Odisha",
+    "Puducherry",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal"
+];
 function getCurrentDate(data) {
     // DD-MM-YYY
     var today = new Date();
@@ -48,6 +87,10 @@ function setDistrictData(data){
 }
 
 
+function getStateData(){
+    return stateList;
+}
+
 
 const Utils = {
 
@@ -56,7 +99,8 @@ const Utils = {
     formateDate,
     getCurrentTime,
     getDistrictData,
-    setDistrictData
+    setDistrictData,
+    getStateData
 
 }
 
