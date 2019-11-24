@@ -6,6 +6,8 @@ import Card from '@material-ui/core/Card';
 import Loader from '../common/Loader';
 import BrokerTable from './component/brokerTable';
 import brokerService from '../../app/brokerService/brokerService';
+import InfoDialog from '../common/InfoDialog';
+
 const styles = theme => ({
     root: {
         width: '98%',
@@ -79,10 +81,15 @@ class BrokerContainer extends React.Component {
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
                        <BrokerTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
-
+                       <div className="updateBtndef">
+                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD BROKER</p></div>
+                    </div>
 
                 </Card>    :<Loader />}        
-
+{this.state.showAddModal ? <InfoDialog openModal={this.state.open}
+role="broker"
+onEditModalClosed={this.handleClose.bind(this)}
+onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
 
             </div>
         );

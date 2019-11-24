@@ -84,14 +84,26 @@ class PriceCollapseView extends Component {
       searchedText: "",
       expansionpanelHeaderData: this.props.expansionpanelHeaderData || [],
       expansionpanelBodyData:  [],
+      dataList:this.props.expansionpanelHeaderData,
       specificBuyerList : undefined
     }
   }
 
-  handelFilter( event ){
-    this.setState({ searchedText : event.target.value });
-  }
+  handelFilter(event) {
+    let searchedTxt = event.target.value;
+    this.setState({ searchedText: searchedTxt });
+    let initaialTableBodyData = this.state.dataList;
+    let updatedRow = [];
 
+    for (let i = 0; i < initaialTableBodyData.length; i++) {
+      if (initaialTableBodyData[i].hasOwnProperty('fullname') && (initaialTableBodyData[i].fullname).toLowerCase().indexOf(searchedTxt) > -1) {
+        updatedRow.push(initaialTableBodyData[i]);
+      }
+    }
+
+
+    this.setState({ expansionpanelHeaderData: updatedRow });
+  }
 
   onPanelExpanded( event , i, id ){
     this.setState({ expanded: this.state.expanded === i ? "" : i, itemExpanded :"" , specificBuyerList : undefined }, function(){

@@ -146,6 +146,7 @@ class PriceDialog extends Component {
      
     }
     handleAddClick(event){
+        // console.log(this.state.dataObj);
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
         let dialogText = "Are you sure to add ?"
      //   if (this.state.dataObj.state && this.state.dataObj.state != "" && this.state.dataObj.market && this.state.dataObj.market != "" && this.state.dataObj.district && this.state.dataObj.district != ""

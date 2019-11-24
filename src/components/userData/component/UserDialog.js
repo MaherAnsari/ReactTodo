@@ -267,7 +267,7 @@ class UserDialog extends Component {
                 return;
             }
         }
-
+        console.log(data);
         let dialogText = this.state.isUpdate ? "Are you sure  to update ?" : "Are you sure to add ?";
 
         this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, payload: data });
