@@ -27,7 +27,7 @@ const styles = theme => ({
     },
     bgColor: {
         "& > *": {
-            display: "inline-block",
+            // display: "inline-block",
             fontWeight: "600",
             fontFamily: "Montserrat",
             fontSize: "12px",
@@ -74,9 +74,9 @@ class FilterAreaComponent extends React.Component {
 
     getDataBasedOnFilters = () => {
         let data = {
-            buyerid : this.state.buyerid["value"],
-            brokerid : this.state.brokerid["value"],
-            supplierid : this.state.supplierid["value"],
+            buyerid : this.state.buyerid["value"] || "",
+            brokerid : this.state.brokerid["value"] || "",
+            supplierid : this.state.supplierid["value"] || "",
         }
         if ( data["buyerid"] === "" ) {
            delete data["buyerid"];
@@ -91,9 +91,10 @@ class FilterAreaComponent extends React.Component {
     }
 
 
-    getSearchAreaText = (id, indexOfSelect, event) => {
+    getSearchAreaText = (id, event) => {
         try {
-            this.setState([id] : event);
+            
+            this.setState({[id] : event !== null ? event : "" });
         } catch (err) {
             console.log(err);
         }
@@ -115,9 +116,10 @@ class FilterAreaComponent extends React.Component {
                                                 <Select
                                                     name={obj.name}
                                                     value={this.state[obj.name]}
-                                                    onChange={this.getSearchAreaText.bind(this, obj.id, index)}
+                                                    onChange={this.getSearchAreaText.bind(this, obj.id)}
                                                     options={obj.options}
                                                     isSearchable={true}
+                                                    isClearable={true}
                                                     placeholder={`Select ${obj.name}`}
                                                     className={"basic-single " + classes.bgColor} />
 
