@@ -65,7 +65,7 @@ class FilterAreaComponent extends React.Component {
         var data = this.state.configData;
         if(nextprops.stateList !== data[0]["options"] || nextprops.districtList !== data[0]["options"] || nextprops.commodityList !== data[0]["options"]){
             data[0]["options"] = nextprops.stateList;
-            data[1]["options"] = nextprops.districtList;
+            // data[1]["options"] = nextprops.districtList;
             data[2]["options"] = nextprops.commodityList;
           this.setState({ configData :  data });
         }
@@ -87,18 +87,17 @@ class FilterAreaComponent extends React.Component {
          if ( data["commodityid"] === "" ) {
             delete data["commodityid"];
          }
-         console.log(data);
-        // this.props.getSearchedOrderListData(data);
+        //  console.log(data);
+        this.props.getSearchedOrderListData(data);
     }
 
 
     formatDistrictData(value) {
         let data =  this.props.districtData[value];
-    
         var optionsData = [];
        
                 for (var i = 0; i < data.length; i++) {
-                    optionsData.push({ label: data[i]['district_name'], value: data[i]['id'] });
+                    optionsData.push({ label: data[i]['district_name'], value: data[i]['district_name'] });
                 }
             
                 var dataObj = this.state.configData;

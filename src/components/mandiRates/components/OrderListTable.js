@@ -67,7 +67,7 @@ class OrderListTable extends Component {
     }
 
     componentWillReceiveProps(nextprops) {
-
+        // console.log(nextprops.tableData);
         if (this.state.tableBodyData !== nextprops.tableData) {
             this.setState({ tableBodyData: nextprops.tableData });
         }
@@ -104,40 +104,42 @@ class OrderListTable extends Component {
             return "#e5e8ec";
         }
     }
+    
     render() {
         const { classes } = this.props;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
-                    {this.state.tableBodyData ? <div >
+                    {Object.keys(this.state.tableBodyData).length > 0 ? <div >
                         <Card className={classes.card}>
                             <div className="orderList">
                                 <div style={{width:"25%"}}>commodity</div>
                                 <div style={{width:"50%"}}>Min.  &   Max. Price</div>
                                 <div style={{width:"25%"}}>Modal Price</div>
                             </div>
-                            <div className="commodityName"><img src="https://bijak-public-images.s3.ap-south-1.amazonaws.com/commodity/potato.png" style={{marginLeft:'25%'}} alt="Smiley face" width="42" height="42" /> 
-                            <p className="name">Tomato </p></div>
+                           { Object.keys(this.state.tableBodyData).map((option) => {
+                  return (<div>
+                           <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{marginLeft:'5%'}} alt="Smiley face" width="42" height="42" /> 
+                            <p className="name">{option} </p></div>
                             <Card className="detailCard">
                                 <div className="commodityDetail">District Name</div>
-                                <div className="districtDiv">
-                                <div style={{width:"25%"}}>Pamohi</div>
+                                {this.state.tableBodyData[option].map((row, i) => {
+                  return ( <div className="districtDiv">
+                                <div style={{width:"25%"}}>{row.market}</div>
                                 <div style={{width:"50%" ,display:'flex'}}>
-                                    <p style={{width:"50%"}}>Min: 1200</p>
-                                    <p style={{width:"50%"}}>Max: 1299</p>
+                                    <p style={{width:"50%"}}>Min: {row.cost.split('-')[0]}</p>
+                                    <p style={{width:"50%"}}>Max: {row.cost.split('-')[1]}</p>
                                 </div>
-                                <div style={{width:"25%"}}>2500</div>
+                                <div style={{width:"25%"}}>{row.modal_price}</div>
                                 </div>
-                                <div className="districtDiv">
-                                <div style={{width:"25%"}}>Pamohi</div>
-                                <div style={{width:"50%" ,display:'flex'}}>
-                                    <p style={{width:"50%"}}>Min: 1200</p>
-                                    <p style={{width:"50%"}}>Max: 1299</p>
-                                </div>
-                                <div style={{width:"25%"}}>2500</div>
-                                </div>
+                               )
+                            })}
                             </Card>
-                                        </Card>
+                            
+                            </div>
+                                        )
+                                      })}
+                                        </Card>   
                         
                     </div> :
                         <div style={{paddingTop: "14%"}} >

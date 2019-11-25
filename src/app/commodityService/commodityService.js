@@ -22,6 +22,16 @@ let commodityService = {
             url: '/commodity/update',
             data: param
         });
+    },
+    getCommodityData: async function (param) {
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/commodity/mandi/rate',
+            data: param
+        });
     }
 
 

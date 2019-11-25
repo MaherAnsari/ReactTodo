@@ -82,9 +82,9 @@ class BuyerContainer extends React.Component {
                 {this.state.dataList ? <Card className={classes.card}>
                        <BuyerTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
 
-                       <div className="updateBtndef">
+                       {/* <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD BUYER</p></div>
-                    </div>
+                    </div> */}
                 </Card>    :<Loader />}        
 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
 role="ca"

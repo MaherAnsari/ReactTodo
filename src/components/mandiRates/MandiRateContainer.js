@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
-// import Loader from '../common/Loader';
+import Loader from '../common/Loader';
 import Paper from '@material-ui/core/Paper';
 import FilterListComponent from "./components/FilterListComponent";
-import orderService from '../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
 import Utils from '../../app/common/utils';
 import commodityService from '../../app/commodityService/commodityService';
@@ -41,7 +40,9 @@ class MandiRateContainer extends React.Component {
             stateList: [],
             districtList: [],
             commodityList: [],
-            districtData:null
+            districtData:null,
+            mandiListData:{}
+
         }
     }
 
@@ -102,16 +103,22 @@ class MandiRateContainer extends React.Component {
     }
 
     async getSearchedOrderListData(params) {
+        // console.log(params);
+        let obj = {
+            "commodity":params.commodityid,
+            "district":params.districtid,
+            "state":params.stateid
+            }
         try {
-            let resp = await orderService.getOrderListData(params);
+            let resp = await commodityService.getCommodityData(obj);
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ orderedListData: resp.data.result.data });
+                this.setState({ mandiListData: resp.data.result.data });
             } else {
-                this.setState({ orderedListData: [] });
+                this.setState({ mandiListData: [] });
             }
         } catch (err) {
             console.error(err);
-            this.setState({ orderedListData: [] });
+            this.setState({ mandiListData: [] });
         }
     }
 
@@ -125,9 +132,10 @@ class MandiRateContainer extends React.Component {
                         districtList={this.state.districtList}
                         commodityList={this.state.commodityList}
                         districtData = {this.state.districtData}
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> : ""}
+                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> :<Loader />}  
 
-                    <OrderListTable tableData={this.state.orderedListData} />
+
+                    <OrderListTable tableData={this.state.mandiListData} />
                 </Paper>
             </div>
         );
