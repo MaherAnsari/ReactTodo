@@ -164,7 +164,6 @@ class UserDialog extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.commodityList !== this.state.commodityList) {
-            console.log(nextProps.commodityList)
             this.setState({ commodityList: nextProps.commodityList });
         }
     }
@@ -173,13 +172,30 @@ class UserDialog extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: resp.data.result.data });
+                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
             } else {
                 this.setState({ commodityList: [] });
             }
         } catch (err) {
             console.error(err)
             this.setState({ commodityList: [] });
+        }
+    }
+
+    getCommodityNamesArray( data ){
+        try{
+            var listData = [];
+            if(data){
+                for(var i = 0; i < data.length; i++){
+                    if(data[i]["name"]){
+                    listData.push(data[i]["name"] )
+                    }
+                }
+            }
+            return listData;
+        }catch( err ){
+            console.log( err );
+            return [];
         }
     }
 
@@ -205,7 +221,7 @@ class UserDialog extends Component {
         let data = this.state.dataObj;
         if (values.length > 0) {
             for (var i = 0; i < values.length; i++) {
-                commoditylist.push(values[i].name);
+                commoditylist.push(values[i]);
             }
         }
         data["default_commodity"] = commoditylist;
@@ -401,7 +417,7 @@ class UserDialog extends Component {
                 </div>
               
                 <div style={{ display: 'flex' }}>
-                    <TextField
+                    {/* <TextField
                         margin="dense"
                         id="default_commodity"
                         label="Default Commodity"
@@ -410,18 +426,18 @@ class UserDialog extends Component {
                         value={this.state.dataObj.default_commodity}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />
+                    /> */}
 
-                    {/* <Autocomplete
+                    <Autocomplete
                         multiple
                         id="fixed-tags-demo"
                         options={this.state.commodityList}
-                        getOptionLabel={option => option.name}
+                        getOptionLabel={e => e}
                         defaultValue={this.state.dataObj.default_commodity}
                         onChange={this.handelAutoCompleteChange}
                         renderTags={(value, getTagProps) =>
                             value.map((option, index) => (
-                                <Chip label={option.name} {...getTagProps({ index })} />
+                                <Chip label={option} {...getTagProps({ index })} />
                             ))
                         }
                         style={{ width: "98%" }}
@@ -433,7 +449,7 @@ class UserDialog extends Component {
                                 fullWidth
                             />
                         )}
-                    /> */}
+                    />
                 </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
