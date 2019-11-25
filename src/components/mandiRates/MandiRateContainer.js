@@ -9,6 +9,7 @@ import orderService from '../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
 import Utils from '../../app/common/utils';
 import commodityService from '../../app/commodityService/commodityService';
+import mandiDataService from '../../app/mandiDataService/mandiDataService';
 const styles = theme => ({
     root: {
         width: '100%',
@@ -37,23 +38,24 @@ class MandiRateContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            stateList: null,
-            districtList: null,
-            commodityList: null,
+            stateList: [],
+            districtList: [],
+            commodityList: [],
+            districtData:null
         }
     }
 
     componentDidMount() {
         this.getCommodityNames();
-        this.setState({stateList:this.getStateData()
-        ,districtList:this.formatDistrictData() })
+        this.getDistrictData();
+        this.setState({ stateList: this.getStateData() })
     }
 
     async getCommodityNames() {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.formatDataForDropDown(resp.data.result.data, "name" ,"id" )});
+                this.setState({ commodityList: this.formatDataForDropDown(resp.data.result.data, "name", "name") });
             } else {
                 this.setState({ commodityList: [] });
             }
@@ -63,6 +65,17 @@ class MandiRateContainer extends React.Component {
         }
     }
 
+    async getDistrictData() {
+  
+            let resp = await mandiDataService.getDistrictList();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ districtData: resp.data.result.data });
+            }
+       
+
+
+    }
+
 
     getStateData() {
         let data = Utils.getStateData();
@@ -70,32 +83,15 @@ class MandiRateContainer extends React.Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i], value: data[i] });
+                optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
             }
         }
         return optionsData;
     }
-   
-    formatDistrictData() {
 
-        let dataList = Utils.getDistrictData();
-                var optionsData = [];
-                if (dataList) {
-                    for(let key in dataList){
-                        let data = dataList[key];
-                        // console.log(data);
-                        for (var i = 0; i < data.length; i++) {
-                            optionsData.push({ label: data[i]['district_name'], value: data[i]['id'] });
-                        }
-                        // console.log(optionsData);
-                    }
-                   
-                }
-              
-                return optionsData;
-            }
+   
     formatDataForDropDown(data, labelKey, valuekey) {
-// console.log(data);
+        // console.log(data);
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
@@ -105,17 +101,17 @@ class MandiRateContainer extends React.Component {
         return optionsData;
     }
 
-    async getSearchedOrderListData( params ) {
+    async getSearchedOrderListData(params) {
         try {
-            let resp = await orderService.getOrderListData( params );
+            let resp = await orderService.getOrderListData(params);
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ orderedListData : resp.data.result.data });
-            }else{
-                this.setState({ orderedListData : []});
+                this.setState({ orderedListData: resp.data.result.data });
+            } else {
+                this.setState({ orderedListData: [] });
             }
         } catch (err) {
             console.error(err);
-            this.setState({ orderedListData : []});
+            this.setState({ orderedListData: [] });
         }
     }
 
@@ -124,13 +120,14 @@ class MandiRateContainer extends React.Component {
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
-                   {this.state.commodityList ? <FilterListComponent
+                    {this.state.districtData ? <FilterListComponent
                         stateList={this.state.stateList}
                         districtList={this.state.districtList}
-                        commodityList={this.state.commodityList} 
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind( this )}/>:""}
+                        commodityList={this.state.commodityList}
+                        districtData = {this.state.districtData}
+                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> : ""}
 
-                        <OrderListTable  tableData={this.state.orderedListData}  /> 
+                    <OrderListTable tableData={this.state.orderedListData} />
                 </Paper>
             </div>
         );

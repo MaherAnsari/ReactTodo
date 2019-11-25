@@ -27,7 +27,7 @@ const styles = theme => ({
     },
     bgColor: {
         "& > *": {
-            display: "inline-block",
+            // display: "inline-block",
             fontWeight: "600",
             fontFamily: "Montserrat",
             fontSize: "12px",
@@ -87,13 +87,31 @@ class FilterAreaComponent extends React.Component {
          if ( data["commodityid"] === "" ) {
             delete data["commodityid"];
          }
-        this.props.getSearchedOrderListData(data);
+         console.log(data);
+        // this.props.getSearchedOrderListData(data);
     }
 
 
-    getSearchAreaText = (id, indexOfSelect, event) => {
+    formatDistrictData(value) {
+        let data =  this.props.districtData[value];
+    
+        var optionsData = [];
+       
+                for (var i = 0; i < data.length; i++) {
+                    optionsData.push({ label: data[i]['district_name'], value: data[i]['id'] });
+                }
+            
+                var dataObj = this.state.configData;
+                dataObj[1]["options"] = optionsData;
+                this.setState({ configData :  dataObj });    
+    }
+
+    getSearchAreaText = (id, event) => {
         try {
-            this.setState([id] : event);
+            this.setState({[id] : event !== null ? event : "" });
+            if(id === 'stateid' && event){
+                this.formatDistrictData(event.value);
+            }
         } catch (err) {
             console.log(err);
         }
@@ -115,9 +133,10 @@ class FilterAreaComponent extends React.Component {
                                                 <Select
                                                     name={obj.name}
                                                     value={this.state[obj.name]}
-                                                    onChange={this.getSearchAreaText.bind(this, obj.id, index)}
+                                                    onChange={this.getSearchAreaText.bind(this, obj.id)}
                                                     options={obj.options}
                                                     isSearchable={true}
+                                                    isClearable={true}
                                                     placeholder={`Select ${obj.name}`}
                                                     className={"basic-single " + classes.bgColor} />
 

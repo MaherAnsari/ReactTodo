@@ -11,17 +11,33 @@
     width: 25%;
     display: flex;
     font-size: 18px;
-    padding:10;
+    margin-top: 10px;
     margin-top: 20px;
 }
 .commodityDetail{
-    margin-left: 5%;
+    margin-left: 8%;
     text-align: left;
-    margin-top: 5px;
+    margin-top: 10px;
+    /* padding: 5px; */
+    font-size: 15px;
     font-weight: 700;
 }
 .detailCard{
-    width: 90%;
-    margin-left: 5%;
+    width: 96%;
+    margin-left: 2%;
     font-family: lato;
+}
+.districtDiv{
+    display: flex;
+    height: 40px;
+    padding: 8px;
+    margin-top: 15px;
+    background: #f5f5fa;
+    font-size: 16px;
+    font-family: lato;
+}
+.name{
+    margin-left: 10px;
+    padding: 2px;
+    font-size: 20px;
 }

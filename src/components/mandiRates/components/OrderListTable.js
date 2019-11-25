@@ -33,7 +33,8 @@ const styles = theme => ({
     defaultIcon: { fontSize: '65px', color: "#384952" },
     root: {
         width: '100%',
-        minHeight: '80vh'
+        minHeight: '80vh',
+        fontFamily:'Lato'
     },
     card:{
         minHeight:'60vh'
@@ -112,19 +113,36 @@ class OrderListTable extends Component {
                         <Card className={classes.card}>
                             <div className="orderList">
                                 <div style={{width:"25%"}}>commodity</div>
-                                <div style={{width:"50%"}}>Price</div>
+                                <div style={{width:"50%"}}>Min.  &   Max. Price</div>
                                 <div style={{width:"25%"}}>Modal Price</div>
                             </div>
-                            <div className="commodityName"><img src="https://bijak-public-images.s3.ap-south-1.amazonaws.com/commodity/potato.png" style={{marginLeft:'25%'}} alt="Smiley face" width="42" height="42" /> <p style={{marginLeft:'10px',padding:'2'}}>Tomato </p></div>
+                            <div className="commodityName"><img src="https://bijak-public-images.s3.ap-south-1.amazonaws.com/commodity/potato.png" style={{marginLeft:'25%'}} alt="Smiley face" width="42" height="42" /> 
+                            <p className="name">Tomato </p></div>
                             <Card className="detailCard">
                                 <div className="commodityDetail">District Name</div>
+                                <div className="districtDiv">
+                                <div style={{width:"25%"}}>Pamohi</div>
+                                <div style={{width:"50%" ,display:'flex'}}>
+                                    <p style={{width:"50%"}}>Min: 1200</p>
+                                    <p style={{width:"50%"}}>Max: 1299</p>
+                                </div>
+                                <div style={{width:"25%"}}>2500</div>
+                                </div>
+                                <div className="districtDiv">
+                                <div style={{width:"25%"}}>Pamohi</div>
+                                <div style={{width:"50%" ,display:'flex'}}>
+                                    <p style={{width:"50%"}}>Min: 1200</p>
+                                    <p style={{width:"50%"}}>Max: 1299</p>
+                                </div>
+                                <div style={{width:"25%"}}>2500</div>
+                                </div>
                             </Card>
                                         </Card>
                         
                     </div> :
                         <div style={{paddingTop: "14%"}} >
                             <span className={classes.defaultSpan}>
-                                <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific Orders"}</span>
+                                <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific commodity"}</span>
                         </div>
                     }
                     
