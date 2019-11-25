@@ -73,7 +73,9 @@ class PriceDialog extends Component {
                 "unit":"quantil",
                 "commission_rate":0,
                 "commission_unit":"quantil",
-                "rate_unit":"quantil"
+                "rate_unit":"quantil",
+                "brokermobile":null,
+                "buyermobile":null
             },
             commodityList:[],
             unitArr:["quantil","ton"]
@@ -104,7 +106,7 @@ class PriceDialog extends Component {
 
 
     handelConfirmUpdate = async () => {
-        // console.log(param);
+        // console.log(this.state.dataObj);
 
         let obj = {'data':this.state.dataObj}
         let resp = await priceService.addPrice(obj);
@@ -132,18 +134,35 @@ class PriceDialog extends Component {
         if(id == 'buyerid'){
             this.handleCommodity(event.target.value);
         }
+        if(id == 'brokerid'){
+            this.handleMobile(event.target.value);
+        }
     };
 
 
     handleCommodity =(id) =>{
         let data =  this.props.buyerList;
+        let obj = this.state.dataObj;
         for(let i=0;i<data.length;i++){
             if(data[i]['id'] == id){
-                this.setState({commodityList:data[i]['default_commodity']});
+                obj['buyermobile'] = data[i]['mobile']
+                this.setState({commodityList:data[i]['default_commodity'],dataObj:obj});
                 return;
             }
         }
      
+    }
+
+    handleMobile = (id) =>{
+        let data =  this.props.brokerList;
+        let obj = this.state.dataObj;
+        for(let i=0;i<data.length;i++){
+            if(data[i]['id'] == id){
+                obj['brokermobile'] = data[i]['mobile']
+                this.setState({dataObj:obj});
+                return;
+            }
+        }
     }
     handleAddClick(event){
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
