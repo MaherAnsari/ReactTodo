@@ -39,11 +39,12 @@ class OrdersContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            buyersList: ["buy1", "buy2", "buy3", "buy4"],
-            brokersList: ["bro1", "bro2", "bro3", "bro4"],
-            suppliersList: ["sup1", "sup2", "sup3", "sup4"],
-            orderedListData : undefined
+            buyersList: [],
+            brokersList: [],
+            suppliersList: [],
+            orderedListData: undefined
         }
+        this.ismounted = true;
     }
 
     componentDidMount() {
@@ -55,8 +56,10 @@ class OrdersContainer extends React.Component {
     async getBuyersList() {
         try {
             let resp = await buyerService.getBuyerList();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ buyersList: this.formatDataForDropDown(resp.data.result.data, "fullname" ,"id" )});
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ buyersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+                }
             }
         } catch (err) {
             console.error(err);
@@ -66,8 +69,10 @@ class OrdersContainer extends React.Component {
     async getBrokersList() {
         try {
             let resp = await brokerService.getBrokerList();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname" ,"id" ) });
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+                }
             }
         } catch (err) {
             console.error(err);
@@ -77,8 +82,10 @@ class OrdersContainer extends React.Component {
     async getSuppliersList() {
         try {
             let resp = await supplierService.getSupplierList();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ suppliersList: this.formatDataForDropDown(resp.data.result.data, "fullname" ,"id" ) });
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ suppliersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+                }
             }
         } catch (err) {
             console.error(err);
@@ -96,18 +103,24 @@ class OrdersContainer extends React.Component {
         return optionsData;
     }
 
-    async getSearchedOrderListData( params ) {
+    async getSearchedOrderListData(params) {
         try {
-            let resp = await orderService.getOrderListData( params );
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ orderedListData : resp.data.result.data });
-            }else{
-                this.setState({ orderedListData : []});
+            let resp = await orderService.getOrderListData(params);
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ orderedListData: resp.data.result.data });
+                } else {
+                    this.setState({ orderedListData: [] });
+                }
             }
         } catch (err) {
             console.error(err);
-            this.setState({ orderedListData : []});
+            if (this.ismounted) { this.setState({ orderedListData: [] }); }
         }
+    }
+
+    componentWillUnmount() {
+        this.ismounted = false;
     }
 
     render() {
@@ -118,10 +131,10 @@ class OrdersContainer extends React.Component {
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         brokersList={this.state.brokersList}
-                        suppliersList={this.state.suppliersList} 
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind( this )}/>
+                        suppliersList={this.state.suppliersList}
+                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
 
-                        <OrderListTable  tableData={this.state.orderedListData}  /> 
+                    <OrderListTable tableData={this.state.orderedListData} />
                 </Paper>
             </div>
         );

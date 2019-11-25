@@ -66,7 +66,7 @@ class UserDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList: this.props.commodityList,
             open: this.props.openModal,
             dataObj: {
                 "mobile": "",
@@ -134,6 +134,7 @@ class UserDialog extends Component {
 
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
+        // console.log( this.props.commodityList )
     }
     componentDidMount() {
         if (this.props.data) {
@@ -156,34 +157,7 @@ class UserDialog extends Component {
 
             this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true });
         }
-
-        // console.log(this.state.dataObj);
-        //getting the Commodity Names for ten drop Down 
-        this.getCommodityNames()
     }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.commodityList !== this.state.commodityList) {
-            console.log(nextProps.commodityList)
-            this.setState({ commodityList: nextProps.commodityList });
-        }
-    }
-
-    async getCommodityNames(txt) {
-        try {
-            let resp = await commodityService.getCommodityTable();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: resp.data.result.data });
-            } else {
-                this.setState({ commodityList: [] });
-            }
-        } catch (err) {
-            console.error(err)
-            this.setState({ commodityList: [] });
-        }
-    }
-
-
 
     handleChange = event => {
         let data = this.state.dataObj;

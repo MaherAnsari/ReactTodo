@@ -7,6 +7,8 @@ import  userListService  from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
 import UserListTable from './component/UserListTable';
 import UserDialog from './component/UserDialog';
+import commodityService from '../../app/commodityService/commodityService';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -41,8 +43,8 @@ class UserDataContainer extends React.Component {
             open: false,
             showAddModal:false,
             dataList:null,
-            showLoader:true
-          
+            showLoader:true,
+            commodityList:[]
         };
     }
 
@@ -50,6 +52,7 @@ class UserDataContainer extends React.Component {
 
     async componentDidMount() {
        this.getData();
+       this.getCommodityNames();
     
     }
 
@@ -75,20 +78,39 @@ class UserDataContainer extends React.Component {
     handleClickOpen(event) {
         this.setState({ showAddModal:true,open: true });
     }
+
+    async getCommodityNames(txt) {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ commodityList: resp.data.result.data });
+            } else {
+                this.setState({ commodityList: [] });
+            }
+        } catch (err) {
+            console.error(err)
+            this.setState({ commodityList: [] });
+        }
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <UserListTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
+                       <UserListTable  
+                       tableData={this.state.dataList} 
+                       onClose={this.getData.bind(this)} 
+                       commodityList={ this.state.commodityList}  /> 
 
                        <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD USER</p></div>
+                        <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD USER</p></div>
                     </div>
                 </Card>    :<Loader />}        
 
                 {this.state.showAddModal ? <UserDialog openModal={this.state.open}
                      onEditModalClosed={this.handleClose.bind(this)}
+                     commodityList={ this.state.commodityList}
                      onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
             </div>
         );

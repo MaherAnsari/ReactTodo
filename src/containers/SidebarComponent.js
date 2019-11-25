@@ -27,7 +27,7 @@ const _items = [
   { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
   { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#e6008a", children: [] },
   { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#e6008a", children: [] },
-  { name: 'Orders', route: '/orders-list', iconClassName: 'eco', iconColor: "#e6008a", children: [] },
+  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6008a", children: [] },
   { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'eco', iconColor: "#e6008a", children: [] }
 
 ]
