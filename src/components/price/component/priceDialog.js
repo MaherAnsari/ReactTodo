@@ -74,8 +74,8 @@ class PriceDialog extends Component {
                 "commission_rate":0,
                 "commission_unit":"quantil",
                 "rate_unit":"quantil",
-                "brokermobile":null,
-                "buyermobile":null
+                "broker_mobile":null,
+                "buyer_mobile":null
             },
             commodityList:[],
             unitArr:["quantil","ton"]
@@ -145,7 +145,7 @@ class PriceDialog extends Component {
         let obj = this.state.dataObj;
         for(let i=0;i<data.length;i++){
             if(data[i]['id'] == id){
-                obj['buyermobile'] = data[i]['mobile']
+                obj['buyer_mobile'] = data[i]['mobile']
                 this.setState({commodityList:data[i]['default_commodity'],dataObj:obj});
                 return;
             }
@@ -158,7 +158,7 @@ class PriceDialog extends Component {
         let obj = this.state.dataObj;
         for(let i=0;i<data.length;i++){
             if(data[i]['id'] == id){
-                obj['brokermobile'] = data[i]['mobile']
+                obj['broker_mobile'] = data[i]['mobile']
                 this.setState({dataObj:obj});
                 return;
             }

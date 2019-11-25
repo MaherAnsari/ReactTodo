@@ -10,7 +10,7 @@ let commodityService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/commodity/distinctlist/weight'
+            url: '/commodity/distinctlist/weight?lang=hindi'
         });
     },
     updateCommodity: async function (param) {

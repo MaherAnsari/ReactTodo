@@ -80,7 +80,7 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["name", "category", "weight"],
+      tableHeadData: ["name", "category", "weight","Hindi Name"],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
       rawTableBodyData: [],
@@ -199,6 +199,8 @@ class CommodityTable extends Component {
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
+                      </TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell>
                       {/* <div style={{display:'flex'}}> 
                       <Switch
