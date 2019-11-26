@@ -5,6 +5,8 @@ import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import '../mandiRate.css';
 import Card from '@material-ui/core/Card';
+import Icon from '@material-ui/core/Icon';
+import MandiGraphModal from '../common/MandiGraphModal';
 
 const theme = createMuiTheme({
     overrides: {
@@ -34,10 +36,10 @@ const styles = theme => ({
     root: {
         width: '100%',
         minHeight: '80vh',
-        fontFamily:'Lato'
+        fontFamily: 'Lato'
     },
-    card:{
-        minHeight:'60vh'
+    card: {
+        minHeight: '60vh'
     }
 
 });
@@ -62,6 +64,8 @@ class OrderListTable extends Component {
             userId: null,
             payload: null,
 
+            showGraphModal: false,
+            graphPayloads: {}
 
         }
     }
@@ -104,7 +108,23 @@ class OrderListTable extends Component {
             return "#e5e8ec";
         }
     }
-    
+
+    onGraphViewClicked( data , commodity,  event ){
+        var paylaods = {
+            market: data["market"],
+            commodity:  commodity,
+            lang:  "hindi", //data[],
+            days:  10
+        }
+        try{
+            this.setState({ graphPayloads : paylaods }, function(){
+                this.setState({ showGraphModal : true })
+            });
+        }catch(err){
+            console.log( err );
+        }
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -113,42 +133,48 @@ class OrderListTable extends Component {
                     {Object.keys(this.state.tableBodyData).length > 0 ? <div >
                         <Card className={classes.card}>
                             <div className="orderList">
-                                <div style={{width:"25%"}}>commodity</div>
-                                <div style={{width:"50%"}}>Min.  &   Max. Price</div>
-                                <div style={{width:"25%"}}>Modal Price</div>
+                                <div style={{ width: "25%" }}>commodity</div>
+                                <div style={{ width: "50%" }}>Min.  &   Max. Price</div>
+                                <div style={{ width: "25%" }}>Modal Price</div>
                             </div>
-                           { Object.keys(this.state.tableBodyData).map((option) => {
-                  return (<div>
-                           <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{marginLeft:'5%'}} alt="Smiley face" width="42" height="42" /> 
-                            <p className="name">{option} </p></div>
-                            <Card className="detailCard">
-                                <div className="commodityDetail">District Name</div>
-                                {this.state.tableBodyData[option].map((row, i) => {
-                  return ( <div className="districtDiv">
-                                <div style={{width:"25%"}}>{row.market}</div>
-                                <div style={{width:"50%" ,display:'flex'}}>
-                                    <p style={{width:"50%"}}>Min: {row.cost.split('-')[0]}</p>
-                                    <p style={{width:"50%"}}>Max: {row.cost.split('-')[1]}</p>
+                            {Object.keys(this.state.tableBodyData).map((option) => {
+                                return (<div  key={ option } >
+                                    <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{ marginLeft: '5%' }} alt="Smiley face" width="42" height="42" />
+                                        <p className="name">{option} </p></div>
+                                    <Card className="detailCard">
+                                        <div className="commodityDetail">District Name</div>
+                                        {this.state.tableBodyData[option].map((row, i) => {
+                                            return (<div key={"data_"+i} className="districtDiv">
+                                                <div style={{ width: "25%" }}>{row.market}</div>
+                                                <div style={{ width: "45%", display: 'flex' }}>
+                                                    <p style={{ width: "50%" }}>Min: {row.cost.split('-')[0]}</p>
+                                                    <p style={{ width: "50%" }}>Max: {row.cost.split('-')[1]}</p>
+                                                </div>
+                                                <div style={{ width: "20%" }}>{row.modal_price}</div>
+                                                <div style={{ width: "10%" }}>
+                                                    <Icon className={classes.iconHover} color="error" style={{ cursor:"pointer",fontSize: 30 }} onClick={ this.onGraphViewClicked.bind( this, row , option )} >
+                                                        trending_up
+                                                    </Icon>
+                                                </div>
+                                            </div>
+                                            )
+                                        })}
+                                    </Card>
                                 </div>
-                                <div style={{width:"25%"}}>{row.modal_price}</div>
-                                </div>
-                               )
+                                )
                             })}
-                            </Card>
-                            
-                            </div>
-                                        )
-                                      })}
-                                        </Card>   
-                        
+                        </Card>
                     </div> :
-                        <div style={{paddingTop: "14%"}} >
+                        <div style={{ paddingTop: "14%" }} >
                             <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific commodity"}</span>
-                        </div>
-                    }
-                    
+                        </div>}
 
+                    {this.state.showGraphModal &&
+                        <MandiGraphModal
+                            openModal={this.state.showGraphModal}
+                            graphPayloads={ this.state.graphPayloads }
+                            onModalClose={() => this.setState({ showGraphModal: false })} />}
                 </Paper>
             </MuiThemeProvider>
         );
