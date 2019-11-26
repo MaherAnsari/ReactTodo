@@ -76,7 +76,7 @@ class InfoDialog extends Component {
                 "locality": "",
                 "district": "",
                 "state": "",
-                "role": "",
+                "role": this.props.role,
                 "default_commodity": [],
                 "bijak_verified": false,
                 "bijak_assured": false,
@@ -267,14 +267,12 @@ class InfoDialog extends Component {
                 return;
             }
         }
-        console.log(data);
         let dialogText = this.state.isUpdate ? "Are you sure  to update ?" : "Are you sure to add ?";
 
         this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, payload: data });
 
     }
     handleCheckbox(id, event) {
-        // console.log(id);
         let obj = this.state.dataObj;
         obj[id] = !obj[id];
         this.setState({ QueryObj: obj });
