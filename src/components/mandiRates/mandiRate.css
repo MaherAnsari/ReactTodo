@@ -1,0 +1,43 @@
+.orderList{
+    height: 50px;
+    background: #060a3b;
+    color: #fff;
+    padding: 13px;
+    font-size: 20px;
+    display: flex;
+    border-radius: 8px;
+}
+.commodityName{
+    width: 75%;
+    display: flex;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-top: 20px;
+}
+.commodityDetail{
+    margin-left: 8%;
+    text-align: left;
+    margin-top: 10px;
+    /* padding: 5px; */
+    font-size: 15px;
+    font-weight: 700;
+}
+.detailCard{
+    width: 96%;
+    margin-left: 2%;
+    font-family: lato;
+}
+.districtDiv{
+    display: flex;
+    height: 40px;
+    padding: 8px;
+    margin-top: 15px;
+    background: #f5f5fa;
+    font-size: 16px;
+    font-family: lato;
+}
+.name{
+    margin-left: 10px;
+    padding: 2px;
+    font-size: 20px;
+}

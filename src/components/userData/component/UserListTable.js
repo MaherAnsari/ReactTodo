@@ -101,7 +101,7 @@ class UserListTable extends Component {
             userId: null,
             payload: null,
 
-            commodityList:[]
+            // commodityList:["dd"]
 
         }
     }
@@ -396,7 +396,7 @@ class UserListTable extends Component {
                     {this.state.showUserModal ? <UserDialog openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
-                        commodityList={ this.state.commodityList}
+                        commodityList={ this.props.commodityList}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog

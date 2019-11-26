@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import  supplierService  from './../../app/supplierService/supplierService';
 import Loader from '../common/Loader';
 import SupplierTable from './component/supplierTable';
+import InfoDialog from '../common/InfoDialog';
 const styles = theme => ({
     root: {
         width: '98%',
@@ -79,11 +80,16 @@ class SupplierContainer extends React.Component {
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
                        <SupplierTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
-
+                       {/* <div className="updateBtndef">
+                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD SUPPLIER</p></div>
+                    </div> */}
 
                 </Card>    :<Loader />}        
 
-
+{this.state.showAddModal ? <InfoDialog openModal={this.state.open}
+onEditModalClosed={this.handleClose.bind(this)}
+role="la"
+onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
             </div>
         );
     }

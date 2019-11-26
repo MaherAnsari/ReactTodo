@@ -97,7 +97,7 @@ class PriceCollapseView extends Component {
     let updatedRow = [];
 
     for (let i = 0; i < initaialTableBodyData.length; i++) {
-      if (initaialTableBodyData[i].fullname.indexOf(searchedTxt) > -1) {
+      if (initaialTableBodyData[i].hasOwnProperty('fullname') && (initaialTableBodyData[i].fullname).toLowerCase().indexOf(searchedTxt) > -1) {
         updatedRow.push(initaialTableBodyData[i]);
       }
     }
@@ -105,7 +105,6 @@ class PriceCollapseView extends Component {
 
     this.setState({ expansionpanelHeaderData: updatedRow });
   }
-
 
 
   onPanelExpanded( event , i, id ){

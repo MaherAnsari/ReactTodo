@@ -16,6 +16,8 @@ export default () =>
     <AppliedRoute path="/home/supplier-list" exact component={Home}  />
     <AppliedRoute path="/home/rate-list" exact component={Home}  />
     <AppliedRoute path="/home/comodity-list" exact component={Home}  />
+    <AppliedRoute path="/home/orders-list" exact component={Home}  />
+    <AppliedRoute path="/home/mandi-rates" exact component={Home}  />
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
   </Switch>;

@@ -50,7 +50,8 @@ const styles = theme => ({
         paddingLeft: '4px',
         paddingRight: '4px',
         textAlign: 'center',
-        maxWidth: '200px'
+        maxWidth: '200px',
+        padding:"8px"
     },
     titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
     defaultTemplate: { height: '30vh', paddingTop: '10vh', },

@@ -59,8 +59,9 @@ class App extends Component {
     this.setState({ isAuthenticated: props.isLoggedIn, user: props.email, componentName: props.view });
   }
 
-  componentDidMount(){
+  async componentDidMount(){
     window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+  
   }
   componentWillMount() {
     // Utils.setDbName(this.state.providerName);
@@ -78,6 +79,8 @@ class App extends Component {
       });
       
   }
+
+
 
   render() {
     return (
