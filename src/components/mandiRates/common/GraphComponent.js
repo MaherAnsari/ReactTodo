@@ -38,9 +38,9 @@ class GraphComponent extends React.Component {
     var label2= "Max";
     var label3= "Modal Price";
     var chartLabels = [];
-    var lineColor1= "rgb(46, 39, 157)";
-    var lineColor2= "rgb(77, 128, 228)";
-    var lineColor3= "rgb(70, 179, 230)";
+    var lineColor1= "rgb(0, 0, 255)";
+    var lineColor2= "rgb(0, 116, 140)";
+    var lineColor3= "rgb(221, 46, 29)";
 
 
     for( var i = 0; i < data.length; i++ ){
