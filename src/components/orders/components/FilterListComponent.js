@@ -121,7 +121,12 @@ class FilterAreaComponent extends React.Component {
             }
          
             if (resp.data.status === 1 && resp.data.result) {
-                var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                if( type === "brokerid"){
+                    var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                }else{
+                    var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                }
+                
                 callback( respData );
             } else {
                 callback([]);
