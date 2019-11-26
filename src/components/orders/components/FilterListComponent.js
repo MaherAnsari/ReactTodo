@@ -5,7 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import Button from '@material-ui/core/Button';
 import ReactDOM from 'react-dom';
 import FormControl from '@material-ui/core/FormControl';
-import Select from 'react-select';
+import AsyncSelect from 'react-select/lib/Async';
+import buyerService from '../../../app/buyerService/buyerService';
+import supplierService from '../../../app/supplierService/supplierService';
+import brokerService from '../../../app/brokerService/brokerService';
 
 
 const styles = theme => ({
@@ -41,15 +44,16 @@ class FilterAreaComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            buyerid:[],
-            brokerid:[],
-            supplierid:[],
+            buyerid: [],
+            brokerid: [],
+            supplierid: [],
             labelWidth: 0,
             configData: [
-                {name:"Buyer", id:"buyerid", options: this.props.buyersList},
-                {name:"Broker", id:"brokerid", options: this.props.brokersList},
-                {name:"Supplier", id:"supplierid", options : this.props.suppliersList}
-            ]
+                { name: "Buyer", id: "buyerid", options: this.props.buyersList },
+                { name: "Broker", id: "brokerid", options: this.props.brokersList },
+                { name: "Supplier", id: "supplierid", options: this.props.suppliersList }
+            ],
+            inputValue: ""
         }
     }
 
@@ -61,43 +65,82 @@ class FilterAreaComponent extends React.Component {
         }
     }
 
-    componentWillReceiveProps( nextprops ){
+    componentWillReceiveProps(nextprops) {
         var data = this.state.configData;
-        if(nextprops.buyersList !== data[0]["options"] || nextprops.brokersList !== data[0]["options"] || nextprops.suppliersList !== data[0]["options"]){
+        if (nextprops.buyersList !== data[0]["options"] || nextprops.brokersList !== data[0]["options"] || nextprops.suppliersList !== data[0]["options"]) {
             data[0]["options"] = nextprops.buyersList;
             data[1]["options"] = nextprops.brokersList;
             data[2]["options"] = nextprops.suppliersList;
-          this.setState({ configData :  data });
+            this.setState({ configData: data });
         }
-      }
+    }
 
 
     getDataBasedOnFilters = () => {
         let data = {
-            buyerid : this.state.buyerid["value"] || "",
-            brokerid : this.state.brokerid["value"] || "",
-            supplierid : this.state.supplierid["value"] || "",
+            buyerid: this.state.buyerid["value"] || "",
+            brokerid: this.state.brokerid["value"] || "",
+            supplierid: this.state.supplierid["value"] || "",
         }
-        if ( data["buyerid"] === "" ) {
-           delete data["buyerid"];
+        if (data["buyerid"] === "") {
+            delete data["buyerid"];
         }
-        if ( data["brokerid"] === "" ) {
+        if (data["brokerid"] === "") {
             delete data["brokerid"];
-         }
-         if ( data["supplierid"] === "" ) {
+        }
+        if (data["supplierid"] === "") {
             delete data["supplierid"];
-         }
+        }
         this.props.getSearchedOrderListData(data);
     }
 
 
     getSearchAreaText = (id, event) => {
         try {
-            
-            this.setState({[id] : event !== null ? event : "" });
+
+            this.setState({ [id]: event !== null ? event : "" });
         } catch (err) {
             console.log(err);
         }
+    }
+
+    getOptions = async (type, inputValue, callback) => {
+        try {
+            if (!inputValue) {
+                callback([]);
+            }
+            let resp ={};
+            if( type === "buyerid"){
+                resp = await buyerService.serchUser(inputValue);
+            }
+            if( type === "brokerid"){
+                resp = await brokerService.serchUser(inputValue);
+            }
+            if( type === "supplierid"){
+                resp = await supplierService.serchUser(inputValue);
+            }
+         
+            if (resp.data.status === 1 && resp.data.result) {
+                var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                callback( respData );
+            } else {
+                callback([]);
+            }
+        } catch (err) {
+            console.error(err);
+            callback([]);
+        }
+    }
+
+    formatDataForDropDown(data, labelKey, valuekey) {
+
+        var optionsData = [];
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                optionsData.push({ label: data[i][labelKey], value: data[i][valuekey] });
+            }
+        }
+        return optionsData;
     }
 
     render() {
@@ -113,16 +156,17 @@ class FilterAreaComponent extends React.Component {
                                         {(obj && obj.name && obj.id) &&
                                             <FormControl variant="outlined" className={classes.formControl}
                                                 style={{ flex: 1 }}>
-                                                <Select
-                                                    name={obj.name}
+                                                <AsyncSelect
+                                                    cacheOptions
                                                     value={this.state[obj.name]}
+                                                    name={obj.name}
                                                     onChange={this.getSearchAreaText.bind(this, obj.id)}
-                                                    options={obj.options}
                                                     isSearchable={true}
                                                     isClearable={true}
                                                     placeholder={`Select ${obj.name}`}
-                                                    className={"basic-single " + classes.bgColor} />
-
+                                                    defaultOptions={obj.options}
+                                                    loadOptions={this.getOptions.bind(this,obj.id)}
+                                                />
                                             </FormControl>
                                         }
                                     </React.Fragment>
