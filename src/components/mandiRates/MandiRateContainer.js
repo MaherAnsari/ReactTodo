@@ -41,8 +41,7 @@ class MandiRateContainer extends React.Component {
             districtList: [],
             commodityList: [],
             districtData:null,
-            mandiListData:{},
-            showLoader:false
+            mandiListData:{},showLoader:false
 
         }
     }
@@ -68,8 +67,7 @@ class MandiRateContainer extends React.Component {
     }
 
     async getDistrictData() {
-  
-            let resp = await mandiDataService.getDistrictList();
+  let resp = await mandiDataService.getDistrictList();
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ districtData: resp.data.result.data });
             }
@@ -120,7 +118,7 @@ class MandiRateContainer extends React.Component {
             }
         } catch (err) {
             console.error(err);
-            this.setState({ mandiListData: [],showLoader:false });
+            this.setState({ mandiListData: [] ,showLoader:false});
         }
     }
 
@@ -136,8 +134,9 @@ class MandiRateContainer extends React.Component {
                         districtData = {this.state.districtData}
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> :""}  
 
-
-                    {(this.state.showLoader || !this.state.districtData ) ? <Loader />:<OrderListTable tableData={this.state.mandiListData} />}
+                        {(this.state.showLoader || !this.state.districtData) ? <Loader/>:<OrderListTable tableData={this.state.mandiListData} />
+                    }
+                    
                 </Paper>
             </div>
         );

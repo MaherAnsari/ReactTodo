@@ -17,8 +17,8 @@ let mandiDataService = {
         return Api({
             method: 'post',
             headers: {
-    			"Authorization": Utils.getToken()
-    			},
+                "Authorization": Utils.getToken()
+            },
             url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/addAdditionalPlace',
             data: props
         });
@@ -27,18 +27,34 @@ let mandiDataService = {
         return Api({
             method: 'get',
             headers: {
-    			"Authorization": Utils.getToken()
-    			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/'+id
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/' + id
         });
     },
     getDistrictList: async function (id) {
         return Api({
             method: 'get',
             headers: {
-    			"Authorization": Utils.getToken()
-    			},
+                "Authorization": Utils.getToken()
+            },
             url: '/list/state/district'
+        });
+    },
+    commoditypricetrendGraphData: async function ( params ) {
+        // var params = {
+        //     market: "samana",
+        //     commodity: "potato",
+        //     lang: "hindi",
+        //     days: "10"
+        // }
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/commoditypricetrend',
+            params: params
         });
     },
 

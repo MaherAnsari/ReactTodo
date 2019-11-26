@@ -69,7 +69,7 @@ const styles = theme => ({
     maxWidth: 'none',
   },
   toggle:{
-    marginTop:'12px',
+    marginTop:'5px',
     fontSize:'15px',
     color:'#000'
   }
@@ -143,7 +143,6 @@ class CommodityTable extends Component {
     this.props.onEditModalCancel();
   }
   handleChange(row,event){
-    console.log()
     let obj = {"data":{
       "name":row.name,
       "active":!row.active
@@ -203,14 +202,14 @@ class CommodityTable extends Component {
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell>
-                      {/* <div style={{display:'flex'}}> 
+                      <p style={{display:'flex'}}> 
                       <Switch
                         checked={row.active}
                         onChange={this.handleChange.bind(this,row)}
                         value={row.active}
                         color="primary"
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
-                      /><p className={classes.toggle}>Active</p></div> */}
+                      /><span className={classes.toggle}>Active</span></p>
                     </TableRow>
                   );
                 })}
