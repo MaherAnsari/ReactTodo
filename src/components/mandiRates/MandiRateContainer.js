@@ -41,7 +41,8 @@ class MandiRateContainer extends React.Component {
             districtList: [],
             commodityList: [],
             districtData:null,
-            mandiListData:{}
+            mandiListData:{},
+            showLoader:false
 
         }
     }
@@ -104,6 +105,7 @@ class MandiRateContainer extends React.Component {
 
     async getSearchedOrderListData(params) {
         // console.log(params);
+        this.setState({showLoader:true});
         let obj = {
             "commodity":params.commodityid,
             "district":params.districtid,
@@ -112,13 +114,13 @@ class MandiRateContainer extends React.Component {
         try {
             let resp = await commodityService.getCommodityData(obj);
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ mandiListData: resp.data.result.data });
+                this.setState({ mandiListData: resp.data.result.data,showLoader:false });
             } else {
-                this.setState({ mandiListData: [] });
+                this.setState({ mandiListData: [] ,showLoader:false});
             }
         } catch (err) {
             console.error(err);
-            this.setState({ mandiListData: [] });
+            this.setState({ mandiListData: [],showLoader:false });
         }
     }
 
@@ -132,10 +134,10 @@ class MandiRateContainer extends React.Component {
                         districtList={this.state.districtList}
                         commodityList={this.state.commodityList}
                         districtData = {this.state.districtData}
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> :<Loader />}  
+                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> :""}  
 
 
-                    <OrderListTable tableData={this.state.mandiListData} />
+                    {(this.state.showLoader || !this.state.districtData ) ? <Loader />:<OrderListTable tableData={this.state.mandiListData} />}
                 </Paper>
             </div>
         );

@@ -206,8 +206,7 @@ class InfoDialog extends Component {
                         id="source_location"
                         label="Source Location"
                         type="text"
-                        maxLength="10"
-                        disable={true}
+                                                disable={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.source_location}
                         fullWidth
@@ -217,7 +216,6 @@ class InfoDialog extends Component {
                         id="target_location"
                         label="Target Location"
                         type="text"
-                        maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.target_location}
@@ -231,7 +229,6 @@ class InfoDialog extends Component {
                         id="commodity"
                         label="commodity"
                         type="text"
-                        maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.commodity}
@@ -267,7 +264,7 @@ class InfoDialog extends Component {
                         label="Mobile"
                         type="text"
                         maxLength="10"
-                        disabled={this.state.isUpdate}
+                        disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.mobile}
                         fullWidth

@@ -12,6 +12,7 @@ import PriceTable from './priceTable';
 import priceService from '../../../app/priceService/priceService';
 import Loader from '../../common/Loader';
 import NoDataAvailable from '../../common/NoDataAvailable';
+import buyerService from '../../../app/buyerService/buyerService';
 
 const theme = createMuiTheme({
   overrides: {
@@ -89,22 +90,39 @@ class PriceCollapseView extends Component {
     }
   }
 
-  
-  handelFilter(event) {
+  async handelFilter(event) {
     let searchedTxt = event.target.value;
-    this.setState({ searchedText: searchedTxt });
-    let initaialTableBodyData = this.state.dataList;
-    let updatedRow = [];
-
-    for (let i = 0; i < initaialTableBodyData.length; i++) {
-      if (initaialTableBodyData[i].hasOwnProperty('fullname') && (initaialTableBodyData[i].fullname).toLowerCase().indexOf(searchedTxt) > -1) {
-        updatedRow.push(initaialTableBodyData[i]);
-      }
-    }
-
-
-    this.setState({ expansionpanelHeaderData: updatedRow });
+    // console.log(searchedTxt);
+    this.getData(searchedTxt);
   }
+
+  async getData(txt){
+    let rows = [];
+    
+    let resp = await buyerService.serchUser(encodeURIComponent(txt));
+    // console.log(resp.data);
+    if (resp.data.status === 1 && resp.data.result) {
+      rows = resp.data.result.data;
+
+
+    }
+    this.setState({ expansionpanelHeaderData: rows });
+  }
+  // handelFilter(event) {
+  //   let searchedTxt = event.target.value;
+  //   this.setState({ searchedText: searchedTxt });
+  //   let initaialTableBodyData = this.state.dataList;
+  //   let updatedRow = [];
+
+  //   for (let i = 0; i < initaialTableBodyData.length; i++) {
+  //     if (initaialTableBodyData[i].hasOwnProperty('fullname') && (initaialTableBodyData[i].fullname).toLowerCase().indexOf(searchedTxt) > -1) {
+  //       updatedRow.push(initaialTableBodyData[i]);
+  //     }
+  //   }
+
+
+  //   this.setState({ expansionpanelHeaderData: updatedRow });
+  // }
 
 
   onPanelExpanded( event , i, id ){
@@ -144,7 +162,7 @@ onItemPanelExpanded( event , i, id ){
             <div style={{ width: '40%', marginLeft: '40%' }}>
               <input
                 type="text"
-                value={searchedText}
+                // value={searchedText}
                 placeholder="Search..."
                 className="search-input"
                 onChange={this.handelFilter.bind(this)} 

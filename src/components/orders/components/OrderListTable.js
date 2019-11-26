@@ -195,7 +195,7 @@ class OrderListTable extends Component {
                                                {row.bijak_amt}
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >{row.commodity}</TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 7)} >{row.createdtime.split("T")[0]}<i onClick={this.onInfoClick.bind(this,row)}class={"fa fa-info-circle "+classes.info} aria-hidden="true"></i>
+                                            <TableCell className={this.getTableCellClass(classes, 7)} >{row.createdtime.split("T")[0]}<i onClick={this.onInfoClick.bind(this,row)} className={"fa fa-info-circle "+classes.info} aria-hidden="true"></i>
 </TableCell>
 
 

@@ -10,7 +10,7 @@ let buyerService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: param ?'/user/list/buyer' + param : '/user/list/buyer' 
+            url: param ?'/user/list/buyer/' + param : '/user/list/buyer' 
         });
     },
     addMandiData: async function (props) {

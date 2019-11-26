@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
-// import Loader from '../common/Loader';
+import Loader from '../common/Loader';
 import Paper from '@material-ui/core/Paper';
 import FilterListComponent from "./components/FilterListComponent";
 import brokerService from './../../app/brokerService/brokerService';
@@ -42,7 +42,8 @@ class OrdersContainer extends React.Component {
             buyersList: [],
             brokersList: [],
             suppliersList: [],
-            orderedListData: undefined
+            orderedListData: undefined,
+            showLoader:false
         }
         this.ismounted = true;
     }
@@ -104,18 +105,19 @@ class OrdersContainer extends React.Component {
     }
 
     async getSearchedOrderListData(params) {
+        this.setState({showLoader:true});
         try {
             let resp = await orderService.getOrderListData(params);
             if (this.ismounted) {
                 if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ orderedListData: resp.data.result.data });
+                    this.setState({ orderedListData: resp.data.result.data ,showLoader:false});
                 } else {
-                    this.setState({ orderedListData: [] });
+                    this.setState({ orderedListData: [] ,showLoader:false});
                 }
             }
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ orderedListData: [] }); }
+            if (this.ismounted) { this.setState({ orderedListData: [],showLoader:false }); }
         }
     }
 
@@ -134,7 +136,8 @@ class OrdersContainer extends React.Component {
                         suppliersList={this.state.suppliersList}
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
 
-                    <OrderListTable tableData={this.state.orderedListData} />
+{this.state.showLoader ? <Loader />:<OrderListTable tableData={this.state.orderedListData} />}
+                    {/* <OrderListTable tableData={this.state.orderedListData} /> */}
                 </Paper>
             </div>
         );
