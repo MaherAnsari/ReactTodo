@@ -107,7 +107,7 @@ class FilterAreaComponent extends React.Component {
                 <Grid container direction="row" alignItems="stretch">
                     <Grid item xs={12} sm={12} md={12}>
                         {this.state.configData &&
-                            <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', backgroundColor: "#05073a", color: "#000", borderRadius: "4px" }}>
+                            <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', backgroundColor: "#fff", color: "#000", borderRadius: "4px" }}>
                                 {this.state.configData.map((obj, index) => (
                                     <React.Fragment key={index}>
                                         {(obj && obj.name && obj.id) &&

@@ -57,7 +57,8 @@ const styles = theme => ({
         paddingRight: '4px',
         textAlign: 'center',
         maxWidth: '200px',
-        padding:'12px'
+        padding:'12px',
+        maxHeight:'40px'
     },
     titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
     defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -76,8 +77,8 @@ const styles = theme => ({
         minHeight: '80vh'
     },
     lightTooltip: {
-        fontSize: '15px',
-        maxWidth: 'none',
+        fontSize: '18px',
+        maxWidth: '800px',
     },
 });
 
@@ -267,7 +268,7 @@ class UserListTable extends Component {
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
-                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
+                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'center' }}> <StarIcon /> </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -317,7 +318,7 @@ class UserListTable extends Component {
 
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                                <React.Fragment>
+                                                {/* <React.Fragment>
                                                     <Button
                                                         aria-owns={this.state.anchorEl ? 'simple-menu' : null}
                                                         aria-haspopup="true"
@@ -342,25 +343,7 @@ class UserListTable extends Component {
                             </Icon>
                                                             Edit User
                         </MenuItem>
-                                                        {/* <MenuItem
-
-                                                            onClick={this.DisableUserClick.bind(this, row)}
-                                                            style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                                                            <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
-                                                                block
-                            </Icon>
-                                                            Disable User
-                                                        </MenuItem>
-                                                        <MenuItem
-
-                                                            onClick={this.EnableUserClick.bind(this, i)}
-                                                            style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                                                            <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
-                                                                check
-                            </Icon>
-                                                            Enable User
-                                                        </MenuItem> */}
-
+                                                      
                                                         <MenuItem
                                                             onClick={this.onAddAccount.bind(this)}
                                                             style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -379,7 +362,7 @@ class UserListTable extends Component {
                         </MenuItem>
                                                     </Menu>
 
-                                                </React.Fragment>
+                                                </React.Fragment> */}
                                             </TableCell>
                                         </TableRow>
                                     );

@@ -64,7 +64,8 @@ class SupplierContainer extends React.Component {
     }
    }
     handleClose(event) {
-        this.setState({open :false,showAddModal:false,blockList:null});
+        this.setState({open :false,showAddModal:false});
+        this.getData();
     }
     onModalCancel(event){
         this.setState({open :false,showAddModal:false});

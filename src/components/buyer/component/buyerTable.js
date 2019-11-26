@@ -133,7 +133,7 @@ class BrokerTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality + " , " + obj.district;
+        return obj.locality?obj.locality:"" + " , " + obj.district?obj.district:"";
     }
     onModalClick(event) {
         this.setState({ show: true });

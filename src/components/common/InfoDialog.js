@@ -164,7 +164,7 @@ class InfoDialog extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.commodityList !== this.state.commodityList) {
-            console.log(nextProps.commodityList)
+            // console.log(nextProps.commodityList)
             this.setState({ commodityList: nextProps.commodityList });
         }
     }

@@ -58,7 +58,7 @@ class OrdersContainer extends React.Component {
             let resp = await buyerService.getBuyerList();
             if (this.ismounted) {
                 if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ buyersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+                    this.setState({ buyersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile") });
                 }
             }
         } catch (err) {
@@ -84,7 +84,7 @@ class OrdersContainer extends React.Component {
             let resp = await supplierService.getSupplierList();
             if (this.ismounted) {
                 if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ suppliersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+                    this.setState({ suppliersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile") });
                 }
             }
         } catch (err) {

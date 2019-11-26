@@ -118,13 +118,13 @@ class OrderListTable extends Component {
                                 <div style={{width:"25%"}}>Modal Price</div>
                             </div>
                            { Object.keys(this.state.tableBodyData).map((option) => {
-                  return (<div>
+                  return (<div key={option}>
                            <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{marginLeft:'5%'}} alt="Smiley face" width="42" height="42" /> 
                             <p className="name">{option} </p></div>
                             <Card className="detailCard">
                                 <div className="commodityDetail">District Name</div>
                                 {this.state.tableBodyData[option].map((row, i) => {
-                  return ( <div className="districtDiv">
+                  return ( <div className="districtDiv" key ={row.market}>
                                 <div style={{width:"25%"}}>{row.market}</div>
                                 <div style={{width:"50%" ,display:'flex'}}>
                                     <p style={{width:"50%"}}>Min: {row.cost.split('-')[0]}</p>
