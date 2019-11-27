@@ -131,10 +131,10 @@ class PriceDialog extends Component {
         data[id] = event.target.value;
         this.setState({dataObj:data});
         // console.log(event.target.value);
-        if(id == 'buyerid'){
+        if(id === 'buyerid'){
             this.handleCommodity(event.target.value);
         }
-        if(id == 'brokerid'){
+        if(id === 'brokerid'){
             this.handleMobile(event.target.value);
         }
     };
@@ -144,7 +144,7 @@ class PriceDialog extends Component {
         let data =  this.props.buyerList;
         let obj = this.state.dataObj;
         for(let i=0;i<data.length;i++){
-            if(data[i]['id'] == id){
+            if(data[i]['id'] === id){
                 obj['buyer_mobile'] = data[i]['mobile']
                 this.setState({commodityList:data[i]['default_commodity'],dataObj:obj});
                 return;
@@ -157,7 +157,7 @@ class PriceDialog extends Component {
         let data =  this.props.brokerList;
         let obj = this.state.dataObj;
         for(let i=0;i<data.length;i++){
-            if(data[i]['id'] == id){
+            if(data[i]['id'] === id){
                 obj['broker_mobile'] = data[i]['mobile']
                 this.setState({dataObj:obj});
                 return;

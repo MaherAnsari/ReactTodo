@@ -9,7 +9,7 @@ import SupplierTable from './component/supplierTable';
 import InfoDialog from '../common/InfoDialog';
 const styles = theme => ({
     root: {
-        width: '98%',
+        width: '100%',
         // marginTop: '30px',
         // height: '88vh',
         overflow: 'auto',

@@ -82,7 +82,6 @@ class PriceCollapseView extends Component {
     this.state = {
       expanded: "",
       itemExpanded:"",
-      searchedText: "",
       expansionpanelHeaderData: this.props.expansionpanelHeaderData ,
       expansionpanelBodyData:  [],
       specificBuyerList : undefined,
@@ -148,7 +147,7 @@ onItemPanelExpanded( event , i, id ){
 
   render() {
     const { classes } = this.props;
-    const { expanded, itemExpanded, searchedText } = this.state;
+    const { expanded, itemExpanded } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -191,7 +190,7 @@ onItemPanelExpanded( event , i, id ){
                       
                     {this.state.specificBuyerList && this.state.specificBuyerList.length > 0 ? this.state.specificBuyerList.map((item, itemIndex ) => {
               return (
-                <div key={"expanpan"+ item["commodity_name"]} style={{ width: '98%',marginLeft:'1%' ,marginTop: itemIndex != 0 ? "8px":""}} >
+                <div key={"expanpan"+ item["commodity_name"]} style={{ width: '98%',marginLeft:'1%' ,marginTop: itemIndex !== 0 ? "8px":""}} >
                   <ExpansionPanel
                     expanded={itemExpanded === itemIndex }
                     onChange={( event ) => this.onItemPanelExpanded(event, itemIndex, item["id"])}

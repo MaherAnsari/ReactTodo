@@ -119,12 +119,12 @@ class FilterAreaComponent extends React.Component {
             if( type === "supplierid"){
                 resp = await supplierService.serchUser(inputValue);
             }
-         
+         let respData;
             if (resp.data.status === 1 && resp.data.result) {
                 if( type === "brokerid"){
-                    var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                     respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
                 }else{
-                    var respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                     respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
                 }
                 
                 callback( respData );

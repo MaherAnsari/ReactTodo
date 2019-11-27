@@ -279,7 +279,7 @@ class UserDialog extends Component {
         let reqArr = this.state.requiredKey; 
         for (let i = 0; i < reqArr.length; i++) { 
             if (!data[reqArr[i]] && data[reqArr[i]] === "") { 
-                alert("All fields are required"); 
+                alert("Please check all required field"); 
                 return; 
             } 
         } 
@@ -332,6 +332,7 @@ class UserDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }} 
                         value={this.state.dataObj.mobile} 
                         onChange={this.handleChange.bind(this)} 
+                        required
                         fullWidth 
                     /> 
                     <TextField 
@@ -362,6 +363,7 @@ class UserDialog extends Component {
                         style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }} 
                         value={this.state.dataObj.fullname} 
                         onChange={this.handleChange.bind(this)} 
+                        required
                         fullWidth 
                     /> 
  

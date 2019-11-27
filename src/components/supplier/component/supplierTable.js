@@ -125,9 +125,7 @@ class SupplierTable extends Component {
         this.setState({ editableData: {}, showServerDialog: false });
         this.props.onEditModalClosed(event);
     }
-    onModalCancel(event) {
-        this.setState({ editableData: {}, showServerDialog: false });
-    }
+ 
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
@@ -188,7 +186,7 @@ class SupplierTable extends Component {
                             <TableHead>
                                 <TableRow  >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '50px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '90px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                     <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>

@@ -19,10 +19,10 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Icon } from "@material-ui/core";
-import UserDialog from './UserDialog';
+// import UserDialog from './UserDialog';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
-
+import OrderTable from '../../common/OrderTable';
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -144,7 +144,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality ? obj.locality : "- , " + obj.district ? obj.district : "-";
+        return obj.locality ? obj.locality : "-" + obj.district ? obj.district : "-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -242,7 +242,7 @@ class UserListTable extends Component {
         } else if (obj.role === 'broker') {
             return "#7070fd";
         } else {
-            return "#e5e8ec";
+            return "#757575";
         }
     }
     render() {
@@ -272,7 +272,7 @@ class UserListTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData.map((row, i) => {
+                                {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
                                     return (
                                         <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -281,13 +281,13 @@ class UserListTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.fullname?row.fullname:""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.fullname}</div>
                                                 </Tooltip>
 
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.business_name?row.business_name:""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.business_name}</div>
                                                 </Tooltip>
 
@@ -318,7 +318,7 @@ class UserListTable extends Component {
 
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                                {/* <React.Fragment>
+                                                <React.Fragment>
                                                     <Button
                                                         aria-owns={this.state.anchorEl ? 'simple-menu' : null}
                                                         aria-haspopup="true"
@@ -341,7 +341,7 @@ class UserListTable extends Component {
                                                             <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
                                                                 remove_red_eye
                             </Icon>
-                                                            Edit User
+                                                           Order Details
                         </MenuItem>
                                                       
                                                         <MenuItem
@@ -362,7 +362,7 @@ class UserListTable extends Component {
                         </MenuItem>
                                                     </Menu>
 
-                                                </React.Fragment> */}
+                                                </React.Fragment>
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -376,11 +376,11 @@ class UserListTable extends Component {
                             {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                     </div>}
-                    {this.state.showUserModal ? <UserDialog openModal={this.state.open}
+                    {/* {this.state.showUserModal ? <UserDialog openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         commodityList={ this.props.commodityList}
-                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""} */}
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
                             dialogText={this.state.dialogText}
@@ -388,6 +388,10 @@ class UserListTable extends Component {
                             show={this.state.showConfirmDialog}
                             onConfirmed={this.handelConfirmUpdate}
                             onCanceled={this.handelCancelUpdate} /> : ""}
+                    {this.state.showUserModal ? <OrderTable openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        data={this.state.userData}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                 </Paper>
             </MuiThemeProvider>
         );

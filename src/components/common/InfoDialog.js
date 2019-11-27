@@ -263,7 +263,7 @@ class InfoDialog extends Component {
         let reqArr = this.state.requiredKey;
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
-                alert("All fields are required");
+                alert("Please check all required field");
                 return;
             }
         }
@@ -310,6 +310,7 @@ class InfoDialog extends Component {
                         label="Mobile"
                         type="number"
                         maxLength="10"
+                        required
                         disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: '98%' }}
                         value={this.state.dataObj.mobile}
@@ -344,6 +345,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
                         value={this.state.dataObj.fullname}
                         onChange={this.handleChange.bind(this)}
+                        required
                         fullWidth
                     />
 

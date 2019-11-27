@@ -5,7 +5,9 @@ const styles = theme => ({
     root: {
         display: 'table',
         width: '100%',
-        height: '30vh'
+        height: '30vh',
+        textAlign:"center"
+
     },
     branchdiv: {
         width: '10%',
