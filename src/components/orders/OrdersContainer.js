@@ -10,6 +10,8 @@ import buyerService from './../../app/buyerService/buyerService';
 import supplierService from './../../app/supplierService/supplierService';
 import orderService from './../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
+import DateRangeSelector from "./components/DateRangeSelector";
+
 
 const styles = theme => ({
     root: {
@@ -43,7 +45,8 @@ class OrdersContainer extends React.Component {
             brokersList: [],
             suppliersList: [],
             orderedListData: undefined,
-            showLoader:false
+            showLoader: false,
+            datePayloads:{ "startDate": "", "endDate": "" }
         }
         this.ismounted = true;
     }
@@ -105,19 +108,29 @@ class OrdersContainer extends React.Component {
     }
 
     async getSearchedOrderListData(params) {
-        this.setState({showLoader:true});
+       
+        // { "startDate": "", "endDate": "" }
+        if( this.state.datePayloads["startDate"] !== ""){
+            params["startDate"] =  this.state.datePayloads["startDate"];
+        }
+        if( this.state.datePayloads["endDate"] !== ""){
+            params["endDate"] =  this.state.datePayloads["endDate"];
+        }
+
+        
+        this.setState({ showLoader: true });
         try {
             let resp = await orderService.getOrderListData(params);
             if (this.ismounted) {
                 if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ orderedListData: resp.data.result.data ,showLoader:false});
+                    this.setState({ orderedListData: resp.data.result.data, showLoader: false });
                 } else {
-                    this.setState({ orderedListData: [] ,showLoader:false});
+                    this.setState({ orderedListData: [], showLoader: false });
                 }
             }
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ orderedListData: [],showLoader:false }); }
+            if (this.ismounted) { this.setState({ orderedListData: [], showLoader: false }); }
         }
     }
 
@@ -125,18 +138,26 @@ class OrdersContainer extends React.Component {
         this.ismounted = false;
     }
 
+    onDateChaged(data) {
+console.log( data )
+this.setState({ datePayloads : data});
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
+                    <div>
+                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                    </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
 
-{this.state.showLoader ? <Loader />:<OrderListTable tableData={this.state.orderedListData} />}
+                    {this.state.showLoader ? <Loader /> : <OrderListTable tableData={this.state.orderedListData} />}
                     {/* <OrderListTable tableData={this.state.orderedListData} /> */}
                 </Paper>
             </div>

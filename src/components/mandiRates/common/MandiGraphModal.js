@@ -8,6 +8,8 @@ import GraphComponent from './GraphComponent';
 import mandiDataService from '../../../app/mandiDataService/mandiDataService';
 import Loader from '../../common/Loader';
 import NoDataAvailable from "../../common/NoDataAvailable";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 const styles = theme => ({
     heading: {
@@ -56,18 +58,20 @@ class UserDialog extends Component {
         super(props);
         this.state = {
             open: this.props.openModal,
-            graphPayloads : this.props.graphPayloads,
-            graphData: undefined
+            graphPayloads: this.props.graphPayloads,
+            graphData: undefined,
+            noOfDaysData: [3,7,10,15,20,25,30],
+            selectedDays : 10
         }
     }
     componentDidMount() {
-        this.getGraphData( this.state.graphPayloads)
+        this.getGraphData(this.state.graphPayloads)
     }
 
-    async getGraphData( params ) {
+    async getGraphData(params) {
         try {
-            console.log( params )
-            let resp = await mandiDataService.commoditypricetrendGraphData( params );
+            console.log(params)
+            let resp = await mandiDataService.commoditypricetrendGraphData(params);
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ graphData: resp.data.result.data });
             } else {
@@ -84,6 +88,14 @@ class UserDialog extends Component {
         this.props.onModalClose();
     }
 
+    onNumberOfDaysChanged( event ){
+        this.setState({ selectedDays : event.target.value, graphData : undefined }, function(){
+            var params = this.state.graphPayloads;
+            params["days"] =  event.target.value;
+            this.getGraphData(params)
+        })
+    }
+
     render() {
         const { classes } = this.props;
         return (<div>
@@ -96,19 +108,39 @@ class UserDialog extends Component {
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '40px' }}
                     id="form-dialog-title">
-                    <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                    {this.state.graphPayloads["market"] + "  ( "+ this.state.graphPayloads["commodity"]+" )" }
-                    </p>
+                    <div>
+
+                        <div style={{ float: "left", color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                            {this.state.graphPayloads["market"] + "  ( " + this.state.graphPayloads["commodity"] + " )"}
+                        </div>
+
+                        <div style={{ float: "right", color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                            Showing Data of &nbsp;
+                            <Select
+                                labelId="simple-select-label-for-days"
+                                id="select_days"
+                                value={this.state.selectedDays}
+                                style={{ color: "#ffffff"}}
+                                onChange={ (event )=> this.onNumberOfDaysChanged( event )}
+                            >
+                            {this.state.noOfDaysData.map((daysOption, i) => 
+                                <MenuItem key={daysOption+"_"+i} value={daysOption}>{daysOption}</MenuItem>
+                            )}
+                            </Select>
+                            days
+                        </div>
+
+                    </div>
                 </DialogTitle>
                 <DialogContent>
                     {this.state.graphData && this.state.graphData.length > 0 ?
                         <GraphComponent
                             graphData={this.state.graphData} />
                         :
-                        (this.state.graphData && this.state.graphData.length === 0 ? 
+                        (this.state.graphData && this.state.graphData.length === 0 ?
                             <NoDataAvailable style={{ color: "#fff", background: '#533381 !important' }} bvText={"No Data"} />
                             :
-                        <Loader />)}
+                            <Loader />)}
                 </DialogContent>
             </Dialog>
         </div>

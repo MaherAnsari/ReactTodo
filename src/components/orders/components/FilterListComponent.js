@@ -10,7 +10,6 @@ import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
 
-
 const styles = theme => ({
     root: {
         display: 'flex',
@@ -53,11 +52,13 @@ class FilterAreaComponent extends React.Component {
                 { name: "Broker", id: "brokerid", options: this.props.brokersList },
                 { name: "Supplier", id: "supplierid", options: this.props.suppliersList }
             ],
-            inputValue: ""
+            inputValue: "",
+            date: new Date()
         }
     }
 
     componentDidMount() {
+
         if (this.InputLabelRef) {
             this.setState({
                 labelWidth: ReactDOM.findDOMNode(this.InputLabelRef).offsetWidth,
@@ -121,10 +122,11 @@ class FilterAreaComponent extends React.Component {
             }
          let respData;
             if (resp.data.status === 1 && resp.data.result) {
+                var respData = [];
                 if( type === "brokerid"){
-                     respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                    respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
                 }else{
-                     respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                    respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
                 }
                 
                 callback( respData );
@@ -154,6 +156,7 @@ class FilterAreaComponent extends React.Component {
             <div>
                 <Grid container direction="row" alignItems="stretch">
                     <Grid item xs={12} sm={12} md={12}>
+
                         {this.state.configData &&
                             <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', backgroundColor: "#fff", color: "#000", borderRadius: "4px" }}>
                                 {this.state.configData.map((obj, index) => (
