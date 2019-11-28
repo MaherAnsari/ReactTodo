@@ -88,7 +88,6 @@ class OrderListTable extends Component {
             showOptionModal: false,
             anchorEl: null,
             showUserModal: false,
-            open: false,
             userData: {},
             userId: null,
             payload: null,

@@ -58,7 +58,8 @@ class DateRangeSelector extends React.Component {
                     <div style={{
                         verticalAlign: "middle",
                         lineHeight: "52px",
-                        fontSize: "16px"
+                        fontSize: "16px",
+                        marginRight:'30px' 
                     }}>Select Date Range &nbsp; &nbsp;&nbsp;</div>
                     {/* <KeyboardDatePicker
           disableToolbar
@@ -79,7 +80,7 @@ class DateRangeSelector extends React.Component {
                         id="date-picker-dialog"
                         label="Start date"
                         format="dd/MM/yyyy"
-                        style={{ marginTop: 0, width: 150 }}
+                        style={{ marginTop: 0, width: 150,marginRight:'30px' }}
                         value={selectedStartDate}
                         onChange={this.handleStartDateChange}
                         KeyboardButtonProps={{
@@ -91,7 +92,7 @@ class DateRangeSelector extends React.Component {
                         id="date-picker-dialog"
                         label="End date"
                         format="dd/MM/yyyy"
-                        style={{ marginTop: 0, width: 150 }}
+                        style={{ marginTop: 0, width: 150 ,marginRight:'100px' }}
                         value={selectedEndDate}
                         onChange={this.handleEndDateChange}
                         KeyboardButtonProps={{
