@@ -10,6 +10,7 @@ import priceService from '../../../app/priceService/priceService';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const styles = theme => ({
     heading: {
@@ -51,38 +52,39 @@ const styles = theme => ({
         padding: '25px',
         textAlign: 'center'
     },
-    slash:{
-        fontSize:'20px',
-        marginTop:'px'
+    slash: {
+        fontSize: '20px',
+        marginTop: 'px'
     }
 
 });
 
 class PriceDialog extends Component {
-   
+
     constructor(props) {
         super(props);
         this.state = {
             open: this.props.openModal,
             dataObj: {
-                "buyerid":"",
-                "brokerid":"",
-                "commodity":"",
-                "rate":0,
-                "qnt":0,
-                "unit":"quantil",
-                "commission_rate":0,
-                "commission_unit":"quantil",
-                "rate_unit":"quantil",
-                "broker_mobile":null,
-                "buyer_mobile":null
+                "buyerid": "",
+                "brokerid": "",
+                "commodity": "",
+                "rate": 0,
+                "qnt": 0,
+                "unit": "quantil",
+                "commission_rate": 0,
+                "commission_unit": "quantil",
+                "rate_unit": "quantil",
+                "broker_mobile": null,
+                "buyer_mobile": null
             },
-            commodityList:[],
-            unitArr:["quantil","ton"]
+            commodityList: [],
+            unitArr: ["quantil", "ton"]
         }
 
         this._isMounted = false;
-
+        this.handelAutoCompleteBuyerChange = this.handelAutoCompleteBuyerChange.bind(this);
+        this.handelAutoCompleteBrokerChange = this.handelAutoCompleteBrokerChange.bind(this);
     }
 
     // componentWillReceiveProps() {
@@ -91,16 +93,17 @@ class PriceDialog extends Component {
     //     }
     // }
     componentDidMount() {
-        this._isMounted = true;}
+        this._isMounted = true;
+    }
     componentWillUnmount() {
         this._isMounted = false;
-     }
+    }
 
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
         data[id] = event.target.value;
-        this.setState({dataObj:data});
+        this.setState({ dataObj: data });
     }
 
 
@@ -108,7 +111,7 @@ class PriceDialog extends Component {
     handelConfirmUpdate = async () => {
         // console.log(this.state.dataObj);
 
-        let obj = {'data':this.state.dataObj}
+        let obj = { 'data': this.state.dataObj }
         let resp = await priceService.addPrice(obj);
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
@@ -126,54 +129,76 @@ class PriceDialog extends Component {
     }
 
 
-    handleStateChange  = (id,event) => {
+    handleStateChange = (id, event) => {
         let data = this.state.dataObj;
         data[id] = event.target.value;
-        this.setState({dataObj:data});
+        this.setState({ dataObj: data });
         // console.log(event.target.value);
-        if(id === 'buyerid'){
-            this.handleCommodity(event.target.value);
-        }
-        if(id === 'brokerid'){
-            this.handleMobile(event.target.value);
-        }
+        // if (id === 'buyerid') {
+        //     this.handleCommodity(event.target.value);
+        // }
+        // if (id === 'brokerid') {
+        //     this.handleMobile(event.target.value);
+        // }
     };
 
 
-    handleCommodity =(id) =>{
-        let data =  this.props.buyerList;
+    handleCommodity = (id) => {
+        let data = this.props.buyerList;
         let obj = this.state.dataObj;
-        for(let i=0;i<data.length;i++){
-            if(data[i]['id'] === id){
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]['id'] === id) {
                 obj['buyer_mobile'] = data[i]['mobile']
-                this.setState({commodityList:data[i]['default_commodity'],dataObj:obj});
+                this.setState({ commodityList: data[i]['default_commodity'], dataObj: obj });
                 return;
             }
         }
-     
+
     }
 
-    handleMobile = (id) =>{
-        let data =  this.props.brokerList;
+    handelAutoCompleteBrokerChange = (event, values) => {
+       if(values){
         let obj = this.state.dataObj;
-        for(let i=0;i<data.length;i++){
-            if(data[i]['id'] === id){
-                obj['broker_mobile'] = data[i]['mobile']
-                this.setState({dataObj:obj});
-                return;
-            }
-        }
+        obj['brokerid'] = values['id'];
+        obj['broker_mobile'] = values['mobile'];
+        this.setState({ dataObj: obj });
+       }else{
+        let obj = this.state.dataObj;
+        obj['brokerid'] = "";
+        obj['broker_mobile'] = "";
+        this.setState({ dataObj: obj });
+       }
+       
+
+
     }
-    handleAddClick(event){
+    handleAddClick(event) {
         // console.log(this.state.dataObj);
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
         let dialogText = "Are you sure to add ?"
-     //   if (this.state.dataObj.state && this.state.dataObj.state != "" && this.state.dataObj.market && this.state.dataObj.market != "" && this.state.dataObj.district && this.state.dataObj.district != ""
-      //  && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi != "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi != "") {
-            this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
-        // } else {
-        //     alert("All fields are required");
-        // }
+          if (this.state.dataObj.brokerid && this.state.dataObj.brokerid != "" && this.state.dataObj.buyerid && this.state.dataObj.buyerid != "") {
+        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
+        } else {
+            alert("Please check broker or buyer");
+        }
+    }
+
+    handelAutoCompleteBuyerChange = (event, values) => {
+        // console.log(values);
+        if(values){
+            let obj = this.state.dataObj;
+            obj['buyerid'] = values['id'];
+            obj['buyer_mobile'] = values['mobile'];
+            this.setState({ commodityList: values['default_commodity'], dataObj: obj });
+        }else{
+            let obj = this.state.dataObj;
+            obj['buyerid'] = "";
+            obj['buyer_mobile'] = "";
+            this.setState({ commodityList: [], dataObj: obj });
+        }
+       
+
+
     }
     render() {
         const { classes } = this.props;
@@ -184,54 +209,44 @@ class PriceDialog extends Component {
             aria-labelledby="form-dialog-title"                >
             <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>Commodity Price Data</p>  </DialogTitle>
             <DialogContent>
-            <div >
-                    <TextField
-                        select
-                        id="buyerid"
-                        label="Buyer"
-                        type="text"
-                        style={{ marginRight: '2%', width: '100%', marginTop: '5px' }}
-                        value={this.state.dataObj.buyerid}
-                        onChange={this.handleStateChange.bind(this,'buyerid')}
-                    
-                    >
-                         
-
-                        {this.props.buyerList.map((option, i) => (
-                            <MenuItem key={i} value={option.id}  selected={true}>
-                                {option.fullname } {"("+option.business_name+")"}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    </div>
-                    <div >
-                    <TextField
-                        select
-                        id="brokerid"
-                        label="Broker"
-                        type="text"
-                        style={{ marginRight: '2%', width: '100%', marginTop: '5px' }}
-                        value={this.state.dataObj.brokerid}
-                        onChange={this.handleStateChange.bind(this,'brokerid')}
-
-                    >
-
-                        {this.props.brokerList.map((option, i) => (
-                            <MenuItem key={i} value={option.id} selected={true}>
-                                 {option.fullname } {"("+option.business_name+")"}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    </div>
                 <div >
-                <TextField
+                    <Autocomplete
+                        options={this.props.buyerList}
+                        style={{ margin:'0', width: '100%' }}
+                        getOptionLabel={option => option.fullname + " (" + option.business_name + ")"}
+                        id="buyerid"
+                        required
+                        onChange={this.handelAutoCompleteBuyerChange}
+                        renderInput={params => (
+                            <TextField {...params} label="Buyer" margin="none" fullWidth />
+                        )}
+                    />
+                
+                  
+                </div>
+                <div >
+                <Autocomplete
+                        options={this.props.brokerList}
+                        style={{ margin:'0', width: '100%' }}
+                        getOptionLabel={option => option.fullname + " (" + option.business_name + ")"}
+                        id="brokerid"
+                        required
+                        onChange={this.handelAutoCompleteBrokerChange}
+                        renderInput={params => (
+                            <TextField {...params} label="Broker" margin="none" fullWidth />
+                        )}
+                    />
+                   
+                </div>
+                <div >
+                    <TextField
                         select
                         id="commodity"
                         label="Commodity"
                         type="text"
                         style={{ marginRight: '2%', width: '100%', marginTop: '5px' }}
                         value={this.state.dataObj.commodity}
-                        onChange={this.handleStateChange.bind(this,'commodity')}
+                        onChange={this.handleStateChange.bind(this, 'commodity')}
 
                     >
 
@@ -241,28 +256,28 @@ class PriceDialog extends Component {
                             </MenuItem>
                         ))}
                     </TextField>
-                    </div>
-                
-                <div style={{display:'flex'}}>
+                </div>
+
+                <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
                         id="rate"
                         label="Rate"
                         type="number"
-                        style={{ marginRight: '2%',width:'50%' }}
+                        style={{ marginRight: '2%', width: '50%' }}
                         value={this.state.dataObj.rate}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                    
+
                     <TextField
                         select
                         id="rate_unit"
                         label="Rate Unit"
                         type="text"
-                        style={{ marginRight: '2%',marginLeft: '2%', width: '30%', marginTop: '5px' }}
+                        style={{ marginRight: '2%', marginLeft: '2%', width: '30%', marginTop: '5px' }}
                         value={this.state.dataObj.rate_unit}
-                        onChange={this.handleStateChange.bind(this,'rate_unit')}
+                        onChange={this.handleStateChange.bind(this, 'rate_unit')}
 
                     >
 
@@ -272,27 +287,27 @@ class PriceDialog extends Component {
                             </MenuItem>
                         ))}
                     </TextField>
-                    </div>
-                   
-                       <div style={{display:'flex'}}>
-                       <TextField
+                </div>
+
+                <div style={{ display: 'flex' }}>
+                    <TextField
                         margin="dense"
                         id="qnt"
                         label="Qnt"
                         type="number"
-                        style={{ marginRight: '2%' ,width:'50%'}}
+                        style={{ marginRight: '2%', width: '50%' }}
                         value={this.state.dataObj.qnt}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                      <TextField
+                    <TextField
                         select
                         id="unit"
                         label="Unit"
                         type="text"
-                        style={{ marginRight: '2%', marginLeft: '2%',width: '30%', marginTop: '5px' }}
+                        style={{ marginRight: '2%', marginLeft: '2%', width: '30%', marginTop: '5px' }}
                         value={this.state.dataObj.unit}
-                        onChange={this.handleStateChange.bind(this,'unit')}
+                        onChange={this.handleStateChange.bind(this, 'unit')}
 
                     >
 
@@ -302,26 +317,26 @@ class PriceDialog extends Component {
                             </MenuItem>
                         ))}
                     </TextField>
-                    </div>
-                    <div style={{display:'flex'}}>
+                </div>
+                <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
                         id="commission_rate"
                         label="Commision"
                         type="number"
-                        style={{ marginRight: '2%',width:'50%' }}
+                        style={{ marginRight: '2%', width: '50%' }}
                         value={this.state.dataObj.commission_rate}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         select
                         id="commission_unit"
                         label="commision Unit"
                         type="text"
                         style={{ marginRight: '2%', marginLeft: '2%', width: '30%', marginTop: '5px' }}
                         value={this.state.dataObj.unit}
-                        onChange={this.handleStateChange.bind(this,'commission_unit')}
+                        onChange={this.handleStateChange.bind(this, 'commission_unit')}
 
                     >
 
@@ -331,14 +346,14 @@ class PriceDialog extends Component {
                             </MenuItem>
                         ))}
                     </TextField>
-                    </div>
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Add</Button>
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
         </Dialog>
-       
+
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
                     dialogText={this.state.dialogText}

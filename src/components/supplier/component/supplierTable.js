@@ -101,7 +101,7 @@ class SupplierTable extends Component {
     componentWillReceiveProps() {
 
         if (this.state.tableBodyData !== this.props.tableData) {
-            this.setState({ tableBodyData: this.pros.tableData });
+            this.setState({ tableBodyData: this.props.tableData });
         }
     }
 
@@ -171,7 +171,7 @@ class SupplierTable extends Component {
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
-                    {/* <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex' }}>
 
                         <div style={{ width: '40%', marginLeft: '58%' }}>
                             <input
@@ -180,7 +180,7 @@ class SupplierTable extends Component {
                                 className="search-input"
                                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
                         </div>
-                    </div> */}
+                    </div>
                     <div >
                         <Table className='table-body'>
                             <TableHead>
