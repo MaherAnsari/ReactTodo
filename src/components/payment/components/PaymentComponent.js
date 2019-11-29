@@ -128,15 +128,6 @@ class PaymentComponent extends Component {
         this.getPaymentInfoDetails(this.state.datePayloads);
     }
 
-
-
-    componentWillReceiveProps(nextprops) {
-
-        if (this.state.tableBodyData !== nextprops.payoutData) {
-            this.setState({ tableBodyData: nextprops.payoutData });
-        }
-    }
-
     getPaymentInfoDetails = async (params) => {
         try {
             this.setState({ showLoader: true })
