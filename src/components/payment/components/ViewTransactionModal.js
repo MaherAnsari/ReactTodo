@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,7 +14,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import paymentService from '../../../app/paymentService/paymentService';
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,15 +21,25 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TransactionInvoiceModal from './TransactionInvoiceModal';
 import Fab from '@material-ui/core/Fab';
+import Loader from '../../common/Loader';
 
 
 const styles = theme => ({
     appBar: {
         position: 'relative',
+        background: "#05073a",
     },
     title: {
         marginLeft: theme.spacing(2),
         flex: 1,
+        fontSize: "20px !important",
+        fontFamily: "lato !important",
+        fontWeight: 500
+    },
+    closeBtn:{
+        fontSize: "15px !important",
+        fontFamily: "lato !important",
+        fontWeight: 500
     },
     tableCell: {
         paddingLeft: '4px',
@@ -55,13 +59,15 @@ class ViewTransactionModal extends Component {
         super(props);
         this.state = {
             open: this.props.open,
-            transactionData: {},
+            transactionData: undefined,
             mobileNumber: this.props.mobileNumber,
             tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time", "Amount", "Payment mode", "Supporting invoice"],
             expanded: "",
             invoiceModalData: [],
             showImageInvoiceModal: false,
-            supplierNameMapping: {}
+            supplierNameMapping: {},
+            buyerInfo: this.props.buyerInfo,
+            showLoader: false
         }
     }
 
@@ -71,7 +77,6 @@ class ViewTransactionModal extends Component {
 
     getTransactionList = async (params) => {
         try {
-            console.log(params)
             let resp = await paymentService.getTransactionDetailsOfBuyer(params);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result.data;
@@ -98,16 +103,6 @@ class ViewTransactionModal extends Component {
     }
     }
 
-
-
-    handleClickOpen = () => {
-        this.setState({ open: false })
-    };
-
-    handleClose = () => {
-        this.setState({ open: false })
-    };
-
     onPanelExpanded(event, i) {
         this.setState({ expanded: this.state.expanded === i ? "" : i });
     }
@@ -131,28 +126,28 @@ class ViewTransactionModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { open, transactionData, expanded,supplierNameMapping } = this.state;
+        const { transactionData, expanded,supplierNameMapping, buyerInfo } = this.state;
         return (
             <div>
-                {!this.state.showImageInvoiceModal ? <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
+                <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
                     <AppBar className={classes.appBar}>
                         <Toolbar>
                             <IconButton edge="start" color="inherit" onClick={(event) => { this.handelModalClose(event) }} aria-label="close">
                                 <CloseIcon />
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
-                                Transactions
+                                {(buyerInfo["buyer_fullname"] ?buyerInfo["buyer_fullname"] +" - ": "")+ (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")  }
                              </Typography>
 
-                            <Button autoFocus color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
+                            <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
                                 close
                             </Button>
                         </Toolbar>
                     </AppBar>
                     <div style={{ marginTop: 20 }}>
-                        {transactionData && Object.keys(transactionData).map((suplierNumber, itemIndex) => (
+                        {transactionData ? Object.keys(transactionData).map((suplierNumber, itemIndex) => (
                             <div key={"expanpan" + suplierNumber}
-                                style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex != 0 ? "8px" : "" }} >
+                                style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex !== 0 ? "8px" : "" }} >
                                 <ExpansionPanel
                                     expanded={expanded === itemIndex}
                                     // onChange={(event) =>}
@@ -232,15 +227,16 @@ class ViewTransactionModal extends Component {
                                     </ExpansionPanelDetails>
                                 </ExpansionPanel>
                             </div>)
-                        )}
+                        ): <Loader />}
                     </div>
+                   
 
                 </Dialog>
-                    :
+                {this.state.showImageInvoiceModal &&
                     <TransactionInvoiceModal
                         openModal={this.state.showImageInvoiceModal}
                         onInvoiceModalClose={() => { this.setState({ showImageInvoiceModal: false, invoiceModalData: [] }) }}
-                        invoiceUrlData={this.state.invoiceModalData} />}}
+                        invoiceUrlData={this.state.invoiceModalData} />}
 
             </div>);
     }

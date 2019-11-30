@@ -176,7 +176,7 @@ class PriceDialog extends Component {
         // console.log(this.state.dataObj);
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
         let dialogText = "Are you sure to add ?"
-          if (this.state.dataObj.brokerid && this.state.dataObj.brokerid != "" && this.state.dataObj.buyerid && this.state.dataObj.buyerid != "") {
+          if (this.state.dataObj.brokerid && this.state.dataObj.brokerid !== "" && this.state.dataObj.buyerid && this.state.dataObj.buyerid !== "") {
         this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
             alert("Please check broker or buyer");

@@ -8,10 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import SerachFilter from '../common/SerachFilter';
 import DateRangeSelector from '../common/DateRangeSelector';
 import Fab from '@material-ui/core/Fab';
-import buyerService from '../../../app/buyerService/buyerService';
 import paymentService from '../../../app/paymentService/paymentService';
 import ViewTransactionModal from './ViewTransactionModal';
 import Loader from '../../common/Loader';
@@ -95,22 +93,9 @@ class PaymentComponent extends Component {
         this.state = {
             tableHeadData: ["Buyer Name", "Buyer Mobile", "Location", "Amount", "No. of Transactions", "Transactions"],
             tableBodyData: [],
-            rawTableBodyData: [],
             searchedText: "",
-            editableData: {},
-            showServerDialog: false,
-            showOptionModal: false,
-            anchorEl: null,
-            showUserModal: false,
-            open: false,
-            userData: {},
-            userId: null,
-            payload: null,
-            showAddModal: false,
-            infoData: null,
             open: false,
 
-            buyersList: this.props.buyersList,
             datePayloads: { "startDate": "", "endDate": "" },
             paymentMetaInfo: {
                 "count": "-",
@@ -118,13 +103,13 @@ class PaymentComponent extends Component {
             },
             showTransactionModal: false,
             showLoader: false,
-            defaultData: []
+            defaultData: [],
+            buyerInfo: {}
 
         }
     }
 
     componentDidMount() {
-        this.getBuyersList();
         this.getPaymentInfoDetails(this.state.datePayloads);
     }
 
@@ -148,46 +133,9 @@ class PaymentComponent extends Component {
         return classes.tableCell;
     }
 
-    getInfoSTring(obj) {
-        return obj.source_location ? obj.source_location : "- , " + obj.target_location ? obj.target_location : "-";
-    }
-
-    getRole(row) {
-        if (row.role === "ca") {
-            return "buyer";
-        } else if (row.role === 'la') {
-            return "supplier";
-        } else if (row.role === 'broker') {
-            return "broker";
-        } else {
-            return "NA";
-        }
-    }
-    getBackgroundColor(obj) {
-        if (obj.role === "ca") {
-            return "#f94141";
-        } else if (obj.role === 'la') {
-            return "#82af82";
-        } else if (obj.role === 'broker') {
-            return "#7070fd";
-        } else {
-            return "#e5e8ec";
-        }
-    }
-
-    onInfoClick = (info, event) => {
-        this.setState({
-            infoData: info, showAddModal: true, open: true
-        })
-    }
-
-    onModalCancel(event) {
-        this.setState({ showAddModal: false, infoData: null, open: false })
-    }
 
     async handelFilter(event) {
         let searchedTxt = event.target.value;
-        console.log(searchedTxt)
         if (searchedTxt.trim() !== "") {
             var respData = [];
             let resp = await paymentService.getPaymentSearchedUser(searchedTxt);
@@ -201,26 +149,11 @@ class PaymentComponent extends Component {
     }
 
     onDateChaged(data) {
-        this.setState({ datePayloads: data }, function () {
-            // this.getPaymentInfoDetails( data );
-        });
-    }
-
-    getBuyersList = async (payload) => {
-        try {
-            let resp = await buyerService.serchUser();
-
-            if (resp.data.status === 1 && resp.data.result) {
-                var respData = resp.data.result.data;
-                this.setState({ buyersList: respData });
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        this.setState({ datePayloads: data });
     }
 
     handelShowTransactionModal(row, event) {
-        this.setState({ mobileNumber: row["buyer_mobile"] }, function () {
+        this.setState({ buyerInfo: row, mobileNumber: row["buyer_mobile"] }, function () {
             this.setState({ showTransactionModal: true })
         })
     }
@@ -321,6 +254,7 @@ class PaymentComponent extends Component {
                         <ViewTransactionModal
                             open={this.state.showTransactionModal}
                             onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
+                            buyerInfo={this.state.buyerInfo}
                             mobileNumber={this.state.mobileNumber} />
                     }
 
