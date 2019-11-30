@@ -71,15 +71,15 @@ class PriceDialog extends Component {
                 "commodity": "",
                 "rate": 0,
                 "qnt": 0,
-                "unit": "quantil",
+                "unit": "quintal",
                 "commission_rate": 0,
-                "commission_unit": "quantil",
-                "rate_unit": "quantil",
+                "commission_unit": "quintal",
+                "rate_unit": "quintal",
                 "broker_mobile": null,
                 "buyer_mobile": null
             },
             commodityList: [],
-            unitArr: ["quantil", "ton"]
+            unitArr: ["quintal", "ton"]
         }
 
         this._isMounted = false;
