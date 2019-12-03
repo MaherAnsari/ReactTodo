@@ -13,6 +13,11 @@ import DoneAllIcon from '@material-ui/icons/DoneAll';
 import PersonIcon from '@material-ui/icons/Person';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
+import EditIcon from '@material-ui/icons/Edit';
+import EditMandiDataModal from './EditMandiDataModal';
+import Utils from '../../../app/common/utils';
+import FilterDataView from '../common/FilterDataView';
+
 
 const theme = createMuiTheme({
   overrides: {
@@ -47,8 +52,8 @@ const styles = theme => ({
     paddingLeft: '4px',
     paddingRight: '4px',
     textAlign: 'center',
-    maxWidth: '200px',
-    padding:'12px'
+    maxWidth: "120px", //'200px',
+    padding: '12px'
   },
   titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
   defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -78,85 +83,85 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["state", "district", "market","market (Hindi)","district (Hindi)"],
+      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Off Day", "Location", "Action"],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
-      editableData: {},
       showServerDialog: false,
-      deleteId: null
+      deleteMarket: null,
+
+      showEditDataModal: false,
+      editableData: undefined,
+      "stateList": this.getStateData(),
+      districtData: Utils.getDistrictData()
 
     }
   }
 
-
-  async handelFilter(event) {
-    let searchedTxt = event.target.value;
-    console.log(searchedTxt);
-    if(searchedTxt){
-      this.getData(searchedTxt);
-    }else{
-      this.getData('a');
+  getStateData() {
+    let data = Utils.getStateData();
+    var optionsData = [];
+    if (data) {
+      for (var i = 0; i < data.length; i++) {
+        optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
+      }
     }
-    
+    return optionsData;
   }
 
-  async getData(txt){
+
+
+  async handelFilter(data) {
+
+    console.log(data);
+    if (data) {
+      this.getData(data);
+    }
+
+  }
+
+  async getData(params) {
     let rows = [];
-    
-    let resp = await mandiDataService.getMandiData(encodeURIComponent(txt));
-    // console.log(resp.data);
+    // encodeURIComponent(txt)
+    let resp = await mandiDataService.getMandiSearchData(params);
     if (resp.data.status === 1 && resp.data.result) {
       rows = resp.data.result.data;
-
-
     }
     this.setState({ tableBodyData: rows });
   }
 
   handelConfirmUpdate = async () => {
-
-    // let rows = [];
-    let resp = await mandiDataService.deleteMandi(this.state.deleteId);
+    let resp = await mandiDataService.deleteSpecificMandi(this.state.deleteMarket);
     this.setState({ showConfirmDialog: false, alertData: {} });
     if (resp.data.status === 1) {
       alert("Succesfully Deleted");
-      this.getData('a');
+      this.getData({ "query": "a" });
     } else {
       alert("Opps there was an error, while deleted");
     }
-   
-  }
-  onEditClicked(particularTaskData, event) {
-    this.setState({ editableData: JSON.parse(JSON.stringify(particularTaskData)), showServerDialog: true });
-  }
-
-  onModalClosed(event) {
-
-    this.setState({ editableData: {}, showServerDialog: false });
-    this.props.onEditModalClosed(event);
-  }
-  onModalCancel(event) {
-    this.setState({ editableData: {}, showServerDialog: false });
   }
 
   getTableCellClass(classes, index) {
     return classes.tableCell;
   }
 
-  onDeleteMandi(id, event) {
-    // console.log(this.state.dataObj);
+  onDeleteMandi(market, event) {
     let dialogText = "Are you sure to delete ?"
-
-    this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteId: id });
-
+    this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteMarket: market });
   }
+
   handelCancelUpdate = () => {
     this.setState({ showConfirmDialog: false, alertData: {} });
   }
-  handleDialogCancel(event) {
-    this.props.onEditModalCancel();
+
+  handelEditModalOpen(data) {
+    this.setState({ editableData: data, showEditDataModal: true })
   }
+
+  handelEditModalClose() {
+    this.setState({ editableData: undefined, showEditDataModal: false })
+  }
+
 
   render() {
     const { classes } = this.props;
@@ -165,41 +170,59 @@ class MandiListTable extends Component {
         <Paper className={classes.root} >
           {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
           <div style={{ display: 'flex' }}>
+            {this.state.districtData ?
+             <FilterDataView
+              stateList={this.state.stateList}
+              districtList={this.state.districtList}
+              districtData={Utils.getDistrictData()}
+              onHeaderFilterChange={this.handelFilter.bind(this)}
+            />
+              : ""}
 
-            <div style={{ width: '40%', marginLeft: '58%' }}>
+            {/* <div style={{ width: '40%' }}>
               <input
                 type="text"
                 placeholder="Search..."
                 className="search-input"
                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
-            </div>
+            </div> */}
           </div>
           <div >
             <Table className='table-body'>
               <TableHead>
                 <TableRow  >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '150px' }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
+                {/*  ["state","state (Hindi)","district", "market","market (Hindi)","district (Hindi)", "Mandi Grade","Mandi Grade( HINDI)", "APMC","Mandi Off Day","Location","Action"], */}
                 {this.state.tableBodyData.map((row, i) => {
                   return (
                     <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                        {row.state}
-                      </TableCell>
+                        {row.state}</TableCell>
+                      <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                        {row.state_hindi ? row.state_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.district}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.market}
-                      </TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.market_hindi ? row.market_hindi:"-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.market}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.market_hindi ? row.market_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes": "No") : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_monthly_off_day ? row.mandi_monthly_off_day : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "," + (row.loc_long ? row.loc_long : "-")}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
                         {row.businessAddedPlace ? <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
                           : <DoneAllIcon className="material-Icon" />}
-                        {row.businessAddedPlace ? <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.id)} style={{ color: 'red', cursor: 'pointer' }} /> : ""
+                        {row.businessAddedPlace ? <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ color: 'red', cursor: 'pointer' }} /> : ""
                         }
+                        <EditIcon
+                          className="material-Icon"
+                          onClick={() => this.handelEditModalOpen(row)}
+                          style={{ color: "#e72e89", cursor: "pointer" }} />
                       </TableCell>
                     </TableRow>
                   );
@@ -211,7 +234,7 @@ class MandiListTable extends Component {
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
               <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
               {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
-                <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
+                <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>}
           </div>}
           {this.state.showConfirmDialog ?
             <ConfirmDialog
@@ -220,6 +243,14 @@ class MandiListTable extends Component {
               show={this.state.showConfirmDialog}
               onConfirmed={this.handelConfirmUpdate}
               onCanceled={this.handelCancelUpdate} /> : ""}
+
+          {this.state.showEditDataModal && this.state.editableData &&
+            <EditMandiDataModal openModal={this.state.showEditDataModal}
+              stateList={Utils.getStateData()}
+              districtMap={Utils.getDistrictData()}
+              editableData={this.state.editableData}
+              onEditModalClosed={this.handelEditModalClose.bind(this)}
+            />}
         </Paper>
       </MuiThemeProvider>
     );

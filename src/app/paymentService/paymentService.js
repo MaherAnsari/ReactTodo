@@ -28,16 +28,16 @@ let paymentService = {
     
     getPaymentSearchedUser : async function (param) {
         // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/search?searchVal=demo
-        let params ={
-            searchVal  : param
-        }
+        // let params ={
+        //     searchVal  : param
+        // }
             return Api({
                 method: 'get',
                 headers: {
                     "Authorization": Utils.getToken()
                 },
                 url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/search',
-                params: params
+                params: param
             });
         },
 

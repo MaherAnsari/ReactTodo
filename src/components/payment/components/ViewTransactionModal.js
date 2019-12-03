@@ -61,7 +61,7 @@ class ViewTransactionModal extends Component {
             open: this.props.open,
             transactionData: undefined,
             mobileNumber: this.props.mobileNumber,
-            tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time", "Amount", "Payment mode", "Supporting invoice"],
+            tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time", "Amount", "Payment mode", "Supporting images"],
             expanded: "",
             invoiceModalData: [],
             showImageInvoiceModal: false,

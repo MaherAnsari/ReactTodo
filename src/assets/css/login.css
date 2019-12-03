@@ -111,6 +111,10 @@
     border-color: transparent !important;
   }
   
+#searchinput:focus {
+    border-color: unset !important;
+  }
+
   input:focus::-webkit-input-placeholder { color:transparent; }
   input:focus:-moz-placeholder { color:transparent; }
   input:focus::-moz-placeholder { color:transparent; }

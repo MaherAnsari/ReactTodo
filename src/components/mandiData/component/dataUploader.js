@@ -64,12 +64,12 @@ class DataUploader extends Component {
                 'state': '',
                 'market': '',
                 'district': '',
-                'market_hindi':'',
-                'district_hindi':'',
-                'state_hindi':'-'
-               
+                'market_hindi': '',
+                'district_hindi': '',
+                'state_hindi': '',
+                "remarks": "additional place"
             },
-            "stateList":[
+            "stateList": [
                 "Andaman and Nicobar Islands",
                 "Andhra Pradesh",
                 "Arunachal Pradesh",
@@ -107,9 +107,9 @@ class DataUploader extends Component {
                 "Uttar Pradesh",
                 "Uttarakhand",
                 "West Bengal"
-                ],
-            "districtMap":Utils.getDistrictData()  ,
-            "districtList":[]
+            ],
+            "districtMap": Utils.getDistrictData(),
+            "districtList": []
 
         }
 
@@ -126,7 +126,7 @@ class DataUploader extends Component {
         let data = this.state.dataObj;
         let id = event.target.id;
         data[id] = event.target.value;
-        this.setState({dataObj:data});
+        this.setState({ dataObj: data });
     }
 
     onSubmitClick = () => {
@@ -157,27 +157,27 @@ class DataUploader extends Component {
     }
 
 
-    handleStateChange  = (id,event) => {
+    handleStateChange = (id, event) => {
         let data = this.state.dataObj;
         data[id] = event.target.value;
-        this.setState({dataObj:data});
-        if(id === "state" ){
+        this.setState({ dataObj: data });
+        if (id === "state") {
             let val = event.target.value;
-            this.state.dataObj.district="";
-            if(this.state.districtMap.hasOwnProperty(val.toLowerCase())){
+            this.state.dataObj.district = "";
+            if (this.state.districtMap.hasOwnProperty(val.toLowerCase())) {
                 let list = this.state.districtMap[val.toLowerCase()];
-                this.setState({districtList:list});
+                this.setState({ districtList: list });
             }
-           
+
         }
     };
 
 
-    handleAddClick(event){
+    handleAddClick(event) {
 
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
-        && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
+            && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
             alert("All fields are required");
@@ -205,65 +205,39 @@ class DataUploader extends Component {
                         fullWidth
                     /></div>
                 <div >
-                <TextField
-                            select
-                            id="state"
-                            label="State"
-                            type="text"
-                            style={{ marginRight: '2%',width:'100%' }}
-                            value={this.state.dataObj.state}
-                            onChange={this.handleStateChange.bind(this,'state')}
-
-                        >
-
-                            {this.state.stateList.map((option, i) => (
-                                <MenuItem key={i} value={option} selected={true}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    {/* <TextField
-                        margin="dense"
+                    <TextField
+                        select
                         id="state"
-                        label="state"
+                        label="State"
                         type="text"
-                        style={{ marginRight: '2%' }}
+                        style={{ marginRight: '2%', width: '100%' }}
                         value={this.state.dataObj.state}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    /> */}
-                    </div>
+                        onChange={this.handleStateChange.bind(this, 'state')} >
+                        {this.state.stateList.map((option, i) => (
+                            <MenuItem key={i} value={option} selected={true}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </div>
 
                 <div >
-                <TextField
-                            select
-                            id="district"
-                            label="District"
-                            type="text"
-                            style={{ marginRight: '2%',width:'100%' }}
-                            value={this.state.dataObj.district}
-                            onChange={this.handleStateChange.bind(this,'district')}
-
-                        >
-
-                            {this.state.districtList.map((option, i) => (
-                                <MenuItem key={i} value={option.district_name} selected={true}>
-                                    {option.district_name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    {/* <TextField
-                        margin="dense"
+                    <TextField
+                        select
                         id="district"
                         label="District"
                         type="text"
-                        style={{ marginRight: '2%' }}
+                        style={{ marginRight: '2%', width: '100%' }}
                         value={this.state.dataObj.district}
-                        onChange={this.handleChange.bind(this)}
-                        fullWidth
-                    /> */}
-                    </div>
-                       <div >
+                        onChange={this.handleStateChange.bind(this, 'district')}>
+                        {this.state.districtList.map((option, i) => (
+                            <MenuItem key={i} value={option.district_name} selected={true}>
+                                {option.district_name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </div>
+                <div >
                     <TextField
                         margin="dense"
                         id="district_hindi"
@@ -274,7 +248,7 @@ class DataUploader extends Component {
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     /></div>
-                       <div >
+                <div >
                     <TextField
                         margin="dense"
                         id="market_hindi"

@@ -46,7 +46,7 @@ class TransactionInvoiceModal extends Component {
                     <div>
 
                         <div style={{ float: "left", textAlign: "center", color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                            Supporting invoices
+                            Supporting images
                         </div>
 
                     </div>

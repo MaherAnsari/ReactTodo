@@ -137,19 +137,34 @@ class PaymentComponent extends Component {
     async handelFilter(event) {
         let searchedTxt = event.target.value;
         if (searchedTxt.trim() !== "") {
-            var respData = [];
-            let resp = await paymentService.getPaymentSearchedUser(searchedTxt);
-            if (resp.data.status === 1 && resp.data.result) {
-                respData = resp.data.result.data;
-            }
-            this.setState({ tableBodyData: respData, searchedText: searchedTxt });
+            this.getPaymentSearchedUser( searchedTxt )
+            // var respData = [];
+            // let resp = await paymentService.getPaymentSearchedUser(searchedTxt);
+            // if (resp.data.status === 1 && resp.data.result) {
+            //     respData = resp.data.result.data;
+            // }
+            // this.setState({ tableBodyData: respData, searchedText: searchedTxt });
         } else {
             this.setState({ tableBodyData: this.state.defaultData, searchedText: searchedTxt });
         }
     }
 
+    async getPaymentSearchedUser( txt ){
+        let payload= this.state.datePayloads;
+        if( txt.trim() !== ""){
+        payload["searchVal"] = txt;}
+        var respData = [];
+        let resp = await paymentService.getPaymentSearchedUser(payload);
+        if (resp.data.status === 1 && resp.data.result) {
+            respData = resp.data.result.data;
+        }
+        this.setState({ tableBodyData: respData, searchedText: txt });
+    }
+
     onDateChaged(data) {
-        this.setState({ datePayloads: data });
+        this.setState({ datePayloads: data }, function(){
+            this.getPaymentSearchedUser( this.state.searchedText );
+        });
     }
 
     handelShowTransactionModal(row, event) {
