@@ -29,7 +29,7 @@ class EditMandiDataModal extends Component {
         this.state = {
             open: this.props.openModal,
             dataObj: this.props.editableData,
-            mandiGradeOptions: ["A", "B", "C", "D", "E", "F", "G", "H"],
+            mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
             mandiGradeHindiOptions: ['क', 'ख', 'ग', 'घ', 'ङ', 'च'],
             // dataObj: {
             //     'state': '',
@@ -241,10 +241,10 @@ class EditMandiDataModal extends Component {
                             label="Mandi Grade"
                             type="text"
                             style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
-                            value={this.state.dataObj.mandi_grade || ""}
+                            value={this.state.dataObj.mandi_grade }
                             onChange={this.handleStateChange.bind(this, 'mandi_grade')}>
                             {mandiGradeOptions.map((option, i) => (
-                                <MenuItem key={i} value={option} selected={true}>
+                                <MenuItem key={i} value={option.toLowerCase()} selected={true}>
                                     {option}
                                 </MenuItem>
                             ))}

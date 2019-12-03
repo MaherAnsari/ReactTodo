@@ -69,6 +69,8 @@ class DataUploader extends Component {
                 'state_hindi': '',
                 "remarks": "additional place"
             },
+            mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
+            mandiGradeHindiOptions: ['क', 'ख', 'ग', 'घ', 'ङ', 'च'],
             "stateList": [
                 "Andaman and Nicobar Islands",
                 "Andhra Pradesh",
@@ -174,7 +176,7 @@ class DataUploader extends Component {
 
 
     handleAddClick(event) {
-
+console.log(this.state.dataObj)
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
@@ -185,7 +187,9 @@ class DataUploader extends Component {
     }
     render() {
         const { classes } = this.props;
-        return (<div> <Dialog style={{ zIndex: '1' }}
+        const { mandiGradeOptions, mandiGradeHindiOptions } = this.state;
+        return (<div> 
+            <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
@@ -259,6 +263,80 @@ class DataUploader extends Component {
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     /></div>
+
+                    
+                    <div >
+                        <TextField
+                            select
+                            id="mandi_grade"
+                            label="Mandi Grade"
+                            type="text"
+                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                            value={this.state.dataObj.mandi_grade }
+                            onChange={this.handleStateChange.bind(this, 'mandi_grade')}>
+                            {mandiGradeOptions.map((option, i) => (
+                                <MenuItem key={i} value={option} selected={true}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div >
+                        <TextField
+                            select
+                            id="mandi_grade_hindi"
+                            label="Mandi Grade ( Hindi )"
+                            type="text"
+                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                            value={this.state.dataObj.mandi_grade_hindi || ""}
+                            onChange={this.handleStateChange.bind(this, 'mandi_grade_hindi')}>
+                            {mandiGradeHindiOptions.map((option, i) => (
+                                <MenuItem key={i} value={option} selected={true}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div >
+                        <TextField
+                            select
+                            id="apmc_req"
+                            label="APMC"
+                            type="text"
+                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                            value={this.state.dataObj.apmc_req}
+                            onChange={this.handleStateChange.bind(this, 'apmc_req')}>
+                            {[true, false].map((option, i) => (
+                                <MenuItem key={i} value={option} selected={true}>
+                                    {option ? "Yes" : "No"}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div >
+                        <TextField
+                            margin="dense"
+                            id="loc_lat"
+                            label="Latitude"
+                            type="text"
+                            style={{ marginRight: '2%' }}
+                            value={this.state.dataObj.loc_lat }
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                    </div>
+                    <div >
+                        <TextField
+                            margin="dense"
+                            id="loc_long"
+                            label="Longitude"
+                            type="text"
+                            style={{ marginRight: '2%' }}
+                            value={this.state.dataObj.loc_long }
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                    </div>
 
             </DialogContent>
             <DialogActions>

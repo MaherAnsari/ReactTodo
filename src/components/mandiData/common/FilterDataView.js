@@ -94,10 +94,19 @@ class FilterDataView extends React.Component {
                 district: this.state.districtid["value"],
                 query: this.state.searchedTxt
             }
-        if (data["state"] === "") {
+        if ( data["state"] === "") {
             delete data["state"];
         }
-        if (data["district"] === "") {
+
+        if(data["state"] === undefined){
+            delete data["state"];
+        }
+
+        if(data["district"] === undefined){
+            delete data["district"];
+        }
+
+        if ( data["district"] === "") {
             delete data["district"];
         }
         if (data["query"] === "") {
@@ -111,7 +120,7 @@ class FilterDataView extends React.Component {
         }
 
         if(Object.keys(data).length > 0){
-        this.props.onHeaderFilterChange(data);
+            this.props.onHeaderFilterChange(data);
         }
     }
 

@@ -17,7 +17,7 @@ import Badge from '@material-ui/core/Badge';
 const useStyles = makeStyles(theme => ({
     formControl: {
         margin: theme.spacing(1),
-        minWidth: 120,
+        minWidth: 300,
         // maxWidth: 300,
         width: "100%"
     },
@@ -45,15 +45,14 @@ const MenuProps = {
 };
 
 const filterOptions = [
-    "All",
-    "APMC Req ( Yes )",
-    "APMC Req ( No )",
+    "APMC Req",
     "Mandi Grade",
     "Mandi Grade (Hindi)"
 ];
 
-const mandiGradeFilterOption = ["A", "B", "C", "D", "E", "F"];
-const mandiGradeHindiFilterOption = ['क', 'ख', 'ग', 'घ', 'ङ', 'च'];
+const ampcReqOption = ["All", "Yes", "No"];
+const mandiGradeFilterOption = ["All", "A", "B", "C", "D", "E", "F"];
+const mandiGradeHindiFilterOption = ["All", 'क', 'ख', 'ग', 'घ', 'ङ', 'च'];
 
 function getStyles(name, personName, theme) {
     return {
@@ -69,13 +68,18 @@ export default function FilterOptionData(viewProps) {
     const classes = useStyles();
     const theme = useTheme();
     const [filterOptionsVal, setFilterOptionsVal] = React.useState([]);
+    const [ampcReqFilterVal, setAmpcReqFilterVal] = React.useState("");
     const [mandiGradeFilterVal, setMandiGradeFilterVal] = React.useState("");
     const [mandiGradeHindiFilterVal, setMandiGradeHindiFilterVal] = React.useState("");
 
-    const [filterPayloadObj , setFilterPayloadObj]  = React.useState({});
+    const [filterPayloadObj, setFilterPayloadObj] = React.useState({});
 
     const handleChange = event => {
         setFilterOptionsVal(event.target.value);
+    };
+
+    const handleChangeOfAmpcReqFilterVal = event => {
+        setAmpcReqFilterVal(event.target.value);
     };
 
     const handleChangeOfMandiGrade = event => {
@@ -103,50 +107,35 @@ export default function FilterOptionData(viewProps) {
     const handelFilterChosen = () => {
         var filterPayload = {}
 
-        if (filterOptionsVal.indexOf("APMC Req ( Yes )") > -1) {
-            filterPayload["apmc_req"] = true;
+        if (ampcReqFilterVal !== "" && ampcReqFilterVal !== "All") {
+            filterPayload["apmc_req"] = ampcReqFilterVal === "Yes" ? true : false;
         }
-        if (filterOptionsVal.indexOf("APMC Req ( No )") > -1) {
-            filterPayload["apmc_req"] = false;
+        if (mandiGradeFilterVal !== "" && mandiGradeFilterVal !== "All") {
+            filterPayload["mandi_grade"] = mandiGradeFilterVal.toString();
         }
-        if (filterOptionsVal.indexOf("Mandi Grade") > -1) {
-            var datamg = mandiGradeFilterVal;
-            if (datamg !== "") {
-                filterPayload["mandi_grade"] = datamg.toString();
-            } else {
-                alert("please select a Mandi Grade")
-                return;
-            }
+
+        if (mandiGradeHindiFilterVal !== "" && mandiGradeHindiFilterVal !== "All") {
+            filterPayload["mandi_grade_hindi"] = mandiGradeHindiFilterVal.toString();
         }
-        if (filterOptionsVal.indexOf("Mandi Grade (Hindi)") > -1) {
-            var datamgh = mandiGradeHindiFilterVal;
-            if (datamgh !== "") {
-                filterPayload["mandi_grade_hindi"] = datamgh.toString();
-            } else {
-                alert("please select a Mandi Grade ( Hindi )");
-                return;
-            }
-        }
-        handleChangeOffilterPayloadObj( filterPayload );
+        handleChangeOffilterPayloadObj(filterPayload);
         viewProps.onFilterAdded(filterPayload);
         setOpen(false);
-
     };
 
 
 
     return (
         <div>
-             <Badge className={classes.margin} badgeContent={Object.keys(filterPayloadObj).length} color="primary">
-            <Button onClick={handleClickOpen} style={{ lineHeight: "36px" }}>Filter</Button>
+            <Badge className={classes.margin} badgeContent={Object.keys(filterPayloadObj).length} color="primary">
+                <Button onClick={handleClickOpen} style={{ lineHeight: "36px" }}>Filter</Button>
             </Badge>
             <Dialog disableBackdropClick disableEscapeKeyDown open={open} onClose={handleClose}>
                 <DialogTitle>Select Filter</DialogTitle>
                 <DialogContent>
                     <form className={classes.container}>
                         <FormControl className={classes.formControl}>
-                            <InputLabel id="demo-mutiple-chip-label">Select Filters</InputLabel>
-                            <Select
+                            <InputLabel id="demo-mutiple-chip-label">Select ampc_req</InputLabel>
+                            {/* <Select
                                 labelId="demo-mutiple-chip-label1"
                                 id="demo-mutiple-chip"
                                 multiple
@@ -168,10 +157,21 @@ export default function FilterOptionData(viewProps) {
                                         {name}
                                     </MenuItem>
                                 ))}
+                            </Select> */}
+                            <Select
+                                labelId="demo-customized-select-label"
+                                id="demo-customized-select"
+                                value={ampcReqFilterVal}
+                                onChange={handleChangeOfAmpcReqFilterVal}
+                            // input={<BootstrapInput />}
+                            >
+                                {ampcReqOption.map(name => (
+                                    <MenuItem value={name}>{name}</MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
 
-                        {filterOptionsVal.indexOf("Mandi Grade") > -1 && <FormControl className={classes.formControl}>
+                        <FormControl className={classes.formControl}>
                             <InputLabel id="demo-mutiple-chip-label">Select Mandi Grades</InputLabel>
                             {/* <Select
                                 labelId="demo-mutiple-chip-label"
@@ -195,19 +195,19 @@ export default function FilterOptionData(viewProps) {
                                     </MenuItem>
                                 ))}
                             </Select> */}
-                               <Select
-                                    labelId="demo-customized-select-label"
-                                    id="demo-customized-select"
-                                    value={mandiGradeFilterVal}
-                                    onChange={handleChangeOfMandiGrade}
-                                    // input={<BootstrapInput />}
-                                    >
-                     {mandiGradeFilterOption.map(name => (
+                            <Select
+                                labelId="demo-customized-select-label"
+                                id="demo-customized-select"
+                                value={mandiGradeFilterVal}
+                                onChange={handleChangeOfMandiGrade}
+                            // input={<BootstrapInput />}
+                            >
+                                {mandiGradeFilterOption.map(name => (
                                     <MenuItem value={name}>{name}</MenuItem>
                                 ))}
-                                    </Select>
-                        </FormControl>}
-                        {filterOptionsVal.indexOf("Mandi Grade (Hindi)") > -1 && <FormControl className={classes.formControl}>
+                            </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel id="demo-mutiple-chip-label">Select Mandi Grades ( Hindi )</InputLabel>
                             {/* <Select
                                 labelId="demo-mutiple-chip-label"
@@ -231,18 +231,18 @@ export default function FilterOptionData(viewProps) {
                                     </MenuItem>
                                 ))}
                             </Select> */}
-                               <Select
-                                    labelId="demo-customized-select-label"
-                                    id="demo-customized-select2"
-                                    value={mandiGradeHindiFilterVal}
-                                    onChange={handleChangeOfMandiGradeHindi}
-                                    // input={<BootstrapInput />}
-                                    >
-                     {mandiGradeHindiFilterOption.map(name => (
+                            <Select
+                                labelId="demo-customized-select-label"
+                                id="demo-customized-select2"
+                                value={mandiGradeHindiFilterVal}
+                                onChange={handleChangeOfMandiGradeHindi}
+                            // input={<BootstrapInput />}
+                            >
+                                {mandiGradeHindiFilterOption.map(name => (
                                     <MenuItem value={name}>{name}</MenuItem>
                                 ))}
-                                    </Select>
-                        </FormControl>}
+                            </Select>
+                        </FormControl>
                     </form>
                 </DialogContent>
                 <DialogActions>
