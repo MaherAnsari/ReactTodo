@@ -87,7 +87,7 @@ class InfoDialog extends Component {
             requiredKey: ['fullname', 'mobile', 'role'],
             roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
-            isInfo:false,
+            isInfo: false,
             payload: {},
             stateList: [
                 "Andaman and Nicobar Islands",
@@ -156,12 +156,12 @@ class InfoDialog extends Component {
 
             // console.log(this.props.data);
 
-            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true,isInfo:this.props.isInfo });
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo });
         }
 
         // console.log(this.state.dataObj);
         //getting the Commodity Names for ten drop Down 
-        
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -185,33 +185,33 @@ class InfoDialog extends Component {
         }
     }
 
-    getCommodityNamesArray( data ){ 
-        try{ 
-            var listData = []; 
-            if(data){ 
-                for(var i = 0; i < data.length; i++){ 
-                    if(data[i]["name"]){ 
-                    listData.push(data[i]["name"] ) 
-                    } 
-                } 
-            } 
-            return listData; 
-        }catch( err ){ 
-            console.log( err ); 
-            return []; 
-        } 
-    } 
+    getCommodityNamesArray(data) {
+        try {
+            var listData = [];
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]["name"]) {
+                        listData.push(data[i]["name"])
+                    }
+                }
+            }
+            return listData;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    }
 
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-        if (id === "mobile" || id === "sec_mobile" || id === "third_mobile" ) { 
-            if (event.target.value.length <= 10) { 
-                data[id] = event.target.value; 
-            } 
-        } else if (id === "default_commodity" || id === "partner_names") { 
-            data[id] = event.target.value.split(','); 
-        } else { 
+        if (id === "mobile" || id === "sec_mobile" || id === "third_mobile") {
+            if (event.target.value.length <= 10) {
+                data[id] = event.target.value;
+            }
+        } else if (id === "default_commodity" || id === "partner_names") {
+            data[id] = event.target.value.split(',');
+        } else {
             data[id] = event.target.value;
         }
         this.setState({ dataObj: data });
@@ -359,7 +359,7 @@ class InfoDialog extends Component {
                         id="fullname"
                         label="Fullname"
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
                         value={this.state.dataObj.fullname}
                         disabled={this.state.isInfo}
                         onChange={this.handleChange.bind(this)}
@@ -420,7 +420,7 @@ class InfoDialog extends Component {
                         ))}
                     </TextField>
                 </div>
-              
+
                 <div style={{ display: 'flex' }}>
                     {/* <TextField
                         margin="dense"
@@ -438,12 +438,12 @@ class InfoDialog extends Component {
                         id="fixed-tags-demo"
                         disabled={this.state.isInfo}
                         options={this.state.commodityList}
-                        getOptionLabel={option => option.name}
+                        getOptionLabel={e => e}
                         defaultValue={this.state.dataObj.default_commodity}
                         onChange={this.handelAutoCompleteChange}
                         renderTags={(value, getTagProps) =>
                             value.map((option, index) => (
-                                <Chip label={option.name} {...getTagProps({ index })} />
+                                <Chip label={option} {...getTagProps({ index })} />
                             ))
                         }
                         style={{ width: "98%" }}
@@ -464,7 +464,7 @@ class InfoDialog extends Component {
                         label="Buisness Name"
                         disabled={this.state.isInfo}
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
                         value={this.state.dataObj.business_name}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
@@ -483,62 +483,62 @@ class InfoDialog extends Component {
                     />}
 
                 </div>
-                <div style={{ display: 'flex' }}> 
-                    <TextField 
-                        margin="dense" 
-                        id="sec_mobile" 
-                        label="Second Mobile" 
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
+                        id="sec_mobile"
+                        label="Second Mobile"
                         disabled={this.state.isInfo}
-                        type="number" 
-                        maxLength="10" 
-                        disabled={this.state.isUpdate} 
-                        style={{ marginRight: '2%', width: '48%' }} 
-                        value={this.state.dataObj.sec_mobile} 
-                        onChange={this.handleChange.bind(this)} 
-                        fullWidth 
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isUpdate}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.sec_mobile}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
                     />
-                     <TextField 
-                        margin="dense" 
-                        id="third_mobile" 
-                        label="Third Mobile" 
+                    <TextField
+                        margin="dense"
+                        id="third_mobile"
+                        label="Third Mobile"
                         disabled={this.state.isInfo}
-                        type="number" 
-                        maxLength="10" 
-                        disabled={this.state.isUpdate} 
-                        style={{ marginRight: '2%', width: '48%' }} 
-                        value={this.state.dataObj.third_mobile} 
-                        onChange={this.handleChange.bind(this)} 
-                        fullWidth 
-                    />  
-                    </div>
-                    <div style={{ display: 'flex' }}> 
-                    <TextField 
-                        margin="dense" 
-                        id="bijak_credit_limit" 
-                        label="bijak Credit Limit" 
-                        type="number" 
-                        maxLength="10" 
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isUpdate}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.third_mobile}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
+                        id="bijak_credit_limit"
+                        label="bijak Credit Limit"
+                        type="number"
+                        maxLength="10"
                         disabled={this.state.isInfo}
                         // disabled={this.state.isUpdate} 
-                        style={{ marginRight: '2%', width: '48%' }} 
-                        value={this.state.dataObj.bijak_credit_limit} 
-                        onChange={this.handleChange.bind(this)} 
-                        fullWidth 
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.bijak_credit_limit}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
                     />
- 
-                    <TextField 
-                        margin="dense" 
-                        id="partner_names" 
-                        label="Partner Name" 
+
+                    <TextField
+                        margin="dense"
+                        id="partner_names"
+                        label="Partner Name"
                         disabled={this.state.isInfo}
-                        type="text" 
-                        style={{ marginRight: '2%', width: '48%' }} 
-                        value={this.state.dataObj.partner_names} 
-                        onChange={this.handleChange.bind(this)} 
-                        fullWidth 
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.partner_names}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
                     />
- 
-                </div> 
+
+                </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
@@ -612,7 +612,7 @@ class InfoDialog extends Component {
 
             </DialogContent>
             <DialogActions>
-             {!this.state.isInfo &&   <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
+                {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
         </Dialog>
