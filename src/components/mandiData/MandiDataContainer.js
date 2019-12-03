@@ -47,7 +47,7 @@ class MandiDataContainer extends React.Component {
     }
 
     async componentDidMount() {
-        this.getData('agra');
+        this.getData('haryana');
 
     }
 
@@ -65,7 +65,7 @@ class MandiDataContainer extends React.Component {
 
     handleClose(event) {
         this.setState({ open: false, showAddModal: false, dataList: null });
-        this.getData("agra");
+        this.getData("haryana");
     }
 
     onModalCancel(event) {

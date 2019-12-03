@@ -135,7 +135,7 @@ class MandiListTable extends Component {
     this.setState({ showConfirmDialog: false, alertData: {} });
     if (resp.data.status === 1) {
       alert("Succesfully Deleted");
-      this.getData({ "query": "a" });
+      this.getData({ "query": "haryana" });
     } else {
       alert("Opps there was an error, while deleted");
     }
