@@ -28,7 +28,7 @@ const styles = theme => ({
     dialogPaper: {
         minWidth: '80%',
         // maxWidth: '700px',
-        minHeight: '750px',
+        minHeight: '700px',
         // maxHeight: '500px'
     },
     tableCell: {

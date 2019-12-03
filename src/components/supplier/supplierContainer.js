@@ -7,6 +7,8 @@ import  supplierService  from './../../app/supplierService/supplierService';
 import Loader from '../common/Loader';
 import SupplierTable from './component/supplierTable';
 import InfoDialog from '../common/InfoDialog';
+import commodityService from './../../app/commodityService/commodityService';
+
 const styles = theme => ({
     root: {
         width: '100%',

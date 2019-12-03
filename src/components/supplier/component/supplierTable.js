@@ -16,6 +16,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
+import HowToRegIcon from '@material-ui/icons/HowToReg';
+import InfoDialog from '../../common/InfoDialog';
 
 const theme = createMuiTheme({
     overrides: {
@@ -74,6 +76,13 @@ const styles = theme => ({
         fontSize: '15px',
         maxWidth: 'none',
     },
+    info:{
+        fontSize: '18px',
+        marginLeft: '8px',
+        color: '#ee4b53',
+        cursor: 'pointer',
+        // float:'right'
+    }
 });
 
 
@@ -151,13 +160,15 @@ class SupplierTable extends Component {
     onAddAccount = (event) => {
         this.setState({ anchorEl: null });
     }
-
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
         this.props.onClose();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
+    }
+    onInfoClick = (info,event)=>{
+        this.setState({showUserModal: true, open: true,userData:info ,isInfo:true});
     }
 
 
@@ -232,10 +243,12 @@ class SupplierTable extends Component {
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
                                                 </Tooltip>
-
+                                                <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                               
+                                            <i onClick={this.onInfoClick.bind(this,row)} className={"fa fa-info-circle "+classes.info} aria-hidden="true"></i>
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -243,6 +256,12 @@ class SupplierTable extends Component {
                             </TableBody>
                         </Table>
                     </div>
+                    {this.state.showUserModal ? <InfoDialog openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        data={this.state.userData}
+                        isInfo={this.state.isInfo}
+                        commodityList={ this.props.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                             <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>

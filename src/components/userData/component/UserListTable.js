@@ -19,10 +19,11 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Icon } from "@material-ui/core";
-// import UserDialog from './UserDialog';
+import UserDialog from './UserDialog';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
 import OrderTable from '../../common/OrderTable';
+import HowToRegIcon from '@material-ui/icons/HowToReg';
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -80,6 +81,13 @@ const styles = theme => ({
         fontSize: '18px',
         maxWidth: '800px',
     },
+    info:{
+        fontSize: '20px',
+        marginRight: '8px',
+        color: '#fff250',
+        cursor: 'pointer',
+        float:'right'
+    }
 });
 
 
@@ -101,6 +109,8 @@ class UserListTable extends Component {
             userData: {},
             userId: null,
             payload: null,
+            showOrderModal:false,
+            isInfo:false
 
             // commodityList:["dd"]
 
@@ -159,6 +169,9 @@ class UserListTable extends Component {
     onEditUserClick = (event) => {
         this.setState({ anchorEl: null, showUserModal: true, open: true });
     }
+    onOrderDetailClick = (event) =>{
+        this.setState({ anchorEl: null, showOrderModal: true, open: true });
+    }
     // DisableUserClick = (obj, event) => {
     //     console.log(obj);
     //     if(obj.active){
@@ -193,11 +206,11 @@ class UserListTable extends Component {
     }
 
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
         this.props.onClose();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
     }
 
 
@@ -245,6 +258,10 @@ class UserListTable extends Component {
             return "#757575";
         }
     }
+    onInfoClick = (info,event)=>{
+        this.setState({showUserModal: true, open: true,userData:info ,isInfo:true});
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -304,7 +321,7 @@ class UserListTable extends Component {
                                                     <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join() : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ background: this.getBackgroundColor(row) }}>{this.getRole(row)}</TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ background: this.getBackgroundColor(row) }}>{this.getRole(row)} <i onClick={this.onInfoClick.bind(this,row)} className={"fa fa-info-circle "+classes.info} aria-hidden="true"></i></TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                                 <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
@@ -315,7 +332,9 @@ class UserListTable extends Component {
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
                                                 </Tooltip>
-
+                                                <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
                                                 <React.Fragment>
@@ -335,7 +354,7 @@ class UserListTable extends Component {
                                                         onClose={this.handleAnchorMenuClose.bind(this)}
                                                     >
                                                         <MenuItem
-                                                            onClick={this.onEditUserClick.bind(this)}
+                                                            onClick={this.onOrderDetailClick.bind(this)}
                                                             style={{ fontFamily: "'Montserrat', sans-serif" }}>
 
                                                             <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
@@ -345,12 +364,12 @@ class UserListTable extends Component {
                         </MenuItem>
                                                       
                                                         <MenuItem
-                                                            onClick={this.onAddAccount.bind(this)}
+                                                            onClick={this.onEditUserClick.bind(this)}
                                                             style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                                             <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
                                                                 send
                             </Icon>
-                                                            Add Account
+                                                            Edit User
                         </MenuItem>
                                                         <MenuItem
                                                             onClick={this.onAddAccount.bind(this)}
@@ -376,11 +395,12 @@ class UserListTable extends Component {
                             {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                     </div>}
-                    {/* {this.state.showUserModal ? <UserDialog openModal={this.state.open}
+                    {this.state.showUserModal ? <UserDialog openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
+                        isInfo={this.state.isInfo}
                         commodityList={ this.props.commodityList}
-                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""} */}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
                             dialogText={this.state.dialogText}
@@ -388,7 +408,7 @@ class UserListTable extends Component {
                             show={this.state.showConfirmDialog}
                             onConfirmed={this.handelConfirmUpdate}
                             onCanceled={this.handelCancelUpdate} /> : ""}
-                    {this.state.showUserModal ? <OrderTable openModal={this.state.open}
+                    {this.state.showOrderModal ? <OrderTable openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
