@@ -447,7 +447,7 @@ class UserDialog extends Component {
                         onChange={this.handelAutoCompleteChange} 
                         renderTags={(value, getTagProps) => 
                             value.map((option, index) => ( 
-                                <Chip label={option} {...getTagProps({ index })} /> 
+                                <Chip disabled={this.state.isInfo} label={option} {...getTagProps({ index })} /> 
                             )) 
                         } 
                         style={{ width: "98%" }} 

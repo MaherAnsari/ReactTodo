@@ -219,6 +219,7 @@ class InfoDialog extends Component {
 
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
+        console.log(event);
         let data = this.state.dataObj;
         if (values.length > 0) {
             for (var i = 0; i < values.length; i++) {
@@ -443,7 +444,7 @@ class InfoDialog extends Component {
                         onChange={this.handelAutoCompleteChange}
                         renderTags={(value, getTagProps) =>
                             value.map((option, index) => (
-                                <Chip label={option} {...getTagProps({ index })} />
+                                <Chip disabled={this.state.isInfo} label={option} {...getTagProps({ index })} />
                             ))
                         }
                         style={{ width: "98%" }}

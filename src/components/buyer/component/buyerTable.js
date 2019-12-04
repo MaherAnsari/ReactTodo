@@ -18,6 +18,8 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
 import HowToRegIcon from '@material-ui/icons/HowToReg';
 import InfoDialog from '../../common/InfoDialog';
+import UserFilterDataView from './../../common/UserFilterDataView';
+import Utils from '../../../app/common/utils';
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -101,7 +103,8 @@ class BrokerTable extends Component {
             open: false,
             userData: {},
             userId: null,
-            payload: null
+            payload: null,
+            stateList: this.getStateData()
 
         }
     }
@@ -112,11 +115,23 @@ class BrokerTable extends Component {
         }
     }
 
-    async handelFilter(event) {
-        let searchedTxt = event.target.value;
+    getStateData() {
+        let data = Utils.getStateData();
+        var optionsData = [];
+        if (data) {
+          for (var i = 0; i < data.length; i++) {
+            optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
+          }
+        }
+        return optionsData;
+      }
+
+    async handelFilter(data) {
+        // let searchedTxt = event.target.value;
         // console.log(searchedTxt);
+        data['role'] = 'ca';
         let rows = [];
-        let resp = await buyerService.serchUser(searchedTxt);
+        let resp = await buyerService.serchUser(data);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             rows = resp.data.result.data;
@@ -170,7 +185,7 @@ class BrokerTable extends Component {
         this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
     }
     onInfoClick = (info,event)=>{
-        this.setState({showUserModal: true, open: true,userData:info ,isInfo:true});
+        this.setState({showUserModal: true, open: true,userData:JSON.parse(JSON.stringify(info)) ,isInfo:true});
     }
 
 
@@ -186,13 +201,13 @@ class BrokerTable extends Component {
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
                     <div style={{ display: 'flex' }}>
 
-                        <div style={{ width: '40%', marginLeft: '58%' }}>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="search-input"
-                                onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
-                        </div>
+                    <UserFilterDataView
+                            stateList={this.state.stateList}
+                            //   districtList={this.state.districtList}
+                            //   districtData={Utils.getDistrictData()}
+                            onHeaderFilterChange={this.handelFilter.bind(this)}
+                        />
+
                     </div>
                     <div >
                         <Table className='table-body'>

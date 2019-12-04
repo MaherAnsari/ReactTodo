@@ -6,8 +6,10 @@ import Button from '@material-ui/core/Button';
 import ReactDOM from 'react-dom';
 import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
-import FilterOptionData from "./FilterOptionData";
-import mandiDataService from '../../../app/mandiDataService/mandiDataService';
+import mandiDataService from '../../app/mandiDataService/mandiDataService';
+
+// import FilterOptionData from "./FilterOptionData";
+
 
 const styles = theme => ({
     root: {
@@ -48,26 +50,26 @@ const styles = theme => ({
         fontFamily: "lato",
         fontSize: "14px",
         color: "#3e5569"
-       
+
     }
 });
 
-class FilterDataView extends React.Component {
+class UserFilterDataView extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             stateid: [],
             districtid: [],
-            districtData:[],
             labelWidth: 0,
+            districtData:[],
             configData: [
                 { name: "State", id: "stateid", options: this.props.stateList },
                 { name: "District", id: "districtid", options: [] },
                 { name: "Search", id: "searchInput", options: {} }
             ],
-        searchedTxt:"",
-        filterOptionData: {}
+            searchedTxt: "",
+            filterOptionData: {}
         }
     }
 
@@ -94,47 +96,42 @@ class FilterDataView extends React.Component {
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ districtData: resp.data.result.data });
         }
+
+
+
     }
+
 
     getDataBasedOnFilters = () => {
         let data = {
-                state: this.state.stateid["value"],
-                district: this.state.districtid["value"],
-                query: this.state.searchedTxt
-            }
-        if ( data["state"] === "") {
+            state: this.state.stateid["value"],
+            district: this.state.districtid["value"],
+            searchVal: this.state.searchedTxt
+        }
+        if (data["state"] === "") {
             delete data["state"];
         }
-
-        if(data["state"] === undefined){
-            delete data["state"];
-        }
-
-        if(data["district"] === undefined){
+        if (data["district"] === "") {
             delete data["district"];
         }
-
-        if ( data["district"] === "") {
-            delete data["district"];
-        }
-        if (data["query"] === "") {
-            delete data["query"];
+        if (data["searchVal"] === "") {
+            delete data["searchVal"];
         }
 
-        if(Object.keys(this.state.filterOptionData).length > 0){
-            for( var keys in this.state.filterOptionData){
+        if (Object.keys(this.state.filterOptionData).length > 0) {
+            for (var keys in this.state.filterOptionData) {
                 data[keys] = this.state.filterOptionData[keys];
             }
         }
 
-        if(Object.keys(data).length > 0){
+        if (Object.keys(data).length > 0) {
             this.props.onHeaderFilterChange(data);
         }
     }
 
     handelSearchInputChange = (event) => {
-       this.setState({searchedTxt :  event.target.value || "a" })
-        console.log(event.target.value );
+        this.setState({ searchedTxt: event.target.value || "a" })
+        console.log(event.target.value);
     }
 
 
@@ -160,10 +157,6 @@ class FilterDataView extends React.Component {
         } catch (err) {
             console.log(err);
         }
-    }
-
-    onFilterDataAdded( data ){
-      this.setState({filterOptionData : data })
     }
 
     render() {
@@ -205,10 +198,8 @@ class FilterDataView extends React.Component {
                                     }
                                 </React.Fragment>
                             ))}
-                            <FilterOptionData
-                            onFilterAdded={this.onFilterDataAdded.bind(this)}/>
                             <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }} onClick={this.getDataBasedOnFilters.bind(this)}>
-                                    Search
+                                Search
                                 </Button>
                         </form>
                     }
@@ -220,8 +211,8 @@ class FilterDataView extends React.Component {
     }
 }
 
-FilterDataView.propTypes = {
+UserFilterDataView.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(FilterDataView);
+export default withStyles(styles)(UserFilterDataView);
