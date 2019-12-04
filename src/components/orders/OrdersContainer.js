@@ -46,7 +46,7 @@ class OrdersContainer extends React.Component {
             suppliersList: [],
             orderedListData: undefined,
             showLoader: false,
-            datePayloads:{ "startDate": "", "endDate": "" }
+            datePayloads: { "startDate": "", "endDate": "" }
         }
         this.ismounted = true;
     }
@@ -108,16 +108,16 @@ class OrdersContainer extends React.Component {
     }
 
     async getSearchedOrderListData(params) {
-       
+
         // { "startDate": "", "endDate": "" }
-        if( this.state.datePayloads["startDate"] !== ""){
-            params["startDate"] =  this.state.datePayloads["startDate"];
+        if (this.state.datePayloads["startDate"] !== "") {
+            params["startDate"] = this.state.datePayloads["startDate"];
         }
-        if( this.state.datePayloads["endDate"] !== ""){
-            params["endDate"] =  this.state.datePayloads["endDate"];
+        if (this.state.datePayloads["endDate"] !== "") {
+            params["endDate"] = this.state.datePayloads["endDate"];
         }
 
-        
+
         this.setState({ showLoader: true });
         try {
             let resp = await orderService.getOrderListData(params);
@@ -139,8 +139,7 @@ class OrdersContainer extends React.Component {
     }
 
     onDateChaged(data) {
-console.log( data )
-this.setState({ datePayloads : data});
+        this.setState({ datePayloads: data });
     }
 
     render() {

@@ -16,7 +16,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
-
+import HowToRegIcon from '@material-ui/icons/HowToReg';
+import InfoDialog from '../../common/InfoDialog';
+import UserFilterDataView from './../../common/UserFilterDataView';
+import Utils from '../../../app/common/utils';
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -73,6 +76,13 @@ const styles = theme => ({
         fontSize: '15px',
         maxWidth: 'none',
     },
+    info:{
+        fontSize: '18px',
+        marginLeft: '8px',
+        color: '#ee4b53',
+        cursor: 'pointer',
+        // float:'right'
+    }
 });
 
 
@@ -93,7 +103,9 @@ class BrokerTable extends Component {
             open: false,
             userData: {},
             userId: null,
-            payload: null
+            showOrderModal:false,
+            payload: null,
+            stateList: this.getStateData()
 
         }
     }
@@ -104,11 +116,23 @@ class BrokerTable extends Component {
         }
     }
 
-    async handelFilter(event) {
-        let searchedTxt = event.target.value;
+    
+    getStateData() {
+        let data = Utils.getStateData();
+        var optionsData = [];
+        if (data) {
+          for (var i = 0; i < data.length; i++) {
+            optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
+          }
+        }
+        return optionsData;
+      }
+    async handelFilter(data) {
+        // let searchedTxt = event.target.value;
         // console.log(searchedTxt);
+        data['role'] = 'broker';
         let rows = [];
-        let resp = await brokerService.serchUser(searchedTxt);
+        let resp = await brokerService.serchUser(data);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             rows = resp.data.result.data;
@@ -153,14 +177,17 @@ class BrokerTable extends Component {
         this.setState({ anchorEl: null });
     }
 
+ 
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
         this.props.onClose();
     }
-    // onModalCancel(event) {
-    //     this.setState({ open: false, showUserModal: false });
-    // }
-
+    onModalCancel(event) {
+        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
+    }
+    onInfoClick = (info,event)=>{
+        this.setState({showUserModal: true, open: true,userData:JSON.parse(JSON.stringify(info)) ,isInfo:true});
+    }
 
  
     handelCancelUpdate = () => {
@@ -173,21 +200,21 @@ class BrokerTable extends Component {
                 <Paper className={classes.root} >
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
                     <div style={{ display: 'flex' }}>
+               
+                        <UserFilterDataView
+                            stateList={this.state.stateList}
+                            //   districtList={this.state.districtList}
+                            //   districtData={Utils.getDistrictData()}
+                            onHeaderFilterChange={this.handelFilter.bind(this)}
+                        />
 
-                        <div style={{ width: '40%', marginLeft: '58%' }}>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="search-input"
-                                onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
-                        </div>
                     </div>
                     <div >
                         <Table className='table-body'>
                             <TableHead>
                                 <TableRow  >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '50px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '90px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                     <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>
@@ -232,10 +259,12 @@ class BrokerTable extends Component {
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
                                                 </Tooltip>
-
+                                                <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                               
+                                            <i onClick={this.onInfoClick.bind(this,row)} className={"fa fa-info-circle "+classes.info} aria-hidden="true"></i>
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -249,6 +278,12 @@ class BrokerTable extends Component {
                             {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                     </div>}
+                    {this.state.showUserModal ? <InfoDialog openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        data={this.state.userData}
+                        isInfo={this.state.isInfo}
+                        commodityList={ this.props.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
                             dialogText={this.state.dialogText}

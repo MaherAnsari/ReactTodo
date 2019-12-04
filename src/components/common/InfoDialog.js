@@ -87,6 +87,7 @@ class InfoDialog extends Component {
             requiredKey: ['fullname', 'mobile', 'role'],
             roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
+            isInfo: false,
             payload: {},
             stateList: [
                 "Andaman and Nicobar Islands",
@@ -136,6 +137,7 @@ class InfoDialog extends Component {
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
     componentDidMount() {
+        this.getCommodityNames();
         if (this.props.data) {
             let data = this.props.data;
             let arr = ['state', 'district', 'locality', 'business_name', 'business_name_hindi', 'fullname_hindi']
@@ -154,12 +156,12 @@ class InfoDialog extends Component {
 
             // console.log(this.props.data);
 
-            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true });
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo });
         }
 
         // console.log(this.state.dataObj);
         //getting the Commodity Names for ten drop Down 
-        this.getCommodityNames()
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -173,7 +175,7 @@ class InfoDialog extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: resp.data.result.data });
+                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
             } else {
                 this.setState({ commodityList: [] });
             }
@@ -183,16 +185,31 @@ class InfoDialog extends Component {
         }
     }
 
-
+    getCommodityNamesArray(data) {
+        try {
+            var listData = [];
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]["name"]) {
+                        listData.push(data[i]["name"])
+                    }
+                }
+            }
+            return listData;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    }
 
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-        if (id === "mobile") {
+        if (id === "mobile" || id === "sec_mobile" || id === "third_mobile") {
             if (event.target.value.length <= 10) {
                 data[id] = event.target.value;
             }
-        } else if (id === "default_commodity") {
+        } else if (id === "default_commodity" || id === "partner_names") {
             data[id] = event.target.value.split(',');
         } else {
             data[id] = event.target.value;
@@ -202,6 +219,7 @@ class InfoDialog extends Component {
 
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
+        console.log(event);
         let data = this.state.dataObj;
         if (values.length > 0) {
             for (var i = 0; i < values.length; i++) {
@@ -263,7 +281,7 @@ class InfoDialog extends Component {
         let reqArr = this.state.requiredKey;
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
-                alert("All fields are required");
+                alert("Please check all required field");
                 return;
             }
         }
@@ -310,6 +328,7 @@ class InfoDialog extends Component {
                         label="Mobile"
                         type="number"
                         maxLength="10"
+                        required
                         disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: '98%' }}
                         value={this.state.dataObj.mobile}
@@ -341,9 +360,11 @@ class InfoDialog extends Component {
                         id="fullname"
                         label="Fullname"
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
                         value={this.state.dataObj.fullname}
+                        disabled={this.state.isInfo}
                         onChange={this.handleChange.bind(this)}
+                        required
                         fullWidth
                     />
 
@@ -352,6 +373,7 @@ class InfoDialog extends Component {
                         id="fullname_hindi"
                         label="Fullname (Hindi)"
                         type="text"
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.fullname_hindi}
                         onChange={this.handleChange.bind(this)}
@@ -367,6 +389,7 @@ class InfoDialog extends Component {
                         margin="dense"
                         id="state"
                         label="State"
+                        disabled={this.state.isInfo}
                         type="text"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.state}
@@ -384,6 +407,7 @@ class InfoDialog extends Component {
                         id="district"
                         label="District"
                         type="text"
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', marginTop: '5px', width: '48%' }}
                         value={this.state.dataObj.district}
                         onChange={this.handleStateChange.bind(this, 'district')}
@@ -397,7 +421,7 @@ class InfoDialog extends Component {
                         ))}
                     </TextField>
                 </div>
-              
+
                 <div style={{ display: 'flex' }}>
                     {/* <TextField
                         margin="dense"
@@ -413,13 +437,14 @@ class InfoDialog extends Component {
                     <Autocomplete
                         multiple
                         id="fixed-tags-demo"
+                        disabled={this.state.isInfo}
                         options={this.state.commodityList}
-                        getOptionLabel={option => option.name}
+                        getOptionLabel={e => e}
                         defaultValue={this.state.dataObj.default_commodity}
                         onChange={this.handelAutoCompleteChange}
                         renderTags={(value, getTagProps) =>
                             value.map((option, index) => (
-                                <Chip label={option.name} {...getTagProps({ index })} />
+                                <Chip disabled={this.state.isInfo} label={option} {...getTagProps({ index })} />
                             ))
                         }
                         style={{ width: "98%" }}
@@ -438,8 +463,9 @@ class InfoDialog extends Component {
                         margin="dense"
                         id="business_name"
                         label="Buisness Name"
+                        disabled={this.state.isInfo}
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }}
+                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
                         value={this.state.dataObj.business_name}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
@@ -449,6 +475,7 @@ class InfoDialog extends Component {
                         margin="dense"
                         id="business_name_hindi"
                         label="Buisness Name (Hindi)"
+                        disabled={this.state.isInfo}
                         type="text"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.business_name_hindi}
@@ -460,9 +487,66 @@ class InfoDialog extends Component {
                 <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
+                        id="sec_mobile"
+                        label="Second Mobile"
+                        disabled={this.state.isInfo}
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isUpdate}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.sec_mobile}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                    <TextField
+                        margin="dense"
+                        id="third_mobile"
+                        label="Third Mobile"
+                        disabled={this.state.isInfo}
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isUpdate}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.third_mobile}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
+                        id="bijak_credit_limit"
+                        label="bijak Credit Limit"
+                        type="number"
+                        maxLength="10"
+                        disabled={this.state.isInfo}
+                        // disabled={this.state.isUpdate} 
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.bijak_credit_limit}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+
+                    <TextField
+                        margin="dense"
+                        id="partner_names"
+                        label="Partner Name"
+                        disabled={this.state.isInfo}
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.partner_names}
+                        onChange={this.handleChange.bind(this)}
+                        fullWidth
+                    />
+
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <TextField
+                        margin="dense"
                         id="locality"
                         label="Locality"
                         type="text"
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.locality}
                         onChange={this.handleChange.bind(this)}
@@ -473,6 +557,7 @@ class InfoDialog extends Component {
                         id="exposure_cutoff_limit"
                         label="Cutoff Limit"
                         type="number"
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '23%' }}
                         value={this.state.dataObj.exposure_cutoff_limit}
                         onChange={this.handleChange.bind(this)}
@@ -483,6 +568,7 @@ class InfoDialog extends Component {
                         id="rating"
                         label="Rating"
                         type="number"
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '23%' }}
                         value={this.state.dataObj.rating}
                         onChange={this.handleChange.bind(this)}
@@ -500,6 +586,7 @@ class InfoDialog extends Component {
                             checked={this.state.dataObj.bijak_verified}
                             onClick={this.handleCheckbox.bind(this, "bijak_verified")}
                             tabIndex={-1}
+                            disabled={this.state.isInfo}
                             disableRipple
                         />Is Bijak Verified</div>
 
@@ -509,6 +596,7 @@ class InfoDialog extends Component {
                             checked={this.state.dataObj.bijak_assured}
                             onClick={this.handleCheckbox.bind(this, "bijak_assured")}
                             tabIndex={-1}
+                            disabled={this.state.isInfo}
                             disableRipple
                         />Is Bijak Assured</div>
                     <div style={{ marginRight: '2%', width: '38%' }}>
@@ -517,6 +605,7 @@ class InfoDialog extends Component {
                             checked={this.state.dataObj.active}
                             onClick={this.handleCheckbox.bind(this, "active")}
                             tabIndex={-1}
+                            disabled={this.state.isInfo}
                             disableRipple
                         />Is User Enable</div>
                 </div>
@@ -524,7 +613,7 @@ class InfoDialog extends Component {
 
             </DialogContent>
             <DialogActions>
-                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>
+                {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
         </Dialog>

@@ -7,10 +7,11 @@ import Loader from '../common/Loader';
 import BrokerTable from './component/brokerTable';
 import brokerService from '../../app/brokerService/brokerService';
 import InfoDialog from '../common/InfoDialog';
+import commodityService from './../../app/commodityService/commodityService';
 
 const styles = theme => ({
     root: {
-        width: '98%',
+        width: '100%',
         // marginTop: '30px',
         // height: '88vh',
         overflow: 'auto',
@@ -42,7 +43,8 @@ class BrokerContainer extends React.Component {
             open: false,
             showAddModal:false,
             dataList:null,
-            showLoader:true
+            showLoader:true,
+            commodityList:[]
           
         };
     }
@@ -51,7 +53,7 @@ class BrokerContainer extends React.Component {
 
     async componentDidMount() {
        this.getData();
-    
+    this.getCommodityNames();
     }
 
    async getData(){
@@ -64,6 +66,21 @@ class BrokerContainer extends React.Component {
        
     }
    }
+
+   async getCommodityNames() {
+    try {
+        let resp = await commodityService.getCommodityTable();
+        if (resp.data.status === 1 && resp.data.result) {
+            this.setState({ commodityList: resp.data.result.data });
+        } else {
+            this.setState({ commodityList: [] });
+        }
+    } catch (err) {
+        console.error(err)
+        this.setState({ commodityList: [] });
+    }
+}
+
     handleClose(event) {
         this.setState({open :false,showAddModal:false});
         this.getData();
@@ -81,7 +98,7 @@ class BrokerContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <BrokerTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
+                       <BrokerTable  tableData={this.state.dataList} commodityList={this.state.commodityList} onClose={this.getData.bind(this)}   /> 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD BROKER</p></div>
                     </div>
@@ -89,6 +106,7 @@ class BrokerContainer extends React.Component {
                 </Card>    :<Loader />}        
 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
 role="broker"
+commodityList={this.state.commodityList}
 onEditModalClosed={this.handleClose.bind(this)}
 onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
 

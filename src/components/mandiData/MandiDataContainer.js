@@ -4,17 +4,17 @@ import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import MandiListTable from './component/MandiListTable';
-import  mandiDataService  from './../../app/mandiDataService/mandiDataService';
+import mandiDataService from './../../app/mandiDataService/mandiDataService';
 import Loader from '../common/Loader';
 import DataUploader from './component/dataUploader';
 const styles = theme => ({
     root: {
-        width: '98%',
+        width: '100%',
         // marginTop: '30px',
         // height: '88vh',
         overflow: 'auto',
         fontFamily: 'Lato !important',
-        maxWidth:'1200px'
+        maxWidth: '100%'
     },
     card: {
         maxWidth: '100%',
@@ -27,73 +27,72 @@ const styles = theme => ({
         alignTtems: 'center',
         display: '-webkit-inline-box'
     },
-  
+
 
 });
 
 
 
 class MandiDataContainer extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            showAddModal:false,
-            dataList:null,
-            showLoader:true
-          
+            showAddModal: false,
+            dataList: null,
+            showLoader: true
+
         };
     }
 
-    
-
     async componentDidMount() {
-       this.getData('a');
-    
+        this.getData('haryana');
+
     }
-    async getData(txt){
-        // let rows = [];
-        let resp = await mandiDataService.getMandiData(txt);
-        // console.log(resp.data);
-        if (resp.data.status === 1 && resp.data.result) {
-            this.setState({ dataList: resp.data.result.data });
-    
-    
+
+    async getData(txt) {
+        try {
+            let params = { "query": txt }
+            let resp = await mandiDataService.getMandiSearchData(params);
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ dataList: resp.data.result.data });
+            }
+        } catch (err) {
+            console.log(err)
         }
-     
-      }
+    }
 
- 
-    
-   
     handleClose(event) {
-        this.setState({open :false,showAddModal:false,dataList:null});
-        this.getData('a');
-    }
-    onModalCancel(event){
-        this.setState({open :false,showAddModal:false});
+        this.setState({ open: false, showAddModal: false, dataList: null });
+        this.getData("haryana");
     }
 
-   
+    onModalCancel(event) {
+        this.setState({ open: false, showAddModal: false });
+    }
+
     handleClickOpen(event) {
-        this.setState({ showAddModal:true,open: true });
+        this.setState({ showAddModal: true, open: true });
     }
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
+
                 {this.state.dataList ? <Card className={classes.card}>
-                       <MandiListTable   tableData={this.state.dataList}   /> 
-                       <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD LOCATION</p></div>
+                    <MandiListTable tableData={this.state.dataList} />
+                    <div className="updateBtndef">
+                        <div className="updateBtnFixed" style={{ display: 'flex', right: "50px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD LOCATION</p></div>
                     </div>
 
-                </Card>    :<Loader />}        
-        {/* {this.state.showLoader ?<Loader />:""} */}
-        {this.state.showAddModal ? <DataUploader openModal={this.state.open}
-                     onEditModalClosed={this.handleClose.bind(this)}
-                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
+                </Card> : <Loader />}
+
+                {/* {this.state.showLoader ?<Loader />:""} */}
+                {this.state.showAddModal ?
+                    <DataUploader openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
             </div>
         );

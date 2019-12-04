@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import CommodityTable from './component/commodityTable';
 import  commodityService  from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
-import { IoTThingsGraph } from 'aws-sdk';
+// import { IoTThingsGraph } from 'aws-sdk';
 
 const styles = theme => ({
     root: {

@@ -120,7 +120,7 @@ class UserDialog extends Component {
                                 labelId="simple-select-label-for-days"
                                 id="select_days"
                                 value={this.state.selectedDays}
-                                style={{ color: "#ffffff"}}
+                                style={{ color: "#000",backgroundColor:'#fff'}}
                                 onChange={ (event )=> this.onNumberOfDaysChanged( event )}
                             >
                             {this.state.noOfDaysData.map((daysOption, i) => 

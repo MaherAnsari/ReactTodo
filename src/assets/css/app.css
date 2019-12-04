@@ -1067,3 +1067,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .market-val{
   font-size: 16px !important;
 }
+
+/* css for Payment container Supporting Invoice added @30-11-19 starts here */
+.supportingimgCard {
+  border-radius: 10px;
+  margin-top: 12px;
+  -webkit-box-shadow: 0px 0px 12px 6px rgba(110,109,110,0.86);
+  -moz-box-shadow: 0px 0px 12px 6px rgba(110,109,110,0.86);
+  box-shadow: 0px 0px 12px 6px rgba(110,109,110,0.86);
+}
+/* css for Payment container Supporting Invoice added @30-11-19 Ends here */

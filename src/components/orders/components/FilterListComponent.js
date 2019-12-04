@@ -120,7 +120,7 @@ class FilterAreaComponent extends React.Component {
             if( type === "supplierid"){
                 resp = await supplierService.serchUser(inputValue);
             }
-         
+        
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = [];
                 if( type === "brokerid"){

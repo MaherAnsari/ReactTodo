@@ -69,7 +69,6 @@ const styles = theme => ({
     maxWidth: 'none',
   },
   toggle:{
-    marginTop:'5px',
     fontSize:'15px',
     color:'#000'
   }
@@ -202,14 +201,14 @@ class CommodityTable extends Component {
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell>
-                      <p style={{display:'flex'}}> 
+                      <TableCell > 
                       <Switch
                         checked={row.active}
                         onChange={this.handleChange.bind(this,row)}
                         value={row.active}
                         color="primary"
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
-                      /><span className={classes.toggle}>Active</span></p>
+                      /><span className={classes.toggle}>Active</span></TableCell>
                     </TableRow>
                   );
                 })}

@@ -22,7 +22,10 @@ import { Icon } from "@material-ui/core";
 import UserDialog from './UserDialog';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
-
+import OrderTable from '../../common/OrderTable';
+import HowToRegIcon from '@material-ui/icons/HowToReg';
+import Utils from '../../../app/common/utils';
+import UserFilterDataView from './../../common/UserFilterDataView';
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -57,8 +60,8 @@ const styles = theme => ({
         paddingRight: '4px',
         textAlign: 'center',
         maxWidth: '200px',
-        padding:'12px',
-        maxHeight:'40px'
+        padding: '12px',
+        maxHeight: '40px'
     },
     titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
     defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -80,6 +83,13 @@ const styles = theme => ({
         fontSize: '18px',
         maxWidth: '800px',
     },
+    info: {
+        fontSize: '20px',
+        marginRight: '8px',
+        color: '#fff250',
+        cursor: 'pointer',
+        float: 'right'
+    }
 });
 
 
@@ -101,6 +111,9 @@ class UserListTable extends Component {
             userData: {},
             userId: null,
             payload: null,
+            showOrderModal: false,
+            isInfo: false,
+            stateList: this.getStateData()
 
             // commodityList:["dd"]
 
@@ -113,13 +126,23 @@ class UserListTable extends Component {
     //     }
     // }
 
+    getStateData() {
+        let data = Utils.getStateData();
+        var optionsData = [];
+        if (data) {
+          for (var i = 0; i < data.length; i++) {
+            optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
+          }
+        }
+        return optionsData;
+      }
+    
 
-
-    async handelFilter(event) {
-        let searchedTxt = event.target.value;
+    async handelFilter(data) {
+    
         // console.log(searchedTxt);
         let rows = [];
-        let resp = await userListService.serchUser(searchedTxt);
+        let resp = await userListService.serchUser(data);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             rows = resp.data.result.data;
@@ -144,7 +167,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality ? obj.locality : "- , " + obj.district ? obj.district : "-";
+        return obj.locality ? obj.locality : "-" + obj.district ? obj.district : "-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -159,45 +182,21 @@ class UserListTable extends Component {
     onEditUserClick = (event) => {
         this.setState({ anchorEl: null, showUserModal: true, open: true });
     }
-    // DisableUserClick = (obj, event) => {
-    //     console.log(obj);
-    //     if(obj.active){
-    //     let reqObj = {
-    //         'data': {
-    //             'active': !obj.active
-    //         }
-    //     }
+    onOrderDetailClick = (event) => {
+        this.setState({ anchorEl: null, showOrderModal: true, open: true });
+    }
 
-    //     let dialogText = "Are you sure to disable user ?"
-    //     this.setState({ dialogText: dialogText, dialogTitle: "Alert", userId: obj.id, showConfirmDialog: true, payload: reqObj });
-    //     this.setState({ anchorEl: null });
-    // }
-    // }
-
-    // EnableUserClick = (obj, event) => {
-    //     if(!obj.active){
-    //     let reqObj = {
-    //         'data': {
-    //             'active': !obj.active
-    //         }
-    //     }
-
-    //     let dialogText = "Are you sure to enable user ?"
-    //     this.setState({ dialogText: dialogText, dialogTitle: "Alert", userId: obj.id, showConfirmDialog: true, payload: reqObj });
-    //     this.setState({ anchorEl: null });
-    // }
-    // }
 
     onAddAccount = (event) => {
         this.setState({ anchorEl: null });
     }
 
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
         this.props.onClose();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showUserModal: false });
+        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
     }
 
 
@@ -242,9 +241,13 @@ class UserListTable extends Component {
         } else if (obj.role === 'broker') {
             return "#7070fd";
         } else {
-            return "#e5e8ec";
+            return "#757575";
         }
     }
+    onInfoClick = (info, event) => {
+        this.setState({ showUserModal: true, open: true, userData: JSON.parse(JSON.stringify(info)), isInfo: true });
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -252,14 +255,19 @@ class UserListTable extends Component {
                 <Paper className={classes.root} >
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
                     <div style={{ display: 'flex' }}>
-
-                        <div style={{ width: '40%', marginLeft: '58%' }}>
+                        <UserFilterDataView
+                            stateList={this.state.stateList}
+                            //   districtList={this.state.districtList}
+                            //   districtData={Utils.getDistrictData()}
+                            onHeaderFilterChange={this.handelFilter.bind(this)}
+                        />
+                        {/* <div style={{ width: '40%', marginLeft: '58%' }}>
                             <input
                                 type="text"
                                 placeholder="Search..."
                                 className="search-input"
                                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
-                        </div>
+                        </div> */}
                     </div>
                     <div >
                         <Table className='table-body'>
@@ -268,11 +276,11 @@ class UserListTable extends Component {
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
-                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'center' }}> <StarIcon /> </TableCell>
+                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '70px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData.map((row, i) => {
+                                {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
                                     return (
                                         <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -281,13 +289,13 @@ class UserListTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.fullname}</div>
                                                 </Tooltip>
 
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.business_name ? row.business_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.business_name}</div>
                                                 </Tooltip>
 
@@ -304,7 +312,7 @@ class UserListTable extends Component {
                                                     <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join() : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ background: this.getBackgroundColor(row) }}>{this.getRole(row)}</TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ background: this.getBackgroundColor(row) }}>{this.getRole(row)} <i onClick={this.onInfoClick.bind(this, row)} className={"fa fa-info-circle " + classes.info} aria-hidden="true"></i></TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                                 <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
@@ -315,10 +323,12 @@ class UserListTable extends Component {
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
                                                 </Tooltip>
-
+                                                <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                                {/* <React.Fragment>
+                                                <React.Fragment>
                                                     <Button
                                                         aria-owns={this.state.anchorEl ? 'simple-menu' : null}
                                                         aria-haspopup="true"
@@ -335,22 +345,22 @@ class UserListTable extends Component {
                                                         onClose={this.handleAnchorMenuClose.bind(this)}
                                                     >
                                                         <MenuItem
-                                                            onClick={this.onEditUserClick.bind(this)}
+                                                            onClick={this.onOrderDetailClick.bind(this)}
                                                             style={{ fontFamily: "'Montserrat', sans-serif" }}>
 
                                                             <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
                                                                 remove_red_eye
                             </Icon>
-                                                            Edit User
+                                                            Order Details
                         </MenuItem>
-                                                      
+
                                                         <MenuItem
-                                                            onClick={this.onAddAccount.bind(this)}
+                                                            onClick={this.onEditUserClick.bind(this)}
                                                             style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                                             <Icon className={classes.icon} style={{ fontSize: 24, margin: 4 }}>
                                                                 send
                             </Icon>
-                                                            Add Account
+                                                            Edit User
                         </MenuItem>
                                                         <MenuItem
                                                             onClick={this.onAddAccount.bind(this)}
@@ -362,7 +372,7 @@ class UserListTable extends Component {
                         </MenuItem>
                                                     </Menu>
 
-                                                </React.Fragment> */}
+                                                </React.Fragment>
                                             </TableCell>
                                         </TableRow>
                                     );
@@ -379,7 +389,8 @@ class UserListTable extends Component {
                     {this.state.showUserModal ? <UserDialog openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
-                        commodityList={ this.props.commodityList}
+                        isInfo={this.state.isInfo}
+                        commodityList={this.props.commodityList}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
@@ -388,6 +399,10 @@ class UserListTable extends Component {
                             show={this.state.showConfirmDialog}
                             onConfirmed={this.handelConfirmUpdate}
                             onCanceled={this.handelCancelUpdate} /> : ""}
+                    {this.state.showOrderModal ? <OrderTable openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        data={this.state.userData}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                 </Paper>
             </MuiThemeProvider>
         );

@@ -23,15 +23,16 @@ let supplierService = {
             data: props
         });
     },
-    serchUser: async function (searchval) {
+    serchUser: async function (param) {
         return Api({
             method: 'get',
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/user/list?searchVal=' + searchval+'&role=la'
+            url: '/user/list',
+            params:param
         });
-    },
+    }
 
 };
 

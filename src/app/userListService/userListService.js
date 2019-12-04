@@ -24,13 +24,14 @@ let userListService = {
         });
     },
 
-    serchUser: async function (searchval) {
+    serchUser: async function (param) {
         return Api({
             method: 'get',
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list?searchVal=' + searchval
+            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list?searchVal=' ,
+            params: param
         });
     },
 

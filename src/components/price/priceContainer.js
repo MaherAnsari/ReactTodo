@@ -64,7 +64,7 @@ class PriceContainer extends React.Component {
     async getPriceList() {
         let resp = await priceService.getPriceList();
         if (resp.data.status === 1 && resp.data.result) {
-            this.setState({ dataList: resp.data.result.data });
+            this.setState({ dataList: resp.data.result.data});
 
 
         }
@@ -84,6 +84,7 @@ class PriceContainer extends React.Component {
 
     async getBuyerList() {
         let resp = await buyerService.getBuyerList();
+       
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ buyerList: resp.data.result.data });// full ( id )
         }
@@ -118,13 +119,12 @@ class PriceContainer extends React.Component {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ?
+                 { this.state.dataList ?
                     <Card className={classes.card}>
                         {/* <PriceTable   tableData={this.state.dataList}   />  */}
-                      { this.state.buyerList &&
+                     
                        <PriceCollapseView
-                            tableData={this.state.dataList}
-                            expansionpanelHeaderData={ this.state.buyerList} />}
+                            expansionpanelHeaderData={ this.state.dataList} />
                         <div className="updateBtndef">
                             <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD PRICE</p></div>
                         </div>

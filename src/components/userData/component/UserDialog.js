@@ -27,7 +27,7 @@ const styles = theme => ({
         fontFamily: 'Montserrat, sans-serif', 
     }, 
     dialogPaper: { 
-        minWidth: '600px', 
+        minWidth: '700px', 
         // maxWidth: '700px', 
         minHeight: '600px', 
         // maxHeight: '500px' 
@@ -87,6 +87,7 @@ class UserDialog extends Component {
             requiredKey: ['fullname', 'mobile', 'role'], 
             roleList: ['la', 'ca', 'broker'], 
             isUpdate: false, 
+            isInfo:false,
             payload: {}, 
             stateList: [ 
                 "Andaman and Nicobar Islands", 
@@ -152,9 +153,9 @@ class UserDialog extends Component {
  
             } 
  
-            // console.log(this.props.data); 
+            console.log(this.props.isInfo); 
  
-            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true }); 
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true,isInfo:this.props.isInfo }); 
         } 
  
         // console.log(this.state.dataObj); 
@@ -204,11 +205,11 @@ class UserDialog extends Component {
     handleChange = event => { 
         let data = this.state.dataObj; 
         let id = event.target.id; 
-        if (id === "mobile") { 
+        if (id === "mobile" || id === "sec_mobile" || id === "third_mobile" ) { 
             if (event.target.value.length <= 10) { 
                 data[id] = event.target.value; 
             } 
-        } else if (id === "default_commodity") { 
+        } else if (id === "default_commodity" || id === "partner_names") { 
             data[id] = event.target.value.split(','); 
         } else { 
             data[id] = event.target.value; 
@@ -254,6 +255,7 @@ class UserDialog extends Component {
             reqObj['data'][0] = obj; 
         } 
         // let resp = {}; 
+        // console.log(reqObj);
         let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj); 
  
         if (resp.data.status === 1) { 
@@ -279,7 +281,7 @@ class UserDialog extends Component {
         let reqArr = this.state.requiredKey; 
         for (let i = 0; i < reqArr.length; i++) { 
             if (!data[reqArr[i]] && data[reqArr[i]] === "") { 
-                alert("All fields are required"); 
+                alert("Please check all required field"); 
                 return; 
             } 
         } 
@@ -328,16 +330,18 @@ class UserDialog extends Component {
                         label="Mobile" 
                         type="number" 
                         maxLength="10" 
-                        disabled={this.state.isUpdate} 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '48%' }} 
                         value={this.state.dataObj.mobile} 
                         onChange={this.handleChange.bind(this)} 
+                        required
                         fullWidth 
                     /> 
                     <TextField 
                         select 
                         id="role" 
                         label="Role" 
+                        disabled={this.state.isInfo}
                         type="text" 
                         style={{ marginRight: '2%', width: '48%', marginTop: '5px' }} 
                         value={this.state.dataObj.role} 
@@ -359,15 +363,18 @@ class UserDialog extends Component {
                         id="fullname" 
                         label="Fullname" 
                         type="text" 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }} 
                         value={this.state.dataObj.fullname} 
                         onChange={this.handleChange.bind(this)} 
+                        required
                         fullWidth 
                     /> 
  
                     {this.state.isUpdate && <TextField 
                         margin="dense" 
                         id="fullname_hindi" 
+                        disabled={this.state.isInfo}
                         label="Fullname (Hindi)" 
                         type="text" 
                         style={{ marginRight: '2%', width: '48%' }} 
@@ -386,6 +393,7 @@ class UserDialog extends Component {
                         id="state" 
                         label="State" 
                         type="text" 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '48%' }} 
                         value={this.state.dataObj.state} 
                         onChange={this.handleStateChange.bind(this, 'state')} 
@@ -401,7 +409,8 @@ class UserDialog extends Component {
                         select 
                         id="district" 
                         label="District" 
-                        type="text" 
+                        type="text"
+                        disabled={this.state.isInfo} 
                         style={{ marginRight: '2%', marginTop: '5px', width: '48%' }} 
                         value={this.state.dataObj.district} 
                         onChange={this.handleStateChange.bind(this, 'district')} 
@@ -431,13 +440,14 @@ class UserDialog extends Component {
                     <Autocomplete 
                         multiple 
                         id="fixed-tags-demo" 
+                        disabled={this.state.isInfo}
                         options={this.state.commodityList} 
                         getOptionLabel={e => e} 
                         defaultValue={this.state.dataObj.default_commodity} 
                         onChange={this.handelAutoCompleteChange} 
                         renderTags={(value, getTagProps) => 
                             value.map((option, index) => ( 
-                                <Chip label={option} {...getTagProps({ index })} /> 
+                                <Chip disabled={this.state.isInfo} label={option} {...getTagProps({ index })} /> 
                             )) 
                         } 
                         style={{ width: "98%" }} 
@@ -457,6 +467,7 @@ class UserDialog extends Component {
                         id="business_name" 
                         label="Buisness Name" 
                         type="text" 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' :"98%"  }} 
                         value={this.state.dataObj.business_name} 
                         onChange={this.handleChange.bind(this)} 
@@ -468,6 +479,7 @@ class UserDialog extends Component {
                         id="business_name_hindi" 
                         label="Buisness Name (Hindi)" 
                         type="text" 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '48%' }} 
                         value={this.state.dataObj.business_name_hindi} 
                         onChange={this.handleChange.bind(this)} 
@@ -478,8 +490,65 @@ class UserDialog extends Component {
                 <div style={{ display: 'flex' }}> 
                     <TextField 
                         margin="dense" 
+                        id="sec_mobile" 
+                        label="Second Mobile" 
+                        type="number" 
+                        maxLength="10" 
+                        disabled={this.state.isInfo}
+                        // disabled={this.state.isUpdate} 
+                        style={{ marginRight: '2%', width: '48%' }} 
+                        value={this.state.dataObj.sec_mobile} 
+                        onChange={this.handleChange.bind(this)} 
+                        fullWidth 
+                    />
+                     <TextField 
+                        margin="dense" 
+                        id="third_mobile" 
+                        label="Third Mobile" 
+                        type="number" 
+                        maxLength="10" 
+                        disabled={this.state.isInfo}
+                        // disabled={this.state.isUpdate} 
+                        style={{ marginRight: '2%', width: '48%' }} 
+                        value={this.state.dataObj.third_mobile} 
+                        onChange={this.handleChange.bind(this)} 
+                        fullWidth 
+                    />  
+                    </div>
+                    <div style={{ display: 'flex' }}> 
+                    <TextField 
+                        margin="dense" 
+                        id="bijak_credit_limit" 
+                        label="bijak Credit Limit" 
+                        type="number" 
+                        maxLength="10" 
+                        disabled={this.state.isInfo}
+                        // disabled={this.state.isUpdate} 
+                        style={{ marginRight: '2%', width: '48%' }} 
+                        value={this.state.dataObj.bijak_credit_limit} 
+                        onChange={this.handleChange.bind(this)} 
+                        fullWidth 
+                    />
+ 
+                    <TextField 
+                        margin="dense" 
+                        id="partner_names" 
+                        label="Partner Name" 
+                        type="text" 
+                        disabled={this.state.isInfo}
+                        style={{ marginRight: '2%', width: '48%' }} 
+                        value={this.state.dataObj.partner_names} 
+                        onChange={this.handleChange.bind(this)} 
+                        fullWidth 
+                    />
+ 
+                </div> 
+                <div style={{ display: 'flex' }}> 
+                    <TextField 
+                        margin="dense" 
                         id="locality" 
-                        label="Locality" 
+                        label="Locality"
+                        disabled={this.state.isInfo} 
                         type="text" 
                         style={{ marginRight: '2%', width: '48%' }} 
                         value={this.state.dataObj.locality} 
@@ -490,7 +559,8 @@ class UserDialog extends Component {
                         margin="dense" 
                         id="exposure_cutoff_limit" 
                         label="Cutoff Limit" 
-                        type="number" 
+                        type="number"
+                        disabled={this.state.isInfo} 
                         style={{ marginRight: '2%', width: '23%' }} 
                         value={this.state.dataObj.exposure_cutoff_limit} 
                         onChange={this.handleChange.bind(this)} 
@@ -501,6 +571,7 @@ class UserDialog extends Component {
                         id="rating" 
                         label="Rating" 
                         type="number" 
+                        disabled={this.state.isInfo}
                         style={{ marginRight: '2%', width: '23%' }} 
                         value={this.state.dataObj.rating} 
                         onChange={this.handleChange.bind(this)} 
@@ -515,6 +586,7 @@ class UserDialog extends Component {
                     <div style={{ marginRight: '2%', width: '38%' }}> 
                         <Checkbox 
                             style={{ height: 24, width: 34 }} 
+                            disabled={this.state.isInfo}
                             checked={this.state.dataObj.bijak_verified} 
                             onClick={this.handleCheckbox.bind(this, "bijak_verified")} 
                             tabIndex={-1} 
@@ -524,6 +596,7 @@ class UserDialog extends Component {
                     <div style={{ marginRight: '2%', width: '38%' }}> 
                         <Checkbox 
                             style={{ height: 24, width: 34 }} 
+                            disabled={this.state.isInfo}
                             checked={this.state.dataObj.bijak_assured} 
                             onClick={this.handleCheckbox.bind(this, "bijak_assured")} 
                             tabIndex={-1} 
@@ -533,6 +606,7 @@ class UserDialog extends Component {
                         <Checkbox 
                             style={{ height: 24, width: 34 }} 
                             checked={this.state.dataObj.active} 
+                            disabled={this.state.isInfo}
                             onClick={this.handleCheckbox.bind(this, "active")} 
                             tabIndex={-1} 
                             disableRipple 
@@ -542,7 +616,7 @@ class UserDialog extends Component {
  
             </DialogContent> 
             <DialogActions> 
-                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> 
+                    {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> }
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> 
             </DialogActions> 
         </Dialog> 
