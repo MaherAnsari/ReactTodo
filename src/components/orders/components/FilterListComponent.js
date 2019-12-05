@@ -111,14 +111,20 @@ class FilterAreaComponent extends React.Component {
                 callback([]);
             }
             let resp ={};
+            let data ={};
+            data["searchVal"] = inputValue;
             if( type === "buyerid"){
-                resp = await buyerService.serchUser(inputValue);
+                
+                data['role'] = 'ca';
+                resp = await buyerService.serchUser(data);
             }
             if( type === "brokerid"){
-                resp = await brokerService.serchUser(inputValue);
+                data['role'] = 'broker';
+                resp = await brokerService.serchUser(data);
             }
             if( type === "supplierid"){
-                resp = await supplierService.serchUser(inputValue);
+                data['role'] = 'la';
+                resp = await supplierService.serchUser(data);
             }
         
             if (resp.data.status === 1 && resp.data.result) {

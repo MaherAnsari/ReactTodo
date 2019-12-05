@@ -14,11 +14,28 @@ import Utils from '../../../app/common/utils';
 const styles = theme => ({
 
     dialogPaper: {
-        minWidth: '550px',
+        minWidth: '700px',
         // maxWidth: '700px',
         minHeight: '400px',
         // maxHeight: '500px'
     },
+    offDay: {
+        textAlign: 'center',
+        width: '48%',
+        marginTop: '33px',
+        marginLeft: '10px'
+    },
+    close:{
+        color:'#000',
+        fontSize:'20px'
+    },
+    card:{
+        boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
+    transition: '0.3s',
+    padding: '10px',
+    borderRadius: '10px',
+    marginTop:'15px'
+    }
 
 });
 
@@ -43,14 +60,42 @@ class EditMandiDataModal extends Component {
             "stateList": this.props.stateList,
             "districtMap": this.props.districtMap,
             "districtList": [],
-            "isManuallyAdded": this.props.editableData && this.props.editableData["businessAddedPlace"] ? this.props.editableData["businessAddedPlace"] : false
+            "isManuallyAdded": this.props.editableData && this.props.editableData["businessAddedPlace"] ? this.props.editableData["businessAddedPlace"] : false,
+            dayArr: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+            dayType: ['first', "second", "third", "fourth", "last"],
+            typeArr: ["dates", "every","all"],
+            offDayArr: []
         }
 
     }
 
     componentDidMount() {
-        console.log(this.props.editableData)
-        this.setState({ districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()] })
+        // console.log(this.props.editableData);
+        let data = this.props.editableData.mandi_off_date ? this.props.editableData.mandi_off_date:[];
+        let offDayData=[];
+        for(let i=0;i<data.length;i++){
+            let obj = { "offType": "", "dayType": "", "day": "", "dates": "" };
+            // let  "every|first|monday"
+            let arr = data[i].split("|");
+            // console.log(arr[0]);
+            if(arr[0] === "every"){
+                obj["offType"] = arr[0];
+                obj["dayType"] =  arr[1];
+                obj["day"] =  arr[2];
+             }else if(arr[0] === "all"){
+                obj["offType"] = arr[0];
+                obj["day"] =  arr[1];
+             }else{
+                obj["offType"] = arr[0];
+                obj["dates"] =  arr[1];
+            }
+
+
+            offDayData.push(obj);
+
+        }
+        // console.log(offDayData);
+        this.setState({ districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()] ,offDayArr:offDayData});
     }
 
     componentWillReceiveProps() {
@@ -77,7 +122,7 @@ class EditMandiDataModal extends Component {
     }
 
     handelConfirmUpdate = async () => {
-        console.log(this.state.dataObj);
+        // console.log(this.state.dataObj);
         var data = this.state.dataObj;
         var payload = {
             "market": data["market"],
@@ -85,9 +130,10 @@ class EditMandiDataModal extends Component {
             "mandi_grade": data["mandi_grade"],
             "mandi_grade_hindi": data["mandi_grade_hindi"],
             "loc_lat": data["loc_lat"],
-            "loc_long": data["loc_long"]
+            "loc_long": data["loc_long"],
+            "mandi_off_date":data["mandi_off_date"]
         }
-        console.log(payload)
+        // console.log(payload)
         let resp = await mandiDataService.updateMandiData( payload );
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
@@ -128,6 +174,21 @@ class EditMandiDataModal extends Component {
 
 
     handleUpdateClick(event) {
+        let offdata = this.state.offDayArr;
+        let offDayArr = []
+        for (let i = 0; i < offdata.length; i++) {
+            let str = "";
+            if (offdata[i]['offType'] === "every") {
+                str = "every"+"|"+ offdata[i]['dayType'] + "|" + offdata[i]['day'];
+            }else if (offdata[i]['offType'] === "all") {
+                str = "all" + "|" + offdata[i]['day'];
+            } else {
+                str = "dates" + "|" + offdata[i]['dates'];
+            }
+            // console.log(str);
+            offDayArr.push(str);
+        }
+        this.state.dataObj.mandi_off_date = offDayArr;
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
@@ -136,6 +197,28 @@ class EditMandiDataModal extends Component {
             alert("All fields are required");
         }
     }
+
+    onAddOffDayClick(event) {
+        let obj = { "offType": "every", "dayType": "first", "day": "monday", "dates": "" };
+        let arr = this.state.offDayArr;
+        arr.push(obj);
+        this.setState({ offDayArr: arr });
+    }
+
+    handleOffDayChange(index, id, event) {
+        // console.log(index);
+        // console.log(event.target.value);
+        // console.log(id);
+        let data = this.state.offDayArr;
+        data[index][id] = event.target.value;
+        this.setState({ offDayArr: data });
+    }
+    onCancelClick(id,event){
+        let data = this.state.offDayArr;
+        data.splice(id,1);
+        this.setState({ offDayArr: data });
+    }
+
     render() {
         const { classes } = this.props;
         const { isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions } = this.state;
@@ -147,7 +230,8 @@ class EditMandiDataModal extends Component {
                 aria-labelledby="form-dialog-title"                >
                 <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>Edit Mandi Data</p>  </DialogTitle>
                 <DialogContent>
-
+                <div style={{ display: 'flex' }}>
+                        <div style={{ width: '50%' }}>
                     <div >
                         <TextField
                             margin="dense"
@@ -305,6 +389,76 @@ class EditMandiDataModal extends Component {
                             onChange={this.handleChange.bind(this)}
                             fullWidth
                         />
+                    </div>
+                    </div>
+                        <div className={classes.offDay}>
+                            Mandi Off Day<i style={{ fontSize: '20px', marginLeft: '5px', color: 'red', cursor: 'pointer' }} onClick={this.onAddOffDayClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
+                            {this.state.offDayArr.map((row, i) => {
+                                return (<div key={i} className={classes.card} >
+                                    <div >
+                                        <TextField
+                                            select
+                                            id="offType"
+                                            label="Select Type"
+                                            type="text"
+                                            style={{ marginRight: '2%', width: '86%',marginLeft:'5%' }}
+                                            value={row.offType}
+                                            onChange={this.handleOffDayChange.bind(this, i, 'offType')} >
+                                            {this.state.typeArr.map((option, i) => (
+                                                <MenuItem key={i} value={option} selected={true}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        <i className={"fa fa-window-close "  +classes.close} onClick={this.onCancelClick.bind(this,i)} aria-hidden="true"></i>
+                                    </div>
+                                    {row.offType === "every" && <div >
+                                        <TextField
+                                            select
+                                            id="dayType"
+                                            label="Day Type"
+                                            type="text"
+                                            style={{ marginRight: '2%', width: '88%' }}
+                                            value={row.dayType}
+                                            onChange={this.handleOffDayChange.bind(this, i, 'dayType')} >
+                                            {this.state.dayType.map((option, i) => (
+                                                <MenuItem key={i} value={option} selected={true}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </div>}
+                                    {row.offType !== "dates" && <div >
+                                        <TextField
+                                            select
+                                            id="day"
+                                            label="Select Day"
+                                            type="text"
+                                            style={{ marginRight: '2%', width: '88%' }}
+                                            value={row.day}
+                                            onChange={this.handleOffDayChange.bind(this, i, 'day')} >
+                                            {this.state.dayArr.map((option, i) => (
+                                                <MenuItem key={i} value={option} selected={true}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </div>}
+                                    {row.offType === "dates" && <div >
+                                        <TextField
+                                            margin="dense"
+                                            id="dates"
+                                            label="Enter Dates (colon Seprates)"
+                                            type="text"
+                                            style={{ marginRight: '2%', width: '88%' }}
+                                            value={row.dates}
+                                            onChange={this.handleOffDayChange.bind(this, i, 'dates')}
+                                            fullWidth
+                                        />
+                                    </div>}
+                                </div>);
+                            })}
+                        </div>
                     </div>
                 </DialogContent>
                 <DialogActions>

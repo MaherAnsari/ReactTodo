@@ -97,8 +97,9 @@ class PriceCollapseView extends Component {
 
   async getData(txt){
     let rows = [];
-    
-    let resp = await buyerService.serchUser(encodeURIComponent(txt));
+    let data = {};
+     data['searchVal'] = encodeURIComponent(txt);
+    let resp = await buyerService.serchUser(data);
     // console.log(resp.data);
     if (resp.data.status === 1 && resp.data.result) {
       rows = resp.data.result.data;

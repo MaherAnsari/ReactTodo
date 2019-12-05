@@ -134,7 +134,7 @@ class FilterDataView extends React.Component {
 
     handelSearchInputChange = (event) => {
        this.setState({searchedTxt :  event.target.value || "a" })
-        console.log(event.target.value );
+        // console.log(event.target.value );
     }
 
 

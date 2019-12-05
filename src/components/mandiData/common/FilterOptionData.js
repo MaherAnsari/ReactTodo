@@ -166,7 +166,7 @@ export default function FilterOptionData(viewProps) {
                             // input={<BootstrapInput />}
                             >
                                 {ampcReqOption.map(name => (
-                                    <MenuItem value={name}>{name}</MenuItem>
+                                    <MenuItem key={name} value={name}>{name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -203,7 +203,7 @@ export default function FilterOptionData(viewProps) {
                             // input={<BootstrapInput />}
                             >
                                 {mandiGradeFilterOption.map(name => (
-                                    <MenuItem value={name}>{name}</MenuItem>
+                                    <MenuItem key={name} value={name}>{name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -239,7 +239,7 @@ export default function FilterOptionData(viewProps) {
                             // input={<BootstrapInput />}
                             >
                                 {mandiGradeHindiFilterOption.map(name => (
-                                    <MenuItem value={name}>{name}</MenuItem>
+                                    <MenuItem key={name} value={name}>{name}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
