@@ -83,7 +83,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Off Day", "Location", "Action"],
+      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Off Day", "Lat/Long", "Action"],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
@@ -213,7 +213,7 @@ class MandiListTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes": "No") : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_monthly_off_day ? row.mandi_monthly_off_day : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "," + (row.loc_long ? row.loc_long : "-")}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
                         {row.businessAddedPlace ? <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
                           : <DoneAllIcon className="material-Icon" />}

@@ -110,8 +110,30 @@ class PaymentComponent extends Component {
     }
 
     componentDidMount() {
-        this.getPaymentInfoDetails(this.state.datePayloads);
+        var datePayloadsVal = this.state.datePayloads;
+        datePayloadsVal["startDate"] = this.formateDateForApi( this.getPreviousDate( 7 ));
+        datePayloadsVal["endDate"] = this.formateDateForApi( new Date() );
+        this.setState({ datePayloads :datePayloadsVal }, function(){
+            this.getPaymentInfoDetails(this.state.datePayloads);
+        })
+        
     }
+
+    getPreviousDate(PreviousnoOfDays) {
+        var date = new Date();
+        return (new Date(date.setDate(date.getDate() - PreviousnoOfDays)));
+    }
+
+    formateDateForApi(data) {
+        if (data && data !== "") {
+            var dateVal = new Date(data);
+            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "0" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            return dateVal;
+        } else {
+            return "";
+        }
+    }
+
 
     getPaymentInfoDetails = async (params) => {
         try {
