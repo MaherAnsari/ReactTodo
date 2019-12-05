@@ -312,6 +312,14 @@ class UserDialog extends Component {
  
         } 
     }; 
+
+    getHeader(){
+        if(this.props.isInfo){
+            return this.state.dataObj.fullname + "("+this.state.dataObj.profile_segment+")";
+        }else{
+            return "User Data";
+        }
+    }
  
     render() { 
         const { classes } = this.props; 
@@ -320,7 +328,7 @@ class UserDialog extends Component {
             classes={{ paper: classes.dialogPaper }} 
             onClose={this.handleDialogCancel.bind(this)} 
             aria-labelledby="form-dialog-title"                > 
-            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>User Data</p>  </DialogTitle> 
+            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px' }}>{this.getHeader()}</p>  </DialogTitle> 
             <DialogContent> 
  
                 <div style={{ display: 'flex' }}> 

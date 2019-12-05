@@ -18,7 +18,8 @@ import EditMandiDataModal from './EditMandiDataModal';
 import Utils from '../../../app/common/utils';
 import FilterDataView from '../common/FilterDataView';
 
-
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import LockIcon from '@material-ui/icons/Lock';
 const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
@@ -83,7 +84,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Off Day", "Lat/Long", "Action"],
+      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Status", "Lat/Long", "Action"],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
@@ -159,7 +160,9 @@ class MandiListTable extends Component {
   }
 
   handelEditModalClose() {
-    this.setState({ editableData: undefined, showEditDataModal: false })
+    this.setState({ editableData: undefined, showEditDataModal: false });
+    let params = { "query": "haryana" };
+    this.getData(params);
   }
 
 
@@ -212,7 +215,10 @@ class MandiListTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes": "No") : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_monthly_off_day ? row.mandi_monthly_off_day : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>
+                      {row.is_open ? <LockOpenIcon className="material-Icon" /> : 
+                        <LockIcon className="material-Icon"  style={{color:'red'}}/>}
+                      </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
                         {row.businessAddedPlace ? <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
