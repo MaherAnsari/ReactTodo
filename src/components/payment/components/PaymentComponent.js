@@ -13,6 +13,7 @@ import Fab from '@material-ui/core/Fab';
 import paymentService from '../../../app/paymentService/paymentService';
 import ViewTransactionModal from './ViewTransactionModal';
 import Loader from '../../common/Loader';
+import AddTransactionModal from './AddTransactionModal';
 
 
 const theme = createMuiTheme({
@@ -91,32 +92,35 @@ class PaymentComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["Buyer Name", "Buyer Mobile", "Location", "Amount", "No. of Transactions", "Transactions"],
+            tableHeadData: ["Buyer Name", "Buyer Mobile", "Location", "Bijak amount in","Bijak amount out", "No. of Transactions - in","No. of Transactions - out", "Transactions"],
             tableBodyData: [],
             searchedText: "",
             open: false,
 
             datePayloads: { "startDate": "", "endDate": "" },
-            paymentMetaInfo: {
-                "count": "-",
-                "sum": "-"
-            },
+            paymentMetaInfo: undefined,
+            // [{
+            //     "count": "-",
+            //     "sum": "-",
+            //     "transaction_type":""
+            // }],
             showTransactionModal: false,
             showLoader: false,
             defaultData: [],
-            buyerInfo: {}
+            buyerInfo: {},
+            showAddTransactionModal: false
 
         }
     }
 
     componentDidMount() {
         var datePayloadsVal = this.state.datePayloads;
-        datePayloadsVal["startDate"] = this.formateDateForApi( this.getPreviousDate( 7 ));
-        datePayloadsVal["endDate"] = this.formateDateForApi( new Date() );
-        this.setState({ datePayloads :datePayloadsVal }, function(){
+        datePayloadsVal["startDate"] = this.formateDateForApi(this.getPreviousDate(7));
+        datePayloadsVal["endDate"] = this.formateDateForApi(new Date());
+        this.setState({ datePayloads: datePayloadsVal }, function () {
             this.getPaymentInfoDetails(this.state.datePayloads);
         })
-        
+
     }
 
     getPreviousDate(PreviousnoOfDays) {
@@ -159,7 +163,7 @@ class PaymentComponent extends Component {
     async handelFilter(event) {
         let searchedTxt = event.target.value;
         if (searchedTxt.trim() !== "") {
-            this.getPaymentSearchedUser( searchedTxt )
+            this.getPaymentSearchedUser(searchedTxt)
             // var respData = [];
             // let resp = await paymentService.getPaymentSearchedUser(searchedTxt);
             // if (resp.data.status === 1 && resp.data.result) {
@@ -171,10 +175,11 @@ class PaymentComponent extends Component {
         }
     }
 
-    async getPaymentSearchedUser( txt ){
-        let payload= this.state.datePayloads;
-        if( txt.trim() !== ""){
-        payload["searchVal"] = txt;}
+    async getPaymentSearchedUser(txt) {
+        let payload = this.state.datePayloads;
+        if (txt.trim() !== "") {
+            payload["searchVal"] = txt;
+        }
         var respData = [];
         let resp = await paymentService.getPaymentSearchedUser(payload);
         if (resp.data.status === 1 && resp.data.result) {
@@ -184,8 +189,8 @@ class PaymentComponent extends Component {
     }
 
     onDateChaged(data) {
-        this.setState({ datePayloads: data }, function(){
-            this.getPaymentSearchedUser( this.state.searchedText );
+        this.setState({ datePayloads: data }, function () {
+            this.getPaymentSearchedUser(this.state.searchedText);
         });
     }
 
@@ -195,9 +200,17 @@ class PaymentComponent extends Component {
         })
     }
 
+    onTransactionDataAdded(event) {
+        this.setState({ showAddTransactionModal: false }, function () {
+            this.getPaymentInfoDetails(this.state.datePayloads);
+        })
+    }
+
+
+
     render() {
         const { classes } = this.props;
-        const { paymentMetaInfo, showLoader } = this.state;
+        const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
@@ -210,16 +223,28 @@ class PaymentComponent extends Component {
                             onChange={this.handelFilter.bind(this)} />
                         <i style={{ marginTop: 22 }} className="fa fa-search"></i>
                     </div>
-                    <div className={classes.detailHeadmain}>
-                        <div style={{ width: "50%", fontSize: 15 }}> Total amount - <span style={{
+                    {paymentMetaInfo && <div className={classes.detailHeadmain}>
+                        <div style={{ width: "25%", fontSize: 15 }}> Total in amount - <span style={{
                             fontWeight: 600,
-                            fontSize: 16, color: "#e72e89"
-                        }}>{paymentMetaInfo["sum"] ? paymentMetaInfo["sum"] : "0"}</span></div>
-                        <div style={{ width: "50%", fontSize: 15 }}> Total no of payment - <span style={{
+                            fontSize: 16, color: "#387a39"
+                        }}>{paymentMetaInfo[0]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
+                        </div>
+                        <div style={{ width: "25%", fontSize: 15 }}> Total out amount - <span style={{
                             fontWeight: 600,
-                            fontSize: 16, color: "#e72e89"
-                        }}>{paymentMetaInfo["count"] ? paymentMetaInfo["count"] : "0"}</span></div>
-                    </div>
+                            fontSize: 16, color: "#d43a3a"
+                        }}>{paymentMetaInfo[1]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
+                        </div>
+                        <div style={{ width: "25%", fontSize: 15 }}> Total no. of in payment - <span style={{
+                            fontWeight: 600,
+                            fontSize: 16, color: "#387a39"
+                        }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
+                        </div>
+                        <div style={{ width: "25%", fontSize: 15 }}> Total no. of out payment - <span style={{
+                            fontWeight: 600,
+                            fontSize: 16, color: "#d43a3a"
+                        }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
+                        </div>
+                    </div>}
                     {this.state.tableBodyData ? <div >
                         <Table className='table-body'>
                             <TableHead>
@@ -248,13 +273,21 @@ class PaymentComponent extends Component {
                                                     {row.buyer_state ? row.buyer_state : ""}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)}>
+                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{color:"#387a39"}}>
                                                 <div className="text-ellpses">
-                                                    {row.sum ? row.sum : "-"}
+                                                    {row.b_in_amount ? row.b_in_amount : "-"}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                {row.count ? row.count : "-"}
+                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{color: "#f91010"}}>
+                                                <div className="text-ellpses">
+                                                    {row.b_out_amount ? row.b_out_amount : "-"}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{color:"#387a39"}}>
+                                                {row.b_in ? row.b_in : "-"}
+                                            </TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{color: "#f91010"}}>
+                                                {row.b_out ? row.b_out : "-"}
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
                                                 <Fab
@@ -297,6 +330,21 @@ class PaymentComponent extends Component {
 
                 </Paper> : <Loader />}
 
+                <div className="updateBtndef">
+                    <div
+                        className="updateBtnFixed"
+                        style={{ display: 'flex' }}
+                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                    >
+                        <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p>Add Transaction</p></div>
+                </div>
+                {showAddTransactionModal &&
+                    <AddTransactionModal
+                        open={showAddTransactionModal}
+                        onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                        onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
+                    />}
 
             </MuiThemeProvider>
         );

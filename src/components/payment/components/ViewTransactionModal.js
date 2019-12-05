@@ -36,7 +36,7 @@ const styles = theme => ({
         fontFamily: "lato !important",
         fontWeight: 500
     },
-    closeBtn:{
+    closeBtn: {
         fontSize: "15px !important",
         fontFamily: "lato !important",
         fontWeight: 500
@@ -59,7 +59,8 @@ class ViewTransactionModal extends Component {
         super(props);
         this.state = {
             open: this.props.open,
-            transactionData: undefined,
+            groupedTransactionData: undefined,
+            allTransactionsData: undefined,
             mobileNumber: this.props.mobileNumber,
             tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time", "Amount", "Payment mode", "Supporting images"],
             expanded: "",
@@ -67,7 +68,9 @@ class ViewTransactionModal extends Component {
             showImageInvoiceModal: false,
             supplierNameMapping: {},
             buyerInfo: this.props.buyerInfo,
-            showLoader: false
+            showLoader: false,
+
+            selectedTab: "all"
         }
     }
 
@@ -79,8 +82,17 @@ class ViewTransactionModal extends Component {
         try {
             let resp = await paymentService.getTransactionDetailsOfBuyer(params);
             if (resp.data.status === 1 && resp.data.result) {
-                var respData = resp.data.result.data;
-                this.setState({ transactionData: respData, supplierNameMapping : this.formatSupplierNameMapping( respData ) });
+                var respData = resp.data.result;
+                this.setState({ 
+                    groupedTransactionData: respData["supplierWiseGrouped"] ,
+                    allTransactionsData:  respData["allTransactions"] ,
+                    buyerInfo: respData["metainfo"],
+                    supplierNameMapping: this.formatSupplierNameMapping(respData["supplierWiseGrouped"]) });
+            }else{
+                this.setState({ 
+                    groupedTransactionData:  [],
+                    allTransactionsData: [],
+                });
             }
         } catch (err) {
             console.error(err);
@@ -90,17 +102,16 @@ class ViewTransactionModal extends Component {
     formatSupplierNameMapping(data) {
         var names = {};
         try {
-        if (data) {
-            for (var key in data) {
-                 names[key] = data[key][0]["supplier_fullname"] ? data[key][0]["supplier_fullname"] + " ( " + key + " ) " : key;
+            if (data) {
+                for (var key in data) {
+                    names[key] = data[key][0]["supplier_fullname"] ? data[key][0]["supplier_fullname"] + " ( " + key + " ) " : key;
+                }
             }
+            return names;
+        } catch (err) {
+            console.error(err);
+            return names;
         }
-        return names;
-    } catch (err) {
-        console.error(err);
-        return names;
-
-    }
     }
 
     onPanelExpanded(event, i) {
@@ -126,7 +137,7 @@ class ViewTransactionModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { transactionData, expanded,supplierNameMapping, buyerInfo } = this.state;
+        const { groupedTransactionData,allTransactionsData, expanded, supplierNameMapping, buyerInfo ,selectedTab} = this.state;
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -136,33 +147,65 @@ class ViewTransactionModal extends Component {
                                 <CloseIcon />
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
-                                {(buyerInfo["buyer_fullname"] ?buyerInfo["buyer_fullname"] +" - ": "")+ (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")  }
-                             </Typography>
-
+                                {(buyerInfo["buyer_fullname"] ? buyerInfo["buyer_fullname"] +(buyerInfo["buyer_business_name"]? " ( "+buyerInfo["buyer_business_name"]+" )":"") + " - " : "") + (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")}
+                            </Typography>
+                            <Typography variant="h6" className={classes.title}>
+                                In amount - {(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] :"")} &nbsp;/ &nbsp; Out amount - {(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] :"")}
+                            </Typography>
                             <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
                                 close
                             </Button>
                         </Toolbar>
                     </AppBar>
+
+                    <div style={{ paddingTop: "10px" , textAlign: "center"}}>
+                        <span
+                            style={{ marginLeft: "10px" }}
+                             >
+                            {selectedTab === "all"  && 
+                            <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
+                            <span
+                               
+                                onClick={() => this.setState({ selectedTab: "all" })}
+                                className=" translabeltag  labeltag"
+                                style={{ cursor: "pointer", color: "#fff", background: selectedTab === "all" ? "#60c1d8" : "#1d6b7d" }}>
+                                All transaction
+                                <span> </span>
+                            </span>
+
+                        </span>
+                        <span style={{ marginLeft: "10px" }} >
+                            {selectedTab === "grouped"  && 
+                            <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
+                            <span
+                                onClick={() => this.setState({ selectedTab: "grouped" })}
+                                className=" translabeltag  labeltag"
+                                style={{ cursor: "pointer", color: "#fff", background: selectedTab === "grouped" ? "#60c1d8" : "#1d6b7d" }}>
+                                Grouped transaction
+                                <span> </span>
+                            </span>
+                        </span>
+                    </div>
+                    { selectedTab === "grouped" ?
                     <div style={{ marginTop: 20 }}>
-                        {transactionData ? Object.keys(transactionData).map((suplierNumber, itemIndex) => (
+                        {groupedTransactionData ? Object.keys(groupedTransactionData).map((suplierNumber, itemIndex) => (
                             <div key={"expanpan" + suplierNumber}
                                 style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex !== 0 ? "8px" : "" }} >
                                 <ExpansionPanel
                                     expanded={expanded === itemIndex}
                                     // onChange={(event) =>}
                                     onChange={(event) => this.onPanelExpanded(event, itemIndex)}
-                                    style={{ width: '100%', background: expanded === itemIndex ? "#f7f7f7" : "white" }}>
+                                    style={{ width: '100%',borderLeft: itemIndex%2 === 0 ?"5px solid #434690":"5px solid #43906e", background: expanded === itemIndex ? "#f7f7f7" : "white" }}>
 
                                     <ExpansionPanelSummary
                                         expandIcon={<ExpandMoreIcon />}
                                         aria-controls="panel1a-content"
                                         id="panel1a-header">
-                                        <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ?supplierNameMapping[suplierNumber] : suplierNumber }</Typography>
+                                        <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ? supplierNameMapping[suplierNumber] : suplierNumber}</Typography>
                                     </ExpansionPanelSummary>
                                     <ExpansionPanelDetails>
 
-                                        {transactionData[suplierNumber] && transactionData[suplierNumber].length > 0 &&
+                                        {groupedTransactionData[suplierNumber] && groupedTransactionData[suplierNumber].length > 0 &&
                                             <Table className='table-body'>
                                                 <TableHead>
                                                     <TableRow  >
@@ -172,7 +215,7 @@ class ViewTransactionModal extends Component {
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {transactionData[suplierNumber].map((row, i) => {
+                                                    {groupedTransactionData[suplierNumber].map((row, i) => {
                                                         return (
                                                             //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                             <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
@@ -217,7 +260,7 @@ class ViewTransactionModal extends Component {
                                                     })}
                                                 </TableBody>
                                             </Table>}
-                                        {transactionData[suplierNumber].length > 0 ? "" :
+                                        {groupedTransactionData[suplierNumber].length > 0 ? "" :
                                             <div className={classes.defaultTemplate}>
                                                 {<span className={classes.defaultSpan}>
                                                     <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
@@ -227,9 +270,77 @@ class ViewTransactionModal extends Component {
                                     </ExpansionPanelDetails>
                                 </ExpansionPanel>
                             </div>)
-                        ): <Loader />}
+                        ) : <Loader />}
                     </div>
-                   
+                    :
+                    (allTransactionsData ? <div style={{ marginTop: 20 }}>
+                        {allTransactionsData && allTransactionsData.length > 0 &&
+                                            <Table className='table-body'>
+                                                <TableHead>
+                                                    <TableRow  >
+                                                        {this.state.tableHeadData.map((option, i) => (
+                                                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {allTransactionsData.map((row, i) => {
+                                                        return (
+                                                            //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
+                                                            <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+
+                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                    {row.id ? row.id : "-"}
+                                                                </TableCell>
+                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                    {row.supplier_fullname ? row.supplier_fullname : "-"}
+                                                                </TableCell>
+                                                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                                    <div className="text-ellpses">
+                                                                        {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                                    <div className="text-ellpses">
+                                                                        {row.createdtime ? row.createdtime : "-"}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                    {row.amount ? row.amount : "-"}
+                                                                </TableCell>
+                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                    {row.payment_mode ? row.payment_mode : "-"}
+                                                                </TableCell>
+                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+
+                                                                    <Fab
+                                                                        variant="extended"
+                                                                        size="small"
+                                                                        aria-label="add"
+                                                                        onClick={this.handelTransactionInvoiceModal.bind(this, row)}
+                                                                        style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
+                                                                    >
+                                                                        View
+                                                </Fab>
+
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })}
+                                                </TableBody>
+                                            </Table>}
+                                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
+                                            <div className={classes.defaultTemplate} 
+                                                style={{marginTop: "20%",
+                                                textAlign: "center",
+                                                fontSize: "24px"}}>
+                                                {<span className={classes.defaultSpan}>
+                                                    <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>}
+                                            </div>}
+                                            {/* {!allTransactionsData && <Loader />} */}
+                    </div> : <Loader />)
+                }
+
 
                 </Dialog>
                 {this.state.showImageInvoiceModal &&

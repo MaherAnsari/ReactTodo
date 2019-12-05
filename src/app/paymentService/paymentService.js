@@ -41,6 +41,18 @@ let paymentService = {
             });
         },
 
+    addPayemtData : async function ( payload ){
+        // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail',
+            data : payload
+        });
+    }
+
 }
 
 export default paymentService;
