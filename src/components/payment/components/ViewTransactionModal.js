@@ -182,9 +182,11 @@ class ViewTransactionModal extends Component {
 
     getTransactionTypeColor(transaction_type) {
         if (transaction_type === "b_out") {
-            return "rgb(56, 122, 57)"; // green
-        } else if (transaction_type === "b_in") {
             return "rgb(212, 58, 58)"; // red
+
+        } else if (transaction_type === "b_in") {
+            return "rgb(56, 122, 57)"; // green
+
         } else {
             return "rgba(0, 0, 0, 0.87)" // default black color
         }
@@ -274,16 +276,16 @@ class ViewTransactionModal extends Component {
 
                     <div style={{textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
                         <div className={classes.dataHeader}>
-                            In amount <span style={{ color: "rgb(56, 122, 57)" }}>{(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
+                            In amount : <span style={{ color: "rgb(56, 122, 57)" }}>{(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
                         </div >
                         <div className={classes.dataHeader}>
-                            Out amount - <span style={{ color: "rgb(212, 58, 58)" }}>{(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
+                            Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>{(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
                         </div>
                         <div className={classes.dataHeader}>
-                        Total outstanding balance - <span  style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
+                        Total outstanding balance : <span  style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
                         </div>
                         <div className={classes.dataHeader} style={{color : "rgb(230, 0, 138)"}}>
-                        Bijak credit limit - <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
+                        Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
                         </div>
                     </div>
 
