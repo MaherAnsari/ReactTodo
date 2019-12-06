@@ -27,7 +27,7 @@ const styles = theme => ({
         fontFamily: 'Montserrat, sans-serif',
     },
     dialogPaper: {
-        minWidth: '600px',
+        minWidth: '700px',
         // maxWidth: '700px',
         minHeight: '600px',
         // maxHeight: '500px'
@@ -57,6 +57,12 @@ const styles = theme => ({
         marginTop: '8%',
         padding: '25px',
         textAlign: 'center'
+    },
+    profile:{
+        marginLeft: '30%',
+    background: 'red',
+    width: '40px',
+    borderRadius: '10px'
     }
 
 });
@@ -313,9 +319,19 @@ class InfoDialog extends Component {
 
     getHeader(){
         if(this.props.isInfo){
-            return this.state.dataObj.fullname + "("+this.state.dataObj.profile_segment+")";
+            return this.state.dataObj.fullname ;
         }else{
             return "User Data";
+        }
+    }
+
+    getProfileColor(data){
+        if(data <= 2 ){
+            return 'red';
+        }else if(data >2 && data <= 5){
+            return '#d8d805';
+        }else{
+            return "green";
         }
     }
     render() {
@@ -325,8 +341,9 @@ class InfoDialog extends Component {
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
-            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px' }}>{this.getHeader()}</p>  </DialogTitle>
-            <DialogContent>
+                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px',display:'flex',marginLeft:'35%',width:'60%' }}>{this.getHeader()}
+    {this.props.isInfo && <p className={classes.profile} style={{background:this.getProfileColor(this.state.dataObj.profile_segment)}}>{this.state.dataObj.profile_segment}</p>}</div>  </DialogTitle> 
+            <DialogContent> 
 
                 <div style={{ display: 'flex' }}>
                     <TextField

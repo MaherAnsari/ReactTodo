@@ -8,7 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
 import mandiDataService from '../../app/mandiDataService/mandiDataService';
 
-// import FilterOptionData from "./FilterOptionData";
+import UserFilterOption from "./UserFilterOption";
 
 
 const styles = theme => ({
@@ -69,7 +69,9 @@ class UserFilterDataView extends React.Component {
                 { name: "Search", id: "searchInput", options: {} }
             ],
             searchedTxt: "",
-            filterOptionData: {}
+            filterOptionData: {},
+            isFilterDialogOpen:false,
+            open:false
         }
     }
 
@@ -159,6 +161,14 @@ class UserFilterDataView extends React.Component {
         }
     }
 
+
+    onFilterDataAdded( data ){
+        this.setState({filterOptionData : data })
+      }
+
+      onFilterClick(event){
+        this.setState({isFilterDialogOpen:true,open:true})
+      }
     render() {
         const { classes } = this.props;
         return (
@@ -198,6 +208,12 @@ class UserFilterDataView extends React.Component {
                                     }
                                 </React.Fragment>
                             ))}
+                            {/* <Button component="span" style={{ border: '1px solid #000', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#000', margin: '0px 5px' }} onClick={this.onFilterClick.bind(this)}>
+                                Search
+                                </Button>
+                             {this.state.isFilterDialogOpen &&  <UserFilterOption
+                             openModal={this.state.open}
+                            onFilterAdded={this.onFilterDataAdded.bind(this)}/>} */}
                             <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }} onClick={this.getDataBasedOnFilters.bind(this)}>
                                 Search
                                 </Button>
