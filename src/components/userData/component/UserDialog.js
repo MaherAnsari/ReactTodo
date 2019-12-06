@@ -618,7 +618,7 @@ class UserDialog extends Component {
                             onClick={this.handleCheckbox.bind(this, "active")} 
                             tabIndex={-1} 
                             disableRipple 
-                        />Is User Enable</div> 
+                        />Is User Enabled</div> 
                 </div> 
  
  

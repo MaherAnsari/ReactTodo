@@ -100,7 +100,7 @@ class InfoDialog extends Component {
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
-            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>Order Info</p>  </DialogTitle>
+            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Order Info</p>  </DialogTitle>
             <DialogContent>
 
                 <div style={{ display: 'flex' }}>
@@ -206,7 +206,7 @@ class InfoDialog extends Component {
                         id="source_location"
                         label="Source Location"
                         type="text"
-                                                disable={true}
+                        disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.source_location}
                         fullWidth
@@ -357,7 +357,7 @@ class InfoDialog extends Component {
                    <TextField
                         margin="dense"
                         id="actual_dispatch_date"
-                        label="Disoatch Date"
+                        label="Dispatch Date"
                         type="text"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}

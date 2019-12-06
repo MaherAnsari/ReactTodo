@@ -221,7 +221,7 @@ class DataUploader extends Component {
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>Mandi Data</p>  </DialogTitle>
+                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Mandi Data</p>  </DialogTitle>
                 <DialogContent>
                     <div style={{ display: 'flex' }}>
                         <div style={{ width: '50%' }}>

@@ -164,7 +164,9 @@ class MandiListTable extends Component {
     let params = { "query": "haryana" };
     this.getData(params);
   }
-
+  handelEditModalCancel() {
+    this.setState({ editableData: undefined, showEditDataModal: false });
+  }
 
   render() {
     const { classes } = this.props;
@@ -256,6 +258,7 @@ class MandiListTable extends Component {
               districtMap={Utils.getDistrictData()}
               editableData={this.state.editableData}
               onEditModalClosed={this.handelEditModalClose.bind(this)}
+              onEditModalCancel={this.handelEditModalCancel.bind(this)}
             />}
         </Paper>
       </MuiThemeProvider>
