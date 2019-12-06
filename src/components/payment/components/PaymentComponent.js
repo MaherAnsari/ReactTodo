@@ -92,7 +92,7 @@ class PaymentComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["Buyer Name", "Buyer Mobile", "Location", "Bijak amount in","Bijak amount out", "No. of Transactions - in","No. of Transactions - out", "Transactions"],
+            tableHeadData: ["Buyer Name", "Buyer Mobile", "Location", "Bijak amount in", "Bijak amount out", "No. of Transactions - in", "No. of Transactions - out", "Transactions"],
             tableBodyData: [],
             searchedText: "",
             open: false,
@@ -224,25 +224,29 @@ class PaymentComponent extends Component {
                         <i style={{ marginTop: 22 }} className="fa fa-search"></i>
                     </div>
                     {paymentMetaInfo && <div className={classes.detailHeadmain}>
-                        <div style={{ width: "25%", fontSize: 15 }}> Total in amount - <span style={{
-                            fontWeight: 600,
-                            fontSize: 16, color: "#387a39"
-                        }}>{paymentMetaInfo[0]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
+                        <div style={{ width: "50%" }}>
+                            <div style={{ width: "100%", fontSize: 15 }}> Total in amount - <span style={{
+                                fontWeight: 600,
+                                fontSize: 16, color: "#387a39"
+                            }}>{paymentMetaInfo[0]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
+                            </div>
+                            <div style={{ width: "100%", fontSize: 15 }}> Total no. of in payment - <span style={{
+                                fontWeight: 600,
+                                fontSize: 16, color: "#387a39"
+                            }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
+                            </div>
                         </div>
-                        <div style={{ width: "25%", fontSize: 15 }}> Total out amount - <span style={{
-                            fontWeight: 600,
-                            fontSize: 16, color: "#d43a3a"
-                        }}>{paymentMetaInfo[1]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
-                        </div>
-                        <div style={{ width: "25%", fontSize: 15 }}> Total no. of in payment - <span style={{
-                            fontWeight: 600,
-                            fontSize: 16, color: "#387a39"
-                        }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
-                        </div>
-                        <div style={{ width: "25%", fontSize: 15 }}> Total no. of out payment - <span style={{
-                            fontWeight: 600,
-                            fontSize: 16, color: "#d43a3a"
-                        }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
+                        <div style={{ width: "50%" }}>
+                            <div style={{ width: "100%", fontSize: 15 }}> Total out amount - <span style={{
+                                fontWeight: 600,
+                                fontSize: 16, color: "#d43a3a"
+                            }}>{paymentMetaInfo[1]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
+                            </div>
+                            <div style={{ width: "100%", fontSize: 15 }}> Total no. of out payment - <span style={{
+                                fontWeight: 600,
+                                fontSize: 16, color: "#d43a3a"
+                            }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
+                            </div>
                         </div>
                     </div>}
                     {this.state.tableBodyData ? <div >
@@ -273,21 +277,21 @@ class PaymentComponent extends Component {
                                                     {row.buyer_state ? row.buyer_state : ""}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{color:"#387a39"}}>
+                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39" }}>
                                                 <div className="text-ellpses">
-                                                    {row.b_in_amount ? row.b_in_amount : "-"}
+                                                    {row.b_in_amount ? row.b_in_amount : "0"}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{color: "#f91010"}}>
+                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010" }}>
                                                 <div className="text-ellpses">
-                                                    {row.b_out_amount ? row.b_out_amount : "-"}
+                                                    {row.b_out_amount ? row.b_out_amount : "0"}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{color:"#387a39"}}>
-                                                {row.b_in ? row.b_in : "-"}
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
+                                                {row.b_in ? row.b_in : "0"}
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{color: "#f91010"}}>
-                                                {row.b_out ? row.b_out : "-"}
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
+                                                {row.b_out ? row.b_out : "0"}
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
                                                 <Fab
@@ -325,6 +329,7 @@ class PaymentComponent extends Component {
                             open={this.state.showTransactionModal}
                             onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
                             buyerInfo={this.state.buyerInfo}
+                            transDate={ this.state.datePayloads}
                             mobileNumber={this.state.mobileNumber} />
                     }
 

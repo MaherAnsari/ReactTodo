@@ -15,14 +15,15 @@ let paymentService = {
             params: param
         });
     },
-    getTransactionDetailsOfBuyer : async function (param) {
+    getTransactionDetailsOfBuyer : async function (pathparam, param) {
     // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/9871468842
         return Api({
             method: 'get',
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/'+param 
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/'+pathparam,
+            params:param 
         });
     },
     

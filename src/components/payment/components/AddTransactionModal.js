@@ -24,7 +24,7 @@ import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
 import paymentService from '../../../app/paymentService/paymentService';
-
+import { Storage } from 'aws-amplify';
 
 const styles = theme => ({
     heading: {
@@ -65,7 +65,10 @@ const styles = theme => ({
         marginTop: '8%',
         padding: '25px',
         textAlign: 'center'
-    }
+    },
+    input: {
+        display: 'none',
+    },
 
 });
 
@@ -102,7 +105,8 @@ class AddTransactionModal extends Component {
             buyerid: "",
             supplierid: "",
             tempVar: {},
-            errorFields: {}
+            errorFields: {},
+            attachmentArray: []
 
         }
 
@@ -136,7 +140,7 @@ class AddTransactionModal extends Component {
         }
         this.setState({
             addTransactionPayload: addTransactionPayloadVal,
-            errorFields:errors
+            errorFields: errors
         })
         console.log(addTransactionPayloadVal)
     }
@@ -257,6 +261,84 @@ class AddTransactionModal extends Component {
         }
     }
 
+    onStepChangeEventOccurs = (stepType) => {
+        let { attachmentArray, step } = this.state;
+        attachmentArray = [];
+        step = stepType;
+        this.setState({ attachmentArray, step });
+    }
+
+    deleteItem(key) {
+        let { attachmentArray } = this.state;
+        for (var i = 0; i < attachmentArray.length; i++) {
+            var indFile = attachmentArray[i];
+            if (indFile.key === key) {
+                attachmentArray.splice(i, 1);
+                this.setState({ attachmentArray });
+            }
+        }
+    }
+
+
+    // fileChangedHandler = (event) => {
+    //     let { selectedFileName, isFileLoading, file } = this.state;
+    //     file = event.target.files[0];
+    //     selectedFileName = file ? file.name : null;
+    //     isFileLoading = !file ? false : true;
+    //     this.setState({ selectedFileName, isFileLoading, file })
+    //     Storage.configure({
+    //         level: 'public',
+    //         AWSS3: {
+    //             bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',//Your bucket name;
+    //             region: 'ap-south-1'//Specify the region your bucket was created in;
+    //         }
+    //     });
+    //     Storage.put(file.name, file, {
+    //         // key: "UBIL-Register-Online.png"
+    //         contentType: 'image/png'
+    //     }).then(result => {
+    //         let data = result
+    //         let attachmentObj = {
+    //             bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
+    //             filename: file.name,
+    //             key: result.key
+    //         }
+    //         let { attachmentArray } = this.state;
+    //         attachmentArray.push(attachmentObj)
+    //         this.setState({
+    //             isFileUpload: false,
+    //             attachmentArray
+    //         })
+    //         console.log(data)
+    //     }
+    //     ).catch(err => {
+    //         this.setState({
+    //             isFileUpload: false
+    //         })
+    //         let data = err
+    //         console.log(err)
+    //     }
+    //     );
+    // }
+
+    checkForAttachmentData() {
+        if (!this.state.attachmentArray || this.state.attachmentArray.length === 0) {
+            return '';
+        }
+        let attachmentStr = "";
+        for (let index in this.state.attachmentArray) {
+            let indData = this.state.attachmentArray[index];
+            attachmentStr = attachmentStr + "bucket:" + indData.bucket + ";key:public/" + indData.key + ";filename:" + indData.filename + `${(this.state.attachmentArray.length) === (parseInt(index) + 1) ? '' : '|'}`
+        }
+        return attachmentStr;
+    }
+
+    handelDateChange( dateval ){
+        var addTransactionPayloadVal = this.state.addTransactionPayload;
+        addTransactionPayloadVal["transaction_date"] = dateval;
+        this.setState({ dateval : addTransactionPayloadVal })
+    }
+
     render() {
         const { classes } = this.props;
         const { addTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
@@ -264,9 +346,15 @@ class AddTransactionModal extends Component {
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
+                disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>Mandi Data</p>  </DialogTitle>
+                <DialogTitle
+                    style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
+                    id="form-dialog-title">
+                    <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                        Add Transaction</p>
+                </DialogTitle>
                 <DialogContent>
 
                     <div>
@@ -279,7 +367,9 @@ class AddTransactionModal extends Component {
                                     format="dd/MM/yyyy"
                                     style={{ width: '100%' }}
                                     value={addTransactionPayload.transaction_date}
-                                    //   onChange={handleDateChange}
+                                    onChange={ (dateval )=>{
+                                        this.handelDateChange( dateval );
+                                    }}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}
@@ -297,17 +387,17 @@ class AddTransactionModal extends Component {
                             onChange={(item) => {
                                 this.setState({ buyerid: item }, function () {
                                     var data = addTransactionPayload;
-                                    if(errorFields["buyerid"]){
+                                    if (errorFields["buyerid"]) {
                                         delete errorFields["buyerid"];
                                     }
                                     if (item && item !== null) {
                                         data["buyerid"] = tempVar[item["label"]]["id"];
                                         data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                    }else{
+                                    } else {
                                         data["buyerid"] = "";
-                                        data["buyer_mobile"] ="";
+                                        data["buyer_mobile"] = "";
                                     }
-                                    this.setState({ addTransactionPayload: data , errorFields: errorFields})
+                                    this.setState({ addTransactionPayload: data, errorFields: errorFields })
                                 })
                             }}
                             isSearchable={true}
@@ -326,14 +416,14 @@ class AddTransactionModal extends Component {
                             name={"supplierid"}
                             onChange={(item) => {
                                 this.setState({ supplierid: item }, function () {
-                                    if(errorFields["supplierid"]){
+                                    if (errorFields["supplierid"]) {
                                         delete errorFields["supplierid"];
                                     }
                                     var data = addTransactionPayload;
                                     if (item && item !== null) {
                                         data["supplierid"] = tempVar[item["label"]]["id"];
                                         data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
-                                    }else{
+                                    } else {
                                         data["supplierid"] = "";
                                         data["supplier_mobile"] = "";
                                     }
@@ -362,6 +452,24 @@ class AddTransactionModal extends Component {
                             {Object.keys(transactionType).map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {transactionType[key]}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div >
+                        <TextField
+                            select
+                            id="payment_mode"
+                            name="payment_mode"
+                            label="Payment mode"
+                            error={errorFields["payment_mode"] ? true : false}
+                            type="text"
+                            style={{ marginRight: '2%', width: '100%' }}
+                            value={addTransactionPayload.payment_mode}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {payment_modeOption.map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -442,24 +550,7 @@ class AddTransactionModal extends Component {
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
                     </div>
-                    <div >
-                        <TextField
-                            select
-                            id="payment_mode"
-                            name="payment_mode"
-                            label="Transaction Type"
-                            error={errorFields["payment_mode"] ? true : false}
-                            type="text"
-                            style={{ marginRight: '2%', width: '100%' }}
-                            value={addTransactionPayload.payment_mode}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {payment_modeOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
+                 
 
                     <div >
                         <TextField
@@ -509,6 +600,49 @@ class AddTransactionModal extends Component {
                             ))}
                         </TextField>
                     </div>
+
+                    {/* <div>
+                        <Grid container direction="row" alignItems="stretch">
+                            <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                <input
+                                    className={classes.input}
+                                    id="flat-button2-file"
+                                    type="file"
+                                    onClick={(event) => {
+                                        event.target.value = null
+                                    }}
+                                // onChange={this.fileChangedHandler.bind(this)}
+                                />
+                                <label htmlFor="flat-button2-file">
+                                    <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                        Choose supporting invoices
+                            </Button>
+                                </label>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                                {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
+                                    <React.Fragment>
+                                        {this.state.attachmentArray.map((indUpload, index) => (
+                                            <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
+                                                <React.Fragment>
+                                                    <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
+                                                        <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={12} md={10} >
+                                                        <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
+
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
+                                                        <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
+                                                    </Grid>
+                                                </React.Fragment>
+                                            </Grid>
+                                        ))}
+                                    </React.Fragment>
+                                }
+                            </Grid>
+                        </Grid>
+                    </div> */}
 
                 </DialogContent>
                 <DialogActions>

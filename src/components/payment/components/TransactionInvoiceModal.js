@@ -30,6 +30,21 @@ class TransactionInvoiceModal extends Component {
         this.props.onInvoiceModalClose();
     }
 
+    checkIfUrlsKeyIsValid( val ){
+        if(val){
+            return true;
+        }
+        if(!val){
+            return false;
+        }
+        if(val === undefined){
+            return false;
+        }
+        if(val === null){
+            return false;
+        }
+        return true;
+    }
 
     render() {
         const { classes } = this.props;
@@ -62,7 +77,7 @@ class TransactionInvoiceModal extends Component {
                             </div>
                         )
                         :
-                        (this.state.invoiceUrlData && this.state.invoiceUrlData.length === 0 &&
+                        ( !this.checkIfUrlsKeyIsValid(this.state.invoiceUrlData) &&
                             <NoDataAvailable style={{ color: "#fff", background: '#533381 !important' }} bvText={"No Data"} />
                         )}
                 </DialogContent>

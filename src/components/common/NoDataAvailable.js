@@ -48,7 +48,7 @@ class NoDataAvailable extends React.Component {
                 <div className={classes.branchdiv}>
                 <div className={classes.defaultTemplate}>
              <span className={classes.defaultSpan}>
-                <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>
+                <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>
           </div>
                 </div>
             </div>

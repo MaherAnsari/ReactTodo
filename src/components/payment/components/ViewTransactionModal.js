@@ -22,7 +22,45 @@ import TableRow from '@material-ui/core/TableRow';
 import TransactionInvoiceModal from './TransactionInvoiceModal';
 import Fab from '@material-ui/core/Fab';
 import Loader from '../../common/Loader';
+import DateFnsUtils from '@date-io/date-fns';
+import Grid from '@material-ui/core/Grid';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+import 'date-fns';
+
+const theme = createMuiTheme({
+    overrides: {
+        MuiFormLabel:{
+            root:{
+                color: "White"
+            }
+        },
+        MuiInput:{
+            underline:{
+                borderBottom: "1px solid rgb(255, 255, 255)"
+        }
+    },
+    MuiIconButton:{
+        root:{
+            color:"#fff"
+        }
+    },
+    MuiInputBase:{
+        input:{
+            color: "White"
+        }
+    },
+    MuiPickersCalendarHeader:{
+        iconButton : {
+            color: "#000"
+        }
+    }
+    }
+});
 
 const styles = theme => ({
     appBar: {
@@ -47,6 +85,12 @@ const styles = theme => ({
         textAlign: 'center',
         maxWidth: '200px'
     },
+    formControl:{
+        color:"#fff"
+    },
+    dataHeader:{
+        width:"25%"
+    }
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -70,27 +114,29 @@ class ViewTransactionModal extends Component {
             buyerInfo: this.props.buyerInfo,
             showLoader: false,
 
+            transDate: this.props.transDate,
             selectedTab: "all"
         }
     }
 
     componentDidMount() {
-        this.getTransactionList(this.state.mobileNumber);
+        this.getTransactionList(this.state.mobileNumber, this.state.transDate);
     }
 
-    getTransactionList = async (params) => {
+    getTransactionList = async (mobno, dateparams) => {
         try {
-            let resp = await paymentService.getTransactionDetailsOfBuyer(params);
+            let resp = await paymentService.getTransactionDetailsOfBuyer(mobno, dateparams);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
-                this.setState({ 
-                    groupedTransactionData: respData["supplierWiseGrouped"] ,
-                    allTransactionsData:  respData["allTransactions"] ,
+                this.setState({
+                    groupedTransactionData: respData["supplierWiseGrouped"],
+                    allTransactionsData: respData["allTransactions"],
                     buyerInfo: respData["metainfo"],
-                    supplierNameMapping: this.formatSupplierNameMapping(respData["supplierWiseGrouped"]) });
-            }else{
-                this.setState({ 
-                    groupedTransactionData:  [],
+                    supplierNameMapping: this.formatSupplierNameMapping(respData["supplierWiseGrouped"])
+                });
+            } else {
+                this.setState({
+                    groupedTransactionData: [],
                     allTransactionsData: [],
                 });
             }
@@ -119,7 +165,7 @@ class ViewTransactionModal extends Component {
     }
 
     handelModalClose(event) {
-        this.setState({ open: false }, function () {
+        this.setState({ open: false}, function () {
             this.props.onTransactionModalClose();
         })
     }
@@ -134,38 +180,121 @@ class ViewTransactionModal extends Component {
         })
     }
 
+    getTransactionTypeColor(transaction_type) {
+        if (transaction_type === "b_out") {
+            return "rgb(56, 122, 57)"; // green
+        } else if (transaction_type === "b_in") {
+            return "rgb(212, 58, 58)"; // red
+        } else {
+            return "rgba(0, 0, 0, 0.87)" // default black color
+        }
+    }
+
+    handelDateChange( dateVal , id){
+        var dates = this.state.transDate;
+        dates[id] = this.formateDateForApi(dateVal);
+        this.setState({transDate : dates },function(){
+            this.getTransactionList(this.state.mobileNumber, this.state.transDate);
+        });
+    }
+
+    formateDateForApi(data) {
+        if (data && data !== "") {
+            var dateVal = new Date(data);
+            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "0" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            return dateVal;
+        } else {
+            return "";
+        }
+    }
 
     render() {
         const { classes } = this.props;
-        const { groupedTransactionData,allTransactionsData, expanded, supplierNameMapping, buyerInfo ,selectedTab} = this.state;
+        const { groupedTransactionData, transDate, allTransactionsData, expanded, supplierNameMapping, buyerInfo, selectedTab } = this.state;
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
                     <AppBar className={classes.appBar}>
                         <Toolbar>
-                            <IconButton edge="start" color="inherit" onClick={(event) => { this.handelModalClose(event) }} aria-label="close">
+                            <IconButton
+                                edge="start"
+                                color="inherit"
+                                onClick={(event) => { this.handelModalClose(event) }}
+                                aria-label="close">
                                 <CloseIcon />
                             </IconButton>
-                            <Typography variant="h6" className={classes.title}>
-                                {(buyerInfo["buyer_fullname"] ? buyerInfo["buyer_fullname"] +(buyerInfo["buyer_business_name"]? " ( "+buyerInfo["buyer_business_name"]+" )":"") + " - " : "") + (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")}
+                            <Typography
+                                variant="h6"
+                                className={classes.title}>
+                                {(buyerInfo["buyer_fullname"] ? buyerInfo["buyer_fullname"] +
+                                    (buyerInfo["buyer_business_name"] ? " ( " +
+                                        buyerInfo["buyer_business_name"] + " )" : "") +
+                                    " - " : "") + (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")}
                             </Typography>
-                            <Typography variant="h6" className={classes.title}>
-                                In amount - {(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] :"")} &nbsp;/ &nbsp; Out amount - {(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] :"")}
-                            </Typography>
+                            <div style={{ display: "flex" }}>
+                            <MuiThemeProvider theme={theme}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+                                    <KeyboardDatePicker
+                                         id="date-picker-dialog"
+                                        label="Transaction start date"
+                                        format="dd/MM/yyyy"
+                                        maxDate={ new Date()}
+                                        value={transDate["startDate"]}
+                                        onChange={(dateval) => {
+                                            this.handelDateChange(dateval , "startDate");
+                                        }}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                    &nbsp;
+                                    &nbsp;
+                                    <KeyboardDatePicker
+                                         id="date-picker-dialog"
+                                        label="Transaction end date"
+                                        format="dd/MM/yyyy"
+                                        value={transDate["endDate"]}
+                                        maxDate={ new Date()}
+                                        onChange={(dateval) => {
+                                            this.handelDateChange(dateval, "endDate");
+                                        }}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                                </MuiThemeProvider>
+                            </div>
                             <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
                                 close
                             </Button>
                         </Toolbar>
                     </AppBar>
 
-                    <div style={{ paddingTop: "10px" , textAlign: "center"}}>
+                    <div style={{textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
+                        <div className={classes.dataHeader}>
+                            In amount <span style={{ color: "rgb(56, 122, 57)" }}>{(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
+                        </div >
+                        <div className={classes.dataHeader}>
+                            Out amount - <span style={{ color: "rgb(212, 58, 58)" }}>{(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
+                        </div>
+                        <div className={classes.dataHeader}>
+                        Total outstanding balance - <span  style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
+                        </div>
+                        <div className={classes.dataHeader} style={{color : "rgb(230, 0, 138)"}}>
+                        Bijak credit limit - <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
+                        </div>
+                    </div>
+
+                    <div style={{ paddingTop: "10px", textAlign: "center" }}>
                         <span
                             style={{ marginLeft: "10px" }}
-                             >
-                            {selectedTab === "all"  && 
-                            <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
+                        >
+                            {selectedTab === "all" &&
+                                <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
                             <span
-                               
+
                                 onClick={() => this.setState({ selectedTab: "all" })}
                                 className=" translabeltag  labeltag"
                                 style={{ cursor: "pointer", color: "#fff", background: selectedTab === "all" ? "#60c1d8" : "#1d6b7d" }}>
@@ -175,171 +304,173 @@ class ViewTransactionModal extends Component {
 
                         </span>
                         <span style={{ marginLeft: "10px" }} >
-                            {selectedTab === "grouped"  && 
-                            <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
+                            {selectedTab === "grouped" &&
+                                <i className="fa fa-caret-left translabelIcon" style={{ marginRight: "-0.75px" }} aria-hidden="true"></i>}
                             <span
                                 onClick={() => this.setState({ selectedTab: "grouped" })}
                                 className=" translabeltag  labeltag"
                                 style={{ cursor: "pointer", color: "#fff", background: selectedTab === "grouped" ? "#60c1d8" : "#1d6b7d" }}>
-                                Grouped transaction
+                                Supplier wise grouped transaction
                                 <span> </span>
                             </span>
                         </span>
                     </div>
-                    { selectedTab === "grouped" ?
-                    <div style={{ marginTop: 20 }}>
-                        {groupedTransactionData ? Object.keys(groupedTransactionData).map((suplierNumber, itemIndex) => (
-                            <div key={"expanpan" + suplierNumber}
-                                style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex !== 0 ? "8px" : "" }} >
-                                <ExpansionPanel
-                                    expanded={expanded === itemIndex}
-                                    // onChange={(event) =>}
-                                    onChange={(event) => this.onPanelExpanded(event, itemIndex)}
-                                    style={{ width: '100%',borderLeft: itemIndex%2 === 0 ?"5px solid #434690":"5px solid #43906e", background: expanded === itemIndex ? "#f7f7f7" : "white" }}>
+                    {selectedTab === "grouped" ?
+                        <div style={{ marginTop: 20 }}>
+                            {groupedTransactionData ? Object.keys(groupedTransactionData).map((suplierNumber, itemIndex) => (
+                                <div key={"expanpan" + suplierNumber}
+                                    style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex !== 0 ? "8px" : "" }} >
+                                    <ExpansionPanel
+                                        expanded={expanded === itemIndex}
+                                        // onChange={(event) =>}
+                                        onChange={(event) => this.onPanelExpanded(event, itemIndex)}
+                                        style={{ width: '100%', borderLeft: itemIndex % 2 === 0 ? "5px solid #434690" : "5px solid #43906e", background: expanded === itemIndex ? "#f7f7f7" : "white" }}>
 
-                                    <ExpansionPanelSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        aria-controls="panel1a-content"
-                                        id="panel1a-header">
-                                        <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ? supplierNameMapping[suplierNumber] : suplierNumber}</Typography>
-                                    </ExpansionPanelSummary>
-                                    <ExpansionPanelDetails>
+                                        <ExpansionPanelSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1a-content"
+                                            id="panel1a-header">
+                                            <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ? supplierNameMapping[suplierNumber] : suplierNumber}</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails>
 
-                                        {groupedTransactionData[suplierNumber] && groupedTransactionData[suplierNumber].length > 0 &&
-                                            <Table className='table-body'>
-                                                <TableHead>
-                                                    <TableRow  >
-                                                        {this.state.tableHeadData.map((option, i) => (
-                                                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
-                                                        ))}
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {groupedTransactionData[suplierNumber].map((row, i) => {
-                                                        return (
-                                                            //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
-                                                            <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                            {groupedTransactionData[suplierNumber] && groupedTransactionData[suplierNumber].length > 0 &&
+                                                <Table className='table-body'>
+                                                    <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
+                                                        <TableRow  >
+                                                            {this.state.tableHeadData.map((option, i) => (
+                                                                <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                                            ))}
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {groupedTransactionData[suplierNumber].map((row, i) => {
+                                                            return (
+                                                                //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
+                                                                <TableRow key={'table_' + i} style={{ background:i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`  }}>
 
-                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                                    {row.id ? row.id : "-"}
-                                                                </TableCell>
-                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                                    {row.supplier_fullname ? row.supplier_fullname : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                                    <div className="text-ellpses">
-                                                                        {row.supplier_business_name ? row.supplier_business_name : "-"}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 3)}>
-                                                                    <div className="text-ellpses">
-                                                                        {row.createdtime ? row.createdtime : "-"}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                                    {row.amount ? row.amount : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                                    {row.payment_mode ? row.payment_mode : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                        {row.id ? row.id : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                        {row.supplier_fullname ? row.supplier_fullname : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                                        <div className="text-ellpses">
+                                                                            {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                                        <div className="text-ellpses">
+                                                                            {row.createdtime ? row.createdtime : "-"}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)}  style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                                        {row.amount ? row.amount : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                        {row.payment_mode ? row.payment_mode : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
 
-                                                                    <Fab
-                                                                        variant="extended"
-                                                                        size="small"
-                                                                        aria-label="add"
-                                                                        onClick={this.handelTransactionInvoiceModal.bind(this, row)}
-                                                                        style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
-                                                                    >
-                                                                        View
+                                                                        <Fab
+                                                                            variant="extended"
+                                                                            size="small"
+                                                                            aria-label="add"
+                                                                            onClick={this.handelTransactionInvoiceModal.bind(this, row)}
+                                                                            style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
+                                                                        >
+                                                                            View
                                                 </Fab>
 
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        );
-                                                    })}
-                                                </TableBody>
-                                            </Table>}
-                                        {groupedTransactionData[suplierNumber].length > 0 ? "" :
-                                            <div className={classes.defaultTemplate}>
-                                                {<span className={classes.defaultSpan}>
-                                                    <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
-                                            </div>}
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            );
+                                                        })}
+                                                    </TableBody>
+                                                </Table>}
+                                            {groupedTransactionData[suplierNumber].length > 0 ? "" :
+                                                <div className={classes.defaultTemplate}>
+                                                    {<span className={classes.defaultSpan}>
+                                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
+                                                </div>}
 
 
-                                    </ExpansionPanelDetails>
-                                </ExpansionPanel>
-                            </div>)
-                        ) : <Loader />}
-                    </div>
-                    :
-                    (allTransactionsData ? <div style={{ marginTop: 20 }}>
-                        {allTransactionsData && allTransactionsData.length > 0 &&
-                                            <Table className='table-body'>
-                                                <TableHead>
-                                                    <TableRow  >
-                                                        {this.state.tableHeadData.map((option, i) => (
-                                                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
-                                                        ))}
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {allTransactionsData.map((row, i) => {
-                                                        return (
-                                                            //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
-                                                            <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </div>)
+                            ) : <Loader />}
+                        </div>
+                        :
+                        (allTransactionsData ? <div style={{ margin: 20 }}>
+                            {allTransactionsData && allTransactionsData.length > 0 &&
+                                <Table className='table-body'>
+                                    <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
+                                        <TableRow  >
+                                            {this.state.tableHeadData.map((option, i) => (
+                                                <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                            ))}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {allTransactionsData.map((row, i) => {
+                                            return (
+                                                //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
+                                                <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
-                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                                    {row.id ? row.id : "-"}
-                                                                </TableCell>
-                                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                                    {row.supplier_fullname ? row.supplier_fullname : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                                    <div className="text-ellpses">
-                                                                        {row.supplier_business_name ? row.supplier_business_name : "-"}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 3)}>
-                                                                    <div className="text-ellpses">
-                                                                        {row.createdtime ? row.createdtime : "-"}
-                                                                    </div>
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                                    {row.amount ? row.amount : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                                    {row.payment_mode ? row.payment_mode : "-"}
-                                                                </TableCell>
-                                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                        {row.id ? row.id : "-"}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                        {row.supplier_fullname ? row.supplier_fullname : "-"}
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                        <div className="text-ellpses">
+                                                            {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                        <div className="text-ellpses">
+                                                            {row.createdtime ? row.createdtime : "-"}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                        {row.amount ? row.amount : "-"}
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                        {row.payment_mode ? row.payment_mode : "-"}
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
 
-                                                                    <Fab
-                                                                        variant="extended"
-                                                                        size="small"
-                                                                        aria-label="add"
-                                                                        onClick={this.handelTransactionInvoiceModal.bind(this, row)}
-                                                                        style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
-                                                                    >
-                                                                        View
+                                                        <Fab
+                                                            variant="extended"
+                                                            size="small"
+                                                            aria-label="add"
+                                                            onClick={this.handelTransactionInvoiceModal.bind(this, row)}
+                                                            style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
+                                                        >
+                                                            View
                                                 </Fab>
 
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        );
-                                                    })}
-                                                </TableBody>
-                                            </Table>}
-                                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
-                                            <div className={classes.defaultTemplate} 
-                                                style={{marginTop: "20%",
-                                                textAlign: "center",
-                                                fontSize: "24px"}}>
-                                                {<span className={classes.defaultSpan}>
-                                                    <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>}
-                                            </div>}
-                                            {/* {!allTransactionsData && <Loader />} */}
-                    </div> : <Loader />)
-                }
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>}
+                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
+                                <div className={classes.defaultTemplate}
+                                    style={{
+                                        marginTop: "20%",
+                                        textAlign: "center",
+                                        fontSize: "24px"
+                                    }}>
+                                    {<span className={classes.defaultSpan}>
+                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>}
+                                </div>}
+                            {/* {!allTransactionsData && <Loader />} */}
+                        </div> : <Loader />)
+                    }
 
 
                 </Dialog>
