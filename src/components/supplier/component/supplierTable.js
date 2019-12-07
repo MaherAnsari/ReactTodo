@@ -198,6 +198,7 @@ class SupplierTable extends Component {
 
                       <UserFilterDataView
                             stateList={this.state.stateList}
+                            role = "la"
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}

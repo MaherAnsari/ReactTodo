@@ -7,9 +7,8 @@ import ReactDOM from 'react-dom';
 import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
 import mandiDataService from '../../app/mandiDataService/mandiDataService';
-
 import UserFilterOption from "./UserFilterOption";
-
+import Badge from '@material-ui/core/Badge';
 
 const styles = theme => ({
     root: {
@@ -120,6 +119,9 @@ class UserFilterDataView extends React.Component {
             delete data["searchVal"];
         }
 
+        if(this.props.role){
+            data['role'] = this.props.role;
+        }
         if (Object.keys(this.state.filterOptionData).length > 0) {
             for (var keys in this.state.filterOptionData) {
                 data[keys] = this.state.filterOptionData[keys];
@@ -163,11 +165,16 @@ class UserFilterDataView extends React.Component {
 
 
     onFilterDataAdded( data ){
-        this.setState({filterOptionData : data })
+        console.log(data);
+        this.setState({filterOptionData : data,isFilterDialogOpen:false,open:false })
       }
 
       onFilterClick(event){
-        this.setState({isFilterDialogOpen:true,open:true})
+        this.setState({isFilterDialogOpen:true,open:true});
+      }
+
+      onFilterClose(event){
+        this.setState({isFilterDialogOpen:false,open:false});
       }
     render() {
         const { classes } = this.props;
@@ -208,12 +215,18 @@ class UserFilterDataView extends React.Component {
                                     }
                                 </React.Fragment>
                             ))}
-                            {/* <Button component="span" style={{ border: '1px solid #000', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#000', margin: '0px 5px' }} onClick={this.onFilterClick.bind(this)}>
-                                Search
+                             <div><Badge className={classes.margin} style={{height:'50px'}} badgeContent={Object.keys(this.state.filterOptionData).length} color="primary">
+                             <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }} onClick={this.onFilterClick.bind(this)}>
+                                Filter
                                 </Button>
+            </Badge></div>
+                           
                              {this.state.isFilterDialogOpen &&  <UserFilterOption
                              openModal={this.state.open}
-                            onFilterAdded={this.onFilterDataAdded.bind(this)}/>} */}
+                             role={this.props.role}
+                             filterData = {this.state.filterOptionData}
+                             onEditModalCancel = {this.onFilterClose.bind(this)}
+                            onFilterAdded={this.onFilterDataAdded.bind(this)}/>}
                             <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }} onClick={this.getDataBasedOnFilters.bind(this)}>
                                 Search
                                 </Button>

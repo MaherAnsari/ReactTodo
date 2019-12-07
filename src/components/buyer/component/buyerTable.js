@@ -203,6 +203,7 @@ class BrokerTable extends Component {
 
                     <UserFilterDataView
                             stateList={this.state.stateList}
+                            role = "ca"
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}
