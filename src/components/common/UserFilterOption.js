@@ -7,11 +7,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import Utils from './../../app/common/utils';
+import MenuItem from '@material-ui/core/MenuItem'; 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from './../../app/commodityService/commodityService';
+
 
 
 const styles = theme => ({
@@ -23,9 +23,9 @@ const styles = theme => ({
         fontFamily: 'Montserrat, sans-serif',
     },
     dialogPaper: {
-        minWidth: '700px',
+        minWidth: '600px',
         // maxWidth: '700px',
-        minHeight: '600px',
+        minHeight: '400px',
         // maxHeight: '500px'
     },
     formAddBtn: {
@@ -70,29 +70,13 @@ class UserFilterOption extends Component {
         this.state = {
             commodityList: [],
             open: this.props.openModal,
-            dataObj: {
-                "mobile": "",
-                "profile_completed": true,
-                "fullname": "",
-                "business_name": "",
-                "locality": "",
-                "district": "",
-                "state": "",
-                "role": this.props.role,
-                "default_commodity": [],
-                "bijak_verified": false,
-                "bijak_assured": false,
-                "exposure_cutoff_limit": 100,
-                "active": true,
-                "rating": 5
-            },
-            requiredKey: ['fullname', 'mobile', 'role'],
-            roleList: ['la', 'ca', 'broker'],
-            isUpdate: false,
-            isInfo: false,
-            payload: {},
-            "districtMap": Utils.getDistrictData(),
-            "districtList": [],
+            dataObj: {  },
+            roleList: ['All','la', 'ca', 'broker'], 
+            bijak_verified : ["All","Yes", "No"],
+            bijak_assured : ["All","Yes", "No"],
+            profile_completed : ["All","Yes", "No"],
+            active : ["All","Yes", "No"],
+            commodity:[]
 
 
 
@@ -101,6 +85,26 @@ class UserFilterOption extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
+        let commodityArr = [];
+        // console.log(this.props.filterData);
+        let obj = this.props.filterData;
+        // let data = {};
+        // for(let key in obj){
+        //     if(obj[key] === true){
+        //         data[key] =  "Yes";
+        //     }else if(obj[key] === false){
+        //         data[key] = "No";
+        //     }else{
+        //         data[key] = obj[key];
+        //     }
+        // }
+        if(this.props.filterData['default_commodity']){
+            commodityArr = this.props.filterData['default_commodity'].split(",");
+            // console.log(commodityArr);
+        }
+        this.setState({dataObj:this.props.filterData,commodity:commodityArr});
+        
+     
     }
 
 
@@ -139,28 +143,39 @@ class UserFilterOption extends Component {
     handleChange = event => {
         let data = this.state.dataObj;
         let id = event.target.id;
-       if (id === "default_commodity" ) {
-            data[id] = event.target.value.split(',');
-        } else {
+      
             data[id] = event.target.value;
-        }
+        
         this.setState({ dataObj: data });
     }
 
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
-        console.log(event);
+        console.log(values);
         let data = this.state.dataObj;
-        if (values.length > 0) {
-            for (var i = 0; i < values.length; i++) {
-                commoditylist.push(values[i].name);
-            }
-        }
-        data["default_commodity"] = commoditylist;
-        this.setState({ dataObj: data })
+        // if (values.length > 0) {
+        //     for (var i = 0; i < values.length; i++) {
+        //         commoditylist.push(values[i].name);
+        //     }
+        // }
+        data["default_commodity"] = values.join();
+        // console.log(data);
+        this.setState({ dataObj: data,commodity: values})
     }
 
-
+    handleStateChange= (id, event) => { 
+        let data = this.state.dataObj; 
+        let val = event.target.value;
+        // if(val === "Yes"){
+        //     data[id] = true;
+        // }else if(val === "No"){
+        //     data[id] = false;
+        // }else{
+            data[id] = event.target.value;
+        // }
+        
+        this.setState({ dataObj: data }); 
+    }
 
     onSubmitClick = () => {
       
@@ -177,47 +192,13 @@ class UserFilterOption extends Component {
 
 
     handleAddClick(event) {
-       
-
+       if(!this.state.commodity.length){
+           delete this.state.dataObj.default_commodity;
+       }
+        this.props.onFilterAdded(this.state.dataObj);
     }
-    handleCheckbox(id, event) {
-        let obj = this.state.dataObj;
-        obj[id] = !obj[id];
-        this.setState({ QueryObj: obj });
-    }
+ 
 
-    handleStateChange = (id, event) => {
-        let data = this.state.dataObj;
-        data[id] = event.target.value;
-        this.setState({ dataObj: data });
-        if (id === "state") {
-            let val = event.target.value;
-            this.state.dataObj.district = "";
-            if (this.state.districtMap.hasOwnProperty(val.toLowerCase())) {
-                let list = this.state.districtMap[val.toLowerCase()];
-                this.setState({ districtList: list });
-            }
-
-        }
-    };
-
-    getHeader(){
-        if(this.props.isInfo){
-            return this.state.dataObj.fullname ;
-        }else{
-            return "User Data";
-        }
-    }
-
-    getProfileColor(data){
-        if(data <= 2 ){
-            return 'red';
-        }else if(data >2 && data <= 5){
-            return '#d8d805';
-        }else{
-            return "green";
-        }
-    }
     render() {
         const { classes } = this.props;
         return (<div> <Dialog style={{ zIndex: '1' }}
@@ -225,25 +206,40 @@ class UserFilterOption extends Component {
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
-                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px',display:'flex',marginLeft:'35%',width:'60%' }}>Filter Option</div>  </DialogTitle> 
+                    <DialogTitle style={{ height: '60px' }} id="form-dialog-title"><div style={{ color: '#000', fontFamily: 'Lato', fontSize: '20px',display:'flex' }}>Filter Option</div>  </DialogTitle> 
             <DialogContent> 
 
           
+        
 
-
-                <div style={{ display: 'flex' }}>
-             
+               {!this.props.role && <TextField 
+                        select 
+                        id="role" 
+                        label="Role" 
+                        disabled={this.state.isInfo}
+                        type="text" 
+                        style={{ marginRight: '2%', width: '98%', marginTop: '5px' }} 
+                        value={this.state.dataObj.role} 
+                        onChange={this.handleStateChange.bind(this, 'role')} 
+ 
+                    > 
+ 
+                        {this.state.roleList.map((option, i) => ( 
+                            <MenuItem key={i} value={option} selected={true}> 
+                                {option} 
+                            </MenuItem> 
+                        ))} 
+               </TextField> }
                     <Autocomplete
                         multiple
                         id="fixed-tags-demo"
-                        disabled={this.state.isInfo}
                         options={this.state.commodityList}
                         getOptionLabel={e => e}
-                        defaultValue={this.state.dataObj.default_commodity}
+                        defaultValue={this.state.commodity}
                         onChange={this.handelAutoCompleteChange}
                         renderTags={(value, getTagProps) =>
                             value.map((option, index) => (
-                                <Chip disabled={this.state.isInfo} label={option} {...getTagProps({ index })} />
+                                <Chip label={option} {...getTagProps({ index })} />
                             ))
                         }
                         style={{ width: "98%" }}
@@ -256,10 +252,82 @@ class UserFilterOption extends Component {
                             />
                         )}
                     />
-                </div>
-  
-                <div style={{ display: 'flex' }}>
-              
+                    <TextField 
+                        select 
+                        id="bijak_verified" 
+                        label="Bijak Verified" 
+                        disabled={this.state.isInfo}
+                        type="text" 
+                        style={{ marginRight: '2%', width: '98%', marginTop: '5px' }} 
+                        value={this.state.dataObj.bijak_verified} 
+                        onChange={this.handleStateChange.bind(this, 'bijak_verified')} 
+ 
+                    >
+ 
+                        {this.state.bijak_verified.map((option, i) => ( 
+                            <MenuItem key={i} value={option} selected={true}> 
+                                {option} 
+                            </MenuItem> 
+                        ))} 
+                    </TextField> 
+                    <TextField 
+                        select 
+                        id="bijak_assured" 
+                        label="Bijak Assured" 
+                        disabled={this.state.isInfo}
+                        type="text" 
+                        style={{ marginRight: '2%', width: '98%', marginTop: '5px' }} 
+                        value={this.state.dataObj.bijak_assured} 
+                        onChange={this.handleStateChange.bind(this, 'bijak_assured')} 
+ 
+                    > 
+ 
+                        {this.state.bijak_assured.map((option, i) => ( 
+                            <MenuItem key={i} value={option} selected={true}> 
+                                {option} 
+                            </MenuItem> 
+                        ))} 
+                    </TextField> 
+                    <TextField 
+                        select 
+                        id="profile_completed" 
+                        label="Profile Completed" 
+                        disabled={this.state.isInfo}
+                        type="text" 
+                        style={{ marginRight: '2%', width: '98%', marginTop: '5px' }} 
+                        value={this.state.dataObj.profile_completed} 
+                        onChange={this.handleStateChange.bind(this, 'profile_completed')} 
+ 
+                    > 
+ 
+                        {this.state.profile_completed.map((option, i) => ( 
+                            <MenuItem key={i} value={option} selected={true}> 
+                                {option} 
+                            </MenuItem> 
+                        ))} 
+                    </TextField> 
+             
+                  
+                    <TextField 
+                        select 
+                        id="active" 
+                        label="User Active" 
+                        disabled={this.state.isInfo}
+                        type="text" 
+                        style={{ marginRight: '2%', width: '98%', marginTop: '5px' }} 
+                        value={this.state.dataObj.active} 
+                        onChange={this.handleStateChange.bind(this, 'active')} 
+ 
+                    > 
+ 
+                        {this.state.active.map((option, i) => ( 
+                            <MenuItem key={i} value={option} selected={true}> 
+                                {option} 
+                            </MenuItem> 
+                        ))} 
+                    </TextField> 
+             
+{/*               
                     <TextField
                         margin="dense"
                         id="rating"
@@ -270,44 +338,8 @@ class UserFilterOption extends Component {
                         value={this.state.dataObj.rating}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />
-                </div>
-
-
-
-
-                <div style={{ display: 'flex', marginTop: '20px' }}>
-                    <div style={{ marginRight: '2%', width: '38%' }}>
-                        <Checkbox
-                            style={{ height: 24, width: 34 }}
-                            checked={this.state.dataObj.bijak_verified}
-                            onClick={this.handleCheckbox.bind(this, "bijak_verified")}
-                            tabIndex={-1}
-                            disabled={this.state.isInfo}
-                            disableRipple
-                        />Is Bijak Verified</div>
-
-                    <div style={{ marginRight: '2%', width: '38%' }}>
-                        <Checkbox
-                            style={{ height: 24, width: 34 }}
-                            checked={this.state.dataObj.bijak_assured}
-                            onClick={this.handleCheckbox.bind(this, "bijak_assured")}
-                            tabIndex={-1}
-                            disabled={this.state.isInfo}
-                            disableRipple
-                        />Is Bijak Assured</div>
-                    <div style={{ marginRight: '2%', width: '38%' }}>
-                        <Checkbox
-                            style={{ height: 24, width: 34 }}
-                            checked={this.state.dataObj.active}
-                            onClick={this.handleCheckbox.bind(this, "active")}
-                            tabIndex={-1}
-                            disabled={this.state.isInfo}
-                            disableRipple
-                        />Is User Enable</div>
-                </div>
-
-
+                    /> */}
+            
             </DialogContent>
             <DialogActions>
                  <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Ok</Button>

@@ -203,6 +203,7 @@ class BrokerTable extends Component {
 
                     <UserFilterDataView
                             stateList={this.state.stateList}
+                            role = "ca"
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}
@@ -220,7 +221,7 @@ class BrokerTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData.map((row, i) => {
+                            {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
                                     return (
                                         <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>

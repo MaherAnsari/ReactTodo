@@ -142,7 +142,7 @@ class OrderListTable extends Component {
                                     <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{ marginLeft: '5%' }} alt="Smiley face" width="42" height="42" />
                                         <p className="name">{option} </p></div>
                                     <Card className="detailCard">
-                                        <div className="commodityDetail">District Name</div>
+                                        <div className="commodityDetail">Market Name</div>
                                         {this.state.tableBodyData[option].map((row, i) => {
                                             return (<div key={"data_"+i} className="districtDiv">
                                                 <div style={{ width: "25%" }}>{row.market}</div>
