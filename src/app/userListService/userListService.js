@@ -30,7 +30,7 @@ let userListService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list?searchVal=' ,
+            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list' ,
             params: param
         });
     },

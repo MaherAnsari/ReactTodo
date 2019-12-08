@@ -86,10 +86,21 @@ class UserFilterOption extends Component {
     componentDidMount() {
         this.getCommodityNames();
         let commodityArr = [];
-        console.log(this.props.filterData);
+        // console.log(this.props.filterData);
+        let obj = this.props.filterData;
+        // let data = {};
+        // for(let key in obj){
+        //     if(obj[key] === true){
+        //         data[key] =  "Yes";
+        //     }else if(obj[key] === false){
+        //         data[key] = "No";
+        //     }else{
+        //         data[key] = obj[key];
+        //     }
+        // }
         if(this.props.filterData['default_commodity']){
             commodityArr = this.props.filterData['default_commodity'].split(",");
-            console.log(commodityArr);
+            // console.log(commodityArr);
         }
         this.setState({dataObj:this.props.filterData,commodity:commodityArr});
         
@@ -155,13 +166,13 @@ class UserFilterOption extends Component {
     handleStateChange= (id, event) => { 
         let data = this.state.dataObj; 
         let val = event.target.value;
-        if(val === "Yes"){
-            data[id] = true;
-        }else if(val === "No"){
-            data[id] = false;
-        }else{
+        // if(val === "Yes"){
+        //     data[id] = true;
+        // }else if(val === "No"){
+        //     data[id] = false;
+        // }else{
             data[id] = event.target.value;
-        }
+        // }
         
         this.setState({ dataObj: data }); 
     }
@@ -316,7 +327,7 @@ class UserFilterOption extends Component {
                         ))} 
                     </TextField> 
              
-              
+{/*               
                     <TextField
                         margin="dense"
                         id="rating"
@@ -327,7 +338,7 @@ class UserFilterOption extends Component {
                         value={this.state.dataObj.rating}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />
+                    /> */}
             
             </DialogContent>
             <DialogActions>

@@ -109,13 +109,14 @@ class UserFilterDataView extends React.Component {
             district: this.state.districtid["value"],
             searchVal: this.state.searchedTxt
         }
+        console.log(data);
         if (data["state"] === "") {
             delete data["state"];
         }
         if (data["district"] === "") {
             delete data["district"];
         }
-        if (data["searchVal"] === "") {
+        if (!data["searchVal"] || data["searchVal"] === "") {
             delete data["searchVal"];
         }
 
@@ -124,7 +125,14 @@ class UserFilterDataView extends React.Component {
         }
         if (Object.keys(this.state.filterOptionData).length > 0) {
             for (var keys in this.state.filterOptionData) {
-                data[keys] = this.state.filterOptionData[keys];
+                if(this.state.filterOptionData[keys] === "Yes"){
+                    data[keys] = true;
+                }else if(this.state.filterOptionData[keys] === "Yes"){
+                    data[keys] = false;
+                }else{
+                    data[keys] = this.state.filterOptionData[keys];
+                }
+                
             }
         }
 
@@ -135,7 +143,7 @@ class UserFilterDataView extends React.Component {
 
     handelSearchInputChange = (event) => {
         this.setState({ searchedTxt: event.target.value || "a" })
-        console.log(event.target.value);
+        // console.log(event.target.value);
     }
 
 
@@ -165,7 +173,7 @@ class UserFilterDataView extends React.Component {
 
 
     onFilterDataAdded( data ){
-        console.log(data);
+        // console.log(data);
         this.setState({filterOptionData : data,isFilterDialogOpen:false,open:false })
       }
 
