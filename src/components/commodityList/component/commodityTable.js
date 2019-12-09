@@ -10,7 +10,11 @@ import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Switch from '@material-ui/core/Switch';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
-import  commodityService  from '../../../app/commodityService/commodityService';
+import commodityService from '../../../app/commodityService/commodityService';
+import EditIcon from '@material-ui/icons/Edit';
+import EditCommodityList from './EditCommodityList';
+
+
 
 const theme = createMuiTheme({
   overrides: {
@@ -46,7 +50,7 @@ const styles = theme => ({
     paddingRight: '4px',
     textAlign: 'center',
     maxWidth: '200px',
-    padding:"12px"
+    padding: "12px"
   },
   titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
   defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -68,9 +72,9 @@ const styles = theme => ({
     fontSize: '14px',
     maxWidth: 'none',
   },
-  toggle:{
-    fontSize:'15px',
-    color:'#000'
+  toggle: {
+    fontSize: '15px',
+    color: '#000'
   }
 });
 
@@ -80,14 +84,16 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["name", "category", "weight","Hindi Name"],
+      tableHeadData: ["name", "category", "weight", "Hindi Name"],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
-      rawTableBodyData: [],
       searchedText: "",
+
       editableData: {},
       showServerDialog: false,
-      deleteId: null
+      deleteId: null,
+
+      showEditDataModal : false
 
     }
   }
@@ -110,58 +116,52 @@ class CommodityTable extends Component {
     this.setState({ tableBodyData: updatedRow });
   }
 
-
-  onEditClicked(particularTaskData, event) {
-    this.setState({ editableData: JSON.parse(JSON.stringify(particularTaskData)), showServerDialog: true });
-  }
-
-  onModalClosed(event) {
-
-    this.setState({ editableData: {}, showServerDialog: false });
-    this.props.onEditModalClosed(event);
-  }
-  onModalCancel(event) {
-    this.setState({ editableData: {}, showServerDialog: false });
-  }
-
   getTableCellClass(classes, index) {
     return classes.tableCell;
   }
 
-  onDeleteMandi(id, event) {
-    // console.log(this.state.dataObj);
-    let dialogText = "Are you sure to delete ?"
 
-    this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteId: id });
-
-  }
   handelCancelUpdate = () => {
     this.setState({ showConfirmDialog: false, alertData: {} });
   }
-  handleDialogCancel(event) {
-    this.props.onEditModalCancel();
-  }
-  handleChange(row,event){
-    let obj = {"data":{
-      "name":row.name,
-      "active":!row.active
-    }}
+
+
+  handleChange(row, event) {
+    let obj = {
+      "data": {
+        "name": row.name,
+        "active": !row.active
+      }
+    }
     this.updateCommodity(obj);
   }
 
 
-  async updateCommodity(payload){
-    // let rows = [];
+  async updateCommodity(payload) {
     let resp = await commodityService.updateCommodity(payload);
-    // console.log(resp.data);
     if (resp.data.status === 1) {
       alert("Successfully Update");
-       this.props.onClose();
-    }else{
+      this.props.onClose();
+    } else {
       alert("Ooops! there was an error");
     }
- 
   }
+
+  //edit option
+  handelEditModalOpen(data) {
+    this.setState({ editableData: data, showEditDataModal: true });
+  }
+
+  handelEditModalClose( event ){
+    this.setState({ editableData: {} , showEditDataModal: false }, function(){
+      this.props.onClose();
+    });
+  }
+  
+  handelEditModalCancel( event ){
+    this.setState({ editableData: {} , showEditDataModal: false });
+  }
+
 
 
   render() {
@@ -201,15 +201,23 @@ class CommodityTable extends Component {
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell>
-                      <TableCell > 
-                      <Switch
-                        checked={row.active}
-                        onChange={this.handleChange.bind(this,row)}
-                        value={row.active}
-                        color="primary"
-                        inputProps={{ 'aria-label': 'secondary checkbox' }}
-                      /><span className={classes.toggle}>Active</span></TableCell>
+                      <TableCell >
+                        <Switch
+                          checked={row.active}
+                          onChange={this.handleChange.bind(this, row)}
+                          value={row.active}
+                          color="primary"
+                          inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        /><span className={classes.toggle}>Active</span></TableCell>
+                      {/* Edit option Added */}
+                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >
+                        <EditIcon
+                          className="material-Icon"
+                          onClick={() => this.handelEditModalOpen(row)}
+                          style={{ color: "#e72e89", cursor: "pointer" }} />
+                      </TableCell>
                     </TableRow>
+
                   );
                 })}
               </TableBody>
@@ -221,6 +229,15 @@ class CommodityTable extends Component {
               {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
           </div>}
+
+          {this.state.showEditDataModal && <EditCommodityList
+            openModal={this.state.showEditDataModal}
+            editableData={this.state.editableData}
+            onEditModalClosed={this.handelEditModalClose.bind(this)}
+            onEditModalCancel={this.handelEditModalCancel.bind(this)}
+          />}
+
+
           {this.state.showConfirmDialog ?
             <ConfirmDialog
               dialogText={this.state.dialogText}
