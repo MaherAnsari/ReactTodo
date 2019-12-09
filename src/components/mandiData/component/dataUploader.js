@@ -12,44 +12,12 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
 const styles = theme => ({
-    heading: {
-        fontSize: '21px',
-        fontWeight: '500',
-        marginTop: '0',
-        marginBottom: '0',
-        fontFamily: 'Montserrat, sans-serif',
-    },
+
     dialogPaper: {
         minWidth: '700px',
         // maxWidth: '700px',
         minHeight: '400px',
         // maxHeight: '500px'
-    },
-    formAddBtn: {
-        width: '90%',
-        borderRadius: '10px',
-        fontSize: '20px',
-        textTransform: 'uppercase',
-        backgroundColor: '#4d9fa0 ',
-        color: '#fff',
-        height: '45px',
-        marginBottom: '15px',
-        marginTop: "11px",
-        marginRight: 'auto',
-        marginLeft: 'auto'
-    },
-    formRoot: {
-        // display: 'flex',
-        flexWrap: 'wrap',
-        width: '100%',
-        // marginLeft: '25%',
-        border: '1px solid #ccc',
-        boxShadow: '2px 2px 6px 0px  rgba(0,0,0,0.3)',
-        borderRadius: '4px',
-        marginBottom: '20px',
-        marginTop: '8%',
-        padding: '25px',
-        textAlign: 'center'
     },
     offDay: {
         textAlign: 'center',
