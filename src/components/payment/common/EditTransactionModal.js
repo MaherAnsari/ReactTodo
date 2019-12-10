@@ -32,7 +32,7 @@ const styles = theme => ({
     },
     dialogPaper: {
         minWidth: '700px',
-        // maxWidth: '700px',
+        maxWidth: '700px',
         minHeight: '400px',
         // maxHeight: '500px'
     },

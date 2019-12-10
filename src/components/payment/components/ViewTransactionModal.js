@@ -369,7 +369,11 @@ class ViewTransactionModal extends Component {
 
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                                     
-                                                                    <i className="fa fa-circle" data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} style={{ color: row.active ? "green": "red" }} aria-hidden="true"></i> &nbsp;
+                                                                   { !row.active && 
+                                                                   <i className="fa fa-circle"
+                                                                      data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} 
+                                                                      style={{ color: "#776969", fontSize:"17px" , cursor:"pointer", marginLeft: "-12%"}} 
+                                                                      aria-hidden="true"></i>} &nbsp;
                                                                     
                                                                     {row.id ? row.id : "-"}
                                                                     </TableCell>
@@ -446,7 +450,12 @@ class ViewTransactionModal extends Component {
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <i className="fa fa-circle"  data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} style={{cursor:"pointer",color: row.active ? "green": "red" , cursor:"pointer"}} aria-hidden="true"></i> &nbsp;
+                                                    { !row.active && 
+                                                                   <i className="fa fa-circle"
+                                                                      data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} 
+                                                                      style={{ color: "#776969", fontSize:"17px" , cursor:"pointer", marginLeft: "-12%"}} 
+                                                                      aria-hidden="true"></i>} &nbsp;
+                                                                    
                                                         {row.id ? row.id : "-"}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
