@@ -154,7 +154,7 @@ class MandiRateContainer extends React.Component {
                     }
 
                     <div className="updateBtndef">
-                        <div className="updateBtnFixed" style={{ display: 'flex', right: "50px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD INFO</p></div>
+                        <div className="updateBtnFixed" style={{ display: 'flex', right: "50px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD MANDI RATES</p></div>
                     </div>
 
                 </Paper>

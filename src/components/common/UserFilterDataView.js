@@ -127,7 +127,7 @@ class UserFilterDataView extends React.Component {
             for (var keys in this.state.filterOptionData) {
                 if(this.state.filterOptionData[keys] === "Yes"){
                     data[keys] = true;
-                }else if(this.state.filterOptionData[keys] === "Yes"){
+                }else if(this.state.filterOptionData[keys] === "No"){
                     data[keys] = false;
                 }else{
                     data[keys] = this.state.filterOptionData[keys];
