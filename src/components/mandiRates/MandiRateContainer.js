@@ -9,6 +9,7 @@ import OrderListTable from "./components/OrderListTable";
 import Utils from '../../app/common/utils';
 import commodityService from '../../app/commodityService/commodityService';
 import mandiDataService from '../../app/mandiDataService/mandiDataService';
+import AddRatesDialog from './components/AddRatesDialog';
 const styles = theme => ({
     root: {
         width: '100%',
@@ -40,8 +41,10 @@ class MandiRateContainer extends React.Component {
             stateList: [],
             districtList: [],
             commodityList: [],
-            districtData:null,
-            mandiListData:{},showLoader:false
+            districtData: null,
+            mandiListData: {}, showLoader: false,
+            open: false,
+            showAddModal: false,
 
         }
     }
@@ -67,11 +70,11 @@ class MandiRateContainer extends React.Component {
     }
 
     async getDistrictData() {
-  let resp = await mandiDataService.getDistrictList();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ districtData: resp.data.result.data });
-            }
-       
+        let resp = await mandiDataService.getDistrictList();
+        if (resp.data.status === 1 && resp.data.result) {
+            this.setState({ districtData: resp.data.result.data });
+        }
+
 
 
     }
@@ -89,7 +92,7 @@ class MandiRateContainer extends React.Component {
         return optionsData;
     }
 
-   
+
     formatDataForDropDown(data, labelKey, valuekey) {
         // console.log(data);
         var optionsData = [];
@@ -103,23 +106,36 @@ class MandiRateContainer extends React.Component {
 
     async getSearchedOrderListData(params) {
         // console.log(params);
-        this.setState({showLoader:true});
+        this.setState({ showLoader: true });
         let obj = {
-            "commodity":params.commodityid,
-            "district":params.districtid,
-            "state":params.stateid
-            }
+            "commodity": params.commodityid,
+            "district": params.districtid,
+            "state": params.stateid
+        }
         try {
             let resp = await commodityService.getCommodityData(obj);
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ mandiListData: resp.data.result.data,showLoader:false });
+                this.setState({ mandiListData: resp.data.result.data, showLoader: false });
             } else {
-                this.setState({ mandiListData: [] ,showLoader:false});
+                this.setState({ mandiListData: [], showLoader: false });
             }
         } catch (err) {
             console.error(err);
-            this.setState({ mandiListData: [] ,showLoader:false});
+            this.setState({ mandiListData: [], showLoader: false });
         }
+    }
+
+    handleClickOpen(event) {
+        this.setState({ showAddModal: true, open: true });
+    }
+
+    handleClose(event) {
+        this.setState({ open: false, showAddModal: false});
+        // this.getData("haryana");
+    }
+
+    onModalCancel(event) {
+        this.setState({ open: false, showAddModal: false });
     }
 
     render() {
@@ -131,13 +147,22 @@ class MandiRateContainer extends React.Component {
                         stateList={this.state.stateList}
                         districtList={this.state.districtList}
                         commodityList={this.state.commodityList}
-                        districtData = {this.state.districtData}
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> :""}  
+                        districtData={this.state.districtData}
+                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} /> : ""}
 
-                        {(this.state.showLoader || !this.state.districtData) ? <Loader/>:<OrderListTable tableData={this.state.mandiListData} />
+                    {(this.state.showLoader || !this.state.districtData) ? <Loader /> : <OrderListTable tableData={this.state.mandiListData} />
                     }
-                    
+
+                    <div className="updateBtndef">
+                        <div className="updateBtnFixed" style={{ display: 'flex', right: "50px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD MANDI RATES</p></div>
+                    </div>
+
                 </Paper>
+                {this.state.showAddModal ?
+                    <AddRatesDialog openModal={this.state.open}
+                    commodityList={this.state.commodityList}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
             </div>
         );
     }

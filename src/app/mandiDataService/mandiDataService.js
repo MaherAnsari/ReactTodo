@@ -97,6 +97,28 @@ let mandiDataService = {
     },
 
 
+    getMarketList: async function ( params ) {
+       
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/mandi/nearlist',
+            params: params
+        });
+    },
+    addCommodityRates: async function (props) {
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/commodity/market/price',
+            data: props
+        });
+    }
+
 };
 
 export default mandiDataService;
