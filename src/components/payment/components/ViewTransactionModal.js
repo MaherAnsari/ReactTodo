@@ -23,42 +23,39 @@ import TransactionInvoiceModal from './TransactionInvoiceModal';
 import Fab from '@material-ui/core/Fab';
 import Loader from '../../common/Loader';
 import DateFnsUtils from '@date-io/date-fns';
-import Grid from '@material-ui/core/Grid';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+import EditIcon from '@material-ui/icons/Edit';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import 'date-fns';
+import EditTransactionModal from '../common/EditTransactionModal';
 
 const theme = createMuiTheme({
     overrides: {
-        MuiFormLabel:{
-            root:{
+        MuiFormLabel: {
+            root: {
                 color: "White"
             }
         },
-        MuiInput:{
-            underline:{
+        MuiInput: {
+            underline: {
                 borderBottom: "1px solid rgb(255, 255, 255)"
+            }
+        },
+        MuiIconButton: {
+            root: {
+                color: "#fff"
+            }
+        },
+        MuiInputBase: {
+            input: {
+                color: "White"
+            }
+        },
+        MuiPickersCalendarHeader: {
+            iconButton: {
+                color: "#000"
+            }
         }
-    },
-    MuiIconButton:{
-        root:{
-            color:"#fff"
-        }
-    },
-    MuiInputBase:{
-        input:{
-            color: "White"
-        }
-    },
-    MuiPickersCalendarHeader:{
-        iconButton : {
-            color: "#000"
-        }
-    }
     }
 });
 
@@ -85,11 +82,11 @@ const styles = theme => ({
         textAlign: 'center',
         maxWidth: '200px'
     },
-    formControl:{
-        color:"#fff"
+    formControl: {
+        color: "#fff"
     },
-    dataHeader:{
-        width:"25%"
+    dataHeader: {
+        width: "25%"
     }
 });
 
@@ -115,7 +112,10 @@ class ViewTransactionModal extends Component {
             showLoader: false,
 
             transDate: this.props.transDate,
-            selectedTab: "all"
+            selectedTab: "all",
+
+            editableData: undefined,
+            showEditTransactionModal: false
         }
     }
 
@@ -165,7 +165,7 @@ class ViewTransactionModal extends Component {
     }
 
     handelModalClose(event) {
-        this.setState({ open: false}, function () {
+        this.setState({ open: false }, function () {
             this.props.onTransactionModalClose();
         })
     }
@@ -192,10 +192,10 @@ class ViewTransactionModal extends Component {
         }
     }
 
-    handelDateChange( dateVal , id){
+    handelDateChange(dateVal, id) {
         var dates = this.state.transDate;
         dates[id] = this.formateDateForApi(dateVal);
-        this.setState({transDate : dates },function(){
+        this.setState({ transDate: dates }, function () {
             this.getTransactionList(this.state.mobileNumber, this.state.transDate);
         });
     }
@@ -210,9 +210,16 @@ class ViewTransactionModal extends Component {
         }
     }
 
+    //edit option
+    handelEditModalOpen(data) {
+        this.setState({ editableData: data, showEditTransactionModal: true });
+    }
+
     render() {
         const { classes } = this.props;
-        const { groupedTransactionData, transDate, allTransactionsData, expanded, supplierNameMapping, buyerInfo, selectedTab } = this.state;
+        const { groupedTransactionData, transDate, allTransactionsData, expanded,
+            supplierNameMapping, buyerInfo, selectedTab,
+            showEditTransactionModal } = this.state;
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -234,38 +241,38 @@ class ViewTransactionModal extends Component {
                                     " - " : "") + (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")}
                             </Typography>
                             <div style={{ display: "flex" }}>
-                            <MuiThemeProvider theme={theme}>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <MuiThemeProvider theme={theme}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
 
+                                        <KeyboardDatePicker
+                                            id="date-picker-dialog"
+                                            label="Transaction start date"
+                                            format="dd/MM/yyyy"
+                                            maxDate={new Date()}
+                                            value={transDate["startDate"]}
+                                            onChange={(dateval) => {
+                                                this.handelDateChange(dateval, "startDate");
+                                            }}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                        &nbsp;
+                                        &nbsp;
                                     <KeyboardDatePicker
-                                         id="date-picker-dialog"
-                                        label="Transaction start date"
-                                        format="dd/MM/yyyy"
-                                        maxDate={ new Date()}
-                                        value={transDate["startDate"]}
-                                        onChange={(dateval) => {
-                                            this.handelDateChange(dateval , "startDate");
-                                        }}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                    &nbsp;
-                                    &nbsp;
-                                    <KeyboardDatePicker
-                                         id="date-picker-dialog"
-                                        label="Transaction end date"
-                                        format="dd/MM/yyyy"
-                                        value={transDate["endDate"]}
-                                        maxDate={ new Date()}
-                                        onChange={(dateval) => {
-                                            this.handelDateChange(dateval, "endDate");
-                                        }}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
+                                            id="date-picker-dialog"
+                                            label="Transaction end date"
+                                            format="dd/MM/yyyy"
+                                            value={transDate["endDate"]}
+                                            maxDate={new Date()}
+                                            onChange={(dateval) => {
+                                                this.handelDateChange(dateval, "endDate");
+                                            }}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                        />
+                                    </MuiPickersUtilsProvider>
                                 </MuiThemeProvider>
                             </div>
                             <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
@@ -274,7 +281,7 @@ class ViewTransactionModal extends Component {
                         </Toolbar>
                     </AppBar>
 
-                    <div style={{textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
+                    <div style={{ textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
                         <div className={classes.dataHeader}>
                             In amount : <span style={{ color: "rgb(56, 122, 57)" }}>{(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
                         </div >
@@ -282,10 +289,10 @@ class ViewTransactionModal extends Component {
                             Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>{(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
                         </div>
                         <div className={classes.dataHeader}>
-                        Total outstanding balance : <span  style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
+                            Total outstanding balance : <span style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
                         </div>
-                        <div className={classes.dataHeader} style={{color : "rgb(230, 0, 138)"}}>
-                        Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)": "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
+                        <div className={classes.dataHeader} style={{ color: "rgb(230, 0, 138)" }}>
+                            Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
                         </div>
                     </div>
 
@@ -349,7 +356,7 @@ class ViewTransactionModal extends Component {
                                                         {groupedTransactionData[suplierNumber].map((row, i) => {
                                                             return (
                                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
-                                                                <TableRow key={'table_' + i} style={{ background:i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`  }}>
+                                                                <TableRow key={'table_' + i} style={{ background: i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                                         {row.id ? row.id : "-"}
@@ -367,7 +374,7 @@ class ViewTransactionModal extends Component {
                                                                             {row.createdtime ? row.createdtime : "-"}
                                                                         </div>
                                                                     </TableCell>
-                                                                    <TableCell className={this.getTableCellClass(classes, 4)}  style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
                                                                         {row.amount ? row.amount : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -383,8 +390,14 @@ class ViewTransactionModal extends Component {
                                                                             style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
                                                                         >
                                                                             View
-                                                </Fab>
+                                                                    </Fab>
 
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                        <EditIcon
+                                                                            className="material-Icon"
+                                                                            onClick={() => this.handelEditModalOpen(row)}
+                                                                            style={{ color: "#e72e89", cursor: "pointer" }} />
                                                                     </TableCell>
                                                                 </TableRow>
                                                             );
@@ -455,6 +468,13 @@ class ViewTransactionModal extends Component {
                                                 </Fab>
 
                                                     </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                        <EditIcon
+                                                            className="material-Icon"
+                                                            onClick={() => this.handelEditModalOpen(row)}
+                                                            style={{ color: "#e72e89", cursor: "pointer" }} />
+                                                    </TableCell>
+
                                                 </TableRow>
                                             );
                                         })}
@@ -481,6 +501,17 @@ class ViewTransactionModal extends Component {
                         openModal={this.state.showImageInvoiceModal}
                         onInvoiceModalClose={() => { this.setState({ showImageInvoiceModal: false, invoiceModalData: [] }) }}
                         invoiceUrlData={this.state.invoiceModalData} />}
+
+                {showEditTransactionModal && this.state.editableData &&
+                    <EditTransactionModal
+                        open={showEditTransactionModal}
+                        editableTransactionData={this.state.editableData}
+                        onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false }, function(){
+                            this.getTransactionList(this.state.mobileNumber, this.state.transDate);
+                            this.props.onTransactionEdited();
+                        })}
+                        onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
+                    />}
 
             </div>);
     }

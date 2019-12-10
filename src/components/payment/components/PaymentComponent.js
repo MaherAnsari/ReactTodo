@@ -330,6 +330,7 @@ class PaymentComponent extends Component {
                             onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
                             buyerInfo={this.state.buyerInfo}
                             transDate={ this.state.datePayloads}
+                            onTransactionEdited={()=> this.getPaymentInfoDetails(this.state.datePayloads) }
                             mobileNumber={this.state.mobileNumber} />
                     }
 

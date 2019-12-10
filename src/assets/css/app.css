@@ -1126,3 +1126,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 6px;
   background: #60c1d8;
 }
+
+/* for edit transaction pop in Select */
+.MuiPopover-root {
+  z-index: 99999 !important;
+}
