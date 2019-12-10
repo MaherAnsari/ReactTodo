@@ -28,6 +28,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import 'date-fns';
 import EditTransactionModal from '../common/EditTransactionModal';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const theme = createMuiTheme({
     overrides: {
@@ -87,7 +88,11 @@ const styles = theme => ({
     },
     dataHeader: {
         width: "25%"
-    }
+    },
+    lightTooltip: {
+        fontSize: '15px',
+        maxWidth: 'none',
+    },
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -115,7 +120,8 @@ class ViewTransactionModal extends Component {
             selectedTab: "all",
 
             editableData: undefined,
-            showEditTransactionModal: false
+            showEditTransactionModal: false,
+            isDataUpdated: false
         }
     }
 
@@ -167,6 +173,9 @@ class ViewTransactionModal extends Component {
     handelModalClose(event) {
         this.setState({ open: false }, function () {
             this.props.onTransactionModalClose();
+            if (this.state.isDataUpdated) {
+                this.props.onTransactionEdited();
+            }
         })
     }
 
@@ -359,7 +368,10 @@ class ViewTransactionModal extends Component {
                                                                 <TableRow key={'table_' + i} style={{ background: i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                                        {row.id ? row.id : "-"}
+                                                                    
+                                                                    <i className="fa fa-circle" data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} style={{ color: row.active ? "green": "red" }} aria-hidden="true"></i> &nbsp;
+                                                                    
+                                                                    {row.id ? row.id : "-"}
                                                                     </TableCell>
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
@@ -434,6 +446,7 @@ class ViewTransactionModal extends Component {
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <i className="fa fa-circle"  data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} style={{cursor:"pointer",color: row.active ? "green": "red" , cursor:"pointer"}} aria-hidden="true"></i> &nbsp;
                                                         {row.id ? row.id : "-"}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -506,9 +519,8 @@ class ViewTransactionModal extends Component {
                     <EditTransactionModal
                         open={showEditTransactionModal}
                         editableTransactionData={this.state.editableData}
-                        onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false }, function(){
+                        onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
                             this.getTransactionList(this.state.mobileNumber, this.state.transDate);
-                            this.props.onTransactionEdited();
                         })}
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}

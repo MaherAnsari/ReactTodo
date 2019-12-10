@@ -248,9 +248,9 @@ class EditTransactionModal extends Component {
     removeBlankNonMandatoryFields(data) {
         var formateddata = {};
         var keysWithValidUpdateData = {};
-        var mandotaryFields=[ "active", "amount", "amount_bank_entry","bank_id","bank_trxn_id","cashback_allotted_to",
-                    "cashback_value", "creator_role","images","payment_mode","reason", "remarks","supplier_mobile",
-                    "supplierid","transaction_date","transaction_type"];
+        var mandotaryFields = ["active", "amount", "amount_bank_entry", "bank_id", "bank_trxn_id", "cashback_allotted_to",
+            "cashback_value", "creator_role", "images", "payment_mode", "reason", "remarks", "supplier_mobile",
+            "supplierid", "transaction_date", "transaction_type"];
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
@@ -264,9 +264,9 @@ class EditTransactionModal extends Component {
             }
         }
 
-        for( var i = 0; i < mandotaryFields.length ; i++ ){
-            if(formateddata.hasOwnProperty( mandotaryFields[i] ))
-            keysWithValidUpdateData[ mandotaryFields[i] ] = formateddata[ mandotaryFields[i] ]
+        for (var i = 0; i < mandotaryFields.length; i++) {
+            if (formateddata.hasOwnProperty(mandotaryFields[i]))
+                keysWithValidUpdateData[mandotaryFields[i]] = formateddata[mandotaryFields[i]]
         }
 
         return keysWithValidUpdateData;
@@ -274,8 +274,12 @@ class EditTransactionModal extends Component {
 
     prepareSupportingUrlArray(data) {
         var urlArray = [];
-        for (var i = 0; i < data.length > 0; i++) {
-            urlArray.push(data[i]["image_url"]);
+        if (data.length > 0) {
+            for (var i = 0; i < data.length > 0; i++) {
+                urlArray.push(data[i]["image_url"]);
+            }
+        } else {
+            urlArray = this.state.editTransactionPayload["images"];
         }
         return urlArray;
 
@@ -383,7 +387,7 @@ class EditTransactionModal extends Component {
 
     handleStateChange = (id, event) => {
         let data = this.state.editTransactionPayload;
-            data[id] = event.target.checked;
+        data[id] = event.target.checked;
         this.setState({ editableDataObj: data });
     };
 
@@ -406,18 +410,18 @@ class EditTransactionModal extends Component {
                 </DialogTitle>
                 <DialogContent>
 
-                          <div >
-                                <span style={{ lineHeight: "40px" }}>Enable / disable transaction</span>
-                                <Switch
-                                    classes={{ root: classes.muiSwitchroot }}
-                                    checked={editTransactionPayload.active}
-                                    onChange={this.handleStateChange.bind(this, "active")}
-                                    value={editTransactionPayload.active}
-                                    color="primary"
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                />
+                    <div >
+                        <span style={{ lineHeight: "40px" }}>Enable / disable transaction</span>
+                        <Switch
+                            classes={{ root: classes.muiSwitchroot }}
+                            checked={editTransactionPayload.active}
+                            onChange={this.handleStateChange.bind(this, "active")}
+                            value={editTransactionPayload.active}
+                            color="primary"
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        />
 
-                            </div>
+                    </div>
                     <div style={{ display: "flex" }}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
                             <Grid container style={{ width: "49%" }} >
@@ -649,20 +653,20 @@ class EditTransactionModal extends Component {
                             ))}
                         </TextField>
                     </div>
-                    {editTransactionPayload.images && editTransactionPayload.images.length > 0 && 
-                    <div style={{fontFamily: "lato", padding: "10px"}}>
-                        Uploaded Images 
+                    {editTransactionPayload.images && editTransactionPayload.images.length > 0 &&
+                        <div style={{ fontFamily: "lato", padding: "10px" }}>
+                            Uploaded Images
                         </div>}
-                    <div style={{ display : "flex"}}>
-                    {editTransactionPayload.images && editTransactionPayload.images.map((key, i) => (
-                        <div key={"imhs_"+i} style={{ width : "150px", marginLeft: "5px",boxShadow:" 0px 0px 10px 0px rgba(0,0,0,0.75)"}} >
-                            <img src={ key } alt={key} height="150px" />
+                    <div style={{ display: "flex" }}>
+                        {editTransactionPayload.images && editTransactionPayload.images.map((key, i) => (
+                            <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                <img src={key} alt={key} height="150px" />
                             </div>
-                             ))}
+                        ))}
                     </div>
-                   {(!editTransactionPayload.images || editTransactionPayload.images.length === 0) && 
-                     <div style={{fontFamily: "lato", padding: "10px"}}>
-                       No supporting images uploaded yet. you can add by clicking below
+                    {(!editTransactionPayload.images || editTransactionPayload.images.length === 0) &&
+                        <div style={{ fontFamily: "lato", padding: "10px" }}>
+                            No supporting images uploaded yet. you can add by clicking below
                         </div>}
                     <div >
                         <Grid container direction="row" alignItems="stretch">
