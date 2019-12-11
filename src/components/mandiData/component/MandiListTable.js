@@ -20,6 +20,10 @@ import FilterDataView from '../common/FilterDataView';
 
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import LockIcon from '@material-ui/icons/Lock';
+
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+
 const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
@@ -37,6 +41,39 @@ const theme = createMuiTheme({
         fontSize: '15px !important',
         fontFamily: 'lato !important',
         lineHeight: '1.5em',
+      },
+      MuiTypography: {
+        colorInherit: {
+          color: "white"
+        }
+      },
+      MuiInputBase: {
+        input: {
+          color: "#ffffff"
+        }
+      },
+      MuiTablePagination: {
+        selectIcon: {
+          color: "#ffffff"
+        },
+        menuItem: {
+          color: "#000"
+        }
+      },
+      MuiIconButton: {
+        colorInherit: {
+          color: "#ffffff"
+        },
+        root: {
+          "Mui-disabled": {
+            color: "#ffffff"
+          }
+        }
+      },
+      Mui: {
+        disabled: {
+          color: "#717070"
+        }
       }
     },
   }
@@ -94,7 +131,11 @@ class MandiListTable extends Component {
       showEditDataModal: false,
       editableData: undefined,
       "stateList": this.getStateData(),
-      districtData: Utils.getDistrictData()
+      districtData: Utils.getDistrictData(),
+
+      
+      rowsPerPage : 10,
+      page:0,
 
     }
   }
@@ -168,20 +209,29 @@ class MandiListTable extends Component {
     this.setState({ editableData: undefined, showEditDataModal: false });
   }
 
+  handleChangePage = (event, newPage) => {
+    this.setState({ page : newPage });
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ page : 0, rowsPerPage : parseInt(event.target.value, 10) });
+  };
+
   render() {
     const { classes } = this.props;
+    const { rowsPerPage , page} = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
           {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
           <div style={{ display: 'flex' }}>
             {this.state.districtData ?
-             <FilterDataView
-              stateList={this.state.stateList}
-              districtList={this.state.districtList}
-              districtData={Utils.getDistrictData()}
-              onHeaderFilterChange={this.handelFilter.bind(this)}
-            />
+              <FilterDataView
+                stateList={this.state.stateList}
+                districtList={this.state.districtList}
+                districtData={Utils.getDistrictData()}
+                onHeaderFilterChange={this.handelFilter.bind(this)}
+              />
               : ""}
 
             {/* <div style={{ width: '40%' }}>
@@ -203,7 +253,11 @@ class MandiListTable extends Component {
               </TableHead>
               <TableBody>
                 {/*  ["state","state (Hindi)","district", "market","market (Hindi)","district (Hindi)", "Mandi Grade","Mandi Grade( HINDI)", "APMC","Mandi Off Day","Location","Action"], */}
-                {this.state.tableBodyData.map((row, i) => {
+                {this.state.tableBodyData &&
+                (rowsPerPage > 0
+                  ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : this.state.tableBodyData
+                ).map((row, i) => {
                   return (
                     <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -216,10 +270,10 @@ class MandiListTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes": "No") : "-"}</TableCell>
+                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>
-                      {row.is_open ? <LockOpenIcon className="material-Icon" /> : 
-                        <LockIcon className="material-Icon"  style={{color:'red'}}/>}
+                        {row.is_open ? <LockOpenIcon className="material-Icon" /> :
+                          <LockIcon className="material-Icon" style={{ color: 'red' }} />}
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -236,6 +290,23 @@ class MandiListTable extends Component {
                   );
                 })}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50, { label: 'All', value: -1 }]}
+                    colSpan={6}
+                    count={this.state.tableBodyData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
+                </TableRow>
+              </TableFooter>
             </Table>
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
