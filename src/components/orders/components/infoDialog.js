@@ -6,9 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-
 import TextField from '@material-ui/core/TextField';
-
 
 
 const styles = theme => ({
@@ -59,15 +57,15 @@ class InfoDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            keyArr:["supplier_mobile", "buyer_mobile", "source_location", "target_location", "commodity", "qnt",
-             "unit", "type", "bijak_amt", "transport_info", "author_name", "author_mobile", "status", 
-             "remark", "actual_dispatch_date", "actual_arrival_date", "expected_arrival_date", "createdtime", 
-             "updatedtime", "brokerid", "other_info", "supplierid", "buyerid", "rate", "commission_rate", 
-             "commission_unit", "rate_unit", "buyer_name", "buyer_businessname", "broker_name", "broker_businessname", 
-             "supplier_name", "supplier_businessname"],
-             dataObj:{}
+            keyArr: ["supplier_mobile", "buyer_mobile", "source_location", "target_location", "commodity", "qnt",
+                "unit", "type", "bijak_amt", "transport_info", "author_name", "author_mobile", "status",
+                "remark", "actual_dispatch_date", "actual_arrival_date", "expected_arrival_date", "createdtime",
+                "updatedtime", "brokerid", "other_info", "supplierid", "buyerid", "rate", "commission_rate",
+                "commission_unit", "rate_unit", "buyer_name", "buyer_businessname", "broker_name", "broker_businessname",
+                "supplier_name", "supplier_businessname"],
+            dataObj: {}
         }
-      
+
     }
     componentDidMount() {
         if (this.props.data) {
@@ -78,7 +76,7 @@ class InfoDialog extends Component {
                     data[arr[i]] = "";
                 }
             }
-        
+
             this.setState({ dataObj: this.props.data });
         }
 
@@ -115,7 +113,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.supplier_mobile}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="buyer_mobile"
                         label="Buyer Mobile"
@@ -129,77 +127,77 @@ class InfoDialog extends Component {
 
                 </div>
                 <div style={{ display: 'flex' }}>
-                   
-                   <TextField
-                           margin="dense"
-                           id="buyer_name"
-                           label="Buyer Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.buyer_name}
-                           fullWidth
-                       />
-                                         
-                                         <TextField
-                           margin="dense"
-                           id="buyer_businessname"
-                           label="Buyer Buisness Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.buyer_businessname}
-                           fullWidth
-                       />
-                       </div>
-                       <div style={{ display: 'flex' }}>
-                   
-                   <TextField
-                           margin="dense"
-                           id="broker_name"
-                           label="Broker Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.broker_name}
-                           fullWidth
-                       />
-                                         
-                                         <TextField
-                           margin="dense"
-                           id="broker_businessname"
-                           label="Broker Buisness Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.broker_businessname}
-                           fullWidth
-                       />
-                       </div>
-                       <div style={{ display: 'flex' }}>
-                   
-                   <TextField
-                           margin="dense"
-                           id="supplier_name"
-                           label="Supplier Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.supplier_name}
-                           fullWidth
-                       />
-                                         
-                                         <TextField
-                           margin="dense"
-                           id="supplier_businessname"
-                           label="Supplier Buisness Name"
-                           type="text"
-                           disabled={true}
-                           style={{ marginRight: '2%', width: '48%' }}
-                           value={this.state.dataObj.supplier_businessname}
-                           fullWidth
-                       />
-                       </div>
+
+                    <TextField
+                        margin="dense"
+                        id="buyer_name"
+                        label="Buyer Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.buyer_name}
+                        fullWidth
+                    />
+
+                    <TextField
+                        margin="dense"
+                        id="buyer_businessname"
+                        label="Buyer Buisness Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.buyer_businessname}
+                        fullWidth
+                    />
+                </div>
+                <div style={{ display: 'flex' }}>
+
+                    <TextField
+                        margin="dense"
+                        id="broker_name"
+                        label="Broker Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.broker_name}
+                        fullWidth
+                    />
+
+                    <TextField
+                        margin="dense"
+                        id="broker_businessname"
+                        label="Broker Buisness Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.broker_businessname}
+                        fullWidth
+                    />
+                </div>
+                <div style={{ display: 'flex' }}>
+
+                    <TextField
+                        margin="dense"
+                        id="supplier_name"
+                        label="Supplier Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.supplier_name}
+                        fullWidth
+                    />
+
+                    <TextField
+                        margin="dense"
+                        id="supplier_businessname"
+                        label="Supplier Buisness Name"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.supplier_businessname}
+                        fullWidth
+                    />
+                </div>
                 <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
@@ -211,7 +209,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.source_location}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="target_location"
                         label="Target Location"
@@ -234,7 +232,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.commodity}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="qnt"
                         label="Qunatity"
@@ -258,7 +256,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.unit}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="mobile"
                         label="Mobile"
@@ -283,7 +281,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.type}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="amount"
                         label="Amount"
@@ -307,7 +305,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.transport_info}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="author_name"
                         label="Author Name"
@@ -331,7 +329,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.author_mobile}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="status"
                         label="Status"
@@ -354,7 +352,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.remark}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="actual_dispatch_date"
                         label="Dispatch Date"
@@ -377,7 +375,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.actual_arrival_date}
                         fullWidth
                     />
-                   <TextField
+                    <TextField
                         margin="dense"
                         id="expected_arrival_date"
                         label="Expected Arrival date"
@@ -413,7 +411,7 @@ class InfoDialog extends Component {
 
                 </div>
                 <div style={{ display: 'flex' }}>
-                <TextField
+                    <TextField
                         margin="dense"
                         id="brokerid"
                         label="Broker Id"
@@ -424,7 +422,7 @@ class InfoDialog extends Component {
                         fullWidth
                     />
 
-<TextField
+                    <TextField
                         margin="dense"
                         id="other_info"
                         label="Other Info"
@@ -438,8 +436,8 @@ class InfoDialog extends Component {
 
                 </div>
                 <div style={{ display: 'flex' }}>
-                   
-<TextField
+
+                    <TextField
                         margin="dense"
                         id="supplierid"
                         label="Supplier Id"
@@ -449,8 +447,8 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.supplierid}
                         fullWidth
                     />
-                   
-<TextField
+
+                    <TextField
                         margin="dense"
                         id="buyerid"
                         label="Buyer Id"
@@ -461,10 +459,10 @@ class InfoDialog extends Component {
                         fullWidth
                     />
                 </div>
-             
+
                 <div style={{ display: 'flex' }}>
-                   
-<TextField
+
+                    <TextField
                         margin="dense"
                         id="rate"
                         label="Rate"
@@ -474,8 +472,8 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.rate}
                         fullWidth
                     />
-                   
-<TextField
+
+                    <TextField
                         margin="dense"
                         id="commission_rate"
                         label="Commision rate"
@@ -487,8 +485,8 @@ class InfoDialog extends Component {
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
-                   
-                <TextField
+
+                    <TextField
                         margin="dense"
                         id="commission_unit"
                         label="Commision unit"
@@ -498,8 +496,8 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.commission_unit}
                         fullWidth
                     />
-                                      
-                                      <TextField
+
+                    <TextField
                         margin="dense"
                         id="rate_unit"
                         label="Rate Unit"
@@ -509,22 +507,31 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.rate_unit}
                         fullWidth
                     />
-                    </div>
-                  
-               
+                </div>
+                <div style={{padding: "12px 0px", color: "#9e9e9e"}}>
+                {(this.state.dataObj["supporting_images"] && 
+                        this.state.dataObj["supporting_images"] !== null && 
+                        this.state.dataObj["supporting_images"].length > 0) ? 
+                        <div> Supporting Images </div> : <div> No supporting Images added </div>}
+                        </div>
+                <div style={{ display: 'flex' }}>
+                    {this.state.dataObj["supporting_images"] && 
+                        this.state.dataObj["supporting_images"] !== null && 
+                        this.state.dataObj["supporting_images"].length > 0 &&
+
+                        this.state.dataObj["supporting_images"].map((imgKey, i) => (
+                            <div key={"imhs_" + i} className="transaction-supporting-image">
+                                <img src={imgKey} alt={imgKey} height="150px" width="150px"/>
+                            </div>
+                        ))}
+                </div>
+
+
             </DialogContent>
             <DialogActions>
-                {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
-                <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
             </DialogActions>
         </Dialog>
-            {/* {this.state.showConfirmDialog ?
-                <ConfirmDialog
-                    dialogText={this.state.dialogText}
-                    dialogTitle={this.state.dialogTitle}
-                    show={this.state.showConfirmDialog}
-                    onConfirmed={this.handelConfirmUpdate}
-                    onCanceled={this.handelCancelUpdate} /> : ""} */}
         </div>
         );
     }
