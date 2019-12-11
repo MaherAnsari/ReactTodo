@@ -631,7 +631,7 @@ class InfoDialog extends Component {
                             tabIndex={-1}
                             disabled={this.state.isInfo}
                             disableRipple
-                        />Is User Enable</div>
+                        />Is User Enabled</div>
                 </div>
 
 

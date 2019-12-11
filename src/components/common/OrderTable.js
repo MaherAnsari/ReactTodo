@@ -81,9 +81,9 @@ class OrderTable extends Component {
        let param ={};
         if(this.props.data.role === 'ca'){
             param["buyerid"] = this.props.data.mobile;
-        }else  if(this.props.data.role === 'la'){
-            param["brokerid"] = this.props.data.id;
         }else  if(this.props.data.role === 'broker'){
+            param["brokerid"] = this.props.data.id;
+        }else  if(this.props.data.role === 'la'){
             param["supplierid"] = this.props.data.mobile;
         }
         if(Object.keys(param).length){

@@ -109,7 +109,7 @@ class UserFilterDataView extends React.Component {
             district: this.state.districtid["value"],
             searchVal: this.state.searchedTxt
         }
-        console.log(data);
+        // console.log(data);
         if (data["state"] === "") {
             delete data["state"];
         }

@@ -345,7 +345,7 @@ class UserDialog extends Component {
             onClose={this.handleDialogCancel.bind(this)} 
             aria-labelledby="form-dialog-title"                > 
             <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px',display:'flex',marginLeft:'35%',width:'60%' }}>{this.getHeader()}
-    {this.props.isInfo && <p className={classes.profile} style={{background:this.getProfileColor(this.state.dataObj.profile_segment)}}>{this.state.dataObj.profile_segment}</p>}</div>  </DialogTitle> 
+    <p className={classes.profile} style={{background:this.getProfileColor(this.state.dataObj.profile_segment)}}>{this.state.dataObj.profile_segment}</p></div>  </DialogTitle> 
             <DialogContent> 
  
                 <div style={{ display: 'flex' }}> 
