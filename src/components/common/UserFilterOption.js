@@ -226,7 +226,11 @@ class UserFilterOption extends Component {
                 this.state.dataObj['sortorder'] = sortorder;
             }
 
+        }else{
+            delete  this.state.dataObj['sortkey'];
+            delete this.state.dataObj['sortorder']
         }
+        
 
         console.log(this.state.dataObj);
         this.props.onFilterAdded(this.state.dataObj);

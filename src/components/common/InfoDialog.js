@@ -225,14 +225,14 @@ class InfoDialog extends Component {
 
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
-        console.log(event);
+        console.log(values);
         let data = this.state.dataObj;
-        if (values.length > 0) {
-            for (var i = 0; i < values.length; i++) {
-                commoditylist.push(values[i].name);
-            }
-        }
-        data["default_commodity"] = commoditylist;
+        // if (values.length > 0) {
+        //     for (var i = 0; i < values.length; i++) {
+        //         commoditylist.push(values[i].name);
+        //     }
+        // }
+        data["default_commodity"] = values;
         this.setState({ dataObj: data })
     }
 
@@ -341,10 +341,10 @@ class InfoDialog extends Component {
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
-                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px',display:'flex',marginLeft:'35%',width:'60%' }}>{this.getHeader()}
-    {this.props.isInfo && <p className={classes.profile} style={{background:this.getProfileColor(this.state.dataObj.profile_segment)}}>{this.state.dataObj.profile_segment}</p>}</div>  </DialogTitle> 
+                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px'}}>User Data
+</div>  </DialogTitle> 
             <DialogContent> 
-
+   
                 <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
@@ -354,12 +354,12 @@ class InfoDialog extends Component {
                         maxLength="10"
                         required
                         disabled={this.state.isUpdate}
-                        style={{ marginRight: '2%', width: '98%' }}
+                        style={{ marginRight: '2%', width: this.props.role ? '98%' : "48%" }}
                         value={this.state.dataObj.mobile}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
-                    {/* <TextField
+                 {!this.props.role &&   <TextField
                         select
                         id="role"
                         label="Role"
@@ -375,7 +375,7 @@ class InfoDialog extends Component {
                                 {option}
                             </MenuItem>
                         ))}
-                    </TextField> */}
+                    </TextField>}
 
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -384,7 +384,7 @@ class InfoDialog extends Component {
                         id="fullname"
                         label="Fullname"
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
+                        style={{ marginRight: '2%', width:  "48%" }}
                         value={this.state.dataObj.fullname}
                         disabled={this.state.isInfo}
                         onChange={this.handleChange.bind(this)}
@@ -392,7 +392,7 @@ class InfoDialog extends Component {
                         fullWidth
                     />
 
-                    {this.state.isUpdate && <TextField
+                   <TextField
                         margin="dense"
                         id="fullname_hindi"
                         label="Fullname (Hindi)"
@@ -402,7 +402,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.fullname_hindi}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />}
+                    />
                 </div>
 
 
@@ -489,13 +489,13 @@ class InfoDialog extends Component {
                         label="Buisness Name"
                         disabled={this.state.isInfo}
                         type="text"
-                        style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
+                        style={{ marginRight: '2%', width:  "48%" }}
                         value={this.state.dataObj.business_name}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
                     />
 
-                    {this.state.isUpdate && <TextField
+                   <TextField
                         margin="dense"
                         id="business_name_hindi"
                         label="Buisness Name (Hindi)"
@@ -505,7 +505,7 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.business_name_hindi}
                         onChange={this.handleChange.bind(this)}
                         fullWidth
-                    />}
+                    />
 
                 </div>
                 <div style={{ display: 'flex' }}>

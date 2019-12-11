@@ -17,7 +17,7 @@ import BeenhereIcon from '@material-ui/icons/Beenhere';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StarIcon from '@material-ui/icons/Star';
 import HowToRegIcon from '@material-ui/icons/HowToReg';
-import InfoDialog from '../../common/InfoDialog';
+import UserInfo from '../../common/UserInfo';
 import UserFilterDataView from './../../common/UserFilterDataView';
 import Utils from '../../../app/common/utils';
 const theme = createMuiTheme({
@@ -279,7 +279,7 @@ class BrokerTable extends Component {
                             {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                     </div>}
-                    {this.state.showUserModal ? <InfoDialog openModal={this.state.open}
+                    {this.state.showUserModal ? <UserInfo openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         isInfo={this.state.isInfo}

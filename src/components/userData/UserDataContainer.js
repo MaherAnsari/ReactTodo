@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import  userListService  from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
 import UserListTable from './component/UserListTable';
-import UserDialog from './component/UserDialog';
+import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
 
 const styles = theme => ({
@@ -123,7 +123,7 @@ class UserDataContainer extends React.Component {
                     </div>
                 </Card>    :<Loader />}        
 
-                {this.state.showAddModal ? <UserDialog openModal={this.state.open}
+                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
                      onEditModalClosed={this.handleClose.bind(this)}
                      commodityList={ this.state.commodityList}
                      onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
