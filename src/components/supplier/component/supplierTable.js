@@ -20,6 +20,9 @@ import HowToRegIcon from '@material-ui/icons/HowToReg';
 import UserInfo from '../../common/UserInfo';
 import UserFilterDataView from './../../common/UserFilterDataView';
 import Utils from '../../../app/common/utils';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -39,6 +42,40 @@ const theme = createMuiTheme({
                 lineHeight: '1.5em',
             }
         },
+
+        MuiTypography: {
+            colorInherit: {
+                color: "white"
+            }
+        },
+        MuiInputBase: {
+            input: {
+                color: "#ffffff"
+            }
+        },
+        MuiTablePagination: {
+            selectIcon: {
+                color: "#ffffff"
+            },
+            menuItem: {
+                color: "#000"
+            }
+        },
+        MuiIconButton: {
+            colorInherit: {
+                color: "#ffffff"
+            },
+            root: {
+                "Mui-disabled": {
+                    color: "#ffffff"
+                }
+            }
+        },
+        Mui: {
+            disabled: {
+                color: "#717070"
+            }
+        }
     }
 });
 
@@ -54,7 +91,7 @@ const styles = theme => ({
         paddingRight: '4px',
         textAlign: 'center',
         maxWidth: '200px',
-        padding:"8px"
+        padding: "8px"
     },
     titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
     defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -71,19 +108,20 @@ const styles = theme => ({
     root: {
         width: '100%',
         minHeight: '80vh',
-        marginTop:'20px'
+        marginTop: '20px'
     },
     lightTooltip: {
         fontSize: '15px',
         maxWidth: 'none',
     },
-    info:{
+    info: {
         fontSize: '18px',
         marginLeft: '8px',
         color: '#ee4b53',
         cursor: 'pointer',
         // float:'right'
-    }
+    },
+
 });
 
 
@@ -105,7 +143,11 @@ class SupplierTable extends Component {
             userData: {},
             userId: null,
             payload: null,
-            stateList: this.getStateData()
+            stateList: this.getStateData(),
+
+            rowsPerPage: 10,
+            page: 0,
+
 
         }
     }
@@ -120,12 +162,12 @@ class SupplierTable extends Component {
         let data = Utils.getStateData();
         var optionsData = [];
         if (data) {
-          for (var i = 0; i < data.length; i++) {
-            optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
-          }
+            for (var i = 0; i < data.length; i++) {
+                optionsData.push({ label: data[i].toLowerCase(), value: data[i].toLowerCase() });
+            }
         }
         return optionsData;
-      }
+    }
     async handelFilter(data) {
         // let searchedTxt = event.target.value;
         // console.log(searchedTxt);
@@ -146,14 +188,14 @@ class SupplierTable extends Component {
         this.setState({ editableData: {}, showServerDialog: false });
         this.props.onEditModalClosed(event);
     }
- 
+
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
     }
 
     getInfoSTring(obj) {
-        return obj.locality?obj.locality:"" + " , " + obj.district?obj.district:"";
+        return obj.locality ? obj.locality : "" + " , " + obj.district ? obj.district : "";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -173,32 +215,41 @@ class SupplierTable extends Component {
         this.setState({ anchorEl: null });
     }
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
+        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
         this.props.onClose();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
+        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
     }
-    onInfoClick = (info,event)=>{
-        this.setState({showUserModal: true, open: true,userData:JSON.parse(JSON.stringify(info)) ,isInfo:true});
+    onInfoClick = (info, event) => {
+        this.setState({ showUserModal: true, open: true, userData: JSON.parse(JSON.stringify(info)), isInfo: true });
     }
 
 
- 
+
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
+
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+    };
+
+    handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+    };
     render() {
         const { classes } = this.props;
+        const { rowsPerPage , page} = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
                     {/* <div style={{  textAlign: 'center', paddingLeft: '15px', paddingTop: '10px', fontSize: '20px',height:'50px' }}> Total Mandi ({this.state.dataList.length})  </div> */}
                     <div style={{ display: 'flex' }}>
 
-                      <UserFilterDataView
+                        <UserFilterDataView
                             stateList={this.state.stateList}
-                            role = "la"
+                            role="la"
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}
@@ -216,22 +267,26 @@ class SupplierTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
+                                {this.state.tableBodyData && 
+                                 (rowsPerPage > 0
+                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : this.state.tableBodyData
+                                  ).map((row, i) => {
                                     return (
                                         <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                   <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red" }} className="buisness-icon" /> {row.id}</div>
+                                                    <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red" }} className="buisness-icon" /> {row.id}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                            <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.fullname} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.fullname}</div>
                                                 </Tooltip>
-                             
+
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 2)}>
-                                            <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                <Tooltip title={row.business_name} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.business_name}</div>
                                                 </Tooltip>
                                             </TableCell>
@@ -239,11 +294,11 @@ class SupplierTable extends Component {
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
                                                 <Tooltip title={this.getInfoSTring(row)} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{this.getInfoSTring(row)}</div>
-                                                    </Tooltip>
-                                                    </TableCell>
+                                                </Tooltip>
+                                            </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                <Tooltip title={row.default_commodity ? row.default_commodity.join():""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join():""}</div>
+                                                <Tooltip title={row.default_commodity ? row.default_commodity.join() : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join() : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
@@ -261,19 +316,36 @@ class SupplierTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                            <i onClick={this.onInfoClick.bind(this,row)} className={"fa fa-info-circle "+classes.info} aria-hidden="true"></i>
+                                                <i onClick={this.onInfoClick.bind(this, row)} className={"fa fa-info-circle " + classes.info} aria-hidden="true"></i>
                                             </TableCell>
                                         </TableRow>
                                     );
                                 })}
                             </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[ 10, 25,50, { label: 'All', value: -1 }]}
+                                        colSpan={5}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>
                         </Table>
                     </div>
                     {this.state.showUserModal ? <UserInfo openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         isInfo={this.state.isInfo}
-                        commodityList={ this.props.commodityList}
+                        commodityList={this.props.commodityList}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>

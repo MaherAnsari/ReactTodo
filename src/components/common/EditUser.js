@@ -12,48 +12,20 @@ import Utils from '../../app/common/utils';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from '../../app/commodityService/commodityService';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
-
+const theme = createMuiTheme({
+    overrides: {
+      
+        MuiInputBase:{
+            input:{
+                color: "#000"
+            }
+        }
+    }
+});
 const styles = theme => ({
-    heading: {
-        fontSize: '21px',
-        fontWeight: '500',
-        marginTop: '0',
-        marginBottom: '0',
-        fontFamily: 'Montserrat, sans-serif',
-    },
-    dialogPaper: {
-        minWidth: '700px',
-        // maxWidth: '700px', 
-        minHeight: '600px',
-        // maxHeight: '500px' 
-    },
-    formAddBtn: {
-        width: '90%',
-        borderRadius: '10px',
-        fontSize: '20px',
-        textTransform: 'uppercase',
-        backgroundColor: '#4d9fa0 ',
-        color: '#fff',
-        height: '45px',
-        marginBottom: '15px',
-        marginTop: "11px",
-        marginRight: 'auto',
-        marginLeft: 'auto'
-    },
-    formRoot: {
-        // display: 'flex', 
-        flexWrap: 'wrap',
-        width: '100%',
-        // marginLeft: '25%', 
-        border: '1px solid #ccc',
-        boxShadow: '2px 2px 6px 0px  rgba(0,0,0,0.3)',
-        borderRadius: '4px',
-        marginBottom: '20px',
-        marginTop: '8%',
-        padding: '25px',
-        textAlign: 'center'
-    },
+
     profile: {
         marginLeft: '30%',
         background: 'red',
@@ -70,22 +42,7 @@ class EditUser extends Component {
         this.state = {
             commodityList: [],
             open: this.props.openModal,
-            dataObj: {
-                "mobile": "",
-                "profile_completed": true,
-                "fullname": "",
-                "business_name": "",
-                "locality": "",
-                "district": "",
-                "state": "",
-                "role": "ca",
-                "default_commodity": [],
-                "bijak_verified": false,
-                "bijak_assured": false,
-                "exposure_cutoff_limit": 100,
-                "active": true,
-                "rating": 5
-            },
+            dataObj:this.props.data,
             requiredKey: ['fullname', 'mobile', 'role'],
             roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
@@ -101,7 +58,7 @@ class EditUser extends Component {
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
     componentDidMount() {
-         this.getCommodityNames();
+        //  this.getCommodityNames();
         if (this.props.data) {
             let data = this.props.data;
             let arr = ['state', 'district', 'locality', 'business_name', 'business_name_hindi', 'fullname_hindi']
@@ -120,10 +77,10 @@ class EditUser extends Component {
 
             console.log(this.props.data);
 
-            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo });
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo,commodityList:this.props.commodityList });
         }
 
-        // console.log(this.state.dataObj); 
+        console.log(this.state.dataObj); 
         //getting the Commodity Names for ten drop Down  
        
     }
@@ -298,7 +255,8 @@ class EditUser extends Component {
 
     render() {
         const { classes } = this.props;
-        return (<div style={{ width: '100%', padding: '8px 24px' }}>
+        return (
+            <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px' }}>
 
             <div style={{ display: 'flex' }}>
                 <TextField
@@ -418,7 +376,7 @@ class EditUser extends Component {
                     multiple
                     id="fixed-tags-demo"
                     disabled={this.state.isInfo}
-                    options={this.state.commodityList}
+                    options={this.props.commodityList}
                     getOptionLabel={e => e}
                     defaultValue={this.state.dataObj.default_commodity}
                     onChange={this.handelAutoCompleteChange}
@@ -602,6 +560,7 @@ class EditUser extends Component {
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
         </div>
+        </MuiThemeProvider>
         );
     }
 }

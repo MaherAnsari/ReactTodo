@@ -101,13 +101,23 @@ class EditTransactionModal extends Component {
 
     componentWillMount() {
         let obj = {};
+        let attachmentArrayVal = this.state.attachmentArray;
         if (this.state.editTransactionPayload) {
             obj["label"] = this.state.editTransactionPayload["supplier_fullname"];
             obj["value"] = this.state.editTransactionPayload["supplierid"];
         }
         var suppId = [obj];
-
-        this.setState({ supplierid: suppId })
+        if (this.state.editTransactionPayload && this.state.editTransactionPayload["images"] && this.state.editTransactionPayload["images"] !== null) {
+            for (var i = 0; i < this.state.editTransactionPayload["images"].length; i++) {
+                let imgObj = {
+                    bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
+                    image_url: this.state.editTransactionPayload["images"][i],
+                    key: this.state.editTransactionPayload["images"][i]
+                }
+                attachmentArrayVal.push(imgObj)
+            }
+        }
+        this.setState({ supplierid: suppId, attachmentArray : attachmentArrayVal })
 
     }
 
@@ -653,18 +663,24 @@ class EditTransactionModal extends Component {
                             ))}
                         </TextField>
                     </div>
-                    {editTransactionPayload.images && editTransactionPayload.images.length > 0 &&
+                    {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                         <div style={{ fontFamily: "lato", padding: "10px" }}>
                             Uploaded Images
                         </div>}
                     <div style={{ display: "flex" }}>
-                        {editTransactionPayload.images && editTransactionPayload.images.map((key, i) => (
-                            <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
-                                <img src={key} alt={key} height="150px" />
+                        {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                            // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                            //     <img src={key} alt={key} height="150px" />
+                            // </div>
+                            <div key={"imhs_" + i} className="transaction-supporting-image">
+                                <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px"  width="150px" />
+                                <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                    <i className="fa fa-trash fa-lg"></i>
+                                </div>
                             </div>
                         ))}
                     </div>
-                    {(!editTransactionPayload.images || editTransactionPayload.images.length === 0) &&
+                    {(this.state.attachmentArray && this.state.attachmentArray.length === 0) &&
                         <div style={{ fontFamily: "lato", padding: "10px" }}>
                             No supporting images uploaded yet. you can add by clicking below
                         </div>}
@@ -687,7 +703,7 @@ class EditTransactionModal extends Component {
                             </Button>
                                 </label>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12}>
+                            {/* <Grid item xs={12} sm={12} md={12}>
                                 {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
                                     <React.Fragment>
                                         {this.state.attachmentArray.map((indUpload, index) => (
@@ -708,7 +724,7 @@ class EditTransactionModal extends Component {
                                         ))}
                                     </React.Fragment>
                                 }
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </div>
 

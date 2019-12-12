@@ -2,58 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import InfoIcon from '@material-ui/icons/Info';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import PersonPinIcon from '@material-ui/icons/PersonPin';
+
 import OrderTable from './OrderTable';
 import EditUser  from './EditUser';
 import UserDetail from './UserDetail';
+import commodityService from '../../app/commodityService/commodityService';
+
 const styles = theme => ({
-    heading: {
-        fontSize: '21px',
-        fontWeight: '500',
-        marginTop: '0',
-        marginBottom: '0',
-        fontFamily: 'Montserrat, sans-serif',
-    },
     dialogPaper: {
         minWidth: '700px',
         // maxWidth: '700px',
         minHeight: '600px',
         // maxHeight: '500px'
-    },
-    formAddBtn: {
-        width: '90%',
-        borderRadius: '10px',
-        fontSize: '20px',
-        textTransform: 'uppercase',
-        backgroundColor: '#4d9fa0 ',
-        color: '#fff',
-        height: '45px',
-        marginBottom: '15px',
-        marginTop: "11px",
-        marginRight: 'auto',
-        marginLeft: 'auto'
-    },
-    formRoot: {
-        // display: 'flex',
-        flexWrap: 'wrap',
-        width: '100%',
-        // marginLeft: '25%',
-        border: '1px solid #ccc',
-        boxShadow: '2px 2px 6px 0px  rgba(0,0,0,0.3)',
-        borderRadius: '4px',
-        marginBottom: '20px',
-        marginTop: '8%',
-        padding: '25px',
-        textAlign: 'center'
     },
     profile:{
         marginLeft: '30%',
@@ -71,37 +36,48 @@ class UserInfo extends Component {
         this.state = {
             commodityList: [],
             open: this.props.openModal,
-            dataObj: {
-                "mobile": "",
-                "profile_completed": true,
-                "fullname": "",
-                "business_name": "",
-                "locality": "",
-                "district": "",
-                "state": "",
-                "role": this.props.role,
-                "default_commodity": [],
-                "bijak_verified": false,
-                "bijak_assured": false,
-                "exposure_cutoff_limit": 100,
-                "active": true,
-                "rating": 5
-            },
-            requiredKey: ['fullname', 'mobile', 'role'],
-            roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
             isInfo: false,
-            payload: {},
-            "districtList": [],
-            currentView:"orders"
+            currentView:"userInfo"
 
 
 
         }
     }
     componentDidMount() {
+        this.getCommodityNames();
 
+    }
 
+    async getCommodityNames(txt) {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+            } else {
+                this.setState({ commodityList: [] });
+            }
+        } catch (err) {
+            console.error(err)
+            this.setState({ commodityList: [] });
+        }
+    }
+
+    getCommodityNamesArray(data) {
+        try {
+            var listData = [];
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]["name"]) {
+                        listData.push(data[i]["name"])
+                    }
+                }
+            }
+            return listData;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
     }
 
  
@@ -166,6 +142,7 @@ class UserInfo extends Component {
 {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
                         data={this.props.data}
+                        commodityList = {this.state.commodityList}
                         onEditModalCancel = {this.handleDialogCancel.bind(this)}
                         /> : ""} 
 

@@ -20,6 +20,9 @@ import HowToRegIcon from '@material-ui/icons/HowToReg';
 import UserInfo from '../../common/UserInfo';
 import UserFilterDataView from './../../common/UserFilterDataView';
 import Utils from '../../../app/common/utils';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -39,6 +42,40 @@ const theme = createMuiTheme({
                 lineHeight: '1.5em',
             }
         },
+
+        MuiTypography:{
+            colorInherit:{
+                color: "white"
+            }
+        },
+        MuiInputBase:{
+            input:{
+                color: "#ffffff"
+            }
+        },
+        MuiTablePagination:{
+            selectIcon:{
+                color: "#ffffff"
+            },
+            menuItem:{
+                color:"#000"
+            }
+        },
+        MuiIconButton:{
+            colorInherit:{
+                color:"#ffffff"
+            },
+            root:{
+                "Mui-disabled":{
+                color:"#ffffff"
+                }
+            }
+        },
+        Mui:{
+            disabled:{
+                color:"#717070"
+            }
+        }
     }
 });
 
@@ -105,7 +142,11 @@ class BrokerTable extends Component {
             userId: null,
             showOrderModal:false,
             payload: null,
-            stateList: this.getStateData()
+            stateList: this.getStateData(),
+
+            
+            rowsPerPage : 10,
+            page:0,
 
         }
     }
@@ -193,8 +234,18 @@ class BrokerTable extends Component {
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
+
+    handleChangePage = (event, newPage) => {
+        this.setState({ page : newPage });
+      };
+
+      handleChangeRowsPerPage = event => {
+        this.setState({ page : 0, rowsPerPage : parseInt(event.target.value, 10) });
+      };
+
     render() {
         const { classes } = this.props;
+        const { rowsPerPage , page} = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -221,7 +272,11 @@ class BrokerTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
+                            {this.state.tableBodyData && 
+                             (rowsPerPage > 0
+                                ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : this.state.tableBodyData
+                              ).map((row, i) => {
                                     return (
                                         <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -271,6 +326,23 @@ class BrokerTable extends Component {
                                     );
                                 })}
                             </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[ 10, 25,50, { label: 'All', value: -1 }]}
+                                        colSpan={5}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>
                         </Table>
                     </div>
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>

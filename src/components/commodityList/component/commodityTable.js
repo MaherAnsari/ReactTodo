@@ -14,6 +14,8 @@ import commodityService from '../../../app/commodityService/commodityService';
 import EditIcon from '@material-ui/icons/Edit';
 import EditCommodityList from './EditCommodityList';
 
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 
 
 const theme = createMuiTheme({
@@ -35,6 +37,39 @@ const theme = createMuiTheme({
         lineHeight: '1.5em',
       }
     },
+    MuiTypography: {
+      colorInherit: {
+        color: "white"
+      }
+    },
+    MuiInputBase: {
+      input: {
+        color: "#ffffff"
+      }
+    },
+    MuiTablePagination: {
+      selectIcon: {
+        color: "#ffffff"
+      },
+      menuItem: {
+        color: "#000"
+      }
+    },
+    MuiIconButton: {
+      colorInherit: {
+        color: "#ffffff"
+      },
+      root: {
+        "Mui-disabled": {
+          color: "#ffffff"
+        }
+      }
+    },
+    Mui: {
+      disabled: {
+        color: "#717070"
+      }
+    }
   }
 });
 
@@ -93,7 +128,10 @@ class CommodityTable extends Component {
       showServerDialog: false,
       deleteId: null,
 
-      showEditDataModal : false
+      showEditDataModal: false,
+
+      rowsPerPage: 10,
+      page: 0,
 
     }
   }
@@ -152,20 +190,27 @@ class CommodityTable extends Component {
     this.setState({ editableData: data, showEditDataModal: true });
   }
 
-  handelEditModalClose( event ){
-    this.setState({ editableData: {} , showEditDataModal: false }, function(){
+  handelEditModalClose(event) {
+    this.setState({ editableData: {}, showEditDataModal: false }, function () {
       this.props.onClose();
     });
   }
-  
-  handelEditModalCancel( event ){
-    this.setState({ editableData: {} , showEditDataModal: false });
+
+  handelEditModalCancel(event) {
+    this.setState({ editableData: {}, showEditDataModal: false });
   }
 
+  handleChangePage = (event, newPage) => {
+    this.setState({ page: newPage });
+  };
 
+  handleChangeRowsPerPage = event => {
+    this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+  };
 
   render() {
     const { classes } = this.props;
+    const { rowsPerPage, page } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -190,7 +235,11 @@ class CommodityTable extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.tableBodyData.map((row, i) => {
+                {this.state.tableBodyData &&
+                 (rowsPerPage > 0
+                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : this.state.tableBodyData
+                                  ).map((row, i) => {
                   return (
                     <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -221,6 +270,23 @@ class CommodityTable extends Component {
                   );
                 })}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50, { label: 'All', value: -1 }]}
+                    colSpan={6}
+                    count={this.state.tableBodyData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
+                </TableRow>
+              </TableFooter>
             </Table>
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>

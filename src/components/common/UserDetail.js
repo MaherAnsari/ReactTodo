@@ -14,8 +14,7 @@ const styles = theme => ({
     head: {
         fontSize: '15px',
         fontWeight: 'bold',
-        color:'#848383',
-        lineHieght:'2 !important'
+        color:'#848383'
     },
     value: {
         fontSize: '15px',
@@ -58,7 +57,17 @@ class UserDetail extends Component {
 
     }
 
-
+    getRole(role) {
+        if (role === "ca") {
+            return "buyer";
+        } else if (role === 'la') {
+            return "supplier";
+        } else if (role === 'broker') {
+            return "broker";
+        } else {
+            return "NA";
+        }
+    }
 
     render() {
         const { classes } = this.props;
@@ -68,7 +77,7 @@ class UserDetail extends Component {
                 <p className={classes.head}>Mobile : </p><p className={classes.value}> { this.props.data.mobile}</p>
                 </div>
                 <div className={classes.row}>
-                <p className={classes.head}>Role : </p><p className={classes.value}> {this.props.data.role}</p>
+                <p className={classes.head}>Role : </p><p className={classes.value}> {this.getRole(this.props.data.role)}</p>
                 </div>
             </div>
           
@@ -102,15 +111,15 @@ class UserDetail extends Component {
                 <p className={classes.head}>Rating: </p><p className={classes.value}>{this.props.data.rating}</p>
             </div>
             <div className={classes.row}>
-                <p className={classes.head}>Is Bijak Verified : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_verified ? "green":"" }}>{this.props.data.bijak_verified ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is Bijak Verified : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_verified ? "green":"" ,lineHeight:'1.5'}}>{this.props.data.bijak_verified ? "Yes" :"No"}</p>
             </div>
             </div>
             <div className={classes.mainrow}>
             <div className={classes.row}>
-                <p className={classes.head}>Is Bijak Assured : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_assured ? "green":"" }}>{this.props.data.bijak_assured ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is Bijak Assured : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_assured ? "green":"" ,lineHeight:'1.5'}}>{this.props.data.bijak_assured ? "Yes" :"No"}</p>
             </div>
             <div className={classes.row}>
-                <p className={classes.head}>Is User Enabled: </p><p className={classes.value,classes.label} style={{background:this.props.data.active ? "green":"" }}>{this.props.data.active ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is User Enabled: </p><p className={classes.value,classes.label} style={{background:this.props.data.active ? "green":"" ,lineHeight:'1.5' }}>{this.props.data.active ? "Yes" :"No"}</p>
             </div>
             </div>
            
