@@ -237,7 +237,7 @@
     width: calc(100% - 560px);
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url('../images/5.jpg');
+    background-image: url('../images/login.jpg');
     background-position: center;
     position: relative;
     z-index: 1;
