@@ -111,7 +111,7 @@ class BrokerTable extends Component {
             stateList: this.getStateData(),
 
             
-            rowsPerPage : 10,
+            rowsPerPage : 50,
             page:0,
 
         }

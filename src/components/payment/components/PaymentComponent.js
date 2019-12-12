@@ -113,7 +113,7 @@ class PaymentComponent extends Component {
             buyerInfo: {},
             showAddTransactionModal: false,
 
-            rowsPerPage: 10,
+            rowsPerPage: 50,
             page: 0,
       
 

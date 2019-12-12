@@ -52,7 +52,7 @@ const styles = theme => ({
     paddingRight: '4px',
     textAlign: 'center',
     maxWidth: '200px',
-    padding: "12px"
+    padding: "8px 12px"
   },
   titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
   defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -97,7 +97,7 @@ class CommodityTable extends Component {
 
       showEditDataModal: false,
 
-      rowsPerPage: 10,
+      rowsPerPage: 50,
       page: 0,
 
     }
@@ -197,7 +197,7 @@ class CommodityTable extends Component {
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px' }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px',padding: "14px" }}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -217,12 +217,13 @@ class CommodityTable extends Component {
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell>
-                      <TableCell >
+                      <TableCell style={{padding: "0px"}}>
                         <Switch
                           checked={row.active}
                           onChange={this.handleChange.bind(this, row)}
                           value={row.active}
                           color="primary"
+                          
                           inputProps={{ 'aria-label': 'secondary checkbox' }}
                         /><span className={classes.toggle}>Active</span></TableCell>
                       {/* Edit option Added */}

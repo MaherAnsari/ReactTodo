@@ -155,7 +155,7 @@ class MandiListTable extends Component {
       districtData: Utils.getDistrictData(),
 
 
-      rowsPerPage: 10,
+      rowsPerPage: 50,
       page: 0,
 
     }

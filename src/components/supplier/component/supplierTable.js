@@ -111,7 +111,7 @@ class SupplierTable extends Component {
             payload: null,
             stateList: this.getStateData(),
 
-            rowsPerPage: 10,
+            rowsPerPage: 50,
             page: 0,
 
 
