@@ -47,14 +47,14 @@ class MandiDataContainer extends React.Component {
     }
 
     async componentDidMount() {
-        this.getData('haryana');
+        this.getData();
 
     }
 
-    async getData(txt) {
+    async getData() {
         try {
-            let params = { "query": txt }
-            let resp = await mandiDataService.getMandiSearchData(params);
+            // let params = { "query": txt }
+            let resp = await mandiDataService.getMandiSearchData();
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ dataList: resp.data.result.data });
             }
@@ -65,7 +65,7 @@ class MandiDataContainer extends React.Component {
 
     handleClose(event) {
         this.setState({ open: false, showAddModal: false, dataList: null });
-        this.getData("haryana");
+        this.getData();
     }
 
     onModalCancel(event) {

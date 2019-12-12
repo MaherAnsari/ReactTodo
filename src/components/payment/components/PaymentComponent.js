@@ -188,11 +188,14 @@ class PaymentComponent extends Component {
             payload["searchVal"] = txt;
         }
         var respData = [];
+        var paymentMeta =[];
         let resp = await paymentService.getPaymentSearchedUser(payload);
         if (resp.data.status === 1 && resp.data.result) {
             respData = resp.data.result.data;
+
+            paymentMeta=resp.data.result["metainfo"]
         }
-        this.setState({ tableBodyData: respData, searchedText: txt });
+        this.setState({ tableBodyData: respData,paymentMetaInfo:paymentMeta, searchedText: txt });
     }
 
     onDateChaged(data) {
