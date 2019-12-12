@@ -6,11 +6,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Chip from '@material-ui/core/Chip';
 import { useTheme } from '@material-ui/core/styles';
 import Badge from '@material-ui/core/Badge';
 
@@ -33,22 +31,6 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
-
-const filterOptions = [
-    "APMC Req",
-    "Mandi Grade",
-    "Mandi Grade (Hindi)"
-];
 
 const ampcReqOption = ["All", "Yes", "No"];
 const mandiGradeFilterOption = ["All", "A", "B", "C", "D", "E", "F"];
