@@ -11,8 +11,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from './../../app/commodityService/commodityService';
-
-
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+const theme = createMuiTheme({
+    overrides: {
+      
+        MuiInputBase:{
+            input:{
+                color: "#000"
+            }
+        }
+    }
+});
 
 const styles = theme => ({
     heading: {
@@ -226,6 +235,9 @@ class UserFilterOption extends Component {
                 this.state.dataObj['sortorder'] = sortorder;
             }
 
+        }else{
+            delete  this.state.dataObj['sortkey'];
+            delete this.state.dataObj['sortorder']
         }
 
         console.log(this.state.dataObj);
@@ -255,7 +267,8 @@ class UserFilterOption extends Component {
 
     render() {
         const { classes } = this.props;
-        return (<div> <Dialog style={{ zIndex: '1' }}
+        return (
+            <MuiThemeProvider theme={theme}><div > <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
@@ -271,14 +284,14 @@ class UserFilterOption extends Component {
                             label="Role"
                             disabled={this.state.isInfo}
                             type="text"
-                            style={{ marginRight: '2%', width: '98%', marginTop: '5px' }}
+                            style={{ marginRight: '2%', width: '98%', color: '#000',marginTop: '5px' }}
                             value={this.state.dataObj.role}
                             onChange={this.handleStateChange.bind(this, 'role')}
 
                         >
 
                             {this.state.roleList.map((option, i) => (
-                                <MenuItem key={i} value={option} selected={true}>
+                                <MenuItem key={i}  value={option} selected={true}>
                                     {option}
                                 </MenuItem>
                             ))}
@@ -313,7 +326,7 @@ class UserFilterOption extends Component {
                             label="Bijak Verified"
                             disabled={this.state.isInfo}
                             type="text"
-                            style={{ marginRight: '2%', width: '98%', marginTop: '5px' }}
+                            style={{ marginRight: '2%', width: '98%', color: '#000',marginTop: '5px' }}
                             value={this.state.dataObj.bijak_verified}
                             onChange={this.handleStateChange.bind(this, 'bijak_verified')}
 
@@ -454,6 +467,7 @@ class UserFilterOption extends Component {
         </Dialog>
 
         </div >
+        </MuiThemeProvider>
         );
     }
 }
