@@ -300,7 +300,7 @@ class UserListTable extends Component {
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
-                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
+                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}> <StarIcon /> </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

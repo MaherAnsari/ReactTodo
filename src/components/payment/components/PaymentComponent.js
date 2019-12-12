@@ -248,24 +248,24 @@ class PaymentComponent extends Component {
                             <div style={{ width: "100%", fontSize: 15 }}> Total in amount : <span style={{
                                 fontWeight: 600,
                                 fontSize: 16, color: "#387a39"
-                            }}>{paymentMetaInfo[0]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
+                            }}>{paymentMetaInfo[0]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
                             </div>
                             <div style={{ width: "100%", fontSize: 15 }}> Total no. of in payment : <span style={{
                                 fontWeight: 600,
                                 fontSize: 16, color: "#387a39"
-                            }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
+                            }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
                             </div>
                         </div>
                         <div style={{ width: "50%" }}>
                             <div style={{ width: "100%", fontSize: 15 }}> Total out amount : <span style={{
                                 fontWeight: 600,
                                 fontSize: 16, color: "#d43a3a"
-                            }}>{paymentMetaInfo[1]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
+                            }}>{paymentMetaInfo[1]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
                             </div>
                             <div style={{ width: "100%", fontSize: 15 }}> Total no. of out payment : <span style={{
                                 fontWeight: 600,
                                 fontSize: 16, color: "#d43a3a"
-                            }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
+                            }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
                             </div>
                         </div>
                     </div>}
