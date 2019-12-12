@@ -100,7 +100,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname", "business_name", "mobile", "Info", "commodity", "role", "status"],
+            tableHeadData: ["id", "fullname", "business_name", "mobile", "Order/Payment", "commodity", "role", "status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -249,6 +249,15 @@ class UserListTable extends Component {
         } else {
             return "#757575";
         }
+      
+    }
+
+    getOrderNoBackgroundColor(obj) {
+        if (obj.ordercount === "0" || obj.paymentcount === "0") {
+            return "#757575";
+        }  else {
+            return "#377c3b";
+        }
     }
     onInfoClick = (info, event) => {
         this.setState({ showUserModal: true, open: true, userData: JSON.parse(JSON.stringify(info)), isInfo: true });
@@ -323,13 +332,16 @@ class UserListTable extends Component {
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
 
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                <Tooltip title={this.getInfoSTring(row)} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{this.getInfoSTring(row)}</div>
+                                                <Tooltip title={row.ordercount+"/"+row.paymentcount} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses" style={{  color: "white",
+                                                            background:this.getOrderNoBackgroundColor(row),
+                                                            padding: "4px 12px",width:'fit-content',marginLeft:'20%',
+                                                            borderRadius: "13px"}}>{row.ordercount+"/"+row.paymentcount}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
                                                 <Tooltip title={row.default_commodity ? row.default_commodity.join() : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join() : ""}</div>
+                                                    <div className="text-ellpses" >{row.default_commodity ? row.default_commodity.join() : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)} > 

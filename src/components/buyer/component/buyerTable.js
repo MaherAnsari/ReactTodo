@@ -95,7 +95,7 @@ class BrokerTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname", "business_name", "mobile", "Info", "commodity", "status"],
+            tableHeadData: ["id", "fullname", "business_name", "mobile", "order/payment", "commodity", "status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -110,7 +110,7 @@ class BrokerTable extends Component {
             payload: null,
             stateList: this.getStateData(),
 
-            rowsPerPage : 10,
+            rowsPerPage : 50,
             page:0,
 
         }
@@ -183,6 +183,13 @@ class BrokerTable extends Component {
         this.setState({ anchorEl: null });
     }
 
+    getOrderNoBackgroundColor(obj) {
+        if (obj.ordercount === "0" || obj.paymentcount === "0") {
+            return "#757575";
+        }  else {
+            return "#377c3b";
+        }
+    }
  
     handleClose(event) {
         this.setState({ open: false, showUserModal: false ,showOrderModal:false,isInfo:false});
@@ -261,9 +268,12 @@ class BrokerTable extends Component {
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                <Tooltip title={this.getInfoSTring(row)} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{this.getInfoSTring(row)}</div>
-                                                    </Tooltip>
+                                            <Tooltip title={row.ordercount+"/"+row.paymentcount} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses" style={{  color: "white",
+                                                            background:this.getOrderNoBackgroundColor(row),
+                                                            padding: "4px 12px",width:'fit-content',marginLeft:'20%',
+                                                            borderRadius: "13px"}}>{row.ordercount+"/"+row.paymentcount}</div>
+                                                </Tooltip>
                                                     </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
                                                 <Tooltip title={row.default_commodity ? row.default_commodity.join():""} placement="top" classes={{ tooltip: classes.lightTooltip }}>

@@ -178,14 +178,14 @@ onItemPanelExpanded( event , i, id ){
                   <ExpansionPanel
                     expanded={expanded === i}
                     onChange={( event ) => this.onPanelExpanded(event, i, row["id"])}
-                    style={{ width: '100%',background :expanded === i ? "#f7f7f7" :  "white"  }}>
+                    style={{    borderLeft: i % 2 === 0 ?"4px solid #3a7e40":"4px solid #50a1cf", width: '100%',background :expanded === i ? "#f7f7f7" :  "white"  }}>
 
                     <ExpansionPanelSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
                       id="panel1a-header"
                     >
-                      <Typography style={{fontSize:'18px',fontFamily:'Lato'}}className={classes.heading}>{row["fullname"] + " (" + row["id"] + ")"}</Typography>
+                      <Typography style={{fontSize:'16px',fontFamily:'Lato',fontWeight: 600}}className={classes.heading}>{row["fullname"] + " (" + row["id"] + ")"}</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
                       
@@ -202,7 +202,7 @@ onItemPanelExpanded( event , i, id ){
                       aria-controls="panel1a-content"
                       id="panel1a-header">
 
-                      <Typography style={{fontSize:'18px',fontFamily:'Lato'}} className={classes.heading}>{item["commodity_name"]}</Typography>
+                      <Typography style={{fontSize:'16px',fontFamily:'Lato', fontWeight:500}} className={classes.heading}>{item["commodity_name"]}</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                       <PriceTable tableData={item.brokers} />

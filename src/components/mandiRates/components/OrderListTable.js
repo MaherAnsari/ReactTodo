@@ -12,19 +12,19 @@ const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
             head: {
-                color: '#fff',
+                color: '#2e3247',
                 fontWeight: 600,
-                fontSize: '15px !important',
+                fontSize: '13px !important',
                 fontFamily: 'lato !important',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                lineHeight: "1em"
 
             },
             body: {
                 color: 'rgba(0, 0, 0, 0.87)',
                 fontWeight: 500,
-                fontSize: '15px !important',
+                fontSize: '14px !important',
                 fontFamily: 'lato !important',
-                lineHeight: '1.5em',
             }
         },
     }

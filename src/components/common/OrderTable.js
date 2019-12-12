@@ -8,8 +8,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import orderService from './../../app/orderService/orderService';
 import NoDataAvailable from '../common/NoDataAvailable';
 
 

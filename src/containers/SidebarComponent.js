@@ -49,6 +49,20 @@ class VerticalItem extends React.Component {
     }
   }
 
+  componentDidMount(){
+
+    // to open default sub item selected
+    var routeItem =this.props.item;
+      if(routeItem.children.length > 0 ){
+        for( var j = 0 ; j < routeItem.children.length; j++){
+          if( routeItem.children[j]["route"] === this.props.active){
+            this.setState({ isHover : true });
+            break;
+          }
+      }
+    }
+  }
+
 
   toggleHover(isHover) {
     this.setState({ isHover: isHover })
