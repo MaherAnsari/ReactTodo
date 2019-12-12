@@ -111,15 +111,15 @@ class UserDetail extends Component {
                 <p className={classes.head}>Rating: </p><p className={classes.value}>{this.props.data.rating}</p>
             </div>
             <div className={classes.row}>
-                <p className={classes.head}>Is Bijak Verified : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_verified ? "green":"" ,lineHeight:'1.5'}}>{this.props.data.bijak_verified ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is Bijak Verified  </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_verified ? "green":"" ,lineHeight:'1.5',marginLeft:'10px'}}>{this.props.data.bijak_verified ? "Yes" :"No"}</p>
             </div>
             </div>
             <div className={classes.mainrow}>
             <div className={classes.row}>
-                <p className={classes.head}>Is Bijak Assured : </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_assured ? "green":"" ,lineHeight:'1.5'}}>{this.props.data.bijak_assured ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is Bijak Assured  </p><p className={classes.value,classes.label} style={{background:this.props.data.bijak_assured ? "green":"" ,lineHeight:'1.5',marginLeft:'10px'}}>{this.props.data.bijak_assured ? "Yes" :"No"}</p>
             </div>
             <div className={classes.row}>
-                <p className={classes.head}>Is User Enabled: </p><p className={classes.value,classes.label} style={{background:this.props.data.active ? "green":"" ,lineHeight:'1.5' }}>{this.props.data.active ? "Yes" :"No"}</p>
+                <p className={classes.head}>Is User Enabled </p><p className={classes.value,classes.label} style={{background:this.props.data.active ? "green":"" ,lineHeight:'1.5' ,marginLeft:'10px'}}>{this.props.data.active ? "Yes" :"No"}</p>
             </div>
             </div>
            

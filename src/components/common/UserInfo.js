@@ -12,6 +12,7 @@ import OrderTable from './OrderTable';
 import EditUser  from './EditUser';
 import UserDetail from './UserDetail';
 import commodityService from '../../app/commodityService/commodityService';
+import orderService from '../../app/orderService/orderService';
 
 const styles = theme => ({
     dialogPaper: {
@@ -38,7 +39,8 @@ class UserInfo extends Component {
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
-            currentView:"userInfo"
+            currentView:"userInfo",
+            orderList:[]
 
 
 
@@ -46,7 +48,38 @@ class UserInfo extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
+        let param = {};
+        if (this.props.data.role === 'ca') {
+            param["buyerid"] = this.props.data.mobile;
+        } else if (this.props.data.role === 'broker') {
+            param["brokerid"] = this.props.data.id;
+        } else if (this.props.data.role === 'la') {
+            param["supplierid"] = this.props.data.mobile;
+        }
+        if (Object.keys(param).length) {
+            this.getListData(param);
+        }
+    }
 
+
+    async getListData(params) {
+        this.setState({ showLoader: true });
+
+        try {
+            let resp = await orderService.getOrderListData(params);
+
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ orderList: resp.data.result.data, showLoader: false });
+            } else {
+                // this.setState({ tableBodyData: [] ,showLoader:false});
+            }
+
+        } catch (err) {
+            console.error(err);
+            if (this.ismounted) {
+                // this.setState({ tableBodyData: [],showLoader:false });
+            }
+        }
     }
 
     async getCommodityNames(txt) {
@@ -136,7 +169,8 @@ class UserInfo extends Component {
     
     {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        data={this.props.data}
+                        onEditModalCancel = {this.handleDialogCancel.bind(this)}
+                        data={this.state.orderList}
                         /> : ""} 
 
 {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
@@ -148,7 +182,7 @@ class UserInfo extends Component {
 
 {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        
+                        onEditModalCancel = {this.handleDialogCancel.bind(this)}
                         data={this.props.data}
                         /> : ""} 
 

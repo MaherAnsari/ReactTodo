@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import ConfirmDialog from './../../app/common/ConfirmDialog';
 import Table from '@material-ui/core/Table';
@@ -72,46 +68,17 @@ class OrderTable extends Component {
         super(props);
         this.state = {
             tableHeadData: ["supplier_mobile", "buyer_mobile", "amount", "commodity", "Date"],
-            open: this.props.openModal, tableBodyData: []
+            open: this.props.openModal, tableBodyData: this.props.data
         }
 
     }
     componentDidMount() {
-        console.log(this.props.data);
-        let param = {};
-        if (this.props.data.role === 'ca') {
-            param["buyerid"] = this.props.data.mobile;
-        } else if (this.props.data.role === 'broker') {
-            param["brokerid"] = this.props.data.id;
-        } else if (this.props.data.role === 'la') {
-            param["supplierid"] = this.props.data.mobile;
-        }
-        if (Object.keys(param).length) {
-            this.getListData(param);
-        }
+     
 
     }
 
 
-    async getListData(params) {
-        this.setState({ showLoader: true });
-
-        try {
-            let resp = await orderService.getOrderListData(params);
-
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ tableBodyData: resp.data.result.data, showLoader: false });
-            } else {
-                // this.setState({ tableBodyData: [] ,showLoader:false});
-            }
-
-        } catch (err) {
-            console.error(err);
-            if (this.ismounted) {
-                // this.setState({ tableBodyData: [],showLoader:false });
-            }
-        }
-    }
+  
     getTableCellClass(classes, index) {
         return classes.tableCell;
     }
@@ -183,7 +150,7 @@ class OrderTable extends Component {
             {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
-            <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+            <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
 
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
