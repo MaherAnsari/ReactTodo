@@ -15,21 +15,28 @@ const styles = theme => ({
   listItemIconOpen: {
     color: '#1991eb',
   },
-  
+
 });
 
 
 const _items = [
-  { name: 'Mandi Data',  route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#e6008a", children: [] },
-  { name: 'User List', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#e6008a", children: [] },
-  { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
-  { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
-  { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
-  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#e6008a", children: [] },
-  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#e6008a", children: [] },
-  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6008a", children: [] },
-  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#e6008a", children: [] },
-  { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#e6008a", children: [] }
+  { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [] },
+  {
+    name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
+      { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
+      { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
+      { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
+      { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
+    ]
+  },
+  // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
+  // { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
+  // { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
+  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#62cc42", children: [] },
+  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
+  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
+  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
+  { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
 
 ]
 
@@ -44,44 +51,48 @@ class VerticalItem extends React.Component {
 
 
   toggleHover(isHover) {
-    this.setState({ isHover })
+    this.setState({ isHover: isHover })
   }
 
   onSelect(route) {
 
-      this.props.onSelect(route);
-      this.toggleHover(false);
-    
-   
+    this.props.onSelect(route);
+    // this.toggleHover(false);
+
+
   }
 
   renderSubLevel(item) {
     const { extended, active } = this.props
     const { isHover } = this.state
 
-    const style = {}
-    if (isHover && this._ref !== null
-      && ((!active && extended) || (active && !extended) || !active)
-    ) {
-      const bound = this._ref.getBoundingClientRect()
-      //console.log('>>', this._ref.getBoundingClientRect())
-      style.transform = `translate3d(${bound.left + bound.width}px, ${bound.top}px, 0px)`
+    const style = {
+
     }
+    // if (isHover && this._ref !== null
+    //   && ((!active && extended) || (active && !extended) || !active)
+    // ) {
+    //   const bound = this._ref.getBoundingClientRect()
+    //   //console.log('>>', this._ref.getBoundingClientRect())
+    //   style.transform = `translate3d(${bound.left + bound.width}px, ${bound.top}px, 0px)`
+    // }
 
 
     return (
-      <ul className='class_ul sub-level' style={style}>
-        {/* <li className='class_li top-item' onClick={() => this.onSelect(item.route)} >
-          <div className='item-name'>{item.name}</div>
-        </li> */}
+      <ul className='class_ul sub-level' style={style} >
         {item.children && item.children.map(i => {
           return (
-            <li className="class_li" key={i.route} style={{ background: "#384952 !important", color: "#f5f5fa" }} onClick={() => this.onSelect(i.route)} >
-              {/* <i className={i.iconClassName} /> */}
-              <Icon className="sideBarIcon">
+            <li className="class_li" key={i.route} 
+            // style={{ background: "#2e3247 !important", color: i.iconColor }} 
+            style={{background: active === i.route ? "#05073a":"",borderLeft : active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
+            onClick={() => this.onSelect(i.route)} >
+              
+              <Icon className="sideBarIcon"  style={{ fontSize: "18px"}}>
                 {i.iconClassName}
               </Icon>
-              <div className='item-name'>{i.name}</div>
+              <div className='item-name' >{i.name}</div>
+              {active === i.route ? <i className={"fa fa-chevron-right"} 
+            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>:""}
             </li>
           )
         })}
@@ -90,45 +101,39 @@ class VerticalItem extends React.Component {
   }
 
   render() {
-    const { item, active, isGlobalMode } = this.props
+    const { item, active } = this.props
     const { isHover } = this.state; //activeRoute
     let className = 'vertical-item-component';
-    // console.log("_--------------_-----_--> " + isGlobalMode);
     if (isHover) className += ' is-hover'
-    // if (active) className += ' active'
-    // console.log(item,activeRoute,active);
     return (
       <li
 
         ref={ref => { this._ref = ref }}
+        style={{background : active === item.route ? '#5cb8eb' : '#25283b' }}
         className={className + " class_li"}
-        onMouseEnter={() => this.toggleHover(true)}
-        onMouseLeave={() => this.toggleHover(false)}
-
-      >
-        {isGlobalMode ? <div>
-          {item.isGlobal && <div>  <div className='item'  onClick={() => this.onSelect(item.route)}  >
-            {/* <i className={item.iconClassName} /> */}
-            <Icon className="sideBarIcon" style={{ color: item.iconColor }}>
+        // onMouseEnter={() => this.toggleHover(true)}
+        // onMouseLeave={() => this.toggleHover(false)}
+         >
+        <div>
+          <div className='item'
+            style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
+            onClick={() => {
+              if (item.children.length === 0) {
+                this.onSelect(item.route)
+              }else{
+                this.toggleHover(!this.state.isHover)
+              }
+            }
+            }  >
+            <Icon className="sideBarIcon" style={{ color: item.iconColor ,fontSize: "18px"}}>
               {item.iconClassName}
             </Icon>
             <div className='item-name'>{item.name}</div>
+            {item.children && item.children.length > 0 && <i className={isHover ? "fa fa-chevron-up" : "fa fa-chevron-down"} 
+            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>}
           </div>
-            {this.renderSubLevel(item)}
-          </div>}
-        </div> : <div>
-            <div className='item' style={{ background:active === item.route ?'#e5e8ec':'#f5f5fa'}}onClick={() => this.onSelect(item.route)}  >
-              {/* <i className={item.iconClassName} /> */}
-              <Icon className="sideBarIcon" style={{ color: item.iconColor }}>
-                {item.iconClassName}
-              </Icon>
-              <div className='item-name'>{item.name}</div>
-              {item.children && item.children.length > 0 && <i className="fa fa-angle-double-right" aria-hidden="true"></i>}
-            </div>
-            {this.renderSubLevel(item)}
-          </div>}
-
-
+          {this.renderSubLevel(item)}
+        </div>
       </li>
     )
   }
@@ -147,24 +152,19 @@ class VerticalNavigation extends React.PureComponent {
   }
 
   render() {
-    const { items, open, activeRoute, isGlobalMode, dbImageUrl } = this.props;
+    const { items, open, activeRoute, dbImageUrl } = this.props;
     let additionalClass = ''
     additionalClass += open ? 'extended' : 'collapsed'
-// console.log(activeRoute)
+    // console.log(activeRoute)
     return (
       <div className={`vertical-navigation-component ${additionalClass}`}>
-        <div className='nav-header' style={{backgroundColor:'#e4e4e8'}}>
+        <div className='nav-header' style={{ backgroundColor: '#2e3247' }}>
           <div>
             <img style={{
-              // borderRadius: '50%',
               height: '60px',
-              // border: '4px solid #dedede',
-              // maxHeight: '80px',
               maxWidth: '200px',
-              padding:'10px 10px 10px 10px'
-              // marginBottom:'20px',
-              // marginTop:'5px'
-            }} src={isGlobalMode ? '' : 'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
+              padding: '10px 10px 10px 10px'
+            }} src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
           </div>
           {/* <Tooltip title={labname || ""} placement="right" >
             <div style={{
@@ -175,7 +175,7 @@ class VerticalNavigation extends React.PureComponent {
               width: '100%',
               textOverflow: 'ellipsis',
               overflow: 'hidden'
-            }} >{isGlobalMode ? "Global Data" : 'Bijak'}</div>
+            }} >{'Bijak'}</div>
           </Tooltip> */}
 
 
@@ -185,7 +185,6 @@ class VerticalNavigation extends React.PureComponent {
             <VerticalItem
               key={`vni_${index}`}
               item={i}
-              isGlobalMode={isGlobalMode}
               index={index}
               extended={open}
               active={activeRoute}
@@ -212,24 +211,14 @@ class ListItems extends React.PureComponent {
     super(props)
     this.state = {
       open: false,
-      activeRoute: "/"+window.location.href.split('/')[4],
+      activeRoute: "/" + window.location.href.split('/')[4],
       isSetGlobal: false
     }
   }
 
-  componentWillMount() {
-   
-  }
-
-
-  componentDidUpdate() {
-
-  }
-
   onRouteChanged(rPath) {
-    // console.log(rPath);
-    this.setState({activeRoute:rPath})
-    this.props.history.push("/home"+ rPath);
+    this.setState({ activeRoute: rPath })
+    this.props.history.push("/home" + rPath);
   }
 
   onToggleMenu(open = !this.state.open) {
@@ -248,7 +237,6 @@ class ListItems extends React.PureComponent {
             open={this.state.open}
             labname={this.props.labname}
             activeRoute={this.state.activeRoute}
-            isGlobalMode={this.state.isSetGlobal}
             onChange={this.onRouteChanged.bind(this)}
           />
         </div>

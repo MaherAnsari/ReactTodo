@@ -67,7 +67,7 @@
 }
 .vertical-navigation-component.extended, .vertical-navigation-component .is-hover {
   min-width: 320px;
-  background: rgb(37, 95, 117);
+  background: #2e3247;
 
 }
 .vertical-navigation-component.extended .top-item {
@@ -78,7 +78,7 @@
   position: relative;
 }
 .vertical-navigation-component.extended .is-hover:not(.active) .sub-level, .vertical-navigation-component.collapsed .is-hover .sub-level {
-  display: block;
+  display: contents;
   position: fixed;
   width: 320px;
   top: 0;
@@ -95,10 +95,10 @@
   align-items: center;
 }
 .vertical-navigation-component .sub-level li {
-  height: 50px;
+  height: 40px;
 }
 .vertical-navigation-component .sub-level li:hover {
-  background: rgb(37, 95, 117);
+  background:#05073a;
   color: white;
 }
 .vertical-navigation-component .sub-level .top-item {
@@ -115,7 +115,7 @@
 }
 .vertical-navigation-component .vertical-item-component:hover, .vertical-navigation-component .vertical-item-component.active {
   opacity: 1;
-  background: var(--primary3Color);
+  /* background: var(--primary3Color); */
 }
 .vertical-navigation-component .vertical-item-component .active {
   border-left: 5px #1991eb solid !important;
@@ -147,7 +147,8 @@
 }
 
 .item-name{
-font-size: 15px;
-font-weight: 700;
-font-family: lato;
+  font-size: 14px;
+  font-weight: 500;
+  color:#afb1b9;
+  font-family: lato;
 }

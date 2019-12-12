@@ -22,54 +22,21 @@ const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
       head: {
-        color: '#fff',
+        color: '#2e3247',
         fontWeight: 600,
-        fontSize: '15px !important',
+        fontSize: '13px !important',
         fontFamily: 'lato !important',
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        lineHeight: "1em"
 
       },
       body: {
         color: 'rgba(0, 0, 0, 0.87)',
         fontWeight: 500,
-        fontSize: '15px !important',
+        fontSize: '14px !important',
         fontFamily: 'lato !important',
-        lineHeight: '1.5em',
       }
     },
-    MuiTypography: {
-      colorInherit: {
-        color: "white"
-      }
-    },
-    MuiInputBase: {
-      input: {
-        color: "#ffffff"
-      }
-    },
-    MuiTablePagination: {
-      selectIcon: {
-        color: "#ffffff"
-      },
-      menuItem: {
-        color: "#000"
-      }
-    },
-    MuiIconButton: {
-      colorInherit: {
-        color: "#ffffff"
-      },
-      root: {
-        "Mui-disabled": {
-          color: "#ffffff"
-        }
-      }
-    },
-    Mui: {
-      disabled: {
-        color: "#717070"
-      }
-    }
   }
 });
 
@@ -119,7 +86,7 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["name", "category", "weight", "Hindi Name"],
+      tableHeadData: ["name", "category", "weight", "Hindi Name","",""],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
       searchedText: "",
@@ -228,7 +195,7 @@ class CommodityTable extends Component {
           <div >
             <Table className='table-body'>
               <TableHead>
-                <TableRow  >
+                <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
                     <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px' }}>{option}</TableCell>
                   ))}
@@ -241,7 +208,7 @@ class CommodityTable extends Component {
                                     : this.state.tableBodyData
                                   ).map((row, i) => {
                   return (
-                    <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                    <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                         {row.name}
                       </TableCell>
@@ -263,17 +230,17 @@ class CommodityTable extends Component {
                         <EditIcon
                           className="material-Icon"
                           onClick={() => this.handelEditModalOpen(row)}
-                          style={{ color: "#e72e89", cursor: "pointer" }} />
+                          style={{ color: "#e72e89", cursor: "pointer" , height: "18px", fontSize: "18px"}} />
                       </TableCell>
                     </TableRow>
 
                   );
                 })}
               </TableBody>
-              <TableFooter>
+              <TableFooter style={{ borderTop: "2px solid #858792" }}>
                 <TableRow>
                   <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, { label: 'All', value: -1 }]}
+                    rowsPerPageOptions={[ 25, 50, 100]}
                     colSpan={6}
                     count={this.state.tableBodyData.length}
                     rowsPerPage={rowsPerPage}

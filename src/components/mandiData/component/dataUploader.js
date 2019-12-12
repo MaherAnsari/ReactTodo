@@ -11,6 +11,20 @@ import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
+import Checkbox from '@material-ui/core/Checkbox';
+
+
+const CustomCheckbox = withStyles({
+    root: {
+      color: "#fff",
+      '&$checked': {
+        color: "yellow",
+      },
+    },
+    checked: {},
+  })(props => <Checkbox color="default" {...props} />);
+  
+
 const styles = theme => ({
 
     dialogPaper: {
@@ -25,20 +39,20 @@ const styles = theme => ({
         marginTop: '33px',
         marginLeft: '10px'
     },
-    close:{
-        color:'#000',
-        fontSize:'20px'
+    close: {
+        color: '#000',
+        fontSize: '20px'
     },
-    close:{
-        color:'#000',
-        fontSize:'20px'
-    }, 
-      card:{
+    close: {
+        color: '#000',
+        fontSize: '20px'
+    },
+    card: {
         boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
-    transition: '0.3s',
-    padding: '10px',
-    borderRadius: '10px',
-    marginTop:'15px'
+        transition: '0.3s',
+        padding: '10px',
+        borderRadius: '10px',
+        marginTop: '15px'
     }
 
 
@@ -58,7 +72,8 @@ class DataUploader extends Component {
                 'district_hindi': '',
                 'state_hindi': '',
                 "remarks": "additional place",
-                "mandi_off_date": []
+                "mandi_off_date": [],
+                "type": "l"
             },
             mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
             mandiGradeHindiOptions: ['क', 'ख', 'ग', 'घ', 'ङ', 'च'],
@@ -67,7 +82,7 @@ class DataUploader extends Component {
             "districtList": [],
             dayArr: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
             dayType: ['first', "second", "third", "fourth", "last"],
-            typeArr: ["dates", "every",'all'],
+            typeArr: ["dates", "every", 'all'],
             offDayArr: []
             // dateArr:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
 
@@ -100,7 +115,7 @@ class DataUploader extends Component {
     }
 
     handelConfirmUpdate = async () => {
-       
+
         let resp = await mandiDataService.addMandiData(this.state.dataObj);
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
@@ -141,8 +156,8 @@ class DataUploader extends Component {
         for (let i = 0; i < offdata.length; i++) {
             let str = "";
             if (offdata[i]['offType'] === "every") {
-                str = "every"+"|"+ offdata[i]['dayType'] + "|" + offdata[i]['day'];
-            }else if (offdata[i]['offType'] === "all") {
+                str = "every" + "|" + offdata[i]['dayType'] + "|" + offdata[i]['day'];
+            } else if (offdata[i]['offType'] === "all") {
                 str = "all" + "|" + offdata[i]['day'];
             } else {
                 str = "dates" + "|" + offdata[i]['dates'];
@@ -175,11 +190,19 @@ class DataUploader extends Component {
         data[index][id] = event.target.value;
         this.setState({ offDayArr: data });
     }
-    onCancelClick(id,event){
+    onCancelClick(id, event) {
         let data = this.state.offDayArr;
-        data.splice(id,1);
+        data.splice(id, 1);
         this.setState({ offDayArr: data });
     }
+
+    handleCheckbokChange( event ){
+        var dataObjVal = this.state.dataObj;
+        dataObjVal["type"] = event.target.checked ? "m" : "l";
+        this.setState({ dataObj: dataObjVal });
+    }
+
+    // type ="m"/ "l"
     render() {
         const { classes } = this.props;
         const { mandiGradeOptions, mandiGradeHindiOptions } = this.state;
@@ -189,7 +212,29 @@ class DataUploader extends Component {
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Mandi Data</p>  </DialogTitle>
+                <div
+                    style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
+                    id="form-dialog-title">
+                    <div style={{ color: '#fff',lineHeight: "48px", verticalAlign: "middle", paddingLeft:"42%",fontFamily: 'Lato', fontSize: '18px', width: "100%", display: "flex" }}>
+                        Mandi Data
+                        
+                        <div style={{right: "0px", position: "absolute",fontSize: "15px",color: "cyan"}}>
+                            Valid Mandi 
+                            
+                            <CustomCheckbox
+                                checked={this.state.dataObj.type === "m"}
+                                onChange={this.handleCheckbokChange.bind( this )}
+                                value={this.state.dataObj.type === "m"}
+                                inputProps={{
+                                'aria-label': 'primary checkbox',
+                                }}
+                            />
+                            </div>
+                        </div>
+                        
+                           
+        
+                </div>
                 <DialogContent>
                     <div style={{ display: 'flex' }}>
                         <div style={{ width: '50%' }}>
@@ -336,6 +381,7 @@ class DataUploader extends Component {
                                 />
                             </div>
                         </div>
+
                         <div className={classes.offDay}>
                             Mandi Off Day<i style={{ fontSize: '20px', marginLeft: '5px', color: 'red', cursor: 'pointer' }} onClick={this.onAddOffDayClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
                             {this.state.offDayArr.map((row, i) => {
@@ -346,7 +392,7 @@ class DataUploader extends Component {
                                             id="offType"
                                             label="Select Type"
                                             type="text"
-                                            style={{ marginRight: '2%', width: '86%',marginLeft:'5%' }}
+                                            style={{ marginRight: '2%', width: '86%', marginLeft: '5%' }}
                                             value={row.offType}
                                             onChange={this.handleOffDayChange.bind(this, i, 'offType')} >
                                             {this.state.typeArr.map((option, i) => (
@@ -355,7 +401,7 @@ class DataUploader extends Component {
                                                 </MenuItem>
                                             ))}
                                         </TextField>
-                                        <i className={"fa fa-window-close "  +classes.close} onClick={this.onCancelClick.bind(this,i)} aria-hidden="true"></i>
+                                        <i className={"fa fa-window-close " + classes.close} onClick={this.onCancelClick.bind(this, i)} aria-hidden="true"></i>
                                     </div>
                                     {row.offType === "every" && <div >
                                         <TextField

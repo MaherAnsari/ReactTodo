@@ -78,9 +78,10 @@ const styles = theme => ({
   drawerPaper: {
     position: 'fixed',
     whiteSpace: 'nowrap',
-    backgroundColor: '#f5f5fa',
+    // backgroundColor: '#f5f5fa',
+    backgroundColor: '#2e3247',
     borderRight: "0 !important",
-    backgroundImage: "#f5f5fa !important",
+    backgroundImage: "#2e3247 !important",
     // backgroundImage: "linear-gradient(to left, #3c3f3f, #333535, #292c2c, #212323, #181a1a)",
     // backgroundImage: "linear-gradient(to right bottom, #478e89, #25828b, #00748c, #00668c, #005687)",
     width: drawerWidth,
@@ -255,7 +256,7 @@ class Home extends React.Component {
 
     return (
       <div className={classes.root}>
-        <AppBar position="fixed" style={{ background: "#05073a", boxShadow: 'none' }}
+        <AppBar position="fixed" style={{ background: "#2e3247", boxShadow: 'none' }}
           className={classNames(classes.appBar, this.state.open && classes.appBarShift)}>
           <Toolbar>
 

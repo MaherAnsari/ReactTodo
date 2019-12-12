@@ -28,24 +28,31 @@ const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
       head: {
-        color: '#fff',
+        color: '#2e3247',
         fontWeight: 600,
-        fontSize: '15px !important',
+        fontSize: '13px !important',
         fontFamily: 'lato !important',
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        lineHeight: "1em"
 
       },
       body: {
         color: 'rgba(0, 0, 0, 0.87)',
         fontWeight: 500,
-        fontSize: '15px !important',
+        fontSize: '14px !important',
         fontFamily: 'lato !important',
-        lineHeight: '1.5em',
+        // lineHeight: '1.5em',
       },
       MuiTypography: {
+        body2:{
+          color: "red",
+          fontFamily: "lato",
+          fontWeight: 600
+        },
         colorInherit: {
           color: "white"
         }
+     
       },
       MuiInputBase: {
         input: {
@@ -70,11 +77,17 @@ const theme = createMuiTheme({
           }
         }
       },
-      Mui: {
-        disabled: {
-          color: "#717070"
+      MuiSvgIcon: {
+        root: {
+          height: "18px",
+          fontSize: "18px"
         }
       }
+      // Mui: {
+      //   disabled: {
+      //     color: "#717070"
+      //   }
+      // }
     },
   }
 });
@@ -92,6 +105,14 @@ const styles = theme => ({
     textAlign: 'center',
     maxWidth: "120px", //'200px',
     padding: '12px'
+  },
+  tableCellCyan: {
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    textAlign: 'center',
+    maxWidth: "120px", //'200px',
+    padding: '12px',
+    color: "#022361"
   },
   titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
   defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -133,9 +154,9 @@ class MandiListTable extends Component {
       "stateList": this.getStateData(),
       districtData: Utils.getDistrictData(),
 
-      
-      rowsPerPage : 10,
-      page:0,
+
+      rowsPerPage: 10,
+      page: 0,
 
     }
   }
@@ -187,6 +208,11 @@ class MandiListTable extends Component {
     return classes.tableCell;
   }
 
+  getTableCustomBgCellClass(classes) {
+      return classes.tableCellCyan;
+  }
+
+
   onDeleteMandi(market, event) {
     let dialogText = "Are you sure to delete ?"
     this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true, deleteMarket: market });
@@ -210,16 +236,16 @@ class MandiListTable extends Component {
   }
 
   handleChangePage = (event, newPage) => {
-    this.setState({ page : newPage });
+    this.setState({ page: newPage });
   };
 
   handleChangeRowsPerPage = event => {
-    this.setState({ page : 0, rowsPerPage : parseInt(event.target.value, 10) });
+    this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
   };
 
   render() {
     const { classes } = this.props;
-    const { rowsPerPage , page} = this.state;
+    const { rowsPerPage, page } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -245,7 +271,7 @@ class MandiListTable extends Component {
           <div >
             <Table className='table-body'>
               <TableHead>
-                <TableRow  >
+                <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
                     <TableCell key={option} className={this.getTableCellClass(classes, i)}>{option}</TableCell>
                   ))}
@@ -254,46 +280,51 @@ class MandiListTable extends Component {
               <TableBody>
                 {/*  ["state","state (Hindi)","district", "market","market (Hindi)","district (Hindi)", "Mandi Grade","Mandi Grade( HINDI)", "APMC","Mandi Off Day","Location","Action"], */}
                 {this.state.tableBodyData &&
-                (rowsPerPage > 0
-                  ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : this.state.tableBodyData
-                ).map((row, i) => {
-                  return (
-                    <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
-                      <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                        {row.state}</TableCell>
-                      <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                        {row.state_hindi ? row.state_hindi : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.district}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.market}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.market_hindi ? row.market_hindi : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>
-                        {row.is_open ? <LockOpenIcon className="material-Icon" /> :
-                          <LockIcon className="material-Icon" style={{ color: 'red' }} />}
-                      </TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 4)}>
-                        {row.businessAddedPlace ? <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
-                          : <DoneAllIcon className="material-Icon" />}
-                        {row.businessAddedPlace ? <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ color: 'red', cursor: 'pointer' }} /> : ""
-                        }
-                        <EditIcon
-                          className="material-Icon"
-                          onClick={() => this.handelEditModalOpen(row)}
-                          style={{ color: "#e72e89", cursor: "pointer" }} />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                  (rowsPerPage > 0
+                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    : this.state.tableBodyData
+                  ).map((row, i) => {
+                    return (
+                      <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                          {row.state}</TableCell>
+                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                          {row.state_hindi ? row.state_hindi : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district}</TableCell>
+                        <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell>
+                        <TableCell className={this.getTableCustomBgCellClass(classes)}>{row.market_hindi ? row.market_hindi : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>
+                          {row.is_open ? <LockOpenIcon className="material-Icon"  style={{ height: "18px", fontSize: "18px" }}  /> :
+                            <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
+                        </TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 4)}>
+                          <div>
+                            {row.businessAddedPlace ?
+                              <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a', height: "18px", fontSize: "18px" }} />
+                              :
+                              <DoneAllIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} />}
+                            {row.businessAddedPlace ?
+                              <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ height: "18px", fontSize: "18px", color: 'red', cursor: 'pointer' }} /> : ""
+                            }
+                            <EditIcon
+                              className="material-Icon"
+                              onClick={() => this.handelEditModalOpen(row)}
+                              style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
-              <TableFooter>
+              <TableFooter style={{ borderTop: "2px solid #858792" }}>
                 <TableRow>
                   <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, { label: 'All', value: -1 }]}
+                    rowsPerPageOptions={[25, 50, 100]}
                     colSpan={6}
                     count={this.state.tableBodyData.length}
                     rowsPerPage={rowsPerPage}
