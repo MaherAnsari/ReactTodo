@@ -33,8 +33,10 @@
     padding: 8px;
     margin-top: 15px;
     background: #f5f5fa;
-    font-size: 16px;
-    font-family: lato;
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 500;
+    font-size: 14px !important;
+    font-family: lato !important;
 }
 .name{
     margin-left: 10px;
