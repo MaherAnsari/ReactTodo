@@ -15,19 +15,19 @@ const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
       head: {
-        color: '#fff',
+        color: '#2e3247',
         fontWeight: 600,
-        fontSize: '15px !important',
+        fontSize: '13px !important',
         fontFamily: 'lato !important',
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        lineHeight: "1em"
 
       },
       body: {
         color: 'rgba(0, 0, 0, 0.87)',
         fontWeight: 500,
-        fontSize: '15px !important',
+        fontSize: '14px !important',
         fontFamily: 'lato !important',
-        lineHeight: '1.5em',
       }
     },
   }
@@ -170,7 +170,7 @@ class PriceTable extends Component {
           <div >
             <Table className='table-body' style={{marginBottom:'0px'}}>
               <TableHead>
-                <TableRow  >
+                <TableRow style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
                     <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '150px' }}>{option}</TableCell>
                   ))}
@@ -179,7 +179,7 @@ class PriceTable extends Component {
               <TableBody>
                 {this.state.tableBodyData.map((row, i) => {
                   return (
-                    <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                    <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                         {row.buyer_name ? row.buyer_name:"-"}
                       </TableCell>

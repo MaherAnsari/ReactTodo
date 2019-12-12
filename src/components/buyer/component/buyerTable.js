@@ -27,55 +27,22 @@ const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
             head: {
-                color: '#fff',
+                color: '#2e3247',
                 fontWeight: 600,
-                fontSize: '15px !important',
+                fontSize: '13px !important',
                 fontFamily: 'lato !important',
-                textTransform: 'uppercase'
-
-            },
-            body: {
+                textTransform: 'uppercase',
+                lineHeight: "1em"
+        
+              },
+              body: {
                 color: 'rgba(0, 0, 0, 0.87)',
                 fontWeight: 500,
-                fontSize: '15px !important',
+                fontSize: '14px !important',
                 fontFamily: 'lato !important',
-                lineHeight: '1.5em',
-            }
+                // lineHeight: '1.5em',
+              }
         },
-        
-        MuiTypography:{
-            colorInherit:{
-                color: "white"
-            }
-        },
-        MuiInputBase:{
-            input:{
-                color: "#ffffff"
-            }
-        },
-        MuiTablePagination:{
-            selectIcon:{
-                color: "#ffffff"
-            },
-            menuItem:{
-                color:"#000"
-            }
-        },
-        MuiIconButton:{
-            colorInherit:{
-                color:"#ffffff"
-            },
-            root:{
-                "Mui-disabled":{
-                color:"#ffffff"
-                }
-            }
-        },
-        // Mui:{
-        //     disabled:{
-        //         color:"#717070"
-        //     }
-        // }
     }
 });
 
@@ -262,7 +229,7 @@ class BrokerTable extends Component {
                     <div >
                         <Table className='table-body'>
                             <TableHead>
-                                <TableRow  >
+                                <TableRow style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '90px' : '125px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
@@ -276,10 +243,10 @@ class BrokerTable extends Component {
                                 : this.state.tableBodyData
                               ).map((row, i) => {
                                     return (
-                                        <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                        <TableRow key={'table_' + i}  style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                   <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red" }} className="buisness-icon" /> {row.id}</div>
+                                                   <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red", height: "18px", fontSize: "18px"  }} className="buisness-icon" /> {row.id}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -305,16 +272,16 @@ class BrokerTable extends Component {
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                                 <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
+                                                    <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a', height: "18px", fontSize: "18px"  }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.bijak_verified ? "Bijak Verified : YES" : "Bijak Verified : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red' }} />
+                                                    <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
+                                                    <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a', height: "18px", fontSize: "18px"  }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a', height: "18px", fontSize: "18px"  }} />
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 7)} >{row.rating}
@@ -324,10 +291,10 @@ class BrokerTable extends Component {
                                     );
                                 })}
                             </TableBody>
-                            <TableFooter>
+                            <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions={[ 10, 25,50, { label: 'All', value: -1 }]}
+                                        rowsPerPageOptions={[25,50, 100]}
                                         colSpan={5}
                                         count={this.state.tableBodyData.length}
                                         rowsPerPage={rowsPerPage}

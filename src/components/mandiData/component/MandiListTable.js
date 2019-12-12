@@ -299,7 +299,7 @@ class MandiListTable extends Component {
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>
                           {row.is_open ? <LockOpenIcon className="material-Icon" /> :
-                            <LockIcon className="material-Icon" style={{ color: 'red' }} />}
+                            <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
                         </TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 4)}>

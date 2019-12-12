@@ -30,6 +30,10 @@ import 'date-fns';
 import EditTransactionModal from '../common/EditTransactionModal';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+  
+
 const theme = createMuiTheme({
     overrides: {
         MuiFormLabel: {
@@ -121,7 +125,11 @@ class ViewTransactionModal extends Component {
 
             editableData: undefined,
             showEditTransactionModal: false,
-            isDataUpdated: false
+            isDataUpdated: false,
+            
+            rowsPerPage: 50,
+            page: 0,
+      
         }
     }
 
@@ -224,11 +232,22 @@ class ViewTransactionModal extends Component {
         this.setState({ editableData: data, showEditTransactionModal: true });
     }
 
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+      };
+    
+      handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+      };
+    
+
+
     render() {
         const { classes } = this.props;
         const { groupedTransactionData, transDate, allTransactionsData, expanded,
             supplierNameMapping, buyerInfo, selectedTab,
             showEditTransactionModal } = this.state;
+            const { rowsPerPage, page } = this.state;
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -355,10 +374,11 @@ class ViewTransactionModal extends Component {
                                             {groupedTransactionData[suplierNumber] && groupedTransactionData[suplierNumber].length > 0 &&
                                                 <Table className='table-body'>
                                                     <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
-                                                        <TableRow  >
+                                                        <TableRow   style={{borderBottom: "2px solid #858792"}} >
                                                             {this.state.tableHeadData.map((option, i) => (
                                                                 <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                                             ))}
+                                                            <TableCell  className={this.getTableCellClass(classes, 0)} style={{ minWidth: '120px', paddingLeft:  '' }}></TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -413,12 +433,13 @@ class ViewTransactionModal extends Component {
                                                                         <EditIcon
                                                                             className="material-Icon"
                                                                             onClick={() => this.handelEditModalOpen(row)}
-                                                                            style={{ color: "#e72e89", cursor: "pointer" }} />
+                                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize:"18px" }} />
                                                                     </TableCell>
                                                                 </TableRow>
                                                             );
                                                         })}
                                                     </TableBody>
+                                                    
                                                 </Table>}
                                             {groupedTransactionData[suplierNumber].length > 0 ? "" :
                                                 <div className={classes.defaultTemplate}>
@@ -437,14 +458,19 @@ class ViewTransactionModal extends Component {
                             {allTransactionsData && allTransactionsData.length > 0 &&
                                 <Table className='table-body'>
                                     <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
-                                        <TableRow  >
+                                        <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                             {this.state.tableHeadData.map((option, i) => (
                                                 <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                             ))}
+                                             <TableCell className={this.getTableCellClass(classes, 0)} style={{ paddingLeft:  '' }}></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {allTransactionsData.map((row, i) => {
+                                        {
+                                          (rowsPerPage > 0
+                                            ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            : allTransactionsData
+                                          ).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -494,13 +520,30 @@ class ViewTransactionModal extends Component {
                                                         <EditIcon
                                                             className="material-Icon"
                                                             onClick={() => this.handelEditModalOpen(row)}
-                                                            style={{ color: "#e72e89", cursor: "pointer" }} />
+                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />
                                                     </TableCell>
 
                                                 </TableRow>
                                             );
                                         })}
                                     </TableBody>
+                                    <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[25, 50, 100]}
+                    colSpan={5}
+                    count={allTransactionsData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
+                </TableRow>
+              </TableFooter>
                                 </Table>}
                             {allTransactionsData && allTransactionsData.length > 0 ? "" :
                                 <div className={classes.defaultTemplate}

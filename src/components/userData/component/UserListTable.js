@@ -118,7 +118,7 @@ class UserListTable extends Component {
             stateList: this.getStateData(),
 
 
-            rowsPerPage : 10,
+            rowsPerPage : 50,
             page:0,
 
             // commodityList:["dd"]
@@ -405,7 +405,7 @@ class UserListTable extends Component {
                             <TableFooter  style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions={[ 10, 25,50, { label: 'All', value: -1 }]}
+                                        rowsPerPageOptions={[ 25,50,100 ]}
                                         colSpan={6}
                                         count={this.state.tableBodyData.length}
                                         rowsPerPage={rowsPerPage}

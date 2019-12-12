@@ -15,16 +15,20 @@ import ViewTransactionModal from './ViewTransactionModal';
 import Loader from '../../common/Loader';
 import AddTransactionModal from './AddTransactionModal';
 
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+    
 
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
             head: {
-                color: '#fff',
+                color: '#2e3247',
                 fontWeight: 600,
-                fontSize: '14px !important',
+                fontSize: '13px !important',
                 fontFamily: 'lato !important',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                lineHeight: "1em"
 
             },
             body: {
@@ -32,7 +36,6 @@ const theme = createMuiTheme({
                 fontWeight: 500,
                 fontSize: '14px !important',
                 fontFamily: 'lato !important',
-                lineHeight: '1.5em',
             }
         },
     }
@@ -108,7 +111,11 @@ class PaymentComponent extends Component {
             showLoader: false,
             defaultData: [],
             buyerInfo: {},
-            showAddTransactionModal: false
+            showAddTransactionModal: false,
+
+            rowsPerPage: 10,
+            page: 0,
+      
 
         }
     }
@@ -206,11 +213,21 @@ class PaymentComponent extends Component {
         })
     }
 
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+      };
+    
+      handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+      };
+    
+
 
 
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
+        const { rowsPerPage, page } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
@@ -252,17 +269,21 @@ class PaymentComponent extends Component {
                     {this.state.tableBodyData ? <div >
                         <Table className='table-body'>
                             <TableHead>
-                                <TableRow  >
+                                <TableRow style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData && this.state.tableBodyData.map((row, i) => {
+                                {this.state.tableBodyData && 
+                                 (rowsPerPage > 0
+                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : this.state.tableBodyData
+                                  ).map((row, i) => {
                                     return (
                                         // ["Buyer Name","Buyer Mobile","Location","Amount","No. of Transactions", "Transactions"],
-                                        <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                        <TableRow key={'table_' + i}  style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
 
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 {row.buyer_fullname ? row.buyer_fullname : "-"}
@@ -308,6 +329,23 @@ class PaymentComponent extends Component {
                                     );
                                 })}
                             </TableBody>
+                            <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[25, 50, 100]}
+                    colSpan={6}
+                    count={this.state.tableBodyData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
+                </TableRow>
+              </TableFooter>
                         </Table>
                         {this.state.tableBodyData.length > 0 ? "" :
                             <div className={classes.defaultTemplate}>
