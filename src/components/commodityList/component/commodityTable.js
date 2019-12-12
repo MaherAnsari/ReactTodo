@@ -65,11 +65,11 @@ const theme = createMuiTheme({
         }
       }
     },
-    Mui: {
-      disabled: {
-        color: "#717070"
-      }
-    }
+    // Mui: {
+    //   disabled: {
+    //     color: "#717070"
+    //   }
+    // }
   }
 });
 
