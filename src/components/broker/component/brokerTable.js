@@ -268,7 +268,11 @@ class BrokerTable extends Component {
                                                     </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
                                                 <Tooltip title={row.default_commodity ? row.default_commodity.join():"-"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join():"-"}</div>
+                                                    <div className="text-ellpses" style={{padding:"4px 10px"}}><span style={{    
+                                                        color: "white",
+                                                        background: "rgb(71, 125, 227)",
+                                                        padding: "4px 12px",
+                                                        borderRadius: "13px"}}>{row.default_commodity ? row.default_commodity.join():"-"}</span></div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >

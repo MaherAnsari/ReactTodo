@@ -261,6 +261,8 @@ class SignIn extends React.Component {
                 cookie.save('userId', userId, { path: '/' });
                 cookie.save('token', authk, { path: '/' });
                 cookie.save('username', username, { path: '/' });
+                localStorage.setItem('name',data.attributes.name);
+
                 // console.log(cookie);
              
                     this.props.history.push("/home/mandi-data");
@@ -298,17 +300,7 @@ class SignIn extends React.Component {
                             // Auth.currentAuthenticatedUser({
                             // }).then(user => {
                             //     console.log(user);
-                            //     user.deviceKey = user.getCachedDeviceKeyAndPassword();
-                            //     console.log(user.deviceKey);
-                            //     user.setDeviceStatusRemembered({
-                            //         onSuccess: function (result) {
-                            //             console.log('call result: ' + result);
-                            //             // alert('call result: ' + result);
-                            //         },
-                            //         onFailure: function (err) {
-                            //             console.log(JSON.stringify(err));
-                            //         }
-                            //     });
+                            //     localStorage.setItem('name',user.attributes.name);
                             // })
                             //     .catch(err => console.log("_^_" + JSON.stringify(err)))
             
@@ -349,19 +341,8 @@ class SignIn extends React.Component {
                 // Auth.currentAuthenticatedUser({
                 // }).then(user => {
                 //     console.log(user);
-                //     user.deviceKey = user.getCachedDeviceKeyAndPassword();
-                //     console.log(user.deviceKey);
-                //     user.setDeviceStatusRemembered({
-                //         onSuccess: function (result) {
-                //             console.log('call result: ' + result);
-                //             // alert('call result: ' + result);
-                //         },
-                //         onFailure: function (err) {
-                //             console.log(JSON.stringify(err));
-                //         }
-                //     });
-                // })
-                //     .catch(err => console.log("_^_" + JSON.stringify(err)))
+                //     localStorage.setItem('name',user.attributes.name);
+                // }).catch(err => console.log("_^_" + JSON.stringify(err)))
 
                 var authk = data.signInUserSession.idToken.jwtToken;
                 var username = data.signInUserSession.idToken.payload.name;
@@ -392,17 +373,7 @@ class SignIn extends React.Component {
                 // Auth.currentAuthenticatedUser({
                 // }).then(user => {
                 //     console.log(user);
-                //     user.deviceKey = user.getCachedDeviceKeyAndPassword();
-                //     console.log(user.deviceKey);
-                //     user.setDeviceStatusRemembered({
-                //         onSuccess: function (result) {
-                //             console.log('call result: ' + result);
-                //             // alert('call result: ' + result);
-                //         },
-                //         onFailure: function (err) {
-                //             console.log(JSON.stringify(err));
-                //         }
-                //     });
+                //     localStorage.setItem('name',user.attributes.name);
                 // })
                 //     .catch(err => console.log("_^_" + JSON.stringify(err)))
 

@@ -80,20 +80,19 @@ class VerticalItem extends React.Component {
 
     return (
       <ul className='class_ul sub-level' style={style} >
-        {/* <li className='class_li top-item' onClick={() => this.onSelect(item.route)} >
-          <div className='item-name'>{item.name}</div>
-        </li> */}
         {item.children && item.children.map(i => {
           return (
             <li className="class_li" key={i.route} 
-            style={{ background: "#2e3247 !important", color: i.iconColor }} 
-            
+            // style={{ background: "#2e3247 !important", color: i.iconColor }} 
+            style={{background: active === i.route ? "#05073a":"",borderLeft : active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
             onClick={() => this.onSelect(i.route)} >
               
               <Icon className="sideBarIcon"  style={{ fontSize: "18px"}}>
                 {i.iconClassName}
               </Icon>
               <div className='item-name' >{i.name}</div>
+              {active === i.route ? <i className={"fa fa-chevron-right"} 
+            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>:""}
             </li>
           )
         })}
@@ -106,8 +105,6 @@ class VerticalItem extends React.Component {
     const { isHover } = this.state; //activeRoute
     let className = 'vertical-item-component';
     if (isHover) className += ' is-hover'
-    // if (active) className += ' active'
-    // console.log(item,activeRoute,active);
     return (
       <li
 
@@ -164,14 +161,9 @@ class VerticalNavigation extends React.PureComponent {
         <div className='nav-header' style={{ backgroundColor: '#2e3247' }}>
           <div>
             <img style={{
-              // borderRadius: '50%',
               height: '60px',
-              // border: '4px solid #dedede',
-              // maxHeight: '80px',
               maxWidth: '200px',
               padding: '10px 10px 10px 10px'
-              // marginBottom:'20px',
-              // marginTop:'5px'
             }} src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
           </div>
           {/* <Tooltip title={labname || ""} placement="right" >

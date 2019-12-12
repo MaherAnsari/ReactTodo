@@ -298,7 +298,7 @@ class MandiListTable extends Component {
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>
-                          {row.is_open ? <LockOpenIcon className="material-Icon" /> :
+                          {row.is_open ? <LockOpenIcon className="material-Icon"  style={{ height: "18px", fontSize: "18px" }}  /> :
                             <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
                         </TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
