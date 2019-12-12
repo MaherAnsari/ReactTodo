@@ -100,7 +100,10 @@ class BrokerContainer extends React.Component {
                 {this.state.dataList ? <Card className={classes.card}>
                        <BrokerTable  tableData={this.state.dataList} commodityList={this.state.commodityList} onClose={this.getData.bind(this)}   /> 
                        <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD BROKER</p></div>
+                        <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p style={{fontSize: "14px",
+                                    fontFamily: "lato",
+                                    fontWeight: 600}}>ADD BROKER</p></div>
                     </div>
 
                 </Card>    :<Loader />}        

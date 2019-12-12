@@ -20,23 +20,23 @@ const styles = theme => ({
 
 
 const _items = [
-  { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#e6008a", children: [] },
+  { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [] },
   {
-    name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#e6008a", children: [
-      { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#e6008a" },
-      { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a" },
-      { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a" },
-      { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a" },
+    name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
+      { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
+      { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
+      { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
+      { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
     ]
   },
   // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
   // { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
   // { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
-  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#e6008a", children: [] },
-  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#e6008a", children: [] },
-  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6008a", children: [] },
-  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#e6008a", children: [] },
-  { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#e6008a", children: [] }
+  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#62cc42", children: [] },
+  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
+  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
+  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
+  { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
 
 ]
 
@@ -86,14 +86,14 @@ class VerticalItem extends React.Component {
         {item.children && item.children.map(i => {
           return (
             <li className="class_li" key={i.route} 
-            style={{ background: "#384952 !important", color: "#f5f5fa" }} 
+            style={{ background: "#2e3247 !important", color: i.iconColor }} 
             
             onClick={() => this.onSelect(i.route)} >
               
-              <Icon className="sideBarIcon">
+              <Icon className="sideBarIcon"  style={{ fontSize: "18px"}}>
                 {i.iconClassName}
               </Icon>
-              <div className='item-name'>{i.name}</div>
+              <div className='item-name' >{i.name}</div>
             </li>
           )
         })}
@@ -112,13 +112,14 @@ class VerticalItem extends React.Component {
       <li
 
         ref={ref => { this._ref = ref }}
+        style={{background : active === item.route ? '#5cb8eb' : '#25283b' }}
         className={className + " class_li"}
         // onMouseEnter={() => this.toggleHover(true)}
         // onMouseLeave={() => this.toggleHover(false)}
          >
         <div>
           <div className='item'
-            style={{ background: active === item.route ? '#e5e8ec' : '#f5f5fa' }}
+            style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {
                 this.onSelect(item.route)
@@ -127,12 +128,12 @@ class VerticalItem extends React.Component {
               }
             }
             }  >
-            <Icon className="sideBarIcon" style={{ color: item.iconColor }}>
+            <Icon className="sideBarIcon" style={{ color: item.iconColor ,fontSize: "18px"}}>
               {item.iconClassName}
             </Icon>
             <div className='item-name'>{item.name}</div>
             {item.children && item.children.length > 0 && <i className={isHover ? "fa fa-chevron-up" : "fa fa-chevron-down"} 
-            style={{position: "absolute",right: "0px" }} aria-hidden="true"></i>}
+            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>}
           </div>
           {this.renderSubLevel(item)}
         </div>
@@ -160,7 +161,7 @@ class VerticalNavigation extends React.PureComponent {
     // console.log(activeRoute)
     return (
       <div className={`vertical-navigation-component ${additionalClass}`}>
-        <div className='nav-header' style={{ backgroundColor: '#e4e4e8' }}>
+        <div className='nav-header' style={{ backgroundColor: '#2e3247' }}>
           <div>
             <img style={{
               // borderRadius: '50%',

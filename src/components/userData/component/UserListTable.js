@@ -32,55 +32,21 @@ const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
             head: {
-                color: '#fff',
+                color: '#2e3247',
                 fontWeight: 600,
-                fontSize: '15px !important',
+                fontSize: '13px !important',
                 fontFamily: 'lato !important',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                lineHeight: "1em"
 
             },
             body: {
                 color: 'rgba(0, 0, 0, 0.87)',
                 fontWeight: 500,
-                fontSize: '15px !important',
+                fontSize: '14px !important',
                 fontFamily: 'lato !important',
-                lineHeight: '1.5em',
             }
-        },
-
-        MuiTypography:{
-            colorInherit:{
-                color: "white"
-            }
-        },
-        MuiInputBase:{
-            input:{
-                color: "#ffffff"
-            }
-        },
-        MuiTablePagination:{
-            selectIcon:{
-                color: "#ffffff"
-            },
-            menuItem:{
-                color:"#000"
-            }
-        },
-        MuiIconButton:{
-            colorInherit:{
-                color:"#ffffff"
-            },
-            root:{
-                "Mui-disabled":{
-                color:"#ffffff"
-                }
-            }
-        },
-        // Mui:{
-        //     disabled:{
-        //         color:"#717070"
-        //     }
-        // }
+        }
     }
 });
 
@@ -120,9 +86,9 @@ const styles = theme => ({
         maxWidth: '800px',
     },
     info: {
-        fontSize: '20px',
+        fontSize: '18px',
         marginRight: '8px',
-        color: '#fff250',
+        color: '#000000',
         cursor: 'pointer',
         float: 'right'
     }
@@ -277,7 +243,7 @@ class UserListTable extends Component {
         if (obj.role === "ca") {
             return "#f94141";
         } else if (obj.role === 'la') {
-            return "#82af82";
+            return "#00a700";
         } else if (obj.role === 'broker') {
             return "#7070fd";
         } else {
@@ -321,7 +287,7 @@ class UserListTable extends Component {
                     <div >
                         <Table className='table-body'>
                             <TableHead>
-                                <TableRow  >
+                                <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
@@ -336,10 +302,10 @@ class UserListTable extends Component {
                                   )
                                 .map((row, i) => {
                                     return (
-                                        <TableRow key={'table_' + i} style={i % 2 === 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                        <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red" }} className="buisness-icon" /> {row.id}</div>
+                                                    <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red", fontSize:"18px", height: "18px" }} className="buisness-icon" /> {row.id}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
@@ -366,19 +332,23 @@ class UserListTable extends Component {
                                                     <div className="text-ellpses">{row.default_commodity ? row.default_commodity.join() : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ background: this.getBackgroundColor(row) }}>{this.getRole(row)} <i onClick={this.onInfoClick.bind(this, row)} className={"fa fa-info-circle " + classes.info} aria-hidden="true"></i></TableCell>
+                                            <TableCell className={this.getTableCellClass(classes, 4)} > 
+                                            <span style={{  color: "white",
+                                                            background:this.getBackgroundColor(row),
+                                                            padding: "4px 12px",
+                                                            borderRadius: "13px"}}> {this.getRole(row)} </span> <i onClick={this.onInfoClick.bind(this, row)} className={"fa fa-info-circle " + classes.info} aria-hidden="true"></i></TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                                 <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' }} />
+                                                    <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.bijak_verified ? "Bijak Verified : YES" : "Bijak Verified : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red' }} />
+                                                    <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' }} />
+                                                    <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                                 <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' }} />
+                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
@@ -432,7 +402,7 @@ class UserListTable extends Component {
                                     );
                                 })}
                             </TableBody>
-                            <TableFooter>
+                            <TableFooter  style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[ 10, 25,50, { label: 'All', value: -1 }]}

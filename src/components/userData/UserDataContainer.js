@@ -119,7 +119,10 @@ class UserDataContainer extends React.Component {
                        commodityList={ this.state.commodityList}  /> 
 
                        <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD USER</p></div>
+                        <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p style={{fontSize: "14px",
+                                    fontFamily: "lato",
+                                    fontWeight: 600}}>ADD USER</p></div>
                     </div>
                 </Card>    :<Loader />}        
 

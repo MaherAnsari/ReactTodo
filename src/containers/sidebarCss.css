@@ -67,7 +67,7 @@
 }
 .vertical-navigation-component.extended, .vertical-navigation-component .is-hover {
   min-width: 320px;
-  background: rgb(5, 7, 58);
+  background: #2e3247;
 
 }
 .vertical-navigation-component.extended .top-item {
@@ -95,7 +95,7 @@
   align-items: center;
 }
 .vertical-navigation-component .sub-level li {
-  height: 50px;
+  height: 40px;
 }
 .vertical-navigation-component .sub-level li:hover {
   background:#05073a;
@@ -147,7 +147,8 @@
 }
 
 .item-name{
-font-size: 15px;
-font-weight: 700;
-font-family: lato;
+  font-size: 14px;
+  font-weight: 500;
+  color:#afb1b9;
+  font-family: lato;
 }
