@@ -98,7 +98,7 @@ const styles = theme => ({
     },
     inline: {
         display: 'inline',
-      },
+    },
 });
 
 
@@ -233,17 +233,17 @@ class PaymentComponent extends Component {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
     };
 
-    formatNumberWithComma( x ){
-        try{
-        x=x.toString();
-        var lastThree = x.substring(x.length-3);
-        var otherNumbers = x.substring(0,x.length-3);
-        if(otherNumbers != '')
-            lastThree = ',' + lastThree;
-        var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-        return res;
-    }catch( err){
-            console.log( err);
+    formatNumberWithComma(x) {
+        try {
+            x = x.toString();
+            var lastThree = x.substring(x.length - 3);
+            var otherNumbers = x.substring(0, x.length - 3);
+            if (otherNumbers != '')
+                lastThree = ',' + lastThree;
+            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+            return res;
+        } catch (err) {
+            console.log(err);
             return x;
         }
     }
@@ -269,117 +269,117 @@ class PaymentComponent extends Component {
                         <div style={{ width: "100%", display: "flex" }}>
                             {/* <div style={{ width: "25%", fontSize: 15 ,padding: "28px"}}> */}
                             <List style={{ display: "contents" }}>
-                                <ListItem style={{ background: "rgb(46, 50, 71)" ,borderRadius: "5px"}} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
                                     </ListItemAvatar>
                                     <ListItemText primary={<React.Fragment>
-              <Typography
-                component="div"
-                variant="body2"
-                className={classes.inline}
-                style={{ color: "rgb(97, 203, 66)", fontFamily:"lato", fontWeight:600, fontSize:"16px"}}
-              >
-                {paymentMetaInfo[0]["sum"] ? this.formatNumberWithComma( paymentMetaInfo[0]["sum"]) : "0"}
-              </Typography>
-            </React.Fragment>
-          } secondary={
-            <React.Fragment>
-              <Typography
-                component="span"
-                variant="body2"
-                className={classes.inline}
-                style={{ color: "#afb1b9", fontFamily:"lato", fontWeight:500, fontSize:"14px"}}
-              >
-                Total in amount
-              </Typography>
-            </React.Fragment>
-          } />
+                                        <Typography
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                        >
+                                            {paymentMetaInfo[0]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[0]["sum"]) : "0"}
+                                        </Typography>
+                                    </React.Fragment>
+                                    } secondary={
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total in amount
+                                            </Typography>
+                                        </React.Fragment>
+                                    } />
                                 </ListItem>
-                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px" ,borderRadius: "5px" }} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#f9e646", fontSize: "34px" }}>playlist_add_check</Icon>
                                     </ListItemAvatar>
                                     <ListItemText
-                                    primary={<React.Fragment>
-                                        <Typography
-                                          component="div"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "rgb(97, 203, 66)", fontFamily:"lato", fontWeight:600, fontSize:"16px"}}
-                                        >
-                                         {paymentMetaInfo[0]["count"] ? this.formatNumberWithComma( paymentMetaInfo[0]["count"]) : "0"} 
+                                        primary={<React.Fragment>
+                                            <Typography
+                                                component="div"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            >
+                                                {paymentMetaInfo[0]["count"] ? this.formatNumberWithComma(paymentMetaInfo[0]["count"]) : "0"}
+                                            </Typography>
+                                        </React.Fragment>
+                                        } secondary={
+                                            <React.Fragment>
+                                                <Typography
+                                                    component="span"
+                                                    variant="body2"
+                                                    className={classes.inline}
+                                                    style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                                >
+                                                    Total no. of in payment
                                         </Typography>
-                                      </React.Fragment>
-                                    } secondary={
-                                      <React.Fragment>
-                                        <Typography
-                                          component="span"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "#afb1b9", fontFamily:"lato", fontWeight:500, fontSize:"14px"}}
-                                        >
-                                         Total no. of in payment
-                                        </Typography>
-                                      </React.Fragment>
-                                    } />
+                                            </React.Fragment>
+                                        } />
                                 </ListItem>
-                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px" ,borderRadius: "5px" }} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
                                     </ListItemAvatar>
                                     <ListItemText primary={<React.Fragment>
                                         <Typography
-                                          component="div"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "#e6343a", fontFamily:"lato", fontWeight:600, fontSize:"16px"}}
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                         {paymentMetaInfo[1]["sum"] ?this.formatNumberWithComma( paymentMetaInfo[1]["sum"]) : "0"} 
+                                            {paymentMetaInfo[1]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[1]["sum"]) : "0"}
                                         </Typography>
-                                      </React.Fragment>
+                                    </React.Fragment>
                                     } secondary={
-                                      <React.Fragment>
-                                        <Typography
-                                          component="span"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "#afb1b9", fontFamily:"lato", fontWeight:500, fontSize:"14px"}}
-                                        >
-                                         Total out amount
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total out amount
                                         </Typography>
-                                      </React.Fragment>
+                                        </React.Fragment>
                                     } />
                                 </ListItem>
-                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px" ,borderRadius: "5px" }} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#50a1cf", fontSize: "34px" }}>low_priority</Icon>
                                     </ListItemAvatar>
                                     <ListItemText primary={<React.Fragment>
                                         <Typography
-                                          component="div"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "#e6343a", fontFamily:"lato", fontWeight:600, fontSize:"16px"}}
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                         {paymentMetaInfo[1]["count"] ? this.formatNumberWithComma( paymentMetaInfo[1]["count"]) : "0"}
+                                            {paymentMetaInfo[1]["count"] ? this.formatNumberWithComma(paymentMetaInfo[1]["count"]) : "0"}
                                         </Typography>
-                                      </React.Fragment>
+                                    </React.Fragment>
                                     } secondary={
-                                      <React.Fragment>
-                                        <Typography
-                                          component="span"
-                                          variant="body2"
-                                          className={classes.inline}
-                                          style={{ color: "#afb1b9", fontFamily:"lato", fontWeight:500, fontSize:"14px"}}
-                                        >
-                                         Total no. of out payment
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total no. of out payment
                                         </Typography>
-                                      </React.Fragment>
+                                        </React.Fragment>
                                     } />
                                 </ListItem>
                             </List>
-                            
+
                         </div>
                     </div>}
                     {this.state.tableBodyData ? <div >
@@ -416,19 +416,19 @@ class PaymentComponent extends Component {
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39" }}>
                                                     <div className="text-ellpses">
-                                                        {row.b_in_amount ? this.formatNumberWithComma( row.b_in_amount ): "0"}
+                                                        {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010" }}>
                                                     <div className="text-ellpses">
-                                                        {row.b_out_amount ? this.formatNumberWithComma( row.b_out_amount) : "0"}
+                                                        {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
-                                                    {row.b_in ? this.formatNumberWithComma( row.b_in) : "0"}
+                                                    {row.b_in ? this.formatNumberWithComma(row.b_in) : "0"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
-                                                    {row.b_out ? this.formatNumberWithComma( row.b_out) : "0"}
+                                                    {row.b_out ? this.formatNumberWithComma(row.b_out) : "0"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)}>
                                                     <Fab
