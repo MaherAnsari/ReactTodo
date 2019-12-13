@@ -1153,3 +1153,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 	top: 0;
 	display: none;
 }
+
+.name-span {
+  background-image: linear-gradient(dodgerblue, dodgerblue), linear-gradient(transparent, transparent);
+  background-size: 0 5px, auto;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  transition: all .2s ease-out;
+}
+
+.name-span:hover {
+  /* The following line makes the underline only as wide as the text */
+  /* background-size: calc(100% - 2em) 5px, auto; */
+  background-size: 100% 1px, auto;
+}

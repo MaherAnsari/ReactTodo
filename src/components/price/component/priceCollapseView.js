@@ -13,6 +13,7 @@ import priceService from '../../../app/priceService/priceService';
 import Loader from '../../common/Loader';
 import NoDataAvailable from '../../common/NoDataAvailable';
 import buyerService from '../../../app/buyerService/buyerService';
+import { isUndefined } from 'util';
 
 const theme = createMuiTheme({
   overrides: {
@@ -85,7 +86,8 @@ class PriceCollapseView extends Component {
       expansionpanelHeaderData: this.props.expansionpanelHeaderData ,
       expansionpanelBodyData:  [],
       specificBuyerList : undefined,
-      dataList:this.props.expansionpanelHeaderData 
+      dataList:this.props.expansionpanelHeaderData ,
+      selectedId:undefined
     }
   }
 
@@ -127,7 +129,10 @@ class PriceCollapseView extends Component {
 
   onPanelExpanded( event , i, id ){
     this.setState({ expanded: this.state.expanded === i ? "" : i, itemExpanded :"" , specificBuyerList : undefined }, function(){
-      if( this.state.expanded !== ""){this.getBuyerList( id );}
+      if( this.state.expanded !== ""){
+        this.setState({selectedId:id});
+        this.getBuyerList( id );
+      }
     })
   }
 
@@ -144,7 +149,9 @@ onItemPanelExpanded( event , i, id ){
     // this.getBuyerList( id );
   })
 }
-
+onUpdate(event){
+  this.getBuyerList(this.state.selectedId);
+}
 
   render() {
     const { classes } = this.props;
@@ -205,7 +212,7 @@ onItemPanelExpanded( event , i, id ){
                       <Typography style={{fontSize:'16px',fontFamily:'Lato', fontWeight:500}} className={classes.heading}>{item["commodity_name"]}</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                      <PriceTable tableData={item.brokers} />
+                      <PriceTable tableData={item.brokers}  onUpdate={this.onUpdate.bind(this)}/>
                     </ExpansionPanelDetails>
                   </ExpansionPanel>
                   </div>

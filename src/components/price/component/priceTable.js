@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import mandiDataService from '../../../app/mandiDataService/mandiDataService';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
-
+import PriceDialog from './priceDialog';
 const theme = createMuiTheme({
   overrides: {
     MuiTableCell: {
@@ -81,7 +81,10 @@ class PriceTable extends Component {
       searchedText: "",
       editableData: {},
       showServerDialog: false,
-      deleteId: null
+      deleteId: null,
+      showEditDialog:false,
+      open:false,
+      userData:undefined
 
     }
     // console.log(this.props.tableData);
@@ -151,6 +154,19 @@ class PriceTable extends Component {
     this.props.onEditModalCancel();
   }
 
+
+  onEditPriceCLick(obj,event){
+    this.setState({showEditDialog:true,open:true,userData:obj})
+  }
+
+  handleClose(event){
+    this.setState({showEditDialog:false,open:false,userData:null})
+    this.props.onUpdate();
+  }
+  onModalCancel(event){
+    this.setState({showEditDialog:false,open:false,userData:null})
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -189,7 +205,7 @@ class PriceTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.rate}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.qnt}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
-                       {row.unit}
+                       {row.unit}<i style={{marginLeft:'6px',color:'#61cb42',fontSize:'20px',fontWeight:'bold'}} onClick= {this.onEditPriceCLick.bind(this,row)} class="fa fa-pencil-square-o" aria-hidden="true"></i>
                       </TableCell>
                     </TableRow>
                   );
@@ -197,6 +213,11 @@ class PriceTable extends Component {
               </TableBody>
             </Table>
           </div>
+          {this.state.showEditDialog ? <PriceDialog openModal={this.state.open}
+                    onEditModalClosed={this.handleClose.bind(this)}
+                   data={this.state.userData}
+                   isUpdate={true}
+                    onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
               <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
