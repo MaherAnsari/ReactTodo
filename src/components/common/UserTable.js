@@ -99,7 +99,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment", "commodity", "role", "status"],
+            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment","rating", "commodity", "role","status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -300,9 +300,10 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
+                                        // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
-                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}> <StarIcon /> </TableCell>
+                                   
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -339,6 +340,9 @@ class UserListTable extends Component {
                                                             borderRadius: "13px"}}>{row.ordercount+"/"+row.paymentcount}</div>
                                                 </Tooltip>
                                             </TableCell>
+                                            <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
+                                             
+                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
                                                 <Tooltip title={row.default_commodity ? row.default_commodity.join() : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses " >{row.default_commodity ? row.default_commodity.join() : ""}</div>
@@ -363,9 +367,7 @@ class UserListTable extends Component {
                                                     <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' , height: "18px", fontSize: "18px" }} />
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                             
-                                            </TableCell>
+                                           
                                         </TableRow>
                                     );
                                 })}

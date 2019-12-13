@@ -210,7 +210,7 @@ class CommodityTable extends Component {
                   return (
                     <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                        {row.name}
+                       <img src={row.image_url}></img> {row.name}
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}

@@ -112,7 +112,7 @@ class ViewTransactionModal extends Component {
             groupedTransactionData: undefined,
             allTransactionsData: undefined,
             mobileNumber: this.props.mobileNumber,
-            tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time", "Amount", "Payment mode", "Supporting images"],
+            tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Amount", "Supporting images"],
             expanded: "",
             invoiceModalData: [],
             showImageInvoiceModal: false,
@@ -311,16 +311,16 @@ class ViewTransactionModal extends Component {
 
                     <div style={{ textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
                         <div className={classes.dataHeader}>
-                            In amount : <span style={{ color: "rgb(56, 122, 57)" }}>{(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
+                            In amount : <span style={{ color: "rgb(56, 122, 57)" }}>₹ {(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
                         </div >
                         <div className={classes.dataHeader}>
-                            Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>{(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
+                            Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>₹ {(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
                         </div>
                         <div className={classes.dataHeader}>
-                            Total outstanding balance : <span style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >{(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
+                            Total outstanding balance : <span style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
                         </div>
                         <div className={classes.dataHeader} style={{ color: "rgb(230, 0, 138)" }}>
-                            Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >{(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
+                            Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
                         </div>
                     </div>
 
@@ -410,11 +410,12 @@ class ViewTransactionModal extends Component {
                                                                             {row.createdtime ? row.createdtime : "-"}
                                                                         </div>
                                                                     </TableCell>
-                                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
-                                                                        {row.amount ? row.amount : "-"}
-                                                                    </TableCell>
+                                                                    
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                                         {row.payment_mode ? row.payment_mode : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                                    ₹ {row.amount ? row.amount : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
 
@@ -497,11 +498,12 @@ class ViewTransactionModal extends Component {
                                                             {row.createdtime ? row.createdtime : "-"}
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
-                                                        {row.amount ? row.amount : "-"}
-                                                    </TableCell>
+                                                    
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                         {row.payment_mode ? row.payment_mode : "-"}
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                    ₹ {row.amount ? row.amount : "-"}
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
 

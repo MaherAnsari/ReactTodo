@@ -142,7 +142,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["state", "state (Hindi)", "district", "market", "market (Hindi)", "district (Hindi)", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Status", "Lat/Long", "Action"],
+      tableHeadData: ["market", "district", "state", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Status", "Lat/Long", "Action"],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
@@ -286,14 +286,14 @@ class MandiListTable extends Component {
                   ).map((row, i) => {
                     return (
                       <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                          {row.state}</TableCell>
-                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                          {row.state_hindi ? row.state_hindi : "-"}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district}</TableCell>
-                        <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell>
-                        <TableCell className={this.getTableCustomBgCellClass(classes)}>{row.market_hindi ? row.market_hindi : "-"}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell>
+                        <TableCell component="th" scope="row" className={this.getTableCustomBgCellClass(classes, 0)}>
+                          {row.market+" ("+row.market_hindi+")"}</TableCell>
+                        {/* <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                          {row.state_hindi ? row.state_hindi : "-"}</TableCell> */}
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district+" ("+row.district_hindi+")"}</TableCell>
+                        {/* <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell> */}
+                        <TableCell className={this.getTableCellClass(classes)}>{row.state+" ("+row.state_hindi+")"}</TableCell>
+                        {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
