@@ -3,6 +3,7 @@ import { Route, Switch} from "react-router-dom";
 import AppliedRoute from "./containers/AppliedRoute";
 import Home from "./components/common/HomePage";
 import Signin from "./components/auth/SigninPage";
+import ChangePasswordPage from "./components/auth/ChangePasswordPage";
 import NotFound from "./components/common/NotFoundPage";
 export default () =>
   <Switch>
@@ -19,6 +20,7 @@ export default () =>
     <AppliedRoute path="/home/orders-list" exact component={Home}  />
     <AppliedRoute path="/home/mandi-rates" exact component={Home}  />
     <AppliedRoute path="/home/payment" exact component={Home}  />
+    <AppliedRoute path="/home/change-password" exact component={Home}  />
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
   </Switch>;

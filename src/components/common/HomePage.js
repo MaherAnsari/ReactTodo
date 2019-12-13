@@ -30,6 +30,8 @@ import OrdersContainer from '../orders/OrdersContainer';
 import PaymentContainer from '../payment/PaymentContainer';
 import Utils from '../../app/common/utils';
 import MandiRateContainer from '../mandiRates/MandiRateContainer';
+import ChangePasswordPage from '../auth/ChangePasswordPage';
+
 const drawerWidth = 250;
 
 const styles = theme => ({
@@ -173,6 +175,7 @@ class Home extends React.Component {
       showUnHealthyList : false
     };
     this.logoutUser = this.logoutUser.bind(this)
+    this.changePasswordViewClick = this.changePasswordViewClick.bind(this)
     this.getDbLogo = this.getDbLogo();
   }
 
@@ -223,6 +226,15 @@ class Home extends React.Component {
           this.props.history.push("/");
         })
         .catch(err => console.log(err));
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  changePasswordViewClick = () => {
+    try {
+          this.props.history.push("/home/change-password");
+     
     } catch (err) {
       console.log(err)
     }
@@ -308,7 +320,12 @@ class Home extends React.Component {
                         open={open}
                         onClose={this.handleClose}
                       >
-                        <MenuItem onClick={this.logoutUser}>Logout</MenuItem>
+                        <MenuItem style={{ fontSize:"15px", fontWeight: 500, fontFamily:"lato"}} 
+                              onClick={this.changePasswordViewClick}>Change Password
+                        </MenuItem>
+                        <MenuItem style={{ fontSize:"15px", fontWeight: 500, fontFamily:"lato"}} 
+                              onClick={this.logoutUser}>Logout</MenuItem>
+                        
                       </Menu>
                     </div>
                   }
@@ -347,6 +364,7 @@ class Home extends React.Component {
           <Route path='/home/orders-list' exact component={OrdersContainer} />
           <Route path='/home/mandi-rates' exact component={MandiRateContainer} />
           <Route path='/home/payment' exact component={PaymentContainer} />
+          <Route path='/home/change-password' exact component={ChangePasswordPage} />
          </main>
       </div>
     );
