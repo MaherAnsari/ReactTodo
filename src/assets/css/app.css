@@ -1167,3 +1167,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* background-size: calc(100% - 2em) 5px, auto; */
   background-size: 100% 1px, auto;
 }
+
+/* datepicker */
+#date-picker-dialog-label{
+  font-family: lato !important;
+  font-weight: 500 !important;
+} 
+
+#date-picker-dialog{
+  font-family: lato !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+}

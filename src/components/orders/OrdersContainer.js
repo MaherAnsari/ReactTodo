@@ -139,7 +139,9 @@ class OrdersContainer extends React.Component {
     }
 
     onDateChaged(data) {
-        this.setState({ datePayloads: data });
+        this.setState({ datePayloads: data },function(){
+            this.getSearchedOrderListData( {} );
+        });
     }
 
     render() {

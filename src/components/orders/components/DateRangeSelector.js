@@ -12,7 +12,7 @@ class DateRangeSelector extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedStartDate: this.getPreviousDate(15),
+            selectedStartDate: this.getPreviousDate(1),
             selectedEndDate: new Date()
         }
         this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -59,6 +59,8 @@ class DateRangeSelector extends React.Component {
                         verticalAlign: "middle",
                         lineHeight: "52px",
                         fontSize: "16px",
+                        fontFamily: "lato",
+                        fontWeight: 500,
                         marginRight:'30px' 
                     }}>Select Date Range &nbsp; &nbsp;&nbsp;</div>
                     {/* <KeyboardDatePicker
