@@ -4,10 +4,11 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Auth from '@aws-amplify/auth';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 const styles = theme => ({
@@ -57,7 +58,8 @@ class ChangePasswordPage extends React.Component {
             newPassword: "",
             confirmPassword: "",
             error: {},
-            successMsg: false
+            successMsg: false,
+            open: this.props.openModal
         }
         this.onInputChange = this.onInputChange.bind(this);
         // this.changeNewPassword = this.changeNewPassword.bind(this);
@@ -72,6 +74,12 @@ class ChangePasswordPage extends React.Component {
         this.setState({ [id]: event.target.value, error: {} });
 
     }
+
+    handleDialogCancel(event) {
+        this.setState({ open: false })
+        this.props.onModalClose();
+    }
+
 
 
     async getCurrentUserData() {
@@ -171,31 +179,30 @@ class ChangePasswordPage extends React.Component {
         this.props.history.goBack();
     }
     
-
-
-
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.root}>
-                <Paper style={{ background: "#2e3247" , marginTop: "5%", padding:"20px"}}>
-                    <Typography variant="headline"
-                        style={{
-                            fontSize: 20,
-                            color: "#ffffff",
-                            paddingTop: 20,
-                            lineHeight:"60px",
-                            fontWeight: 500,
-                            fontFamily: "lato"
-                        }}>
-                        Change Password</Typography>
+        <div>
+            <Dialog style={{ zIndex: '1' }}
+            open={this.state.open}
+            fullWidth={true}
+            classes={{ paper: classes.dialogPaper }}
+            onClose={this.handleDialogCancel.bind(this)}
+            aria-labelledby="form-dialog-title"                >
+            <DialogTitle
+                style={{ background: '#05073a', textAlign: 'center', height: '40px' }}
+                id="form-dialog-title">
+                    <div style={{  color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                        Change Password
+                    </div>
+            </DialogTitle>
+            <DialogContent>
                     <React.Fragment>
                         <form className={classes.form} autoComplete="off" style={{ margin: '10px 50px' }}>
-
                             <FormControl margin="normal" required fullWidth >
                                 <InputLabel
                                     htmlFor="oldPassWord"
-                                    style={{ fontFamily: "lato",color:"#ffffff",fontWeight: 500, fontSize: 14 }}>
+                                    style={{ fontFamily: "lato",color:"#000",fontWeight: 500, fontSize: 14 }}>
                                     Old Password</InputLabel>
                                 <Input id="oldPassWord"
                                     name="oldPassWord"
@@ -203,14 +210,14 @@ class ChangePasswordPage extends React.Component {
                                     type="password"
                                     onChange={this.onInputChange}
                                     autoComplete="off"
-                                    autoFocus style={{ fontFamily: "'lato'", color: "#ffffff", fontWeight: 500, fontSize: 14 }} />
+                                    autoFocus style={{ fontFamily: "'lato'", color:"#000", fontWeight: 500, fontSize: 14 }} />
                                 {this.state.error["oldPassWord"] && <span style={{ fontFamily: "lato", color: "red", fontWeight: 500,  fontSize: 11, textAlign: "left" }}>{this.state.error["oldPassWord"]} </span>}
                             </FormControl>
 
                             <FormControl margin="normal" required fullWidth>
                                 <InputLabel
                                     htmlFor="newPassword"
-                                    style={{ fontFamily: "'lato'", fontWeight: 500,color:"#ffffff", fontSize: 14 }}>
+                                    style={{ fontFamily: "'lato'", fontWeight: 500,color:"#000", fontSize: 14 }}>
                                     New Password </InputLabel>
                                 <Input id="newPassword"
                                     name="newPassword"
@@ -218,14 +225,14 @@ class ChangePasswordPage extends React.Component {
                                     value={this.state.newPassword}
                                     onChange={this.onInputChange}
                                     autoComplete="off"
-                                    style={{ fontFamily: "lato", color: "#ffffff", fontWeight: 500, fontSize: 14 }} />
+                                    style={{ fontFamily: "lato", color: "#000", fontWeight: 500, fontSize: 14 }} />
                                 {this.state.error["newPassword"] ? <span style={{ fontFamily: "lato", color: "red", fontWeight: 500, fontSize: 11, textAlign: "left" }}>{this.state.error["newPassword"]} </span> : ""}
                             </FormControl>
 
                             <FormControl margin="normal" required fullWidth >
                                 <InputLabel
                                     htmlFor="confirmPassword"
-                                    style={{ fontFamily: "'lato'", color:"#ffffff",fontWeight: 500, fontSize: 14 }}>
+                                    style={{ fontFamily: "'lato'", color:"#000",fontWeight: 500, fontSize: 14 }}>
                                    Confirm Password</InputLabel>
                                 <Input id="confirmPassword"
                                     name="confirmPassword"
@@ -233,7 +240,7 @@ class ChangePasswordPage extends React.Component {
                                     value={this.state.confirmPassword}
                                     onChange={this.onInputChange}
                                     autoComplete="off"
-                                    style={{ fontFamily: "'lato'", color: "#ffffff", fontWeight: 500, fontSize: 14 }} />
+                                    style={{ fontFamily: "'lato'", color: "#000", fontWeight: 500, fontSize: 14 }} />
                                 {this.state.error["confirmPassword"] ? <span style={{ fontFamily: "lato", color: "red", fontWeight: 500,  fontSize: 12, textAlign: "left" }}>{this.state.error["confirmPassword"]}</span> : ""}
                                 {this.state.successMsg && <span style={{ color: "#3fe33f", fontSize: 13, textAlign: "left" }}>SuccessFully Updated</span>}
                             </FormControl>
@@ -251,15 +258,14 @@ class ChangePasswordPage extends React.Component {
                         </form>
                     </React.Fragment>
 
-                    <div
-                        style={{ color: "#ffffff", cursor: "pointer"}}
-                        onClick={()=>{this.goBack()}}> 
-                        <i className="fa fa-arrow-left" aria-hidden="true"></i>
-                        &nbsp; Back 
+                        <div
+                        style={{ color: "#2009e0", cursor: "pointer", textAlign: "center"}}
+                        onClick={this.handleDialogCancel.bind(this)}> 
+                        Close 
                      </div>
-
-                </Paper>
-            </div>
+                     </DialogContent>
+            </Dialog>
+        </div>
         );
     }
 }
