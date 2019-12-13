@@ -134,8 +134,8 @@ class OrderListTable extends Component {
                         <Card className={classes.card}>
                             <div className="orderList">
                                 <div style={{ width: "25%" }}>commodity</div>
-                                <div style={{ width: "50%" }}>Min.  &   Max. Price</div>
-                                <div style={{ width: "25%" }}>Modal Price</div>
+                                <div style={{ width: "40%" }}>Min.  &   Modal Price</div>
+                                <div style={{ width: "25%" }}>Max Price</div>
                             </div>
                             {Object.keys(this.state.tableBodyData).map((option) => {
                                 return (<div  key={ option } >
@@ -147,10 +147,10 @@ class OrderListTable extends Component {
                                             return (<div key={"data_"+i} className="districtDiv">
                                                 <div style={{ width: "25%" }}>{row.market}</div>
                                                 <div style={{ width: "45%", display: 'flex' }}>
-                                                    <p style={{ width: "50%" }}>Min: {row.cost.split('-')[0]}</p>
-                                                    <p style={{ width: "50%" }}>Max: {row.cost.split('-')[1]}</p>
+                                                    <p style={{ width: "50%" }}>Min: ₹ {row.cost.split('-')[0]}</p>
+                                                    <p style={{ width: "50%" }}>Modal: ₹ {row.modal_price}</p>
                                                 </div>
-                                                <div style={{ width: "20%" }}>{row.modal_price}</div>
+                                                <div style={{ width: "20%" }}>Max: ₹ {row.cost.split('-')[1]}</div>
                                                 <div style={{ width: "10%" }}>
                                                     <Icon className={classes.iconHover} color="error" style={{ cursor:"pointer",fontSize: 30 }} onClick={ this.onGraphViewClicked.bind( this, row , option )} >
                                                         trending_up

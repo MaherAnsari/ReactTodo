@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import  buyerService  from './../../app/buyerService/buyerService';
 import Loader from '../common/Loader';
-import BuyerTable from './component/buyerTable';
+import UserListTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
 
 const styles = theme => ({
@@ -81,7 +81,7 @@ class BuyerContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <BuyerTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
+                       <UserListTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>

@@ -4,7 +4,7 @@ import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Loader from '../common/Loader';
-import BrokerTable from './component/brokerTable';
+import UserListTable from '../common/UserTable';
 import brokerService from '../../app/brokerService/brokerService';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
@@ -98,7 +98,7 @@ class BrokerContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <BrokerTable  tableData={this.state.dataList} commodityList={this.state.commodityList} onClose={this.getData.bind(this)}   /> 
+                       <UserListTable  tableData={this.state.dataList} commodityList={this.state.commodityList} onClose={this.getData.bind(this)}   /> 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p style={{fontSize: "14px",

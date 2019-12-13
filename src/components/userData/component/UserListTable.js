@@ -100,7 +100,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname", "business_name", "mobile", "Order/Payment", "commodity", "role", "status"],
+            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment", "commodity", "role", "status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -271,6 +271,10 @@ class UserListTable extends Component {
         this.setState({ page : 0, rowsPerPage : parseInt(event.target.value, 10) });
       };
 
+      getNameStr(row){
+          return row.fullname +"("+row.business_name+")"
+      }
+
     render() {
         const { classes } = this.props;
         const { rowsPerPage , page} = this.state;
@@ -300,7 +304,7 @@ class UserListTable extends Component {
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
-                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> <StarIcon /> </TableCell>
+                                    <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}> <StarIcon /> </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -314,21 +318,24 @@ class UserListTable extends Component {
                                         <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div> <FiberManualRecordIcon style={{ color: row.active ? "" : "red", fontSize:"18px", height: "18px" }} className="buisness-icon" /> {row.id}</div>
+                                                    <div style={{  color: "white",
+                                                            background:row.active ? "green":"red",
+                                                            padding: "4px 12px",width:'fit-content',marginLeft:'20%',
+                                                            borderRadius: "13px"}}> {row.id}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.fullname}</div>
+                                                    <div className="text-ellpses">{this.getNameStr(row)}</div>
                                                 </Tooltip>
 
                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 2)}>
+                                            {/* <TableCell className={this.getTableCellClass(classes, 2)}>
                                                 <Tooltip title={row.business_name ? row.business_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                                     <div className="text-ellpses">{row.business_name}</div>
                                                 </Tooltip>
 
-                                            </TableCell>
+                                            </TableCell> */}
                                             <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
 
                                             <TableCell className={this.getTableCellClass(classes, 4)}>

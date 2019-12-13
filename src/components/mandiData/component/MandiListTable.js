@@ -198,7 +198,7 @@ class MandiListTable extends Component {
     this.setState({ showConfirmDialog: false, alertData: {} });
     if (resp.data.status === 1) {
       alert("Succesfully Deleted");
-      this.getData({ "query": "haryana" });
+      this.getData("");
     } else {
       alert("Opps there was an error, while deleted");
     }
@@ -229,7 +229,7 @@ class MandiListTable extends Component {
   handelEditModalClose() {
     this.setState({ editableData: undefined, showEditDataModal: false });
     let params = { "query": "haryana" };
-    this.getData(params);
+    this.getData("");
   }
   handelEditModalCancel() {
     this.setState({ editableData: undefined, showEditDataModal: false });

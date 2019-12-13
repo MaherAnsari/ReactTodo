@@ -94,6 +94,10 @@ class PriceDialog extends Component {
     // }
     componentDidMount() {
         this._isMounted = true;
+
+        if(this.props.isUpdate){
+            this.setState({dataObj:this.props.data})
+        }
     }
     componentWillUnmount() {
         this._isMounted = false;
@@ -176,6 +180,9 @@ class PriceDialog extends Component {
         // console.log(this.state.dataObj);
         // this.setState({ alertData: { alertType: "success", title: "Success", text: "Succesfully added" }, showSweetAlert: true ,open:false});
         let dialogText = "Are you sure to add ?"
+        if(this.props.isUpdate){
+            dialogText = "Are you sure to update ?"
+        }
           if (this.state.dataObj.brokerid && this.state.dataObj.brokerid !== "" && this.state.dataObj.buyerid && this.state.dataObj.buyerid !== "") {
         this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
@@ -209,7 +216,7 @@ class PriceDialog extends Component {
             aria-labelledby="form-dialog-title"                >
             <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Commodity Price Data</p>  </DialogTitle>
             <DialogContent>
-                <div >
+              {!this.props.isUpdate &&  <div >
                     <Autocomplete
                         options={this.props.buyerList}
                         style={{ margin:'0', width: '100%' }}
@@ -223,8 +230,8 @@ class PriceDialog extends Component {
                     />
                 
                   
-                </div>
-                <div >
+                </div>}
+                {!this.props.isUpdate && <div >
                 <Autocomplete
                         options={this.props.brokerList}
                         style={{ margin:'0', width: '100%' }}
@@ -237,8 +244,8 @@ class PriceDialog extends Component {
                         )}
                     />
                    
-                </div>
-                <div >
+                </div>}
+                {!this.props.isUpdate && <div >
                     <TextField
                         select
                         id="commodity"
@@ -256,9 +263,9 @@ class PriceDialog extends Component {
                             </MenuItem>
                         ))}
                     </TextField>
-                </div>
+                </div>}
 
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex' ,marginTop:this.props.isUpdate? "10px":""}}>
                     <TextField
                         margin="dense"
                         id="rate"
@@ -349,7 +356,7 @@ class PriceDialog extends Component {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Add</Button>
+                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">{this.props.isUpdate ? "Update":"Add"}</Button>
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
         </Dialog>

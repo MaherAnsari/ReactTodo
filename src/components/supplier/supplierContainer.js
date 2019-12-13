@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import  supplierService  from './../../app/supplierService/supplierService';
 import Loader from '../common/Loader';
-import SupplierTable from './component/supplierTable';
+import UserTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
 
@@ -82,7 +82,7 @@ class SupplierContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <SupplierTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
+                       <UserTable  tableData={this.state.dataList} onClose={this.getData.bind(this)}   /> 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}>
                         <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>

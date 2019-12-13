@@ -10,7 +10,8 @@ let priceService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/rate/list'
+            url: '/rate/list',
+            params:param
         });
     },
     getBuyerList: async function (param) {

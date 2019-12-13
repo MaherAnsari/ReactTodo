@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import  userListService  from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
-import UserListTable from './component/UserListTable';
+import UserListTable from '../common/UserTable';
 import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
 
