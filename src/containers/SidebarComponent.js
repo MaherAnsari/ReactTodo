@@ -20,8 +20,12 @@ const styles = theme => ({
 
 
 const _items = [
-  { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [] },
-  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
+  { name: 'Supporting Data', route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
+    { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
+    { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
+    { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
+  ] },
+  // { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
   {
     name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
@@ -33,10 +37,14 @@ const _items = [
   // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
   // { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
   // { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
-  { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#62cc42", children: [] },
-  { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
-  { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
-  { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
+  { name: 'Business Data', route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
+    { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
+    { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
+    { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
+  ] },
+  // { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
+  // { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
+  // { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
 
 ]
 
@@ -71,7 +79,7 @@ class VerticalItem extends React.Component {
   onSelect(route) {
 
     this.props.onSelect(route);
-    // this.toggleHover(false);
+    // this.toggleHover(true);
 
 
   }
@@ -79,7 +87,7 @@ class VerticalItem extends React.Component {
   renderSubLevel(item) {
     const { extended, active } = this.props
     const { isHover } = this.state
-
+console.log( isHover )
     const style = {
 
     }
