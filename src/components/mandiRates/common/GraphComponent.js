@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 
 var Chart = require("chart.js");
 var mixedChart = undefined;
+const months = ["JAN", "FEB", "MAR","APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 const styles = theme => ({
     root: {
@@ -29,6 +30,17 @@ class GraphComponent extends React.Component {
     this.configureChart( this.state.graphData );
   }
 
+  formatDateData = ( apiDate ) => {
+    try{
+      var formatedDate = new Date( apiDate );
+      formatedDate = formatedDate.getDate() + "-" + months[formatedDate.getMonth()] + "-" + formatedDate.getFullYear();
+      return formatedDate;
+    }catch( err ){
+      console.log( err );
+      return apiDate;
+    }
+  }
+
   configureChart = ( data ) => {
 
     var line1Data = [];
@@ -47,7 +59,7 @@ class GraphComponent extends React.Component {
         line1Data.push( data[i]["cost"].indexOf("-") > -1 ? data[i]["cost"].split("-")[0] : 0 );
         line2Data.push( data[i]["cost"].indexOf("-") > -1 ? data[i]["cost"].split("-")[1] : 0 );
         line3Data.push( data[i]["modal_price"] );
-        chartLabels.push( data[i]["arrival_date"] )
+        chartLabels.push( this.formatDateData(data[i]["arrival_date"]) )
     }
 
     const chartCanvas = this.node;
