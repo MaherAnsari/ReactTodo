@@ -275,7 +275,7 @@ class ViewTransactionModal extends Component {
                                         <KeyboardDatePicker
                                             id="date-picker-dialog"
                                             label="Transaction start date"
-                                            format="dd/MM/yyyy"
+                                            format="dd-MMM-yyyy"
                                             maxDate={new Date()}
                                             value={transDate["startDate"]}
                                             onChange={(dateval) => {

@@ -30,6 +30,8 @@ import OrdersContainer from '../orders/OrdersContainer';
 import PaymentContainer from '../payment/PaymentContainer';
 import Utils from '../../app/common/utils';
 import MandiRateContainer from '../mandiRates/MandiRateContainer';
+import ChangePasswordPage from '../auth/ChangePasswordPage';
+
 const drawerWidth = 250;
 
 const styles = theme => ({
@@ -170,9 +172,12 @@ class Home extends React.Component {
       failedTask:0,
       healthyLabsCount: 0,
       dbNameList: { 'runningTask': [], 'drainingTask': [], 'failedTask': [], "healthyLabs":{} },
-      showUnHealthyList : false
+      showUnHealthyList : false,
+
+      showChangePasswordView : false
     };
     this.logoutUser = this.logoutUser.bind(this)
+    this.changePasswordViewClick = this.changePasswordViewClick.bind(this)
     this.getDbLogo = this.getDbLogo();
   }
 
@@ -228,6 +233,15 @@ class Home extends React.Component {
     }
   }
 
+  changePasswordViewClick = () => {
+    try {
+          this.setState({ showChangePasswordView : true, anchorEl: null })
+     
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   async getDbLogo() {
     
   }
@@ -250,7 +264,7 @@ class Home extends React.Component {
   render() {
 
     const { classes } = this.props;
-    const { anchorEl } = this.state;
+    const { anchorEl, showChangePasswordView } = this.state;
     const open = Boolean(anchorEl);
     // const username = cookie.load('username');
 
@@ -308,7 +322,12 @@ class Home extends React.Component {
                         open={open}
                         onClose={this.handleClose}
                       >
-                        <MenuItem onClick={this.logoutUser}>Logout</MenuItem>
+                        <MenuItem style={{ fontSize:"14px", fontWeight: 500, fontFamily:"lato"}} 
+                              onClick={this.changePasswordViewClick}>Change Password
+                        </MenuItem>
+                        <MenuItem style={{ fontSize:"14px", fontWeight: 500, fontFamily:"lato"}} 
+                              onClick={this.logoutUser}>Logout</MenuItem>
+                        
                       </Menu>
                     </div>
                   }
@@ -348,6 +367,11 @@ class Home extends React.Component {
           <Route path='/home/mandi-rates' exact component={MandiRateContainer} />
           <Route path='/home/payment' exact component={PaymentContainer} />
          </main>
+
+         {showChangePasswordView && 
+            <ChangePasswordPage 
+              openModal={this.state.showChangePasswordView}
+              onModalClose={() => this.setState({ showChangePasswordView : false })} />}
       </div>
     );
   }

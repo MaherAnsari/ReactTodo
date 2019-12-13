@@ -79,7 +79,7 @@ class DateRangeSelector extends React.Component {
                         margin="normal"
                         id="date-picker-dialog"
                         label="Start date"
-                        format="dd/MM/yyyy"
+                        format="dd-MMM-yyyy"
                         style={{ marginTop: 0, width: 150,marginRight:'30px' }}
                         value={selectedStartDate}
                         onChange={this.handleStartDateChange}
@@ -91,7 +91,7 @@ class DateRangeSelector extends React.Component {
                         margin="normal"
                         id="date-picker-dialog"
                         label="End date"
-                        format="dd/MM/yyyy"
+                        format="dd-MMM-yyyy"
                         style={{ marginTop: 0, width: 150 ,marginRight:'100px' }}
                         value={selectedEndDate}
                         onChange={this.handleEndDateChange}

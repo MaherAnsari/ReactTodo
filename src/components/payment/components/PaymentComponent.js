@@ -17,7 +17,17 @@ import AddTransactionModal from './AddTransactionModal';
 
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-    
+
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import ImageIcon from '@material-ui/icons/Image';
+import Icon from '@material-ui/core/Icon';
+import Typography from '@material-ui/core/Typography';
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -81,12 +91,14 @@ const styles = theme => ({
         cursor: 'pointer'
     },
     detailHeadmain: {
-        display: "flex",
-        color: "white",
-        padding: "5px",
-        fontSize: "18px",
-        background: "#05073a"
-    }
+
+        padding: "4px 0px",
+
+        // background: "#05073a"
+    },
+    inline: {
+        display: 'inline',
+    },
 });
 
 
@@ -115,7 +127,7 @@ class PaymentComponent extends Component {
 
             rowsPerPage: 50,
             page: 0,
-      
+
 
         }
     }
@@ -218,13 +230,26 @@ class PaymentComponent extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
-      };
-    
-      handleChangeRowsPerPage = event => {
-        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
-      };
-    
+    };
 
+    handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+    };
+
+    formatNumberWithComma(x) {
+        try {
+            x = x.toString();
+            var lastThree = x.substring(x.length - 3);
+            var otherNumbers = x.substring(0, x.length - 3);
+            if (otherNumbers != '')
+                lastThree = ',' + lastThree;
+            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+            return res;
+        } catch (err) {
+            console.log(err);
+            return x;
+        }
+    }
 
 
     render() {
@@ -244,112 +269,203 @@ class PaymentComponent extends Component {
                         <i style={{ marginTop: 22 }} className="fa fa-search"></i>
                     </div>
                     {paymentMetaInfo && <div className={classes.detailHeadmain}>
-                        <div style={{ width: "50%" }}>
-                            <div style={{ width: "100%", fontSize: 15 }}> Total in amount : <span style={{
-                                fontWeight: 600,
-                                fontSize: 16, color: "#387a39"
-                            }}>₹ {paymentMetaInfo[0]["sum"] ? paymentMetaInfo[1]["sum"] : "0"}</span>
-                            </div>
-                            <div style={{ width: "100%", fontSize: 15 }}> Total no. of in payment : <span style={{
-                                fontWeight: 600,
-                                fontSize: 16, color: "#387a39"
-                            }}>{paymentMetaInfo[0]["count"] ? paymentMetaInfo[1]["count"] : "0"}</span>
-                            </div>
-                        </div>
-                        <div style={{ width: "50%" }}>
-                            <div style={{ width: "100%", fontSize: 15 }}> Total out amount : <span style={{
-                                fontWeight: 600,
-                                fontSize: 16, color: "#d43a3a"
-                            }}>₹ {paymentMetaInfo[1]["sum"] ? paymentMetaInfo[0]["sum"] : "0"}</span>
-                            </div>
-                            <div style={{ width: "100%", fontSize: 15 }}> Total no. of out payment : <span style={{
-                                fontWeight: 600,
-                                fontSize: 16, color: "#d43a3a"
-                            }}>{paymentMetaInfo[1]["count"] ? paymentMetaInfo[0]["count"] : "0"}</span>
-                            </div>
+                        <div style={{ width: "100%", display: "flex" }}>
+                            {/* <div style={{ width: "25%", fontSize: 15 ,padding: "28px"}}> */}
+                            <List style={{ display: "contents" }}>
+                                <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
+                                    <ListItemAvatar>
+                                        <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={<React.Fragment>
+                                        <Typography
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                        >
+                                            ₹ {paymentMetaInfo[0]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[0]["sum"]) : "0"}
+                                        </Typography>
+                                    </React.Fragment>
+                                    } secondary={
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total in amount
+                                            </Typography>
+                                        </React.Fragment>
+                                    } />
+                                </ListItem>
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
+                                    <ListItemAvatar>
+                                        <Icon style={{ color: "#f9e646", fontSize: "34px" }}>playlist_add_check</Icon>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={<React.Fragment>
+                                            <Typography
+                                                component="div"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            >
+                                                {paymentMetaInfo[0]["count"] ? this.formatNumberWithComma(paymentMetaInfo[0]["count"]) : "0"}
+                                            </Typography>
+                                        </React.Fragment>
+                                        } secondary={
+                                            <React.Fragment>
+                                                <Typography
+                                                    component="span"
+                                                    variant="body2"
+                                                    className={classes.inline}
+                                                    style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                                >
+                                                    Total no. of in payment
+                                        </Typography>
+                                            </React.Fragment>
+                                        } />
+                                </ListItem>
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
+                                    <ListItemAvatar>
+                                        <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={<React.Fragment>
+                                        <Typography
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                        >
+                                            ₹ {paymentMetaInfo[1]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[1]["sum"]) : "0"}
+                                        </Typography>
+                                    </React.Fragment>
+                                    } secondary={
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total out amount
+                                        </Typography>
+                                        </React.Fragment>
+                                    } />
+                                </ListItem>
+                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
+                                    <ListItemAvatar>
+                                        <Icon style={{ color: "#50a1cf", fontSize: "34px" }}>low_priority</Icon>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={<React.Fragment>
+                                        <Typography
+                                            component="div"
+                                            variant="body2"
+                                            className={classes.inline}
+                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                        >
+                                            {paymentMetaInfo[1]["count"] ? this.formatNumberWithComma(paymentMetaInfo[1]["count"]) : "0"}
+                                        </Typography>
+                                    </React.Fragment>
+                                    } secondary={
+                                        <React.Fragment>
+                                            <Typography
+                                                component="span"
+                                                variant="body2"
+                                                className={classes.inline}
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
+                                            >
+                                                Total no. of out payment
+                                        </Typography>
+                                        </React.Fragment>
+                                    } />
+                                </ListItem>
+                            </List>
+
                         </div>
                     </div>}
                     {this.state.tableBodyData ? <div >
                         <Table className='table-body'>
                             <TableHead>
-                                <TableRow style={{borderBottom: "2px solid #858792"}} >
+                                <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
                                         <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData && 
-                                 (rowsPerPage > 0
-                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : this.state.tableBodyData
-                                  ).map((row, i) => {
-                                    return (
-                                        // ["Buyer Name","Buyer Mobile","Location","Amount","No. of Transactions", "Transactions"],
-                                        <TableRow key={'table_' + i}  style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                                {this.state.tableBodyData &&
+                                    (rowsPerPage > 0
+                                        ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        : this.state.tableBodyData
+                                    ).map((row, i) => {
+                                        return (
+                                            // ["Buyer Name","Buyer Mobile","Location","Amount","No. of Transactions", "Transactions"],
+                                            <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
 
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.buyer_fullname ? row.buyer_fullname : "-"}
-                                            </TableCell>
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.buyer_mobile ? row.buyer_mobile : "-"}
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                <div className="text-ellpses">
-                                                    {row.buyer_locality ? row.buyer_locality + "," : ""}
-                                                    {row.buyer_district ? row.buyer_district + "," : ""}
-                                                    {row.buyer_state ? row.buyer_state : ""}
-                                                </div>
-                                            </TableCell>
-                                          
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
-                                            {row.b_in ? row.b_in : "0"}
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
-                                             {row.b_out ? row.b_out : "0"}
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39" }}>
-                                                <div className="text-ellpses">
-                                                ₹ {row.b_in_amount ? row.b_in_amount : "0"}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010" }}>
-                                                <div className="text-ellpses">
-                                                ₹ {row.b_out_amount ? row.b_out_amount : "0"}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                <Fab
-                                                    variant="extended"
-                                                    size="small"
-                                                    aria-label="add"
-                                                    onClick={this.handelShowTransactionModal.bind(this, row)}
-                                                    style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
-                                                >
-                                                    View
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {row.buyer_fullname ? row.buyer_fullname : "-"}
+                                                </TableCell>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {row.buyer_mobile ? row.buyer_mobile : "-"}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                    <div className="text-ellpses">
+                                                        {row.buyer_locality ? row.buyer_locality + "," : ""}
+                                                        {row.buyer_district ? row.buyer_district + "," : ""}
+                                                        {row.buyer_state ? row.buyer_state : ""}
+                                                    </div>
+                                                </TableCell>
+                                              
+                                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
+                                                    {row.b_in ? this.formatNumberWithComma(row.b_in) : "0"}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
+                                                    {row.b_out ? this.formatNumberWithComma(row.b_out) : "0"}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39" }}>
+                                                    <div className="text-ellpses">
+                                                    ₹ {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010" }}>
+                                                    <div className="text-ellpses">
+                                                    ₹ {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                    <Fab
+                                                        variant="extended"
+                                                        size="small"
+                                                        aria-label="add"
+                                                        onClick={this.handelShowTransactionModal.bind(this, row)}
+                                                        style={{ textTransform: "none", background: "#05073a", color: "#ffffff", padding: "0 35px" }}
+                                                    >
+                                                        View
                                                 </Fab>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                             </TableBody>
                             <TableFooter style={{ borderTop: "2px solid #858792" }}>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[25, 50, 100]}
-                    colSpan={6}
-                    count={this.state.tableBodyData.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                    onChangePage={this.handleChangePage.bind(this)}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                  />
-                </TableRow>
-              </TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[25, 50, 100]}
+                                        colSpan={6}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>
                         </Table>
                         {this.state.tableBodyData.length > 0 ? "" :
                             <div className={classes.defaultTemplate}>
@@ -371,8 +487,8 @@ class PaymentComponent extends Component {
                             open={this.state.showTransactionModal}
                             onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
                             buyerInfo={this.state.buyerInfo}
-                            transDate={ this.state.datePayloads}
-                            onTransactionEdited={()=> this.getPaymentInfoDetails(this.state.datePayloads) }
+                            transDate={this.state.datePayloads}
+                            onTransactionEdited={() => this.getPaymentInfoDetails(this.state.datePayloads)}
                             mobileNumber={this.state.mobileNumber} />
                     }
 

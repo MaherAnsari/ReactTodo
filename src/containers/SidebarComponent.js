@@ -21,6 +21,7 @@ const styles = theme => ({
 
 const _items = [
   { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [] },
+  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
   {
     name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
@@ -35,7 +36,6 @@ const _items = [
   { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#62cc42", children: [] },
   { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
   { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
-  { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
   { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
 
 ]

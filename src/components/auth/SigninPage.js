@@ -61,6 +61,14 @@ class SignIn extends React.Component {
             },
             action: 'sigin',
             disabledLoginBtn: false,
+
+            forgotPasswordViewStep: 1 ,// 1 for numberInput, 2 for verify
+            forgotPasswordData:{
+                username:"",
+                otp:"",
+                newPassword:""
+            },
+            disabledForgotBtn : false
         }
 
         this.getViewContent = this.getViewContent.bind(this);
@@ -70,6 +78,10 @@ class SignIn extends React.Component {
         // this.handleChangePassword = this.handleChangePassword.bind(this)
         this.handleSigninSubmit = this.handleSigninSubmit.bind(this)
         this.handleNewPassword = this.handleNewPassword.bind(this)
+
+        // forgot password
+        this.handleForgotPasswordWithCodeRequest = this.handleForgotPasswordWithCodeRequest.bind( this );
+        this.handleForgotPasswordWithtCode = this.handleForgotPasswordWithtCode.bind( this );
 
     }
 
@@ -100,12 +112,14 @@ class SignIn extends React.Component {
         this.setState({ user: user });
     }
 
+
+
     getSigninFragment() {
         return (
 
             <form className="login100-form validate-form">
                 <img src="https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp" alt="logo" style={{ height: '8vh' }} />
-                <span className="login100-form-title p-b-43" style={{display:'none', marginBottom: '16px' }}>
+                <span className="login100-form-title p-b-43" style={{ display: 'none', marginBottom: '16px' }}>
                     Bijak
 				            	</span>
 
@@ -130,7 +144,6 @@ class SignIn extends React.Component {
                 </div>
 
                 <div className="flex-sb-m w-full p-t-3 p-b-32">
-
                 </div>
 
                 <div className="container-login100-form-btn">
@@ -139,6 +152,14 @@ class SignIn extends React.Component {
                         onClick={this.handleSigninSubmit}>
                         Login {this.state.disabledLoginBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
                     </button>
+                </div>
+                <div className="flex-sb-m w-full p-t-3 p-b-32" 
+                style={{paddingTop: "12px",
+                        color: "blue",
+                        fontWeight: 500,
+                        fontSize: "14px",
+                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep:1 })}>
+                        Forgot Password
                 </div>
             </form>
 
@@ -214,6 +235,118 @@ class SignIn extends React.Component {
         )
     }
 
+    handleValueChangeOfForgotPassword = event => {
+        const user = this.state.forgotPasswordData;
+        user[event.target.name] = event.target.value;
+        this.setState({ forgotPasswordData: user });
+    }
+
+    async handleForgotPasswordWithtCode(e) {
+        this.setState({ disabledForgotBtn: true })
+        e.preventDefault()
+        try {
+            var response = await Auth.forgotPassword(this.state.forgotPasswordData.username);
+            if (response.CodeDeliveryDetails) {
+                //console.log("Code send" + JSON.stringify(response));
+                this.setState({
+                    forgotPasswordViewStep: 2
+                })
+            } else if (response.message) {
+                alert(response.message);
+            }
+            this.setState({ disabledForgotBtn: false })
+        } catch (e) {
+            alert('Error. try again...');
+            this.setState({ disabledForgotBtn : false })
+        }
+    }
+
+    async handleForgotPasswordWithCodeRequest(e) {
+        e.preventDefault();
+        this.setState({ disabledForgotBtn : true })
+        try {
+            var response = await Auth.forgotPasswordSubmit(this.state.forgotPasswordData.username, this.state.forgotPasswordData.otp, this.state.forgotPasswordData.newPassword);
+            if (!response) {
+                this.setState({ action : "sigin",forgotPasswordViewStep : 1 });
+            } else {
+                alert('Error. try again...');
+            }
+            this.setState({ disabledForgotBtn : false })
+        } catch (e) {
+            alert('Error. try again...');
+            this.setState({ disabledForgotBtn : false })
+        }
+    }
+
+
+    getForgotPasswordFragment() {
+        return (
+
+            (this.state.forgotPasswordViewStep === 1 ?
+                <form className="login100-form validate-form">
+                    <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
+                    <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
+                        Forgot Password
+                </span>
+                    <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                        <input className="input100" value={this.state.forgotPasswordData.username}
+                            onChange={this.handleValueChangeOfForgotPassword} type="text" id="username" name="username" />
+                        <span className="focus-input100"></span>
+                        <span className="label-input100">Mobile number</span>
+                    </div>
+
+                    <div className="flex-sb-m w-full p-t-3 p-b-32">
+                    </div>
+                    <div className="container-login100-form-btn">
+                        <button className="login100-form-btn" 
+                        disabled={this.state.disabledForgotBtn}
+                        onClick={this.handleForgotPasswordWithtCode}>
+                            Continue {this.state.disabledForgotBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
+					</button>
+                    </div>
+                </form> :
+                <form className="login100-form validate-form">
+                    <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
+                    <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
+                        Forgot Password
+                    </span>
+
+                    <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                        <input className="input100"
+                            name="otp"
+                            type="text"
+                            id="otp"
+                            onChange={this.handleValueChangeOfForgotPassword}
+                            value={this.state.forgotPasswordData.otp} />
+                        <span className="focus-input100"></span>
+                        <span className="label-input100">Otp</span>
+                    </div>
+
+                    <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                        <input className="input100"
+                            name="newPassword"
+                            type="password"
+                            id="newPassword"
+                            onChange={this.handleValueChangeOfForgotPassword}
+                            value={this.state.forgotPasswordData.newPassword} />
+                        <span className="focus-input100"></span>
+                        <span className="label-input100">New password</span>
+                    </div>
+
+                    <div className="flex-sb-m w-full p-t-3 p-b-32">
+                    </div>
+                    <div className="container-login100-form-btn">
+                        <button className="login100-form-btn"
+                        disabled={this.state.disabledForgotBtn}
+                         onClick={this.handleForgotPasswordWithCodeRequest}>
+                            Verify {this.state.disabledForgotBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
+                </button>
+                    </div>
+                </form>
+            )
+
+        )
+    }
 
 
     getViewContent = (action) => {
@@ -229,6 +362,11 @@ class SignIn extends React.Component {
         if (action === 'SMS_MFA') {
             return this.getMFAOtpFragment();
         }
+
+        if (action === 'Forgot_password') {
+            return this.getForgotPasswordFragment();
+        }
+
     }
 
     async handleSigninSubmit(e) {
@@ -261,12 +399,12 @@ class SignIn extends React.Component {
                 cookie.save('userId', userId, { path: '/' });
                 cookie.save('token', authk, { path: '/' });
                 cookie.save('username', username, { path: '/' });
-                localStorage.setItem('name',data.attributes.name);
+                localStorage.setItem('name', data.attributes.name);
 
                 // console.log(cookie);
-             
-                    this.props.history.push("/home/mandi-data");
-                
+
+                this.props.history.push("/home/mandi-data");
+
 
             }
         } catch (e) {
@@ -290,7 +428,7 @@ class SignIn extends React.Component {
                             {
                                 email: 'xxxx@example.com',
                                 phone_number: this.state.user.username
-                              }
+                            }
                         ).then(user => {
                             // at this time the user is logged in if no MFA required
                             console.log(user);
@@ -303,7 +441,7 @@ class SignIn extends React.Component {
                             //     localStorage.setItem('name',user.attributes.name);
                             // })
                             //     .catch(err => console.log("_^_" + JSON.stringify(err)))
-            
+
                             var authk = user.signInUserSession.idToken.jwtToken;
                             var username = user.signInUserSession.idToken.payload.name;
                             cookie.save('token', authk, { path: '/' })
@@ -311,9 +449,9 @@ class SignIn extends React.Component {
                             var userId = user.username;
                             cookie.save('userId', userId, { path: '/' });
                             // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
-                           
-                                this.props.history.push("/home/mandi-data");
-                            
+
+                            this.props.history.push("/home/mandi-data");
+
                         }).catch(e => {
                             console.log(e);
                         });
@@ -323,7 +461,7 @@ class SignIn extends React.Component {
                 }).catch(e => {
                     console.log(e);
                 });
-            
+
 
         } catch (e) {
             alert(e.message);
@@ -351,9 +489,9 @@ class SignIn extends React.Component {
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
                 // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
-         
-                    this.props.history.push("/home/mandi-data");
-                
+
+                this.props.history.push("/home/mandi-data");
+
             } else {
                 alert("failed in login");
             }
@@ -384,9 +522,9 @@ class SignIn extends React.Component {
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
                 // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
-               
-                    this.props.history.push("/home/mandi-data");
-                
+
+                this.props.history.push("/home/mandi-data");
+
             } else {
                 alert("failed in login");
             }
@@ -398,9 +536,9 @@ class SignIn extends React.Component {
     render() {
         if (cookie.load('token')) {
             // return <Redirect to={"/" + Utils.getDbName() + "/home/mandi-data"} />;
-           
-                return <Redirect to={"/home/mandi-data"} />;
-            
+
+            return <Redirect to={"/home/mandi-data"} />;
+
         }
 
         return (

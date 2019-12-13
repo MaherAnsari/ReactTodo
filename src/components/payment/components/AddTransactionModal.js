@@ -389,7 +389,7 @@ class AddTransactionModal extends Component {
                                     margin="normal"
                                     id="transaction_date"
                                     label="Transaction date"
-                                    format="dd/MM/yyyy"
+                                    format="dd-MMM-yyyy"
                                     style={{ width: '100%' }}
                                     value={addTransactionPayload.transaction_date}
                                     onChange={(dateval) => {
