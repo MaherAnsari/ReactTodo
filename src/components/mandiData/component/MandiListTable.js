@@ -142,7 +142,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["market", "district", "state", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Status", "Lat/Long", "Action"],
+      tableHeadData: ["market", "district", "state", "Mandi Grade", "APMC", "Mandi Status", "Lat/Long", "Action"],
       tableHeadDataKey: ["market", "district", "state", "mandi_grade", "mandi_grade_hindi", "apmc_req", "is_open", "loc_lat", ""],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
@@ -351,8 +351,8 @@ setArrow = (column) => {
                         {/* <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes)}>{row.state + " (" + row.state_hindi + ")"}</TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}> {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi :"-" + ")": "-" }</TableCell>
+                        {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>
                           {row.is_open ? <LockOpenIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} /> :
