@@ -20,14 +20,16 @@ const styles = theme => ({
 
 
 const _items = [
-  { name: 'Supporting Data', route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
-    { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
-    { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
-    { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
-  ] },
+  {
+    name: 'Supporting Data', id: "1", route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
+      { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
+      { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
+      { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
+    ]
+  },
   // { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
   {
-    name: 'User List', route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
+    name: 'User List', id: "2", route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
       { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
@@ -37,11 +39,13 @@ const _items = [
   // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
   // { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
   // { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
-  { name: 'Business Data', route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
-    { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
-    { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
-    { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
-  ] },
+  {
+    name: 'Business Data', id: "3", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
+      { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
+      { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
+      { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
+    ]
+  },
   // { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf", children: [] },
   // { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a", children: [] },
   // { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42", children: [] }
@@ -50,30 +54,33 @@ const _items = [
 
 
 class VerticalItem extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isHover: false,
-    }
-  }
 
-  componentDidMount(){
+
+  componentDidMount() {
 
     // to open default sub item selected
-    var routeItem =this.props.item;
-      if(routeItem.children.length > 0 ){
-        for( var j = 0 ; j < routeItem.children.length; j++){
-          if( routeItem.children[j]["route"] === this.props.active){
-            this.setState({ isHover : true });
-            break;
-          }
+    var routeItem = this.props.item;
+    if (routeItem.children.length > 0) {
+      for (var j = 0; j < routeItem.children.length; j++) {
+        if (routeItem.children[j]["route"] === this.props.active) {
+          // this.setState({ isHover : true }, function(){
+          this.props.onAccordClicked(routeItem["id"])
+          // });
+          break;
+        }
       }
     }
   }
 
 
-  toggleHover(isHover) {
-    this.setState({ isHover: isHover })
+  toggleHover(accord) {
+
+    // if(this.props.activeAccordian === accord ){
+    this.props.onAccordClicked(accord)
+    // }else{
+    //   this.props.onAccordClicked( accord)
+    // }
+
   }
 
   onSelect(route) {
@@ -85,36 +92,22 @@ class VerticalItem extends React.Component {
   }
 
   renderSubLevel(item) {
-    const { extended, active } = this.props
-    const { isHover } = this.state
-console.log( isHover )
-    const style = {
-
-    }
-    // if (isHover && this._ref !== null
-    //   && ((!active && extended) || (active && !extended) || !active)
-    // ) {
-    //   const bound = this._ref.getBoundingClientRect()
-    //   //console.log('>>', this._ref.getBoundingClientRect())
-    //   style.transform = `translate3d(${bound.left + bound.width}px, ${bound.top}px, 0px)`
-    // }
-
+    const { active } = this.props
 
     return (
-      <ul className='class_ul sub-level' style={style} >
+      <ul className='class_ul sub-level' >
         {item.children && item.children.map(i => {
           return (
-            <li className="class_li" key={i.route} 
-            // style={{ background: "#2e3247 !important", color: i.iconColor }} 
-            style={{background: active === i.route ? "#05073a":"",borderLeft : active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
-            onClick={() => this.onSelect(i.route)} >
-              
-              <Icon className="sideBarIcon"  style={{ fontSize: "18px"}}>
+            <li className="class_li" key={i.route}
+              style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
+              onClick={() => this.onSelect(i.route)} >
+
+              <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
                 {i.iconClassName}
               </Icon>
               <div className='item-name' >{i.name}</div>
-              {active === i.route ? <i className={"fa fa-chevron-right"} 
-            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>:""}
+              {active === i.route ? <i className={"fa fa-chevron-right"}
+                style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
             </li>
           )
         })}
@@ -123,36 +116,32 @@ console.log( isHover )
   }
 
   render() {
-    const { item, active } = this.props
-    const { isHover } = this.state; //activeRoute
+    const { item, active, activeAccordian } = this.props
     let className = 'vertical-item-component';
-    if (isHover) className += ' is-hover'
+    if (activeAccordian === item["id"]) className += ' is-hover'
     return (
       <li
-
         ref={ref => { this._ref = ref }}
-        style={{background : active === item.route ? '#5cb8eb' : '#25283b' }}
+        style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
         className={className + " class_li"}
-        // onMouseEnter={() => this.toggleHover(true)}
-        // onMouseLeave={() => this.toggleHover(false)}
-         >
+      >
         <div>
           <div className='item'
             style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {
                 this.onSelect(item.route)
-              }else{
-                this.toggleHover(!this.state.isHover)
+              } else {
+                this.toggleHover(activeAccordian !== item.id ? item.id : "")
               }
             }
             }  >
-            <Icon className="sideBarIcon" style={{ color: item.iconColor ,fontSize: "18px"}}>
+            <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
               {item.iconClassName}
             </Icon>
             <div className='item-name'>{item.name}</div>
-            {item.children && item.children.length > 0 && <i className={isHover ? "fa fa-chevron-up" : "fa fa-chevron-down"} 
-            style={{position: "absolute",right: "0px", color:"#afb1b9" }} aria-hidden="true"></i>}
+            <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
+              style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>
           </div>
           {this.renderSubLevel(item)}
         </div>
@@ -168,6 +157,12 @@ VerticalItem.defaultProps = {
 
 class VerticalNavigation extends React.PureComponent {
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      activeAccordian: "",
+    }
+  }
 
   onRouteChanged(route) {
     this.props.onChange(route);
@@ -177,7 +172,6 @@ class VerticalNavigation extends React.PureComponent {
     const { items, open, activeRoute, dbImageUrl } = this.props;
     let additionalClass = ''
     additionalClass += open ? 'extended' : 'collapsed'
-    // console.log(activeRoute)
     return (
       <div className={`vertical-navigation-component ${additionalClass}`}>
         <div className='nav-header' style={{ backgroundColor: '#2e3247' }}>
@@ -210,6 +204,8 @@ class VerticalNavigation extends React.PureComponent {
               index={index}
               extended={open}
               active={activeRoute}
+              activeAccordian={this.state.activeAccordian}
+              onAccordClicked={(data) => this.setState({ activeAccordian: data })}
               onSelect={this.onRouteChanged.bind(this)}    // this.onRouteChanged(i.route) } //this.props.onChange(i.route)
             />
           ))}

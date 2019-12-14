@@ -44,7 +44,7 @@ const theme = createMuiTheme({
         // lineHeight: '1.5em',
       },
       MuiTypography: {
-        body2:{
+        body2: {
           color: "red",
           fontFamily: "lato",
           fontWeight: 600
@@ -52,7 +52,7 @@ const theme = createMuiTheme({
         colorInherit: {
           color: "white"
         }
-     
+
       },
       MuiInputBase: {
         input: {
@@ -143,6 +143,7 @@ class MandiListTable extends Component {
     super(props);
     this.state = {
       tableHeadData: ["market", "district", "state", "Mandi Grade", "Mandi Grade (Hindi)", "APMC", "Mandi Status", "Lat/Long", "Action"],
+      tableHeadDataKey: ["market", "district", "state", "mandi_grade", "mandi_grade_hindi", "apmc_req", "is_open", "loc_lat", ""],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
       searchedText: "",
@@ -157,6 +158,10 @@ class MandiListTable extends Component {
 
       rowsPerPage: 50,
       page: 0,
+      sort: {
+        column: null,
+        direction: 'desc',
+      }
 
     }
   }
@@ -209,7 +214,7 @@ class MandiListTable extends Component {
   }
 
   getTableCustomBgCellClass(classes) {
-      return classes.tableCellCyan;
+    return classes.tableCellCyan;
   }
 
 
@@ -243,9 +248,55 @@ class MandiListTable extends Component {
     this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
   };
 
+  onSort = (column) => {
+    if (column !== "") {
+      return e => {
+        const direction = this.state.sort.column ? (this.state.sort.direction === 'asc' ? 'desc' : 'asc') : 'desc'
+        const sortedUsers = this.state.tableBodyData.sort((a, b) => {
+         if(a[column] && a[column] !== null && b[column] && b[column] !== null ){
+          if (typeof (a[column]) === 'string') {
+            const nameA = a[column].toUpperCase() // ignore upper and lowercase
+            const nameB = b[column].toUpperCase() // ignore upper and lowercase
+
+            if (nameA < nameB)
+              return -1
+            if (nameA > nameB)
+              return 1
+            else return 0
+          }
+          else {
+            return a[column] - b[column]
+          }
+        }
+        })
+
+        if (direction === 'desc') {
+          sortedUsers.reverse()
+        }
+        this.setState({
+          tableBodyData: sortedUsers,
+          sort: {
+            column,
+            direction,
+          },
+        })
+      }
+    }
+  }
+
+setArrow = (column) => {
+    let iconClass = 'fa fa-arrow-';
+    
+    if (this.state.sort.column === column) {
+      iconClass += this.state.sort.direction === 'asc' ? 'down' : 'up';
+    }
+    return iconClass;
+    };
+
+
   render() {
     const { classes } = this.props;
-    const { rowsPerPage, page } = this.state;
+    const { rowsPerPage, page, tableHeadDataKey } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -271,9 +322,15 @@ class MandiListTable extends Component {
           <div >
             <Table className='table-body'>
               <TableHead>
-                <TableRow  style={{borderBottom: "2px solid #858792"}} >
+                <TableRow style={{ borderBottom: "2px solid #858792" }} >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)}>{option}</TableCell>
+                    <TableCell
+                      onClick={this.onSort(tableHeadDataKey[i])}
+                      key={option}
+                      style={{ cursor: tableHeadDataKey[i] !== "" ? "pointer" : "unset" }}
+                      className={this.getTableCellClass(classes, i)}>{option}
+                     {tableHeadDataKey[i] !== "" && <i className={this.setArrow( tableHeadDataKey[i] )} aria-hidden="true"></i>}
+                      </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -287,18 +344,18 @@ class MandiListTable extends Component {
                     return (
                       <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                         <TableCell component="th" scope="row" className={this.getTableCustomBgCellClass(classes, 0)}>
-                          {row.market+" ("+row.market_hindi+")"}</TableCell>
+                          {row.market + " (" + row.market_hindi + ")"}</TableCell>
                         {/* <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                           {row.state_hindi ? row.state_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district+" ("+row.district_hindi+")"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district + " (" + row.district_hindi + ")"}</TableCell>
                         {/* <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes)}>{row.state+" ("+row.state_hindi+")"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes)}>{row.state + " (" + row.state_hindi + ")"}</TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade ? row.mandi_grade : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>
-                          {row.is_open ? <LockOpenIcon className="material-Icon"  style={{ height: "18px", fontSize: "18px" }}  /> :
+                          {row.is_open ? <LockOpenIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} /> :
                             <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
                         </TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>

@@ -158,7 +158,16 @@ class SignIn extends React.Component {
                         color: "blue",
                         fontWeight: 500,
                         fontSize: "14px",
-                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep:1 })}>
+                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep:1,  user: {
+                            username: '',
+                            password: '',
+                            loading: false,
+                            verifyCode: '',
+                            showVerification: false,
+                            userdata: null,
+                            newpassword: '',
+                            otp: ''
+                        } })}>
                         Forgot Password
                 </div>
             </form>
