@@ -46,7 +46,7 @@ class PriceContainer extends React.Component {
             buyerList: null,
             brokerList: [],
             commodityList: [],
-            showLoader: true
+            showLoader: true,type:"buyer"
 
         };
     }
@@ -62,7 +62,7 @@ class PriceContainer extends React.Component {
 
     }
     async getPriceList() {
-        let param = {"role":"ca"}
+        let param = {"role":this.state.type == 'buyer' ?"ca":"broker"}
         let resp = await priceService.getPriceList(param);
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data});
@@ -116,6 +116,11 @@ class PriceContainer extends React.Component {
     handleClickOpen(event) {
         this.setState({ showAddModal: true, open: true });
     }
+    onTypeChange(event){
+        this.setState({type:event,dataList:null},function(){
+            this.getPriceList();
+        })
+    }
     render() {
         const { classes } = this.props;
         return (
@@ -125,7 +130,9 @@ class PriceContainer extends React.Component {
                         {/* <PriceTable   tableData={this.state.dataList}   />  */}
                      
                        <PriceCollapseView
-                            expansionpanelHeaderData={ this.state.dataList} />
+                            expansionpanelHeaderData={ this.state.dataList} 
+                            type = {this.state.type}
+                            typeChange = {this.onTypeChange.bind(this)}/>
                         <div className="updateBtndef">
                             <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>

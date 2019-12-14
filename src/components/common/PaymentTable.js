@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import ConfirmDialog from './../../app/common/ConfirmDialog';
+import ConfirmDialog from '../../app/common/ConfirmDialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import NoDataAvailable from '../common/NoDataAvailable';
+import NoDataAvailable from './NoDataAvailable';
 
-
+import Utils from '../../app/common/utils';
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -60,23 +60,23 @@ const styles = theme => ({
 
 });
 
-class OrderTable extends Component {
+class PaymentTable extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["supplier_mobile", "buyer_mobile", "amount", "commodity", "Date"],
+            tableHeadData: ["Supplier Name", "Supplier Bussiness Name", "Created Time", "Payment mode", "Amount"],
             open: this.props.openModal, tableBodyData: this.props.data
         }
 
     }
     componentDidMount() {
-     
+
 
     }
 
 
-  
+
     getTableCellClass(classes, index) {
         return classes.tableCell;
     }
@@ -89,6 +89,28 @@ class OrderTable extends Component {
     handleAddClick(event) {
 
 
+    }
+    getTransactionTypeColor(transaction_type) {
+        if (transaction_type === "b_out") {
+            return "rgb(212, 58, 58)"; // red
+
+        } else if (transaction_type === "b_in") {
+            return "rgb(56, 122, 57)"; // green
+
+        } else {
+            return "rgba(0, 0, 0, 0.87)" // default black color
+        }
+    }
+
+    getBackgroundColor(type){
+       if (type === 'bank') {
+            return "#00a700";
+        } else if (type === 'cash') {
+            return "#f50057";
+        } else {
+            return "#757575";
+        }
+      
     }
     render() {
         const { classes } = this.props;
@@ -108,20 +130,29 @@ class OrderTable extends Component {
 
                             <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                    {/* <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}> */}
-                                    {row.supplier_mobile}
-                                    {/* </Tooltip> */}
+                                    {row.supplier_fullname ? row.supplier_fullname : "-"}
                                 </TableCell>
-                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                    {row.buyer_mobile}
+                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                    <div className="text-ellpses">
+                                        {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                    </div>
+                                </TableCell>
+                                <TableCell className={this.getTableCellClass(classes, 3)}>
+                                    <div className="text-ellpses" style={{fontSize:'12px'}}>
+                                        {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
+                                    </div>
+                                </TableCell>
 
+                                <TableCell className={this.getTableCellClass(classes, 4)} >
+                                
+                                <span style={{  color: "white",
+                                background:this.getBackgroundColor(row.payment_mode),
+                                padding: "4px 12px",
+                                borderRadius: "13px"}} >   {row.payment_mode ? row.payment_mode : "-"} </span>
+                                
                                 </TableCell>
-                               
-                                <TableCell className={this.getTableCellClass(classes, 5)} >
-                                    {row.bijak_amt}
-                                </TableCell>
-                                <TableCell className={this.getTableCellClass(classes, 6)} >{row.commodity}</TableCell>
-                                <TableCell className={this.getTableCellClass(classes, 7)} >{row.createdtime.split("T")[0]}
+                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                    ₹ {row.amount ? row.amount : "-"}
                                 </TableCell>
 
 
@@ -148,8 +179,8 @@ class OrderTable extends Component {
     }
 }
 
-OrderTable.propTypes = {
+PaymentTable.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(OrderTable);
+export default withStyles(styles)(PaymentTable);

@@ -40,6 +40,8 @@ let stateList = [
     "Uttarakhand",
     "West Bengal"
 ];
+const months = ["JAN", "FEB", "MAR","APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
 function getCurrentDate(data) {
     // DD-MM-YYY
     var today = new Date();
@@ -91,6 +93,16 @@ function getStateData(){
     return stateList;
 }
 
+function formatDateData ( apiDate ) {
+    try{
+      var formatedDate = new Date( apiDate );
+      formatedDate = formatedDate.getDate() + "-" + months[formatedDate.getMonth()] + "-" + formatedDate.getFullYear();
+      return formatedDate;
+    }catch( err ){
+      console.log( err );
+      return apiDate;
+    }
+  }
 
 const Utils = {
 
@@ -100,7 +112,8 @@ const Utils = {
     getCurrentTime,
     getDistrictData,
     setDistrictData,
-    getStateData
+    getStateData,
+    formatDateData
 
 }
 

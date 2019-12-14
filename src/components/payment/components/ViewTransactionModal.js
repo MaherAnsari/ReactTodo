@@ -29,7 +29,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import 'date-fns';
 import EditTransactionModal from '../common/EditTransactionModal';
 import Tooltip from '@material-ui/core/Tooltip';
-
+import Utils from './../../../app/common/utils';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
   
@@ -407,7 +407,7 @@ class ViewTransactionModal extends Component {
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 3)}>
                                                                         <div className="text-ellpses">
-                                                                            {row.createdtime ? row.createdtime : "-"}
+                                                                            {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
                                                                         </div>
                                                                     </TableCell>
                                                                     
@@ -495,7 +495,7 @@ class ViewTransactionModal extends Component {
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 3)}>
                                                         <div className="text-ellpses">
-                                                            {row.createdtime ? row.createdtime : "-"}
+                                                            {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
                                                         </div>
                                                     </TableCell>
                                                     

@@ -86,7 +86,7 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["name", "category", "weight", "Hindi Name","",""],
+      tableHeadData: ["","name", "category", "weight", "Hindi Name","",""],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
       searchedText: "",
@@ -197,7 +197,7 @@ class CommodityTable extends Component {
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px',padding: "14px" }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i==0 ? '50px':'120px',padding: "14px" }}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -209,8 +209,11 @@ class CommodityTable extends Component {
                                   ).map((row, i) => {
                   return (
                     <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                       <img style={{width:'35px',height:'35px'}} src={row.image_url}></img> 
+                      </TableCell>
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                       <img src={row.image_url}></img> {row.name}
+                      {row.name}
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}

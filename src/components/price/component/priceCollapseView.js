@@ -14,6 +14,7 @@ import Loader from '../../common/Loader';
 import NoDataAvailable from '../../common/NoDataAvailable';
 import buyerService from '../../../app/buyerService/buyerService';
 import { isUndefined } from 'util';
+import Checkbox from '@material-ui/core/Checkbox'; 
 
 const theme = createMuiTheme({
   overrides: {
@@ -38,7 +39,7 @@ const theme = createMuiTheme({
 });
 
 const styles = theme => ({
-  detailsRoot:{
+  detailsRoot: {
     display: "unset"
   },
   textField: {
@@ -82,12 +83,13 @@ class PriceCollapseView extends Component {
     super(props);
     this.state = {
       expanded: "",
-      itemExpanded:"",
-      expansionpanelHeaderData: this.props.expansionpanelHeaderData ,
-      expansionpanelBodyData:  [],
-      specificBuyerList : undefined,
-      dataList:this.props.expansionpanelHeaderData ,
-      selectedId:undefined
+      itemExpanded: "",
+      expansionpanelHeaderData: this.props.expansionpanelHeaderData,
+      expansionpanelBodyData: [],
+      specificBuyerList: undefined,
+      dataList: this.props.expansionpanelHeaderData,
+      selectedId: undefined,
+      type:this.props.type
     }
   }
 
@@ -97,10 +99,10 @@ class PriceCollapseView extends Component {
     this.getData(searchedTxt);
   }
 
-  async getData(txt){
+  async getData(txt) {
     let rows = [];
     let data = {};
-     data['searchVal'] = encodeURIComponent(txt);
+    data['searchVal'] = encodeURIComponent(txt);
     let resp = await buyerService.serchUser(data);
     // console.log(resp.data);
     if (resp.data.status === 1 && resp.data.result) {
@@ -127,32 +129,51 @@ class PriceCollapseView extends Component {
   // }
 
 
-  onPanelExpanded( event , i, id ){
-    this.setState({ expanded: this.state.expanded === i ? "" : i, itemExpanded :"" , specificBuyerList : undefined }, function(){
-      if( this.state.expanded !== ""){
-        this.setState({selectedId:id});
-        this.getBuyerList( id );
+  onPanelExpanded(event, i, id) {
+    this.setState({ expanded: this.state.expanded === i ? "" : i, itemExpanded: "", specificBuyerList: undefined }, function () {
+      if (this.state.expanded !== "") {
+        this.setState({ selectedId: id });
+        if(this.state.type === 'buyer'){
+          this.getBuyerList(id);
+        }else{
+          this.getBroketList(id);
+        }
+        
       }
     })
   }
 
-  async getBuyerList( id ) {
-    let resp = await priceService.getBuyerList( id );
-    this.state.specificBuyerList = []; 
+  async getBuyerList(id) {
+    let resp = await priceService.getBuyerList(id);
+    this.state.specificBuyerList = [];
     if (resp.data.status === 1 && resp.data.result) {
-        this.setState({ specificBuyerList : resp.data.result });// full ( id )
+      this.setState({ specificBuyerList: resp.data.result });// full ( id )
     }
-}
+  }
 
-onItemPanelExpanded( event , i, id ){
-  this.setState({ itemExpanded: this.state.itemExpanded === i ? "" : i }, function(){
-    // this.getBuyerList( id );
-  })
-}
-onUpdate(event){
-  this.getBuyerList(this.state.selectedId);
-}
+  async getBroketList(id) {
+    let resp = await priceService.getBroketList(id);
+    this.state.specificBuyerList = [];
+    if (resp.data.status === 1 && resp.data.result) {
+      this.setState({ specificBuyerList: resp.data.result });// full ( id )
+    }
+  }
 
+  onItemPanelExpanded(event, i, id) {
+    this.setState({ itemExpanded: this.state.itemExpanded === i ? "" : i }, function () {
+      // this.getBuyerList( id );
+    })
+  }
+  onUpdate(event) {
+    if(this.state.type === 'buyer'){
+      this.getBuyerList(this.state.selectedId);
+    }else{
+      this.getBroketList(this.state.selectedId);
+    }
+  }
+  handleCheckbox(id, event) {
+    this.props.typeChange(id);
+  }
   render() {
     const { classes } = this.props;
     const { expanded, itemExpanded } = this.state;
@@ -160,71 +181,88 @@ onUpdate(event){
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
           <div style={{ display: 'flex' }}>
-          <div style={{ 
-            width: "30%",
-            padding: "14px",
-            textAlign: "left",
-            fontSize: "24px"
-          }} > Rate List </div>
-            <div style={{ width: '40%', marginLeft: '40%' }}>
+            <div style={{
+              width: "30%",
+              padding: "14px",
+              textAlign: "left",
+              fontSize: "24px"
+            }} > Rate List </div>
+            <div style={{ marginRight: '2%', width: '25%',paddingTop:'16px' }}>
+              <Checkbox
+                style={{ height: 24, width: 34 }}
+                checked={this.state.type === 'buyer'}
+                onClick={this.handleCheckbox.bind(this, "buyer")}
+                tabIndex={-1}
+                disableRipple
+              />Buyer wise</div>
+            <div style={{ marginRight: '2%', width: '25%' ,paddingTop:'16px' }}>
+              <Checkbox
+                style={{ height: 24, width: 34 }}
+                checked={this.state.type === 'broker'}
+                onClick={this.handleCheckbox.bind(this, "broker")}
+                tabIndex={-1}
+                disableRipple
+              />Broker wise</div>
+            <div style={{ width: '40%' }}>
               <input
                 type="text"
                 // value={searchedText}
                 placeholder="Search..."
                 className="search-input"
-                onChange={this.handelFilter.bind(this)} 
+                onChange={this.handelFilter.bind(this)}
               /><i className="fa fa-search"></i>
             </div>
           </div>
           <div >
-          {this.state.expansionpanelHeaderData.length > 0 ? <div style={{ marginTop: "18px"
-                          }}>
-            {this.state.expansionpanelHeaderData.map((row, i) => {
-              return (
-                <div key={"expanpan"+ i} style={{ width: '100%',marginTop:'8px'}} >
-                  <ExpansionPanel
-                    expanded={expanded === i}
-                    onChange={( event ) => this.onPanelExpanded(event, i, row["id"])}
-                    style={{    borderLeft: i % 2 === 0 ?"4px solid #3a7e40":"4px solid #50a1cf", width: '100%',background :expanded === i ? "#f7f7f7" :  "white"  }}>
+            {this.state.expansionpanelHeaderData.length > 0 ? <div style={{
+              marginTop: "18px"
+            }}>
+              {this.state.expansionpanelHeaderData.map((row, i) => {
+                return (
+                  <div key={"expanpan" + i} style={{ width: '100%', marginTop: '8px' }} >
+                    <ExpansionPanel
+                      expanded={expanded === i}
+                      onChange={(event) => this.onPanelExpanded(event, i, row["id"])}
+                      style={{ borderLeft: i % 2 === 0 ? "4px solid #3a7e40" : "4px solid #50a1cf", width: '100%', background: expanded === i ? "#f7f7f7" : "white" }}>
 
-                    <ExpansionPanelSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                    >
-                      <Typography style={{fontSize:'16px',fontFamily:'Lato',fontWeight: 600}}className={classes.heading}>{row["fullname"] + " (" + row["id"] + ")"}</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails classes={{root: classes.detailsRoot}}>
-                      
-                    {this.state.specificBuyerList && this.state.specificBuyerList.length > 0 ? this.state.specificBuyerList.map((item, itemIndex ) => {
-              return (
-                <div key={"expanpan"+ item["commodity_name"]} style={{ width: '98%',marginLeft:'1%' ,marginTop: itemIndex !== 0 ? "8px":""}} >
-                  <ExpansionPanel
-                    expanded={itemExpanded === itemIndex }
-                    onChange={( event ) => this.onItemPanelExpanded(event, itemIndex, item["id"])}
-                    style={{ width: '100%',background : itemExpanded === itemIndex ? "#f7f7f7" : "white" }}>
+                      <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography style={{ fontSize: '16px', fontFamily: 'Lato', fontWeight: 600 }} className={classes.heading}>{row["fullname"] + " (" + row["id"] + ")"}</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails classes={{ root: classes.detailsRoot }}>
 
-                    <ExpansionPanelSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header">
+                        {this.state.specificBuyerList && this.state.specificBuyerList.length > 0 ? this.state.specificBuyerList.map((item, itemIndex) => {
+                          return (
+                            <div key={"expanpan" + item["commodity_name"]} style={{ width: '98%', marginLeft: '1%', marginTop: itemIndex !== 0 ? "8px" : "" }} >
+                              <ExpansionPanel
+                                expanded={itemExpanded === itemIndex}
+                                onChange={(event) => this.onItemPanelExpanded(event, itemIndex, item["id"])}
+                                style={{ width: '100%', background: itemExpanded === itemIndex ? "#f7f7f7" : "white" }}>
 
-                      <Typography style={{fontSize:'16px',fontFamily:'Lato', fontWeight:500}} className={classes.heading}>{item["commodity_name"]}</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <PriceTable tableData={item.brokers}  onUpdate={this.onUpdate.bind(this)}/>
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
+                                <ExpansionPanelSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header">
+
+                                  <Typography style={{ fontSize: '16px', fontFamily: 'Lato', fontWeight: 500 }} className={classes.heading}>{item["commodity_name"]}</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                  <PriceTable tableData={item.brokers} onUpdate={this.onUpdate.bind(this)} />
+                                </ExpansionPanelDetails>
+                              </ExpansionPanel>
+                            </div>
+                          );
+                        }) : (!this.state.specificBuyerList ? <Loader height={'30px'} /> : < NoDataAvailable style={{ height: '25vh' }} />)}
+
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
                   </div>
-              );
-            }): ( !this.state.specificBuyerList ? <Loader height={'30px'}/> : < NoDataAvailable style={{height:'25vh'}}/>) }
-
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
-                  </div>
-              );
-            })}
-          </div> :< NoDataAvailable style={{height:'50vh'}}/> }
+                );
+              })}
+            </div> : < NoDataAvailable style={{ height: '50vh' }} />}
           </div>
           {/* {this.state.expansionpanelHeaderData.length == 0 ?  < NoDataAvailable style={{height:'25vh'}}/>:""} */}
           {/* {this.state.expansionpanelHeaderData.length > 0 ? "" : <div className={classes.defaultTemplate}>

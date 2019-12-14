@@ -29,7 +29,7 @@ let priceService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/rate/list/broker'
+            url: param ? '/rate/list/broker/' +param : '/rate/list/broker'
         });
     },
     getCommodityList: async function (param) {

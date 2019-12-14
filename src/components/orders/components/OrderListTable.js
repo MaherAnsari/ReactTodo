@@ -215,7 +215,7 @@ class OrderListTable extends Component {
                                                 {row.broker_name}
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                {row.bijak_amt}
+                                            ₹ {row.bijak_amt}
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 6)} >
                                             <span style={{  color: "white",

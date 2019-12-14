@@ -9,23 +9,24 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import OrderTable from './OrderTable';
-import EditUser  from './EditUser';
+import EditUser from './EditUser';
 import UserDetail from './UserDetail';
 import commodityService from '../../app/commodityService/commodityService';
 import orderService from '../../app/orderService/orderService';
-
+import  PaymentTable from './PaymentTable';
+import paymentService from '../../app/paymentService/paymentService';
 const styles = theme => ({
     dialogPaper: {
-        minWidth: '700px',
+        minWidth: '750px',
         // maxWidth: '700px',
         minHeight: '600px',
         // maxHeight: '500px'
     },
-    profile:{
+    profile: {
         marginLeft: '30%',
-    background: 'red',
-    width: '40px',
-    borderRadius: '10px'
+        background: 'red',
+        width: '40px',
+        borderRadius: '10px'
     }
 
 });
@@ -39,8 +40,9 @@ class UserInfo extends Component {
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
-            currentView:"userInfo",
-            orderList:[]
+            currentView: "userInfo",
+            orderList: [],
+            paymentList:[]
 
 
 
@@ -48,7 +50,7 @@ class UserInfo extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
-        let param = {};
+        let param = {"limit":10};
         if (this.props.data.role === 'ca') {
             param["buyerid"] = this.props.data.mobile;
         } else if (this.props.data.role === 'broker') {
@@ -59,6 +61,7 @@ class UserInfo extends Component {
         if (Object.keys(param).length) {
             this.getListData(param);
         }
+        this.getTransactionList();
     }
 
 
@@ -113,11 +116,11 @@ class UserInfo extends Component {
         }
     }
 
- 
-    getHeader(){
-        if(this.props.isInfo){
-            return this.props.data.fullname ;
-        }else{
+
+    getHeader() {
+        if (this.props.isInfo) {
+            return this.props.data.fullname;
+        } else {
             return "User Data";
         }
     }
@@ -127,12 +130,12 @@ class UserInfo extends Component {
     }
 
 
-    getProfileColor(data){
-        if(data <= 2 ){
+    getProfileColor(data) {
+        if (data <= 2) {
             return 'red';
-        }else if(data >2 && data <= 5){
+        } else if (data > 2 && data <= 5) {
             return '#d8d805';
-        }else{
+        } else {
             return "green";
         }
     }
@@ -140,8 +143,28 @@ class UserInfo extends Component {
     handleChange = (event, value) => {
         // console.log(event,value);
         this.setState({ currentView: value });
-      };
+    };
 
+
+    getTransactionList = async () => {
+        try {
+            let param = {"limit":10}
+            let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.data.mobile, param);
+            if (resp.data.status === 1 && resp.data.result) {
+                var respData = resp.data.result;
+                this.setState({
+
+                    paymentList: respData["allTransactions"]
+                });
+            } else {
+                this.setState({
+                    paymentList: []
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
     render() {
         const { classes } = this.props;
         return (<div> <Dialog style={{ zIndex: '1' }}
@@ -149,47 +172,54 @@ class UserInfo extends Component {
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
-                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px',display:'flex',marginLeft:'35%',width:'60%' }}>{this.getHeader()}
-    {this.props.isInfo && <p className={classes.profile} style={{background:this.getProfileColor(this.props.data.profile_segment)}}>{this.props.data.profile_segment}</p>}</div>  </DialogTitle> 
-            <DialogContent style={{width:'100%',padding:'0'}}> 
-            <Paper square className={classes.root}>
-      <Tabs
-        value={this.state.currentView}
-        onChange={this.handleChange}
-        variant="fullWidth"
-        indicatorColor="secondary"
-        textColor="secondary"
-        aria-label="icon label tabs example"
-      >
-        <Tab  label="User Info"  value="userInfo" />
-        <Tab  label="Orders"  value="orders" />
-        <Tab label="Edit User"  value="editUser"/>
-      </Tabs>
-    </Paper>
-    
-    {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel = {this.handleDialogCancel.bind(this)}
-                        data={this.state.orderList}
-                        /> : ""} 
+            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px', display: 'flex', marginLeft: '35%', width: '60%' }}>{this.getHeader()}
+                {this.props.isInfo && <p className={classes.profile} style={{ background: this.getProfileColor(this.props.data.profile_segment) }}>{this.props.data.profile_segment}</p>}</div>  </DialogTitle>
+            <DialogContent style={{ width: '100%', padding: '0' }}>
+                <Paper square className={classes.root}>
+                    <Tabs
+                        value={this.state.currentView}
+                        onChange={this.handleChange}
+                        variant="fullWidth"
+                        indicatorColor="secondary"
+                        textColor="secondary"
+                        aria-label="icon label tabs example"
+                    >
+                        <Tab label="User Info" value="userInfo" />
+                        <Tab label="Orders" value="orders" />
+                        <Tab label="Payment" value="payment" />
+                        <Tab label="Edit User" value="editUser" />
+                    </Tabs>
+                </Paper>
 
-{this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        data={this.props.data}
-                        commodityList = {this.state.commodityList}
-                        onEditModalCancel = {this.handleDialogCancel.bind(this)}
-                        /> : ""} 
+                {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
+                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                    data={this.state.orderList}
+                /> : ""}
 
-{this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel = {this.handleDialogCancel.bind(this)}
-                        data={this.props.data}
-                        /> : ""} 
+                {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
+                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    data={this.props.data}
+                    commodityList={this.state.commodityList}
+                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                /> : ""}
+
+                {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
+                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                    data={this.props.data}
+                /> : ""}
+
+                {this.state.currentView === 'payment' ? <PaymentTable openModal={this.state.open}
+                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                    data={this.state.paymentList}
+                /> : ""}
 
             </DialogContent>
-        
+
         </Dialog>
-      
+
         </div>
         );
     }
