@@ -283,6 +283,7 @@ class UserListTable extends Component {
                     <div style={{ display: 'flex' }}>
                         <UserFilterDataView
                             stateList={this.state.stateList}
+                            role={this.props.role}
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}
