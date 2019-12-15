@@ -41,7 +41,7 @@ class FilterAreaComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            stateid:[],
+            stateid: {label: "haryana", value: "haryana"},
             districtid:[],
             commodityid:[],
             labelWidth: 0,
@@ -73,6 +73,7 @@ class FilterAreaComponent extends React.Component {
 
 
     getDataBasedOnFilters = () => {
+        console.log(this.state); 
         let data = {
             stateid : this.state.stateid["value"],
             districtid : this.state.districtid["value"],
@@ -102,13 +103,16 @@ class FilterAreaComponent extends React.Component {
             
                 var dataObj = this.state.configData;
                 dataObj[1]["options"] = optionsData;
-                this.setState({ configData :  dataObj });    
+                this.setState({ configData :  dataObj });   
+             
     }
 
     getSearchAreaText = (id, event) => {
+        console.log(id);
         try {
             this.setState({[id] : event !== null ? event : "" });
             if(id === 'stateid' && event){
+                
                 this.formatDistrictData(event.value);
             }
         } catch (err) {
@@ -123,7 +127,7 @@ class FilterAreaComponent extends React.Component {
                 <Grid container direction="row" alignItems="stretch">
                     <Grid item xs={12} sm={12} md={12}>
                         {this.state.configData &&
-                            <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', color: "#000", borderRadius: "4px" }}>
+                            <form className={classes.root}  style={{ padding: '15px 0px', color: "#000", borderRadius: "4px" }}>
                                 {this.state.configData.map((obj, index) => (
                                     <React.Fragment key={index}>
                                         {(obj && obj.name && obj.id) &&

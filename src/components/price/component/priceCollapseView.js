@@ -15,24 +15,31 @@ import NoDataAvailable from '../../common/NoDataAvailable';
 import buyerService from '../../../app/buyerService/buyerService';
 import { isUndefined } from 'util';
 import Checkbox from '@material-ui/core/Checkbox'; 
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import Table from '@material-ui/core/Table';
 
 const theme = createMuiTheme({
   overrides: {
-    MuiTableCell: {
-      head: {
-        color: '#fff',
-        fontWeight: 600,
-        fontSize: '15px !important',
-        fontFamily: 'lato !important',
-        textTransform: 'uppercase'
+    head: {
+      color: '#2e3247',
+      fontWeight: 600,
+      fontSize: '13px !important',
+      fontFamily: 'lato !important',
+      textTransform: 'uppercase',
+      lineHeight: "1em"
 
-      },
-      body: {
-        color: 'rgba(0, 0, 0, 0.87)',
-        fontWeight: 500,
-        fontSize: '15px !important',
-        fontFamily: 'lato !important',
-        lineHeight: '1.5em',
+    },
+    body: {
+      color: 'rgba(0, 0, 0, 0.87)',
+      fontWeight: 500,
+      fontSize: '14px !important',
+      fontFamily: 'lato !important',
+      // lineHeight: '1.5em',
+    }, MuiTablePagination: {
+      toolbar:{
+        paddingRight:'200px'
       }
     },
   }
@@ -89,7 +96,9 @@ class PriceCollapseView extends Component {
       specificBuyerList: undefined,
       dataList: this.props.expansionpanelHeaderData,
       selectedId: undefined,
-      type:this.props.type
+      type:this.props.type,
+      rowsPerPage: 50,
+      page: 0,
     }
   }
 
@@ -174,9 +183,22 @@ class PriceCollapseView extends Component {
   handleCheckbox(id, event) {
     this.props.typeChange(id);
   }
+
+  
+  handleChangePage = (event, newPage) => {
+    // console.log(newPage);
+    this.setState({ page: newPage });
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+  };
+
+
   render() {
     const { classes } = this.props;
     const { expanded, itemExpanded } = this.state;
+    const { rowsPerPage, page } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -214,11 +236,15 @@ class PriceCollapseView extends Component {
             </div>
           </div>
           <div >
-            {this.state.expansionpanelHeaderData.length > 0 ? <div style={{
+            {this.state.expansionpanelHeaderData.length > 0  ? <div style={{
               marginTop: "18px"
-            }}>
-              {this.state.expansionpanelHeaderData.map((row, i) => {
+            }}> 
+              {this.state.expansionpanelHeaderData &&   (rowsPerPage > 0
+                                    ? this.state.expansionpanelHeaderData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : this.state.expansionpanelHeaderData
+                                  ).map((row, i) => {
                 return (
+                 
                   <div key={"expanpan" + i} style={{ width: '100%', marginTop: '8px' }} >
                     <ExpansionPanel
                       expanded={expanded === i}
@@ -259,10 +285,34 @@ class PriceCollapseView extends Component {
 
                       </ExpansionPanelDetails>
                     </ExpansionPanel>
+               
                   </div>
+               
                 );
               })}
+              <Table>
+                  <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[25, 50, 100]}
+                    colSpan={6}
+                    style={{paddingRight:'150px !important'}}
+                    count={this.state.expansionpanelHeaderData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
+                </TableRow>
+              </TableFooter>
+                  </Table>
             </div> : < NoDataAvailable style={{ height: '50vh' }} />}
+          
           </div>
           {/* {this.state.expansionpanelHeaderData.length == 0 ?  < NoDataAvailable style={{height:'25vh'}}/>:""} */}
           {/* {this.state.expansionpanelHeaderData.length > 0 ? "" : <div className={classes.defaultTemplate}>

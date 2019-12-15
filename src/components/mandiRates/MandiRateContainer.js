@@ -53,6 +53,7 @@ class MandiRateContainer extends React.Component {
         this.getCommodityNames();
         this.getDistrictData();
         this.setState({ stateList: this.getStateData() })
+        this.getSearchedOrderListData({"stateid":"haryana"})
     }
 
     async getCommodityNames() {

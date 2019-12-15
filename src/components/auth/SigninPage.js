@@ -256,10 +256,24 @@ class SignIn extends React.Component {
         try {
             var response = await Auth.forgotPassword(this.state.forgotPasswordData.username);
             if (response.CodeDeliveryDetails) {
-                //console.log("Code send" + JSON.stringify(response));
+                // console.log("Code send" + JSON.stringify(response));
+                // this.state.forgotPasswordData['otp']="";
+                // this.state.forgotPasswordData['newPassword']="";
+                // this.state.forgotPasswordData['username']="";
+                // console.log(this.state.forgotPasswordData);
+                //  this.state.forgotPasswordData =  {
+                //     username:"",
+                //     otp:"",
+                //     newPassword:""
+                // }
+                
                 this.setState({
                     forgotPasswordViewStep: 2
+                },function(){
+                    $('#newPassword').val('');
+                    $('#otp').val('');
                 })
+                
             } else if (response.message) {
                 alert(response.message);
             }
@@ -292,7 +306,7 @@ class SignIn extends React.Component {
         return (
 
             (this.state.forgotPasswordViewStep === 1 ?
-                <form className="login100-form validate-form">
+                <form className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
                     <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
                         Forgot Password
@@ -314,7 +328,7 @@ class SignIn extends React.Component {
 					</button>
                     </div>
                 </form> :
-                <form className="login100-form validate-form">
+                <form className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
                     <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
                         Forgot Password
@@ -325,8 +339,10 @@ class SignIn extends React.Component {
                             name="otp"
                             type="text"
                             id="otp"
+                            autoComplete="off"
                             onChange={this.handleValueChangeOfForgotPassword}
-                            value={this.state.forgotPasswordData.otp} />
+                            value={this.state.forgotPasswordData.otp} 
+                            />
                         <span className="focus-input100"></span>
                         <span className="label-input100">Otp</span>
                     </div>
@@ -336,8 +352,10 @@ class SignIn extends React.Component {
                             name="newPassword"
                             type="password"
                             id="newPassword"
+                            autoComplete="off"
                             onChange={this.handleValueChangeOfForgotPassword}
-                            value={this.state.forgotPasswordData.newPassword} />
+                            value={this.state.forgotPasswordData.newPassword} 
+                            />
                         <span className="focus-input100"></span>
                         <span className="label-input100">New password</span>
                     </div>
