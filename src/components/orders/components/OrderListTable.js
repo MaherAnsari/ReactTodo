@@ -14,6 +14,7 @@ import InfoDialog from './infoDialog';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import ViewSupportingInvoiceModal from '../common/ViewSupportingInvoiceModal';
+import AddOrderModal from '../common/AddOrderModal';
 var moment = require('moment');
 
 
@@ -106,7 +107,9 @@ class OrderListTable extends Component {
             page: 0,
 
             showSupportingInvoiceModal: false,
-            invoiceModalData: []
+            invoiceModalData: [],
+
+            showAddModal: false
 
         }
     }
@@ -175,9 +178,9 @@ class OrderListTable extends Component {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
     };
 
-    formatDateAndTime = ( dateval )=>{
+    formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm A')
-        return <div style={{width: "95px"}}> {fdate.split(" ")[0]+" \n"+fdate.split(" ")[1]+" "+fdate.split(" ")[2]}</div>
+        return <div style={{ width: "95px" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
     }
 
     formatNumberWithComma(x) {
@@ -195,9 +198,17 @@ class OrderListTable extends Component {
         }
     }
 
+    handleClickOpen() {
+        this.setState({ showAddModal: true })
+    }
+
+    onOrderDataAdded() {
+        this.setState({ showAddModal: false });
+    }
+
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page } = this.state;
+        const { rowsPerPage, page, showAddModal } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -206,7 +217,7 @@ class OrderListTable extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? "80px" :'120px' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? "80px" : '120px' }}>{option}</TableCell>
                                     ))}
                                     {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
                                 </TableRow>
@@ -225,10 +236,10 @@ class OrderListTable extends Component {
                                                     <span
                                                         data-toggle="tooltip" data-placement="right" title="info"
                                                         onClick={this.onInfoClick.bind(this, row)}
-                                                        style={{color:"#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px", cursor: "pointer" }}>
+                                                        style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px", cursor: "pointer" }}>
                                                         {row.id}
                                                     </span>
-                                                    <i style={{paddingTop:"11px"}}
+                                                    <i style={{ paddingTop: "11px" }}
                                                         data-toggle="tooltip" data-placement="right" title="Supporting images"
                                                         onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
                                                         className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
@@ -256,9 +267,9 @@ class OrderListTable extends Component {
                                                 <TableCell className={this.getTableCellClass(classes, 4)}>
                                                     {row.broker_name}
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 5)}  style={{padding: "0px",borderBottom:0}} >
-                                                    
-                                                    {this.formatDateAndTime( row.createdtime )}
+                                                <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", borderBottom: 0 }} >
+
+                                                    {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{
@@ -269,7 +280,7 @@ class OrderListTable extends Component {
                                                     }}>{row.commodity}</span> </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} >
                                                     {/* {row.createdtime.split("T")[0]+"\n"+row.createdtime.split("T")[1] } */}
-                                                    ₹ { this.formatNumberWithComma(row.bijak_amt)}
+                                                    ₹ {this.formatNumberWithComma(row.bijak_amt)}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -306,16 +317,33 @@ class OrderListTable extends Component {
                         </div>
                     }
 
-                    {this.state.showAddModal ? 
-                    <InfoDialog openModal={this.state.open}
-                        data={this.state.infoData}
-                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                    {this.state.showAddModal ?
+                        <InfoDialog openModal={this.state.open}
+                            data={this.state.infoData}
+                            onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
                     {this.state.showSupportingInvoiceModal &&
-                    <ViewSupportingInvoiceModal
-                        openModal={this.state.showSupportingInvoiceModal}
-                        onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
-                        invoiceUrlData={this.state.invoiceModalData} />}
+                        <ViewSupportingInvoiceModal
+                            openModal={this.state.showSupportingInvoiceModal}
+                            onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
+                            invoiceUrlData={this.state.invoiceModalData} />}
+
+                    <div className="updateBtndef">
+                        <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Add Order</p></div>
+                    </div>
+                    {showAddModal &&
+                        <AddOrderModal
+                            open={showAddModal}
+                            onTransactionAdded={(event) => this.onOrderDataAdded(event)}
+                            onAddModalCancel={(event) => this.setState({ showAddModal: false })}
+                        />}
+
                 </Paper>
             </MuiThemeProvider>
         );
