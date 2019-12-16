@@ -84,23 +84,6 @@ class AddOrderModal extends Component {
         super(props);
         this.state = {
             open: this.props.open,
-            addTransactionPayload: {
-                "supplierid": "",
-                "buyerid": "",
-                "supplier_mobile": "",
-                "buyer_mobile": "",
-                "bank_id": "",
-                "amount": "",
-                "amount_bank_entry": "",
-                "bank_trxn_id": "",
-                "creator_role": "",
-                "payment_mode": "",
-                "transaction_type": "",
-                "transaction_date": new Date(),
-                "cashback_value": "",
-                "cashback_allotted_to": ""
-            },
-
             addOrderPayload: {
                 "buyerid": "",
                 "supplierid": "",
@@ -265,7 +248,7 @@ class AddOrderModal extends Component {
         return optionsData;
     }
 
-    async addTransaction(event) {
+    async addOrder(event) {
         try {
             var payloadData = { "data": [] };
             var payload = this.state.addOrderPayload;
@@ -277,7 +260,7 @@ class AddOrderModal extends Component {
                 console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this order ");
-                    this.props.onTransactionAdded();
+                    this.props.onOrderDataAdded();
                 } else {
                     alert("There was an error while adding this order");
                 }
@@ -771,7 +754,7 @@ class AddOrderModal extends Component {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.addTransaction.bind(this)} color="primary">Add</Button>
+                    <Button className={classes.formCancelBtn} onClick={this.addOrder.bind(this)} color="primary">Add</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
             </Dialog>
