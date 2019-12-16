@@ -7,7 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import OrderTable from './OrderTable';
 import EditUser from './EditUser';
 import UserDetail from './UserDetail';
@@ -15,11 +15,38 @@ import commodityService from '../../app/commodityService/commodityService';
 import orderService from '../../app/orderService/orderService';
 import  PaymentTable from './PaymentTable';
 import paymentService from '../../app/paymentService/paymentService';
+
+
+const theme = createMuiTheme({
+    overrides: {
+      head: {
+        color: '#2e3247',
+        fontWeight: 600,
+        fontSize: '13px !important',
+        fontFamily: 'lato !important',
+        textTransform: 'uppercase',
+        lineHeight: "1em"
+  
+      },
+      body: {
+        color: 'rgba(0, 0, 0, 0.87)',
+        fontWeight: 500,
+        fontSize: '14px !important',
+        fontFamily: 'lato !important',
+        // lineHeight: '1.5em',
+      }, MuiTablePagination: {
+        toolbar:{
+          paddingRight:'200px'
+        }
+      },
+    }
+  });
+
 const styles = theme => ({
     dialogPaper: {
-        minWidth: '750px',
+        minWidth: '850px',
         // maxWidth: '700px',
-        minHeight: '600px',
+        minHeight: '700px',
         // maxHeight: '500px'
     },
     profile: {
@@ -50,7 +77,7 @@ class UserInfo extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
-        let param = {"limit":10};
+        let param = {"limit":10000};
         if (this.props.data.role === 'ca') {
             param["buyerid"] = this.props.data.mobile;
         } else if (this.props.data.role === 'broker') {
@@ -152,7 +179,7 @@ this.props.onEditModalClosed();
 }
     getTransactionList = async () => {
         try {
-            let param = {"limit":10}
+            let param = {"limit":10000,"role":this.props.data.role}
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.data.mobile, param);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
@@ -171,7 +198,8 @@ this.props.onEditModalClosed();
     }
     render() {
         const { classes } = this.props;
-        return (<div> <Dialog style={{ zIndex: '1' }}
+        return (     <MuiThemeProvider theme={theme}>
+        <div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
@@ -179,7 +207,7 @@ this.props.onEditModalClosed();
             <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px', display: 'flex', marginLeft: '35%', width: '60%' }}>{this.getHeader()}
                 {this.props.isInfo && <p className={classes.profile} style={{ background: this.getProfileColor(this.props.data.profile_segment) }}>{this.props.data.profile_segment}</p>}</div>  </DialogTitle>
             <DialogContent style={{ width: '100%', padding: '0' }}>
-                <Paper square className={classes.root}>
+               <div style={{position: "fixed" ,width: '850px'}}><Paper  square className={classes.root}>
                     <Tabs
                         value={this.state.currentView}
                         onChange={this.handleChange}
@@ -193,12 +221,13 @@ this.props.onEditModalClosed();
                         <Tab label="Payment" value="payment" />
                         <Tab label="Edit User" value="editUser" />
                     </Tabs>
-                </Paper>
+                </Paper></div> 
 
                 {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
                     onEditModalClosed={this.handleDialogCancel.bind(this)}
                     onEditModalCancel={this.handleDialogCancel.bind(this)}
                     data={this.state.orderList}
+                    role={this.props.data.role}
                 /> : ""}
 
                 {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
@@ -218,6 +247,8 @@ this.props.onEditModalClosed();
                     onEditModalClosed={this.handleDialogCancel.bind(this)}
                     onEditModalCancel={this.handleDialogCancel.bind(this)}
                     data={this.state.paymentList}
+                    userdata={this.props.data}
+                    role={this.props.data.role}
                 /> : ""}
 
             </DialogContent>
@@ -225,6 +256,7 @@ this.props.onEditModalClosed();
         </Dialog>
 
         </div>
+        </MuiThemeProvider>
         );
     }
 }

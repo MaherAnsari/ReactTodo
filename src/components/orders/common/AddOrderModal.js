@@ -19,7 +19,11 @@ import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import paymentService from '../../../app/paymentService/paymentService';
+import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
+import commodityService from '../../../app/commodityService/commodityService';
+import orderService from '../../../app/orderService/orderService';
+
 
 const styles = theme => ({
     heading: {
@@ -74,7 +78,7 @@ const transactionType = {
 const payment_modeOption = ["bank", "cash"];
 const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
-class AddTransactionModal extends Component {
+class AddOrderModal extends Component {
 
     constructor(props) {
         super(props);
@@ -97,26 +101,39 @@ class AddTransactionModal extends Component {
                 "cashback_allotted_to": ""
             },
 
+            addOrderPayload: {
+                "buyerid": "",
+                "supplierid": "",
+                "brokerid": "",
+                "commodity": "",
+                "rate": "",
+                "qnt": "",
+                "unit": "",
+                "type": "",
+                "bijak_amt": "",
+                "supporting_images": [],
+                "transport_info": "",
+                "author_name": "",
+                "author_mobile": "",
+                "status": "",
+                "remark": "",
+                "other_info": "",
+                "buyer_mobile": "",
+                "supplier_mobile": "",
+                "commission_rate": "",
+                "commission_unit": ""
+            },
+
             buyerid: "",
             supplierid: "",
+            brokerid: "",
             tempVar: {},
             errorFields: {},
-            attachmentArray: []
+            attachmentArray: [],
+            commodityList: []
 
         }
-        // console.log(this.props);
-
-    }
-
-    componentDidMount(){
-        if(this.props.userdata && this.props.userdata.role === "ca"){
-            this.state.addTransactionPayload['buyerid'] = this.props.userdata.id;
-            this.state.addTransactionPayload['buyer_mobile'] = this.props.userdata.mobile;
-
-        }else if(this.props.userdata && this.props.userdata.role === "la"){
-            this.state.addTransactionPayload['supplierid'] = this.props.userdata.id;
-            this.state.addTransactionPayload['supplier_mobile'] = this.props.userdata.mobile;
-        }
+        this.getCommodityNames();
     }
 
     componentWillReceiveProps() {
@@ -125,47 +142,66 @@ class AddTransactionModal extends Component {
         }
     }
 
+    async getCommodityNames() {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+            } else {
+                this.setState({ commodityList: [] });
+            }
+        } catch (err) {
+            console.error(err)
+            this.setState({ commodityList: [] });
+        }
+    }
+
+    getCommodityNamesArray(data) {
+        try {
+            var listData = [];
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]["name"]) {
+                        listData.push(data[i]["name"])
+                    }
+                }
+            }
+            return listData;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    }
+
     handleInputChange(event) {
-        var intejarIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be intejar
+        var intejarIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be intejar
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
             id = event.target.name;
         }
         var val = event.target.value;
-        var addTransactionPayloadVal = this.state.addTransactionPayload;
+        var addOrderPayloadVal = this.state.addOrderPayload;
         if (intejarIds.indexOf(id) > -1) {
             if (val === "" || !isNaN(val)) {
-                addTransactionPayloadVal[id] = Number(val);
+                addOrderPayloadVal[id] = Number(val);
             }
         } else {
-            addTransactionPayloadVal[id] = val;
+            addOrderPayloadVal[id] = val;
         }
 
         if (errors.hasOwnProperty(id)) {
             delete errors[id];
         }
         this.setState({
-            addTransactionPayload: addTransactionPayloadVal,
+            addOrderPayload: addOrderPayloadVal,
             errorFields: errors
         })
-        // console.log(addTransactionPayloadVal)
+        console.log(addOrderPayloadVal)
     }
+
     handleDialogCancel(event) {
-        this.props.onEditModalCancel();
-    }
-
-
-    getSearchAreaText(id, event) {
-
-        try {
-            console.log(id)
-
-
-            this.setState({ [id]: event !== null ? event : "" });
-        } catch (err) {
-            console.log(err);
-        }
+        this.props.onAddModalCancel();
     }
 
     getOptions = async (type, inputValue, callback) => {
@@ -187,9 +223,18 @@ class AddTransactionModal extends Component {
                 resp = await supplierService.serchUser(data);
             }
 
+            if (type === "brokerid") {
+                data['role'] = 'broker';
+                resp = await brokerService.serchUser(data);
+            }
+
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = [];
-                respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                if (type === "brokerid") {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                } else {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                }
                 this.setTempArray(resp.data.result.data);
                 callback(respData);
             } else {
@@ -223,23 +268,18 @@ class AddTransactionModal extends Component {
     async addTransaction(event) {
         try {
             var payloadData = { "data": [] };
-            var payload = this.state.addTransactionPayload;
+            var payload = this.state.addOrderPayload;
 
             if (this.checkForInvalidFields(payload)) {
-                payload["images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
-
-                payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
-                payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
+                payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
-                // console.log (  payloadData["data"] )
-                // return;
-                var resp = await paymentService.addPayemtData(payloadData);
+                var resp = await orderService.addNewOrder(payloadData);
                 console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully added this transaction ");
+                    alert("Successfully added this order ");
                     this.props.onTransactionAdded();
                 } else {
-                    alert("There was an error while adding this transaction");
+                    alert("There was an error while adding this order");
                 }
             } else {
                 alert("please fill the mandatory fields highlighted");
@@ -279,8 +319,8 @@ class AddTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        // console.log(data);
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status",
+         "remark", "other_info","commission_rate","commission_unit"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -289,16 +329,6 @@ class AddTransactionModal extends Component {
         }
         this.setState({ errorFields: error });
         return isValid;
-    }
-
-    formateDateForApi(data) {
-        if (data && data !== "") {
-            var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "0" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
-            return dateVal;
-        } else {
-            return "";
-        }
     }
 
     onStepChangeEventOccurs = (stepType) => {
@@ -335,7 +365,7 @@ class AddTransactionModal extends Component {
             }
         });
 
-        Storage.put("payment/" + file.name, file, {
+        Storage.put("order/" + file.name, file, {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
@@ -347,7 +377,7 @@ class AddTransactionModal extends Component {
             }
             let { attachmentArray } = this.state;
 
-            Storage.get("payment/" + file.name)
+            Storage.get("order/" + file.name)
                 .then(result => {
                     console.log(result.split("?")[0]);
                     attachmentObj["image_url"] = result.split("?")[0];
@@ -372,19 +402,19 @@ class AddTransactionModal extends Component {
 
 
     handelDateChange(dateval) {
-        var addTransactionPayloadVal = this.state.addTransactionPayload;
-        addTransactionPayloadVal["transaction_date"] = dateval;
-        this.setState({ dateval: addTransactionPayloadVal })
+        var addOrderPayloadVal = this.state.addOrderPayload;
+        addOrderPayloadVal["transaction_date"] = dateval;
+        this.setState({ dateval: addOrderPayloadVal })
     }
 
     render() {
         const { classes } = this.props;
-        const { addTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
+        const { addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
-                disableBackdropClick={true}
+                // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
                 <DialogTitle
@@ -396,101 +426,39 @@ class AddTransactionModal extends Component {
                 <DialogContent>
 
                     <div style={{ display: "flex" }}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
-                            <Grid container style={{ width: "49%" }} >
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="transaction_date"
-                                    label="Transaction date"
-                                    format="dd-MMM-yyyy"
-                                    style={{ width: '100%' }}
-                                    value={addTransactionPayload.transaction_date}
-                                    onChange={(dateval) => {
-                                        this.handelDateChange(dateval);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </Grid>
-                        </MuiPickersUtilsProvider>
-
-                        &nbsp;
-                      &nbsp;
-                         <TextField
-                            select
-                            id="transaction_type"
-                            name="transaction_type"
-                            label="Transaction Type"
-                            type="text"
-                            error={errorFields["transaction_type"] ? true : false}
-                            style={{ marginTop: "15px", width: '49%' }}
-                            value={addTransactionPayload.transaction_type}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {Object.keys(transactionType).map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {transactionType[key]}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        {this.props.userdata && this.props.userdata.role === "ca" ?
-
-                            <TextField
-                                margin="dense"
-                                id="buyerid"
-                                label="Buyer"
-                                disabled={true}
-                                // error={errorFields["amount"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={this.props.userdata.fullname}
-                                // onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
-                            : <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                                <AsyncSelect
-                                    cacheOptions
-                                    value={buyerid}
-                                    id={"reactSelectCustom"}
-                                    name={"buyerid"}
-                                    // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                    onChange={(item) => {
-                                        this.setState({ buyerid: item }, function () {
-                                            var data = addTransactionPayload;
-                                            if (errorFields["buyerid"]) {
-                                                delete errorFields["buyerid"];
-                                            }
-                                            if (item && item !== null) {
-                                                data["buyerid"] = tempVar[item["label"]]["id"];
-                                                data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                            } else {
-                                                data["buyerid"] = "";
-                                                data["buyer_mobile"] = "";
-                                            }
-                                            this.setState({ addTransactionPayload: data, errorFields: errorFields })
-                                        })
-                                    }}
-                                    isSearchable={true}
-                                    isClearable={true}
-                                    placeholder={`Select buyer..`}
-                                    defaultOptions={[]}
-                                    loadOptions={this.getOptions.bind(this, "buyerid")}
-                                />
-                            </div>}
+                        <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                            <AsyncSelect
+                                cacheOptions
+                                value={buyerid}
+                                id={"reactSelectCustom"}
+                                name={"buyerid"}
+                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                onChange={(item) => {
+                                    this.setState({ buyerid: item }, function () {
+                                        var data = addOrderPayload;
+                                        if (errorFields["buyerid"]) {
+                                            delete errorFields["buyerid"];
+                                        }
+                                        if (item && item !== null) {
+                                            data["buyerid"] = tempVar[item["label"]]["id"];
+                                            data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                        } else {
+                                            data["buyerid"] = "";
+                                            data["buyer_mobile"] = "";
+                                        }
+                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                    })
+                                }}
+                                isSearchable={true}
+                                isClearable={true}
+                                placeholder={`Select buyer..`}
+                                defaultOptions={[]}
+                                loadOptions={this.getOptions.bind(this, "buyerid")}
+                            />
+                        </div>
                         &nbsp;
                         &nbsp;
-                        {this.props.userdata && this.props.userdata.role === "la"? <TextField
-                                margin="dense"
-                                id="supplierid"
-                                label="Supplier"
-                                disabled={true}
-                                // error={errorFields["amount"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={this.props.userdata.fullname}
-                                // onChange={this.handleInputChange.bind(this)}
-                                fullWidth /> :<div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                    <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
                             <AsyncSelect
                                 cacheOptions
@@ -502,7 +470,7 @@ class AddTransactionModal extends Component {
                                         if (errorFields["supplierid"]) {
                                             delete errorFields["supplierid"];
                                         }
-                                        var data = addTransactionPayload;
+                                        var data = addOrderPayload;
                                         if (item && item !== null) {
                                             data["supplierid"] = tempVar[item["label"]]["id"];
                                             data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
@@ -510,7 +478,7 @@ class AddTransactionModal extends Component {
                                             data["supplierid"] = "";
                                             data["supplier_mobile"] = "";
                                         }
-                                        this.setState({ addTransactionPayload: data, errorFields: errorFields })
+                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
                                     })
                                 }}
                                 isSearchable={true}
@@ -519,40 +487,53 @@ class AddTransactionModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "supplierid")}
                             />
-                        </div>}
+                        </div>
                     </div>
 
-                    <div style={{ display: "flex", marginTop: 4 }} >
-
-                        <TextField
-                            select
-                            id="creator_role"
-                            error={errorFields["creator_role"] ? true : false}
-                            name="creator_role"
-                            label="Creater Role"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.creator_role}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {creator_roleOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                    <div style={{ display: "flex" }}>
+                        <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                            <AsyncSelect
+                                cacheOptions
+                                value={brokerid}
+                                id={"reactSelectCustom"}
+                                name={"brokerid"}
+                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                onChange={(item) => {
+                                    this.setState({ brokerid: item }, function () {
+                                        var data = addOrderPayload;
+                                        if (errorFields["brokerid"]) {
+                                            delete errorFields["brokerid"];
+                                        }
+                                        if (item && item !== null) {
+                                            data["brokerid"] = tempVar[item["label"]]["id"];
+                                            // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                        } else {
+                                            data["brokerid"] = "";
+                                            // data["buyer_mobile"] = "";
+                                        }
+                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                    })
+                                }}
+                                isSearchable={true}
+                                isClearable={true}
+                                placeholder={`Select broker..`}
+                                defaultOptions={[]}
+                                loadOptions={this.getOptions.bind(this, "brokerid")}
+                            />
+                        </div>
                         &nbsp;
-                    &nbsp;
+                        &nbsp;
                         <TextField
                             select
-                            id="payment_mode"
-                            name="payment_mode"
-                            label="Payment mode"
-                            error={errorFields["payment_mode"] ? true : false}
+                            id="commodity"
+                            error={errorFields["commodity"] ? true : false}
+                            name="commodity"
+                            label="Commodity"
                             type="text"
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.payment_mode}
+                            style={{ width: '49%', marginTop: '1%' }}
+                            value={addOrderPayload.commodity}
                             onChange={this.handleInputChange.bind(this)}>
-                            {payment_modeOption.map((key, i) => (
+                            {commodityList.map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {key}
                                 </MenuItem>
@@ -563,110 +544,187 @@ class AddTransactionModal extends Component {
 
                         <TextField
                             margin="dense"
-                            id="bank_id"
-                            label="Bank Id"
+                            id="rate"
+                            label="Rate"
                             type="text"
-                            error={errorFields["bank_id"] ? true : false}
+                            error={errorFields["rate"] ? true : false}
                             style={{ width: '49%' }}
-                            value={addTransactionPayload.bank_id}
+                            value={addOrderPayload.rate}
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
                         &nbsp;
                       &nbsp;
                         <TextField
                             margin="dense"
-                            id="amount"
-                            label="Amount"
-                            error={errorFields["amount"] ? true : false}
+                            id="qnt"
+                            label="Quantity"
+                            error={errorFields["qnt"] ? true : false}
                             type="text"
                             style={{ width: '49%' }}
-                            value={addTransactionPayload.amount}
+                            value={addOrderPayload.qnt}
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
                     </div>
 
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="amount_bank_entry"
-                            label="Amount Bank Entry"
-                            type="text"
-                            error={errorFields["amount_bank_entry"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.amount_bank_entry}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="bank_trxn_id"
-                            label="Bank transaction id"
-                            error={errorFields["bank_trxn_id"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.bank_trxn_id}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-                    <div style={{ display: "flex" }} >
+                    <div style={{ display: "flex", marginTop: 4 }} >
 
                         <TextField
-                            margin="dense"
-                            id="reason"
-                            error={errorFields["reason"] ? true : false}
-                            label="Reason"
+                            select
+                            id="unit"
+                            error={errorFields["unit"] ? true : false}
+                            name="unit"
+                            label="Unit"
                             type="text"
                             style={{ width: '49%' }}
-                            value={addTransactionPayload.reason}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                    &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="remarks"
-                            label="Remarks"
-                            error={errorFields["remarks"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.remarks}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="cashback_value"
-                            label="Cashback Value"
-                            error={errorFields["cashback_value"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addTransactionPayload.cashback_value}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            value={addOrderPayload.unit}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {["quintal", "ton"].map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         &nbsp;
                     &nbsp;
                         <TextField
                             select
-                            id="cashback_allotted_to"
-                            name="cashback_allotted_to"
-                            label="Cashback allotted to "
-                            error={errorFields["cashback_allotted_to"] ? true : false}
+                            id="type"
+                            name="type"
+                            label="Type"
+                            error={errorFields["type"] ? true : false}
                             type="text"
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={addTransactionPayload.cashback_allotted_to}
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.type}
                             onChange={this.handleInputChange.bind(this)}>
-                            {cashback_allotted_toOption.map((key, i) => (
+                            {["none", "commission"].map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {key}
                                 </MenuItem>
                             ))}
                         </TextField>
                     </div>
+
+                    <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="bijak_amt"
+                            label="Bijak Amount"
+                            type="text"
+                            error={errorFields["bijak_amt"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.bijak_amt}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                      &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="author_name"
+                            label="Author name"
+                            error={errorFields["author_name"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.author_name}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="author_mobile"
+                            label="Author mobile number"
+                            type="text"
+                            error={errorFields["author_mobile"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.author_mobile}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                        &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="status"
+                            label="Status"
+                            error={errorFields["status"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.status}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+                    <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="remark"
+                            error={errorFields["remark"] ? true : false}
+                            label="Remarks"
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.remark}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                    &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="other_info"
+                            label="Other Info"
+                            error={errorFields["other_info"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.other_info}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="commission_rate"
+                            label="Commision rate"
+                            error={errorFields["commission_rate"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.commission_rate}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                    &nbsp;
+                        <TextField
+                            select
+                            id="commission_unit"
+                            name="commission_unit"
+                            label="Commission unit"
+                            error={errorFields["commission_unit"] ? true : false}
+                            type="text"
+                            style={{ width: '49%', marginTop: "1%" }}
+                            value={addOrderPayload.commission_unit}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {["quintal", "ton"].map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="transport_info"
+                            label="Transport info"
+                            error={errorFields["transport_info"] ? true : false}
+                            type="text"
+                            style={{ width: '100%' }}
+                            value={addOrderPayload.transport_info}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
                     <div >
 
                         <Grid container direction="row" alignItems="stretch">
@@ -722,8 +780,8 @@ class AddTransactionModal extends Component {
     }
 }
 
-AddTransactionModal.propTypes = {
+AddOrderModal.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AddTransactionModal);
+export default withStyles(styles)(AddOrderModal);

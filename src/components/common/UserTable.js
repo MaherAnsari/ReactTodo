@@ -172,7 +172,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality ? obj.locality : "-" + obj.district ? obj.district : "-";
+        return obj.locality ? obj.locality : "-" +"/"+ obj.district ? obj.district : "-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -344,7 +344,7 @@ class UserListTable extends Component {
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
                                              
                                              </TableCell>
-                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.locality+"/"+row.district}
+                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{this.getInfoSTring(row)}
                                              
                                              </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >

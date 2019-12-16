@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,8 +8,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import NoDataAvailable from './NoDataAvailable';
-
+import AddTransactionModal from './../payment/components/AddTransactionModal';
 import Utils from '../../app/common/utils';
+import paymentService from '../../app/paymentService/paymentService';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -65,17 +67,20 @@ class PaymentTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["Supplier Name", "Supplier Bussiness Name", "Created Time", "Payment mode", "Amount"],
-            open: this.props.openModal, tableBodyData: this.props.data
+            tableHeadData: ["Supplier Name", "Supplier Bussiness Name","Created Time", "Payment mode", "Amount"],
+            open: this.props.openModal, tableBodyData: this.props.data,
+            showAddTransactionModal:false,
+            rowsPerPage: 50,
+            page: 0
         }
 
     }
     componentDidMount() {
-
-
+        if(this.props.userdata.role  === "la"){
+            let tableHeadData = ["Buyer Name","Buyer Bussiness Name" ,"Created Time", "Payment mode", "Amount"];
+            this.setState({tableHeadData:tableHeadData});
+        }
     }
-
-
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
@@ -88,8 +93,33 @@ class PaymentTable extends Component {
 
     handleAddClick(event) {
 
-
     }
+    onTransactionDataAdded(event) {
+        this.setState({ showAddTransactionModal: false }, function () {
+            this.getTransactionList();
+        })
+    }
+
+    getTransactionList = async () => {
+        try {
+            let param = {"limit":10,"role":this.props.role}
+            let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userdata.mobile, param);
+            if (resp.data.status === 1 && resp.data.result) {
+                var respData = resp.data.result;
+                this.setState({
+
+                    tableBodyData: respData["allTransactions"]
+                });
+            } else {
+                this.setState({
+                    tableBodyData: []
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     getTransactionTypeColor(transaction_type) {
         if (transaction_type === "b_out") {
             return "rgb(212, 58, 58)"; // red
@@ -112,16 +142,24 @@ class PaymentTable extends Component {
         }
       
     }
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+      };
+    
+      handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+      };
     render() {
         const { classes } = this.props;
-        return (<div style={{ width: '100%' }}>
+        const { rowsPerPage, page } = this.state;
+        return (<div style={{ width: '100%',marginTop:'50px'  }}>
+            {/* <AddTransactionModal open={true} /> */}
             <Table className='table-body'>
                 <TableHead>
                     <TableRow  >
                         {this.state.tableHeadData.map((option, i) => (
                             <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
                         ))}
-                        {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -129,14 +167,24 @@ class PaymentTable extends Component {
                         return (
 
                             <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
-                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                             {this.props.userdata.role === "la" ?   
+                              <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                              {row.buyer_fullname ? row.buyer_fullname : "-"}
+                          </TableCell>
+                             :<TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                     {row.supplier_fullname ? row.supplier_fullname : "-"}
-                                </TableCell>
-                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                </TableCell>}
+                                {this.props.userdata.role === "la" ?  <TableCell className={this.getTableCellClass(classes, 2)}>
+                                    <div className="text-ellpses">
+                                        {row.buyer_business_name ? row.buyer_business_name : "-"}
+                                    </div>
+                                </TableCell>:      <TableCell className={this.getTableCellClass(classes, 2)}>
                                     <div className="text-ellpses">
                                         {row.supplier_business_name ? row.supplier_business_name : "-"}
                                     </div>
                                 </TableCell>
+                               
+                                }
                                 <TableCell className={this.getTableCellClass(classes, 3)}>
                                     <div className="text-ellpses" style={{fontSize:'12px'}}>
                                         {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
@@ -160,13 +208,46 @@ class PaymentTable extends Component {
                         );
                     })}
                 </TableBody>
-
-            </Table>
+                {this.state.tableBodyData.length>0 && <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[25, 50, 100]}
+                                        colSpan={6}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>}
+            </Table> 
             {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
+          {this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca") &&  <div className="updateBtndef">
+                    <div
+                        className="updateBtnFixedModal"
+                        style={{ display: 'flex' }}
+                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                    >
+                        <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p>Add Transaction</p></div>
+                </div>}
+
+                {this.state.showAddTransactionModal &&
+                    <AddTransactionModal
+                        open={this.state.showAddTransactionModal}
+                        userdata={this.props.userdata}
+                        onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                        onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
+                    />}
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
                     dialogText={this.state.dialogText}

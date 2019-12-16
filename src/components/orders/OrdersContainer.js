@@ -46,7 +46,8 @@ class OrdersContainer extends React.Component {
             suppliersList: [],
             orderedListData: undefined,
             showLoader: false,
-            datePayloads: { "startDate": "", "endDate": "" }
+            datePayloads: { "startDate": "", "endDate": "" },
+
         }
         this.ismounted = true;
     }
@@ -139,13 +140,15 @@ class OrdersContainer extends React.Component {
     }
 
     onDateChaged(data) {
-        this.setState({ datePayloads: data },function(){
-            this.getSearchedOrderListData( {} );
+        this.setState({ datePayloads: data }, function () {
+            this.getSearchedOrderListData({});
         });
     }
 
+
     render() {
         const { classes } = this.props;
+        const { showAddModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -157,7 +160,10 @@ class OrdersContainer extends React.Component {
                         brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
+                    
+                   
 
+                   
                     {this.state.showLoader ? <Loader /> : <OrderListTable tableData={this.state.orderedListData} />}
                     {/* <OrderListTable tableData={this.state.orderedListData} /> */}
                 </Paper>

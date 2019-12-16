@@ -41,7 +41,7 @@ class FilterAreaComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            stateid: {label: "haryana", value: "haryana"},
+            stateid: [],
             districtid:[],
             commodityid:[],
             labelWidth: 0,
@@ -59,6 +59,16 @@ class FilterAreaComponent extends React.Component {
                 labelWidth: ReactDOM.findDOMNode(this.InputLabelRef).offsetWidth,
             });
         }
+
+     
+    }
+
+    componentWillMount(){
+        var obj = {label: "haryana", value: "haryana"};
+        var suppId = [obj];
+        this.setState({ 
+            stateid:suppId
+        })
     }
 
     componentWillReceiveProps( nextprops ){
@@ -135,7 +145,7 @@ class FilterAreaComponent extends React.Component {
                                                 style={{ flex: 1 }}>
                                                 <Select
                                                     name={obj.name}
-                                                    value={this.state[obj.name]}
+                                                    value={obj.name === "State" ? this.state.stateid :this.state[obj.name]}
                                                     onChange={this.getSearchAreaText.bind(this, obj.id)}
                                                     options={obj.options}
                                                     isSearchable={true}

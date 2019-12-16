@@ -520,7 +520,7 @@ background: #228B22;
 .timeline {
   position: relative;
   max-width: 1200px;
-  
+
   margin: 0 auto;
 }
 
@@ -1179,4 +1179,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-family: lato !important;
   font-weight: 500 !important;
   font-size: 15px !important;
+}
+
+
+.updateBtnFixedModal{
+  background: #193b46;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px 20px 10px 20px;
+  font-family: 'Lato';
+  margin-right: 5px;
+  color: #fff;
+  position: absolute;
+  right: 21%;
+  bottom: 115px;
+  text-align: center;
+  margin:' 0 0 0 0';
+  cursor: pointer;
+  transition: 0.5s;
+  -moz-transition: '0.5s';
+  -webkit-transition: 0.5s;
+  -o-transition: 0.5s;
 }

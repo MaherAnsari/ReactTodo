@@ -256,7 +256,7 @@ class EditUser extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px' }}>
+            <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px',marginTop:'50px'  }}>
 
             <div style={{ display: 'flex' }}>
                 <TextField

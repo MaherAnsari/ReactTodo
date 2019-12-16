@@ -9,7 +9,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import NoDataAvailable from '../common/NoDataAvailable';
-
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 
 const styles = theme => ({
     heading: {
@@ -65,13 +66,18 @@ class OrderTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["supplier_mobile", "buyer_mobile", "amount", "commodity", "Date"],
-            open: this.props.openModal, tableBodyData: this.props.data
+            tableHeadData: ["buyer_name", "buyer_mobile", "commodity", "Date", "amount"],
+            open: this.props.openModal, tableBodyData: this.props.data,
+            rowsPerPage: 50,
+            page: 0,
         }
 
     }
     componentDidMount() {
-     
+     if(this.props.role === "ca"){
+        let tableHeadData =  ["supplier_name", "supplier_mobile", "commodity", "Date", "amount"];
+        this.setState({ tableHeadData : tableHeadData});
+     }
 
     }
 
@@ -88,11 +94,19 @@ class OrderTable extends Component {
 
     handleAddClick(event) {
 
-
     }
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+      };
+    
+      handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+      };
+    
     render() {
         const { classes } = this.props;
-        return (<div style={{ width: '100%' }}>
+        const { rowsPerPage, page } = this.state;
+        return (<div style={{ width: '100%',marginTop:'50px' }}>
             <Table className='table-body'>
                 <TableHead>
                     <TableRow  >
@@ -107,29 +121,53 @@ class OrderTable extends Component {
                         return (
 
                             <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
-                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                               {this.props.role === "ca"? <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {row.supplier_name}
+
+                                </TableCell>:<TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {row.buyer_name}
+
+                                </TableCell>}
+                              {this.props.role === "ca"?  <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                     {/* <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}> */}
                                     {row.supplier_mobile}
                                     {/* </Tooltip> */}
-                                </TableCell>
-                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                </TableCell>: <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {/* <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}> */}
                                     {row.buyer_mobile}
-
-                                </TableCell>
+                                    {/* </Tooltip> */}
+                                </TableCell>}
                                
-                                <TableCell className={this.getTableCellClass(classes, 5)} >
-                                    {row.bijak_amt}
-                                </TableCell>
+                               
+                               
                                 <TableCell className={this.getTableCellClass(classes, 6)} >{row.commodity}</TableCell>
                                 <TableCell className={this.getTableCellClass(classes, 7)} >{row.createdtime.split("T")[0]}
                                 </TableCell>
 
-
+                                <TableCell className={this.getTableCellClass(classes, 5)} >
+                                ₹ {row.bijak_amt}
+                                </TableCell>
                             </TableRow>
                         );
                     })}
                 </TableBody>
-
+                {this.state.tableBodyData.length>0 && <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[25, 50, 100]}
+                                        colSpan={6}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>}
             </Table>
             {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
 
