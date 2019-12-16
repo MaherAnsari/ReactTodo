@@ -384,12 +384,6 @@ class AddOrderModal extends Component {
     }
 
 
-    handelDateChange(dateval) {
-        var addOrderPayloadVal = this.state.addOrderPayload;
-        addOrderPayloadVal["transaction_date"] = dateval;
-        this.setState({ dateval: addOrderPayloadVal })
-    }
-
     render() {
         const { classes } = this.props;
         const { addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
@@ -404,7 +398,7 @@ class AddOrderModal extends Component {
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
                     <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Add Transaction</p>
+                        Add Order</p>
                 </DialogTitle>
                 <DialogContent>
 
