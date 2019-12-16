@@ -64,9 +64,9 @@ class SignIn extends React.Component {
 
             forgotPasswordViewStep: 1 ,// 1 for numberInput, 2 for verify
             forgotPasswordData:{
-                username:"",
-                otp:"",
-                newPassword:""
+                username_forgot:"",
+                otp_forgot:"",
+                newPassword_forgot:""
             },
             disabledForgotBtn : false
         }
@@ -158,7 +158,7 @@ class SignIn extends React.Component {
                         color: "blue",
                         fontWeight: 500,
                         fontSize: "14px",
-                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep:1,  user: {
+                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep : 1,  user: {
                             username: '',
                             password: '',
                             loading: false,
@@ -254,7 +254,7 @@ class SignIn extends React.Component {
         this.setState({ disabledForgotBtn: true })
         e.preventDefault()
         try {
-            var response = await Auth.forgotPassword(this.state.forgotPasswordData.username);
+            var response = await Auth.forgotPassword(this.state.forgotPasswordData.username_forgot);
             if (response.CodeDeliveryDetails) {
                 // console.log("Code send" + JSON.stringify(response));
                 // this.state.forgotPasswordData['otp']="";
@@ -270,8 +270,8 @@ class SignIn extends React.Component {
                 this.setState({
                     forgotPasswordViewStep: 2
                 },function(){
-                    $('#newPassword').val('');
-                    $('#otp').val('');
+                    $('#newPassword_forgot').val('');
+                    $('#otp_forgot').val('');
                 })
                 
             } else if (response.message) {
@@ -279,7 +279,7 @@ class SignIn extends React.Component {
             }
             this.setState({ disabledForgotBtn: false })
         } catch (e) {
-            alert('Error. try again...');
+            alert('Error. try again...'+ e);
             this.setState({ disabledForgotBtn : false })
         }
     }
@@ -288,7 +288,7 @@ class SignIn extends React.Component {
         e.preventDefault();
         this.setState({ disabledForgotBtn : true })
         try {
-            var response = await Auth.forgotPasswordSubmit(this.state.forgotPasswordData.username, this.state.forgotPasswordData.otp, this.state.forgotPasswordData.newPassword);
+            var response = await Auth.forgotPasswordSubmit(this.state.forgotPasswordData.username_forgot, this.state.forgotPasswordData.otp_forgot, this.state.forgotPasswordData.newPassword_forgot);
             if (!response) {
                 this.setState({ action : "sigin",forgotPasswordViewStep : 1 });
             } else {
@@ -306,14 +306,17 @@ class SignIn extends React.Component {
         return (
 
             (this.state.forgotPasswordViewStep === 1 ?
-                <form className="login100-form validate-form" autoComplete="off">
+                <form id="forgotpasswordUser" className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
                     <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
                         Forgot Password
                 </span>
                     <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                         <input className="input100" value={this.state.forgotPasswordData.username}
-                            onChange={this.handleValueChangeOfForgotPassword} type="text" id="username" name="username" />
+                            onChange={this.handleValueChangeOfForgotPassword} 
+                            type="text"
+                            autoComplete="new-password"
+                            id="username_forgot" name="username_forgot" />
                         <span className="focus-input100"></span>
                         <span className="label-input100">Mobile number</span>
                     </div>
@@ -328,7 +331,7 @@ class SignIn extends React.Component {
 					</button>
                     </div>
                 </form> :
-                <form className="login100-form validate-form" autoComplete="off">
+                <form  id="forgotpasswordUserOtpNewPassword" className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
                     <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
                         Forgot Password
@@ -336,10 +339,11 @@ class SignIn extends React.Component {
 
                     <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                         <input className="input100"
-                            name="otp"
+                            name="otp_forgot"
                             type="text"
-                            id="otp"
-                            autoComplete="off"
+                            id="otp_forgot"
+                            // autoComplete="off"
+                            autoComplete="new-password"
                             onChange={this.handleValueChangeOfForgotPassword}
                             value={this.state.forgotPasswordData.otp} 
                             />
@@ -349,10 +353,11 @@ class SignIn extends React.Component {
 
                     <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                         <input className="input100"
-                            name="newPassword"
+                            name="newPassword_forgot"
                             type="password"
-                            id="newPassword"
-                            autoComplete="off"
+                            id="newPassword_forgot"
+                            // autoComplete="off"
+                            autoComplete="new-password"
                             onChange={this.handleValueChangeOfForgotPassword}
                             value={this.state.forgotPasswordData.newPassword} 
                             />
