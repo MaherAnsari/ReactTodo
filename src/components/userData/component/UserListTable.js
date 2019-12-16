@@ -156,7 +156,7 @@ class UserListTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows ,page:0,rowsPerPage:50});
+        this.setState({ tableBodyData: rows, page: 0 });
     }
 
 

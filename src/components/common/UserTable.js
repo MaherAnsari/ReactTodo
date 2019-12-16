@@ -55,7 +55,7 @@ const styles = theme => ({
         paddingLeft: '4px',
         paddingRight: '4px',
         textAlign: 'center',
-        maxWidth: '200px',
+        maxWidth: '190px',
         padding: '12px',
         maxHeight: '40px'
     },
@@ -99,7 +99,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment","rating", "commodity", "role","status"],
+            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment","rating","Locality/District", "commodity", "role","status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -154,7 +154,7 @@ class UserListTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows });
+        this.setState({ tableBodyData: rows , page : 0});
     }
 
 
@@ -301,7 +301,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? '80px' : '120px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 4 ? '50px' : '110px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
                                    
@@ -342,6 +342,9 @@ class UserListTable extends Component {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
+                                             
+                                             </TableCell>
+                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.locality+"/"+row.district}
                                              
                                              </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >

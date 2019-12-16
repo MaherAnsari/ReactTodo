@@ -65,7 +65,7 @@ class UserFilterOption extends Component {
             profile_completed: ["All", "Yes", "No"],
             active: ["All", "Yes", "No"],
             commodity: [],
-            sortkey: ["id", "fullname", "rating"],
+            sortkey: ["id", "fullname", "rating","ordercount","paymentcount"],
             sortorder: ["asc", "desc"],
             filterDataArr: []
 
@@ -368,7 +368,7 @@ class UserFilterOption extends Component {
                         Sort Filter<i style={{ fontSize: '20px', marginLeft: '10px', color: 'red', cursor: 'pointer' }} onClick={this.onAddFilterClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
                         {this.state.filterDataArr.map((row, i) => {
                             return (
-                                <div className={classes.card} >
+                                <div key={i} className={classes.card} >
                                     <div >
                                         <TextField
                                             select
