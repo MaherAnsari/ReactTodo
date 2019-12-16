@@ -13,6 +13,8 @@ import InfoDialog from './infoDialog';
 
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import ViewSupportingInvoiceModal from '../common/ViewSupportingInvoiceModal';
+var moment = require('moment');
 
 
 const theme = createMuiTheme({
@@ -71,7 +73,7 @@ const styles = theme => ({
         maxWidth: 'none',
     },
     info: {
-        fontSize: '18px',
+        fontSize: '14px',
         marginLeft: '8px',
         color: '#fd0671',
         cursor: 'pointer'
@@ -84,7 +86,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["supplier_mobile", "buyer_mobile", "supplier_name", "buyer_name", "broker_name", "amount", "commodity", "Date"],
+            tableHeadData: ["order Id", "supplier_mobile", "buyer_mobile", "supplier_name", "buyer_name", "broker_name", "Date", "commodity", "Amount"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -102,6 +104,9 @@ class OrderListTable extends Component {
 
             rowsPerPage: 50,
             page: 0,
+
+            showSupportingInvoiceModal: false,
+            invoiceModalData: []
 
         }
     }
@@ -151,18 +156,44 @@ class OrderListTable extends Component {
         })
     }
 
+    onShowSupportinInvoiceModal = (info, event) => {
+        this.setState({
+            invoiceModalData: info["supporting_images"], showSupportingInvoiceModal: true
+        })
+    }
+
     onModalCancel(event) {
         this.setState({ showAddModal: false, infoData: null, open: false })
     }
 
-    
-  handleChangePage = (event, newPage) => {
-    this.setState({ page: newPage });
-  };
 
-  handleChangeRowsPerPage = event => {
-    this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
-  };
+    handleChangePage = (event, newPage) => {
+        this.setState({ page: newPage });
+    };
+
+    handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+    };
+
+    formatDateAndTime = ( dateval )=>{
+        var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm A')
+        return <div style={{width: "95px"}}> {fdate.split(" ")[0]+" \n"+fdate.split(" ")[1]+" "+fdate.split(" ")[2]}</div>
+    }
+
+    formatNumberWithComma(x) {
+        try {
+            x = x.toString();
+            var lastThree = x.substring(x.length - 3);
+            var otherNumbers = x.substring(0, x.length - 3);
+            if (otherNumbers != '')
+                lastThree = ',' + lastThree;
+            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+            return res;
+        } catch (err) {
+            console.log(err);
+            return x;
+        }
+    }
 
     render() {
         const { classes } = this.props;
@@ -175,58 +206,74 @@ class OrderListTable extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? "80px" :'120px' }}>{option}</TableCell>
                                     ))}
                                     {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData && 
-                                
-                                (rowsPerPage > 0
-                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : this.state.tableBodyData
-                                  ).map((row, i) => {
-                                    return (
+                                {this.state.tableBodyData &&
 
-                                        <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {/* <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}> */}
-                                                {row.supplier_mobile}
-                                                {/* </Tooltip> */}
-                                            </TableCell>
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                {row.buyer_mobile}
+                                    (rowsPerPage > 0
+                                        ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        : this.state.tableBodyData
+                                    ).map((row, i) => {
+                                        return (
 
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 2)}>
-                                                <Tooltip title={row.supplier_name ? row.supplier_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.supplier_name}</div>
-                                                </Tooltip>
+                                            <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
+                                                    <span
+                                                        data-toggle="tooltip" data-placement="right" title="info"
+                                                        onClick={this.onInfoClick.bind(this, row)}
+                                                        style={{color:"#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px", cursor: "pointer" }}>
+                                                        {row.id}
+                                                    </span>
+                                                    <i style={{paddingTop:"11px"}}
+                                                        data-toggle="tooltip" data-placement="right" title="Supporting images"
+                                                        onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
+                                                        className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
+                                                    <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
+                                                </TableCell>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {row.supplier_mobile}
+                                                </TableCell>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {row.buyer_mobile}
 
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 3)}>
-                                                <Tooltip title={row.buyer_name ? row.buyer_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses">{row.buyer_name}</div>
-                                                </Tooltip>
-                                            </TableCell>
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                    <Tooltip title={row.supplier_name ? row.supplier_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                        <div className="text-ellpses">{row.supplier_name}</div>
+                                                    </Tooltip>
 
-                                            <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                {row.broker_name}
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 5)} >
-                                            ₹ {row.bijak_amt}
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 6)} >
-                                            <span style={{  color: "white",
-                                                            background: "rgb(58, 126, 63)",
-                                                            padding: "4px 12px",
-                                                            borderRadius: "13px"}}>{row.commodity}</span> </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 7)} >{row.createdtime.split("T")[0]}<i onClick={this.onInfoClick.bind(this, row)} className={"fa fa-info-circle " + classes.info} aria-hidden="true"></i>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                    <Tooltip title={row.buyer_name ? row.buyer_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                        <div className="text-ellpses">{row.buyer_name}</div>
+                                                    </Tooltip>
+                                                </TableCell>
+
+                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                    {row.broker_name}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 5)}  style={{padding: "0px",borderBottom:0}} >
+                                                    
+                                                    {this.formatDateAndTime( row.createdtime )}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 6)}  >
+                                                    <span style={{
+                                                        color: "white",
+                                                        background: "rgb(58, 126, 63)",
+                                                        padding: "4px 12px",
+                                                        borderRadius: "13px"
+                                                    }}>{row.commodity}</span> </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 7)} >
+                                                    {/* {row.createdtime.split("T")[0]+"\n"+row.createdtime.split("T")[1] } */}
+                                                    ₹ { this.formatNumberWithComma(row.bijak_amt)}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                             </TableBody>
                             <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
@@ -259,9 +306,16 @@ class OrderListTable extends Component {
                         </div>
                     }
 
-                    {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
+                    {this.state.showAddModal ? 
+                    <InfoDialog openModal={this.state.open}
                         data={this.state.infoData}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+
+                    {this.state.showSupportingInvoiceModal &&
+                    <ViewSupportingInvoiceModal
+                        openModal={this.state.showSupportingInvoiceModal}
+                        onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
+                        invoiceUrlData={this.state.invoiceModalData} />}
                 </Paper>
             </MuiThemeProvider>
         );
