@@ -84,8 +84,9 @@ class FilterAreaComponent extends React.Component {
 
     getDataBasedOnFilters = () => {
         console.log(this.state); 
+       
         let data = {
-            stateid : this.state.stateid["value"],
+            stateid :this.state.stateid[0] ? this.state.stateid[0]['value']: this.state.stateid["value"],
             districtid : this.state.districtid["value"],
             commodityid : this.state.commodityid["value"],
         }

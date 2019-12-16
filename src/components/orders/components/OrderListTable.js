@@ -109,7 +109,7 @@ class OrderListTable extends Component {
             showSupportingInvoiceModal: false,
             invoiceModalData: [],
 
-            showAddModal: false
+            showAddOrderModal: false
 
         }
     }
@@ -199,16 +199,17 @@ class OrderListTable extends Component {
     }
 
     handleClickOpen() {
-        this.setState({ showAddModal: true })
+        this.setState({ showAddOrderModal: true })
     }
 
     onOrderDataAdded() {
-        this.setState({ showAddModal: false });
+        this.setState({ showAddOrderModal: false });
+        this.props.getSearchedOrderListData();
     }
 
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page, showAddModal } = this.state;
+        const { rowsPerPage, page, showAddOrderModal } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -337,11 +338,11 @@ class OrderListTable extends Component {
                                 fontWeight: 600
                             }}>Add Order</p></div>
                     </div>
-                    {showAddModal &&
+                    {showAddOrderModal &&
                         <AddOrderModal
-                            open={showAddModal}
+                            open={showAddOrderModal}
                             onTransactionAdded={(event) => this.onOrderDataAdded(event)}
-                            onAddModalCancel={(event) => this.setState({ showAddModal: false })}
+                            onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
                         />}
 
                 </Paper>
