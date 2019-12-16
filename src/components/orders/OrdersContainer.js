@@ -164,8 +164,12 @@ class OrdersContainer extends React.Component {
                    
 
                    
-                    {this.state.showLoader ? <Loader /> : <OrderListTable tableData={this.state.orderedListData} />}
-                    {/* <OrderListTable tableData={this.state.orderedListData} /> */}
+                    {this.state.showLoader ? 
+                    <Loader /> : 
+                    <OrderListTable 
+                    tableData={this.state.orderedListData} 
+                    onOrderAdded={()=> this.getSearchedOrderListData({}) } />}
+
                 </Paper>
             </div>
         );

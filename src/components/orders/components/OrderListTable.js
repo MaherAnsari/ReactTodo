@@ -203,8 +203,9 @@ class OrderListTable extends Component {
     }
 
     onOrderDataAdded() {
-        this.setState({ showAddOrderModal: false });
-        this.props.getSearchedOrderListData();
+        this.setState({ showAddOrderModal: false },function(){
+            this.props.onOrderAdded();
+        });
     }
 
     render() {
@@ -341,7 +342,7 @@ class OrderListTable extends Component {
                     {showAddOrderModal &&
                         <AddOrderModal
                             open={showAddOrderModal}
-                            onTransactionAdded={(event) => this.onOrderDataAdded(event)}
+                            onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
                             onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
                         />}
 

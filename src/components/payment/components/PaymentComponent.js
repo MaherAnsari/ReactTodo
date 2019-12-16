@@ -287,7 +287,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            ₹ {paymentMetaInfo[0]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[0]["sum"]) : "0"}
+                                            ₹ {paymentMetaInfo[1]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[1]["sum"]) : "0"}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
@@ -315,7 +315,7 @@ class PaymentComponent extends Component {
                                                 className={classes.inline}
                                                 style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                             >
-                                                {paymentMetaInfo[0]["count"] ? this.formatNumberWithComma(paymentMetaInfo[0]["count"]) : "0"}
+                                                {paymentMetaInfo[1]["count"] ? this.formatNumberWithComma(paymentMetaInfo[1]["count"]) : "0"}
                                             </Typography>
                                         </React.Fragment>
                                         } secondary={
@@ -342,7 +342,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            ₹ {paymentMetaInfo[1]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[1]["sum"]) : "0"}
+                                            ₹ {paymentMetaInfo[0]["sum"] ? this.formatNumberWithComma(paymentMetaInfo[0]["sum"]) : "0"}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
@@ -369,7 +369,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            {paymentMetaInfo[1]["count"] ? this.formatNumberWithComma(paymentMetaInfo[1]["count"]) : "0"}
+                                            {paymentMetaInfo[0]["count"] ? this.formatNumberWithComma(paymentMetaInfo[0]["count"]) : "0"}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
