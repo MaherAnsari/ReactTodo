@@ -57,6 +57,8 @@ class UserInfo extends Component {
             param["brokerid"] = this.props.data.id;
         } else if (this.props.data.role === 'la') {
             param["supplierid"] = this.props.data.mobile;
+        }else{
+            param["na"] = this.props.data.mobile;
         }
         if (Object.keys(param).length) {
             this.getListData(param);
@@ -145,7 +147,9 @@ class UserInfo extends Component {
         this.setState({ currentView: value });
     };
 
-
+handleClose(event){
+this.props.onEditModalClosed();
+}
     getTransactionList = async () => {
         try {
             let param = {"limit":10}
@@ -198,7 +202,7 @@ class UserInfo extends Component {
                 /> : ""}
 
                 {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
-                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    onEditModalClosed={this.handleClose.bind(this)}
                     data={this.props.data}
                     commodityList={this.state.commodityList}
                     onEditModalCancel={this.handleDialogCancel.bind(this)}

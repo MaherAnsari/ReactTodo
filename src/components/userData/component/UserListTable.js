@@ -145,6 +145,7 @@ class UserListTable extends Component {
 
 
     async handelFilter(data) {
+        this.setState({ page:0,rowsPerPage:50});
 
         // console.log(searchedTxt);
         let rows = [];
@@ -155,7 +156,7 @@ class UserListTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows });
+        this.setState({ tableBodyData: rows ,page:0,rowsPerPage:50});
     }
 
 
@@ -198,7 +199,7 @@ class UserListTable extends Component {
     }
 
     handleClose(event) {
-        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
+        this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false,page:0 });
         this.props.onClose();
     }
     onModalCancel(event) {
