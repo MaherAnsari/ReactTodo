@@ -145,7 +145,7 @@ class BrokerTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows });
+        this.setState({ tableBodyData: rows, page: 0 });
     }
 
 

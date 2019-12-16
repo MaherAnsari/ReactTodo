@@ -146,7 +146,7 @@ class SupplierTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows });
+        this.setState({ tableBodyData: rows , page: 0 });
     }
 
     onModalClosed(event) {

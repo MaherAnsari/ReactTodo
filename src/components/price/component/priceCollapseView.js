@@ -119,7 +119,7 @@ class PriceCollapseView extends Component {
 
 
     }
-    this.setState({ expansionpanelHeaderData: rows });
+    this.setState({ expansionpanelHeaderData: rows, page: 0 });
   }
   // handelFilter(event) {
   //   let searchedTxt = event.target.value;

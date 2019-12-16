@@ -195,7 +195,7 @@ class MandiListTable extends Component {
     if (resp.data.status === 1 && resp.data.result) {
       rows = resp.data.result.data;
     }
-    this.setState({ tableBodyData: rows });
+    this.setState({ tableBodyData: rows , page: 0});
   }
 
   handelConfirmUpdate = async () => {

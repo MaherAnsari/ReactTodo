@@ -118,7 +118,7 @@ class CommodityTable extends Component {
     }
 
 
-    this.setState({ tableBodyData: updatedRow });
+    this.setState({ tableBodyData: updatedRow  , page: 0});
   }
 
   getTableCellClass(classes, index) {

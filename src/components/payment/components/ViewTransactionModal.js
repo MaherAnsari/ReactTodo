@@ -146,7 +146,8 @@ class ViewTransactionModal extends Component {
                     groupedTransactionData: respData["supplierWiseGrouped"],
                     allTransactionsData: respData["allTransactions"],
                     buyerInfo: respData["metainfo"],
-                    supplierNameMapping: this.formatSupplierNameMapping(respData["supplierWiseGrouped"])
+                    supplierNameMapping: this.formatSupplierNameMapping(respData["supplierWiseGrouped"]),
+                    page: 0
                 });
             } else {
                 this.setState({

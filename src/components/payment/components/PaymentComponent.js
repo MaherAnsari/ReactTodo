@@ -164,7 +164,11 @@ class PaymentComponent extends Component {
             let resp = await paymentService.getPaymentDetails(params);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result.data;
-                this.setState({ defaultData: respData, tableBodyData: respData, paymentMetaInfo: resp.data.result["metainfo"] });
+                this.setState({ 
+                    defaultData: respData, 
+                    tableBodyData: respData, 
+                    paymentMetaInfo: resp.data.result["metainfo"],
+                    page: 0 });
             }
             this.setState({ showLoader: false })
         } catch (err) {
@@ -207,7 +211,7 @@ class PaymentComponent extends Component {
 
             paymentMeta=resp.data.result["metainfo"]
         }
-        this.setState({ tableBodyData: respData,paymentMetaInfo:paymentMeta, searchedText: txt });
+        this.setState({ tableBodyData: respData,paymentMetaInfo:paymentMeta, searchedText: txt, page: 0 });
     }
 
     onDateChaged(data) {
