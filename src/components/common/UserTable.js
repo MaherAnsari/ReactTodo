@@ -23,7 +23,6 @@ import UserFilterDataView from './UserFilterDataView';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 
-
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -278,6 +277,10 @@ class UserListTable extends Component {
           return row.fullname +"("+row.business_name+")"
       }
 
+      handelDownloadClicked=()=>{
+        Utils.downloadDataInCSV(this.state.tableBodyData, this.props.downloadAbleFileName )
+    }
+
     render() {
         const { classes } = this.props;
         const { rowsPerPage , page} = this.state;
@@ -425,6 +428,13 @@ class UserListTable extends Component {
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+
+                                       {/* download */}
+                    <div className="updateBtndef" style={{ right : "160px"}}>
+                        <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0}}aria-hidden="true"></i>
+                            </div>
+                    </div>
                 </Paper>
             </MuiThemeProvider>
         );

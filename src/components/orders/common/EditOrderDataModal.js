@@ -9,18 +9,13 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-import 'date-fns';
 import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
-import paymentService from '../../../app/paymentService/paymentService';
+import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
-import Switch from '@material-ui/core/Switch';
+import orderService from '../../../app/orderService/orderService';
+
 
 const styles = theme => ({
     heading: {
@@ -32,7 +27,7 @@ const styles = theme => ({
     },
     dialogPaper: {
         minWidth: '700px',
-        maxWidth: '700px',
+        // maxWidth: '700px',
         minHeight: '400px',
         // maxHeight: '500px'
     },
@@ -65,60 +60,75 @@ const styles = theme => ({
     input: {
         display: 'none',
     },
-    MuiPopoverroot: {
-        zIndex: "99999"
-    },
-    muiSwitchroot: {
-        float: "right"
-    },
+
 });
 
-const transactionType = {
-    "b_in": "bijak-in", "b_out": "bijak-out",
-    "b_hist": "historical"
-};
-const payment_modeOption = ["bank", "cash"];
-const cashback_allotted_toOption = ["none", "la", "ca"];
-const creator_roleOption = ["la", "ca"];
-
-class EditTransactionModal extends Component {
+class EditOrderDataModal extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             open: this.props.open,
-            editTransactionPayload: this.props.editableTransactionData,
+            orderPayload: this.props.editableData,
+            orderPayloadToUpdate: {
+                "buyerid": "",
+                "supplierid": "",
+                "brokerid": "",
+                "commodity": "",
+                "rate": "",
+                "qnt": "",
+                "unit": "",
+                "type": "",
+                "bijak_amt": "",
+                "supporting_images": [],
+                "transport_info": "",
+                "author_name": "",
+                "author_mobile": "",
+                "status": "",
+                "remark": "",
+                "other_info": "",
+                "buyer_mobile": "",
+                "supplier_mobile": "",
+                "commission_rate": "",
+                "commission_unit": ""
+            },
+
             buyerid: "",
             supplierid: "",
+            brokerid: "",
             tempVar: {},
             errorFields: {},
-            attachmentArray: []
+            attachmentArray: [],
+            commodityList: this.props.commodityList
 
         }
-        console.log(this.props.editableTransactionData)
 
     }
 
-    componentWillMount() {
-        let obj = {};
-        let attachmentArrayVal = this.state.attachmentArray;
-        if (this.state.editTransactionPayload) {
-            obj["label"] = this.state.editTransactionPayload["supplier_fullname"];
-            obj["value"] = this.state.editTransactionPayload["supplierid"];
-        }
-        var suppId = [obj];
-        if (this.state.editTransactionPayload && this.state.editTransactionPayload["images"] && this.state.editTransactionPayload["images"] !== null) {
-            for (var i = 0; i < this.state.editTransactionPayload["images"].length; i++) {
-                let imgObj = {
-                    bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
-                    image_url: this.state.editTransactionPayload["images"][i],
-                    key: this.state.editTransactionPayload["images"][i]
-                }
-                attachmentArrayVal.push(imgObj)
-            }
-        }
-        this.setState({ supplierid: suppId, attachmentArray : attachmentArrayVal })
+    componentDidMount(){
+        console.log( this.state.orderPayload )
+        if( this.state.orderPayload ){
 
+            
+            let attachmentArrayVal = this.state.attachmentArray;
+            if (this.state.orderPayload && this.state.orderPayload["supporting_images"] && this.state.orderPayload["supporting_images"] !== null) {
+                for (var i = 0; i < this.state.orderPayload["supporting_images"].length; i++) {
+                    let imgObj = {
+                        bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
+                        image_url: this.state.orderPayload["supporting_images"][i],
+                        key: this.state.orderPayload["supporting_images"][i]
+                    }
+                    attachmentArrayVal.push(imgObj)
+                }
+            }
+    
+            this.setState({
+                attachmentArray : attachmentArrayVal,
+                buyerid: [{ label:  this.state.orderPayload["buyer_name"] ,value: this.state.orderPayload["buyer_mobile"] }],
+                supplierid: [{ label:  this.state.orderPayload["supplier_name"] ,value :  this.state.orderPayload["supplier_mobile"] }],
+                brokerid: [{ value: this.state.orderPayload["brokerid"] ,label: this.state.orderPayload["broker_name"] }],
+            })
+        }
     }
 
 
@@ -128,50 +138,39 @@ class EditTransactionModal extends Component {
         }
     }
 
+
+
+
+
     handleInputChange(event) {
-        // event.stopPropagation();
-        console.log("--------------------->")
-        event.preventDefault()
-        var intejarIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be intejar
+        var intejarIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be intejar
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
             id = event.target.name;
         }
         var val = event.target.value;
-        var addTransactionPayloadVal = this.state.editTransactionPayload;
+        var orderPayloadVal = this.state.orderPayload;
         if (intejarIds.indexOf(id) > -1) {
             if (val === "" || !isNaN(val)) {
-                addTransactionPayloadVal[id] = Number(val);
+                orderPayloadVal[id] = Number(val);
             }
         } else {
-            addTransactionPayloadVal[id] = val;
+            orderPayloadVal[id] = val;
         }
 
         if (errors.hasOwnProperty(id)) {
             delete errors[id];
         }
         this.setState({
-            editTransactionPayload: addTransactionPayloadVal,
+            orderPayload: orderPayloadVal,
             errorFields: errors
         })
-        console.log(addTransactionPayloadVal)
+        console.log(orderPayloadVal)
     }
+
     handleDialogCancel(event) {
         this.props.onEditModalCancel();
-    }
-
-
-    getSearchAreaText(id, event) {
-
-        try {
-            console.log(id)
-
-
-            this.setState({ [id]: event !== null ? event : "" });
-        } catch (err) {
-            console.log(err);
-        }
     }
 
     getOptions = async (type, inputValue, callback) => {
@@ -193,9 +192,18 @@ class EditTransactionModal extends Component {
                 resp = await supplierService.serchUser(data);
             }
 
+            if (type === "brokerid") {
+                data['role'] = 'broker';
+                resp = await brokerService.serchUser(data);
+            }
+
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = [];
-                respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                if (type === "brokerid") {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                } else {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                }
                 this.setTempArray(resp.data.result.data);
                 callback(respData);
             } else {
@@ -226,26 +234,20 @@ class EditTransactionModal extends Component {
         return optionsData;
     }
 
-    async updateTransaction(event) {
+    async updateOrder(event) {
         try {
-            var payloadData = { "data": {} };
-            var payload = this.state.editTransactionPayload;
-            var id = this.state.editTransactionPayload["id"];
-
+            var payload = this.state.orderPayload;
+            var id = payload.id;
             if (this.checkForInvalidFields(payload)) {
-                payload["images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
-                payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
-                payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
-                payloadData["data"] = this.removeBlankNonMandatoryFields(payload);
-                // console.log (  payloadData["data"] )
-                // return;
-                var resp = await paymentService.updatePayementInfo(id, payloadData);
+                payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
+                payload = this.removeBlankNonMandatoryFields(payload);
+                var resp = await orderService.updateExistingOrder( id , payload);
                 console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully added this transaction ");
-                    this.props.onTransactionUpdated();
+                    alert("Successfully updated this order ");
+                    this.props.onOrderDataUpdated();
                 } else {
-                    alert("There was an error while adding this transaction");
+                    alert("There was an error while updating this order");
                 }
             } else {
                 alert("please fill the mandatory fields highlighted");
@@ -257,14 +259,11 @@ class EditTransactionModal extends Component {
 
     removeBlankNonMandatoryFields(data) {
         var formateddata = {};
-        var keysWithValidUpdateData = {};
-        var mandotaryFields = ["active", "amount", "amount_bank_entry", "bank_id", "bank_trxn_id", "cashback_allotted_to",
-            "cashback_value", "creator_role", "images", "payment_mode", "reason", "remarks", "supplier_mobile",
-            "supplierid", "transaction_date", "transaction_type"];
-        for (var key in data) {
-            if (data[key] !== "") {
+        for (var key in this.state.orderPayloadToUpdate) {
+            if (data[key] && data[key] !== "") {
                 formateddata[key] = data[key];
             }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
@@ -272,24 +271,15 @@ class EditTransactionModal extends Component {
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
-        }
 
-        for (var i = 0; i < mandotaryFields.length; i++) {
-            if (formateddata.hasOwnProperty(mandotaryFields[i]))
-                keysWithValidUpdateData[mandotaryFields[i]] = formateddata[mandotaryFields[i]]
         }
-
-        return keysWithValidUpdateData;
+        return formateddata;
     }
 
     prepareSupportingUrlArray(data) {
         var urlArray = [];
-        if (data.length > 0) {
-            for (var i = 0; i < data.length > 0; i++) {
-                urlArray.push(data[i]["image_url"]);
-            }
-        } else {
-            urlArray = this.state.editTransactionPayload["images"];
+        for (var i = 0; i < data.length > 0; i++) {
+            urlArray.push(data[i]["image_url"]);
         }
         return urlArray;
 
@@ -298,25 +288,17 @@ class EditTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status",
+         "remark", "other_info","commission_rate","commission_unit"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
                 isValid = false;
+                console.log( key )
             }
         }
         this.setState({ errorFields: error });
         return isValid;
-    }
-
-    formateDateForApi(data) {
-        if (data && data !== "") {
-            var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "0" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
-            return dateVal;
-        } else {
-            return "";
-        }
     }
 
     onStepChangeEventOccurs = (stepType) => {
@@ -353,7 +335,7 @@ class EditTransactionModal extends Component {
             }
         });
 
-        Storage.put("payment/" + file.name, file, {
+        Storage.put("order/" + file.name, file, {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
@@ -365,7 +347,7 @@ class EditTransactionModal extends Component {
             }
             let { attachmentArray } = this.state;
 
-            Storage.get("payment/" + file.name)
+            Storage.get("order/" + file.name)
                 .then(result => {
                     console.log(result.split("?")[0]);
                     attachmentObj["image_url"] = result.split("?")[0];
@@ -389,100 +371,55 @@ class EditTransactionModal extends Component {
     }
 
 
-    handelDateChange(dateval) {
-        var addTransactionPayloadVal = this.state.editTransactionPayload;
-        addTransactionPayloadVal["transaction_date"] = dateval;
-        this.setState({ dateval: addTransactionPayloadVal })
-    }
-
-    handleStateChange = (id, event) => {
-        let data = this.state.editTransactionPayload;
-        data[id] = event.target.checked;
-        this.setState({ editableDataObj: data });
-    };
-
-
     render() {
         const { classes } = this.props;
-        const { editTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
+        const { orderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
-            <Dialog style={{ zIndex: '99999' }}
+            <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
-                disableBackdropClick={true}
+                // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
                     <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Edit Transaction</p>
+                        Edit Order</p>
                 </DialogTitle>
                 <DialogContent>
 
-                    <div >
-                        <span style={{ lineHeight: "40px" }}>Enable / disable transaction</span>
-                        <Switch
-                            classes={{ root: classes.muiSwitchroot }}
-                            checked={editTransactionPayload.active}
-                            onChange={this.handleStateChange.bind(this, "active")}
-                            value={editTransactionPayload.active}
-                            color="primary"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
-
-                    </div>
                     <div style={{ display: "flex" }}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
-                            <Grid container style={{ width: "49%" }} >
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="transaction_date"
-                                    label="Transaction date"
-                                    format="dd-MMM-yyyy"
-                                    style={{ width: '100%' }}
-                                    value={editTransactionPayload.transaction_date}
-                                    onChange={(dateval) => {
-                                        this.handelDateChange(dateval);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </Grid>
-                        </MuiPickersUtilsProvider>
-
-                        &nbsp;
-                      &nbsp;
-                         <TextField
-                            select
-                            id="transaction_type"
-                            name="transaction_type"
-                            label="Transaction Type"
-                            type="text"
-                            error={errorFields["transaction_type"] ? true : false}
-                            style={{ marginTop: "15px", width: '49%' }}
-                            value={editTransactionPayload.transaction_type}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {Object.keys(transactionType).map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true} >
-                                    {transactionType[key]}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        <TextField
-                            margin="dense"
-                            id="Buyer_name"
-                            label="Buyer name"
-                            type="text"
-                            disabled={true}
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.buyer_fullname}
-                            onChange={() => { }}
-                            fullWidth />
-
+                        <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                            <AsyncSelect
+                                cacheOptions
+                                value={buyerid}
+                                id={"reactSelectCustom"}
+                                name={"buyerid"}
+                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                onChange={(item) => {
+                                    this.setState({ buyerid: item }, function () {
+                                        var data = orderPayload;
+                                        if (errorFields["buyerid"]) {
+                                            delete errorFields["buyerid"];
+                                        }
+                                        if (item && item !== null) {
+                                            data["buyerid"] = tempVar[item["label"]]["id"];
+                                            data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                        } else {
+                                            data["buyerid"] = "";
+                                            data["buyer_mobile"] = "";
+                                        }
+                                        this.setState({ orderPayload: data, errorFields: errorFields })
+                                    })
+                                }}
+                                isSearchable={true}
+                                isClearable={true}
+                                placeholder={`Select buyer..`}
+                                defaultOptions={[]}
+                                loadOptions={this.getOptions.bind(this, "buyerid")}
+                            />
+                        </div>
                         &nbsp;
                         &nbsp;
                     <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
@@ -497,7 +434,7 @@ class EditTransactionModal extends Component {
                                         if (errorFields["supplierid"]) {
                                             delete errorFields["supplierid"];
                                         }
-                                        var data = editTransactionPayload;
+                                        var data = orderPayload;
                                         if (item && item !== null) {
                                             data["supplierid"] = tempVar[item["label"]]["id"];
                                             data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
@@ -505,7 +442,7 @@ class EditTransactionModal extends Component {
                                             data["supplierid"] = "";
                                             data["supplier_mobile"] = "";
                                         }
-                                        this.setState({ editTransactionPayload: data, errorFields: errorFields })
+                                        this.setState({ orderPayload: data, errorFields: errorFields })
                                     })
                                 }}
                                 isSearchable={true}
@@ -517,37 +454,50 @@ class EditTransactionModal extends Component {
                         </div>
                     </div>
 
-                    <div style={{ display: "flex", marginTop: 4 }} >
-
-                        <TextField
-                            select
-                            id="creator_role"
-                            error={errorFields["creator_role"] ? true : false}
-                            name="creator_role"
-                            label="Creater Role"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.creator_role}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {creator_roleOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                    <div style={{ display: "flex" }}>
+                        <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                            <AsyncSelect
+                                cacheOptions
+                                value={brokerid}
+                                id={"reactSelectCustom"}
+                                name={"brokerid"}
+                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                onChange={(item) => {
+                                    this.setState({ brokerid: item }, function () {
+                                        var data = orderPayload;
+                                        if (errorFields["brokerid"]) {
+                                            delete errorFields["brokerid"];
+                                        }
+                                        if (item && item !== null) {
+                                            data["brokerid"] = tempVar[item["label"]]["id"];
+                                            // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                        } else {
+                                            data["brokerid"] = "";
+                                            // data["buyer_mobile"] = "";
+                                        }
+                                        this.setState({ orderPayload: data, errorFields: errorFields })
+                                    })
+                                }}
+                                isSearchable={true}
+                                isClearable={true}
+                                placeholder={`Select broker..`}
+                                defaultOptions={[]}
+                                loadOptions={this.getOptions.bind(this, "brokerid")}
+                            />
+                        </div>
                         &nbsp;
                         &nbsp;
                         <TextField
                             select
-                            id="payment_mode"
-                            name="payment_mode"
-                            label="Payment mode"
-                            error={errorFields["payment_mode"] ? true : false}
+                            id="commodity"
+                            error={errorFields["commodity"] ? true : false}
+                            name="commodity"
+                            label="Commodity"
                             type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.payment_mode}
+                            style={{ width: '49%', marginTop: '1%' }}
+                            value={orderPayload.commodity}
                             onChange={this.handleInputChange.bind(this)}>
-                            {payment_modeOption.map((key, i) => (
+                            {commodityList.map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {key}
                                 </MenuItem>
@@ -558,111 +508,188 @@ class EditTransactionModal extends Component {
 
                         <TextField
                             margin="dense"
-                            id="bank_id"
-                            label="Bank Id"
+                            id="rate"
+                            label="Rate"
                             type="text"
-                            error={errorFields["bank_id"] ? true : false}
+                            error={errorFields["rate"] ? true : false}
                             style={{ width: '49%' }}
-                            value={editTransactionPayload.bank_id}
+                            value={orderPayload.rate}
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
                         &nbsp;
                       &nbsp;
                         <TextField
                             margin="dense"
-                            id="amount"
-                            label="Amount"
-                            error={errorFields["amount"] ? true : false}
+                            id="qnt"
+                            label="Quantity"
+                            error={errorFields["qnt"] ? true : false}
                             type="text"
                             style={{ width: '49%' }}
-                            value={editTransactionPayload.amount}
+                            value={orderPayload.qnt}
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
                     </div>
 
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="amount_bank_entry"
-                            label="Amount Bank Entry"
-                            type="text"
-                            error={errorFields["amount_bank_entry"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.amount_bank_entry}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="bank_trxn_id"
-                            label="Bank transaction id"
-                            error={errorFields["bank_trxn_id"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.bank_trxn_id}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-                    <div style={{ display: "flex" }} >
+                    <div style={{ display: "flex", marginTop: 4 }} >
 
                         <TextField
-                            margin="dense"
-                            id="reason"
-                            error={errorFields["reason"] ? true : false}
-                            label="Reason"
+                            select
+                            id="unit"
+                            error={errorFields["unit"] ? true : false}
+                            name="unit"
+                            label="Unit"
                             type="text"
                             style={{ width: '49%' }}
-                            value={editTransactionPayload.reason}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            value={orderPayload.unit}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {["quintal", "ton"].map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         &nbsp;
                     &nbsp;
                         <TextField
-                            margin="dense"
-                            id="remarks"
-                            label="Remarks"
-                            error={errorFields["remarks"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.remarks}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="cashback_value"
-                            label="Cashback Value"
-                            error={errorFields["cashback_value"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.cashback_value}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
-                        <TextField
                             select
-                            id="cashback_allotted_to"
-                            name="cashback_allotted_to"
-                            label="Cashback allotted to "
-                            error={errorFields["cashback_allotted_to"] ? true : false}
+                            id="type"
+                            name="type"
+                            label="Type"
+                            error={errorFields["type"] ? true : false}
                             type="text"
-                            classes={{ root: classes.MuiPopoverroot }}
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={editTransactionPayload.cashback_allotted_to}
+                            style={{ width: '49%' }}
+                            value={orderPayload.type}
                             onChange={this.handleInputChange.bind(this)}>
-                            {cashback_allotted_toOption.map((key, i) => (
+                            {["none", "commission"].map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {key}
                                 </MenuItem>
                             ))}
                         </TextField>
                     </div>
+
+                    <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="bijak_amt"
+                            label="Bijak Amount"
+                            type="text"
+                            error={errorFields["bijak_amt"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={orderPayload.bijak_amt}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                      &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="author_name"
+                            label="Author name"
+                            error={errorFields["author_name"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.author_name}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="author_mobile"
+                            label="Author mobile number"
+                            type="text"
+                            error={errorFields["author_mobile"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={orderPayload.author_mobile}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                        &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="status"
+                            label="Status"
+                            error={errorFields["status"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.status}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+                    <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="remark"
+                            error={errorFields["remark"] ? true : false}
+                            label="Remarks"
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.remark}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                    &nbsp;
+                        <TextField
+                            margin="dense"
+                            id="other_info"
+                            label="Other Info"
+                            error={errorFields["other_info"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.other_info}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="commission_rate"
+                            label="Commision rate"
+                            error={errorFields["commission_rate"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.commission_rate}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                    &nbsp;
+                        <TextField
+                            select
+                            id="commission_unit"
+                            name="commission_unit"
+                            label="Commission unit"
+                            error={errorFields["commission_unit"] ? true : false}
+                            type="text"
+                            style={{ width: '49%', marginTop: "1%" }}
+                            value={orderPayload.commission_unit}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {["quintal", "ton"].map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="transport_info"
+                            label="Transport info"
+                            error={errorFields["transport_info"] ? true : false}
+                            type="text"
+                            style={{ width: '100%' }}
+                            value={orderPayload.transport_info}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+
+                    
                     {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                         <div style={{ fontFamily: "lato", padding: "10px" }}>
                             Uploaded Images
@@ -708,7 +735,7 @@ class EditTransactionModal extends Component {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.updateTransaction.bind(this)} color="primary">Update</Button>
+                    <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
             </Dialog>
@@ -717,8 +744,8 @@ class EditTransactionModal extends Component {
     }
 }
 
-EditTransactionModal.propTypes = {
+EditOrderDataModal.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(EditTransactionModal);
+export default withStyles(styles)(EditOrderDataModal);

@@ -81,10 +81,14 @@ class BuyerContainer extends React.Component {
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <UserListTable  tableData={this.state.dataList} role= "ca" onClose={this.getData.bind(this)}   /> 
+                       <UserListTable  
+                       tableData={this.state.dataList} 
+                       role= "ca" 
+                       downloadAbleFileName="buyer_list_data"
+                       onClose={this.getData.bind(this)}   /> 
 
                        <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <div className="updateBtnFixed"  style={{display:'flex', right:"10px"}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p style={{fontSize: "14px",
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD BUYER</p></div>

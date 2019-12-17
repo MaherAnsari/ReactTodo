@@ -28,6 +28,7 @@ import Utils from '../../../app/common/utils';
 import UserFilterDataView from './../../common/UserFilterDataView';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -276,6 +277,9 @@ class UserListTable extends Component {
           return row.fullname +"("+row.business_name+")"
       }
 
+
+
+
     render() {
         const { classes } = this.props;
         const { rowsPerPage , page} = this.state;
@@ -464,6 +468,7 @@ class UserListTable extends Component {
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+               
                 </Paper>
             </MuiThemeProvider>
         );
