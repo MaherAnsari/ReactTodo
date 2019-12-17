@@ -15,6 +15,7 @@ import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
 import orderService from '../../../app/orderService/orderService';
+import Switch from '@material-ui/core/Switch';
 
 
 const styles = theme => ({
@@ -60,6 +61,9 @@ const styles = theme => ({
     input: {
         display: 'none',
     },
+    muiSwitchroot: {
+        float: "right"
+    },
 
 });
 
@@ -71,6 +75,7 @@ class EditOrderDataModal extends Component {
             open: this.props.open,
             orderPayload: this.props.editableData,
             orderPayloadToUpdate: {
+                "active": "",
                 "buyerid": "",
                 "supplierid": "",
                 "brokerid": "",
@@ -264,6 +269,10 @@ class EditOrderDataModal extends Component {
                 formateddata[key] = data[key];
             }
 
+            if( key === "active"){
+                formateddata[key] = data[key];
+            }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
@@ -370,6 +379,14 @@ class EditOrderDataModal extends Component {
         );
     }
 
+    handleStateChange = (id, event) => {
+        let data = this.state.orderPayload;
+        if (id === "active") {
+            data[id] = event.target.checked;
+        }
+        console.log( data )
+        this.setState({ orderPayload: data });
+    };
 
     render() {
         const { classes } = this.props;
@@ -388,6 +405,19 @@ class EditOrderDataModal extends Component {
                         Edit Order</p>
                 </DialogTitle>
                 <DialogContent>
+
+                       <div >
+                                <span style={{ lineHeight: "40px", fontFamily:"lato", fontSize:"17px" }}>Enable / disable order</span>
+                                <Switch
+                                    classes={{ root: classes.muiSwitchroot }}
+                                    checked={orderPayload.active}
+                                    onChange={this.handleStateChange.bind(this, "active")}
+                                    value={orderPayload.active}
+                                    color="primary"
+                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                />
+
+                            </div>
 
                     <div style={{ display: "flex" }}>
                         <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
