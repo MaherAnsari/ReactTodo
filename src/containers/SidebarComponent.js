@@ -96,13 +96,14 @@ class VerticalItem extends React.Component {
   }
 
   renderSubLevel(item) {
-    const { active } = this.props
+    const { active, isdrawerOpen } = this.props
 
     return (
       <ul className='class_ul sub-level' >
         {item.children && item.children.map(i => {
           return (
             <li className="class_li" key={i.route}
+             data-toggle={!isdrawerOpen && "tooltip"} title={!isdrawerOpen && i.name} 
               style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
               onClick={() => this.onSelect(i)} >
 
@@ -120,7 +121,7 @@ class VerticalItem extends React.Component {
   }
 
   render() {
-    const { item, active, activeAccordian } = this.props
+    const { item, active, activeAccordian, isdrawerOpen } = this.props
     let className = 'vertical-item-component';
     if (activeAccordian === item["id"]) className += ' is-hover'
     return (
@@ -128,9 +129,10 @@ class VerticalItem extends React.Component {
         ref={ref => { this._ref = ref }}
         style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
         className={className + " class_li"}
+       
       >
         <div>
-          <div className='item'
+          <div className='item' data-toggle={!isdrawerOpen && "tooltip"} title={!isdrawerOpen && item.name} 
             style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {
@@ -144,8 +146,8 @@ class VerticalItem extends React.Component {
               {item.iconClassName}
             </Icon>
             <div className='item-name'>{item.name}</div>
-            <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
-              style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>
+            {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
+              style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
           </div>
           {this.renderSubLevel(item)}
         </div>
@@ -173,7 +175,7 @@ class VerticalNavigation extends React.PureComponent {
   }
 
   render() {
-    const { items, open, activeRoute, dbImageUrl } = this.props;
+    const { items, open, activeRoute, dbImageUrl, isdrawerOpen } = this.props;
     let additionalClass = ''
     additionalClass += open ? 'extended' : 'collapsed'
     return (
@@ -208,6 +210,7 @@ class VerticalNavigation extends React.PureComponent {
               index={index}
               extended={open}
               active={activeRoute}
+              isdrawerOpen={isdrawerOpen}
               activeAccordian={this.state.activeAccordian}
               onAccordClicked={(data) => this.setState({ activeAccordian: data })}
               onRouteClicked={(rname)=>this.props.onRouteClicked(rname)}
@@ -249,7 +252,7 @@ class ListItems extends React.PureComponent {
   }
 
   render() {
-    const { dbImageUrl } = this.props;
+    const { dbImageUrl, isdrawerOpen } = this.props;
     return (
       <div className='app'>
         <div className='col-1'>
@@ -257,6 +260,7 @@ class ListItems extends React.PureComponent {
             items={_items}
             title='basic nav'
             dbImageUrl={dbImageUrl}
+            isdrawerOpen={isdrawerOpen}
             open={this.state.open}
             labname={this.props.labname}
             activeRoute={this.state.activeRoute}
