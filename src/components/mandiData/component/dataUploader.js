@@ -73,9 +73,15 @@ class DataUploader extends Component {
                 'state_hindi': '',
                 "remarks": "additional place",
                 "mandi_off_date": [],
-                "type": "l"
+                "type": "l",
+                "openingHour":"00",
+                "openingMin":"00",
+                "time":"AM",
+                "opening_time":"00:00 AM"
+
             },
             mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
+            timeoption:["am","pm"],
             mandiGradeHindiOptions: ['क', 'ख', 'ग', 'घ', 'ङ', 'च'],
             "stateList": Utils.getStateData(),
             "districtMap": Utils.getDistrictData(),
@@ -166,6 +172,7 @@ class DataUploader extends Component {
             offDayArr.push(str);
         }
         this.state.dataObj.mandi_off_date = offDayArr;
+        this.state.dataObj.opening_time = this.state.dataObj.openingHour+":"+this.state.dataObj.openingMin+" "+this.state.dataObj.time;
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
@@ -205,7 +212,7 @@ class DataUploader extends Component {
     // type ="m"/ "l"
     render() {
         const { classes } = this.props;
-        const { mandiGradeOptions, mandiGradeHindiOptions } = this.state;
+        const { mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -380,6 +387,44 @@ class DataUploader extends Component {
                                     fullWidth
                                 />
                             </div>
+                            <div style={{marginTop:'5px',fontSize:'16px'}}>Mandi Opening Time :</div>                
+                            <div style={{display:'flex'}}>
+                                <TextField
+                                    margin="dense"
+                                    id="openingHour"
+                                    label="Hour"
+                                    type="text"
+                                    style={{ marginRight: '2%',width:'30%' }}
+                                    value={this.state.dataObj.openingHour}
+                                    onChange={this.handleChange.bind(this)}
+                                    fullWidth
+                                />
+                                 <TextField
+                                    margin="dense"
+                                    id="openingMin"
+                                    label="Minute"
+                                    type="text"
+                                    style={{ marginRight: '2%',width:'30%' }}
+                                    value={this.state.dataObj.openingMin}
+                                    onChange={this.handleChange.bind(this)}
+                                    fullWidth
+                                />
+                                  <TextField
+                                    select
+                                    id="time"
+                                    label=""
+                                    type="text"
+                                    style={{ marginRight: '2%', width: '30%' ,paddingTop:'20px'}}
+                                    value={this.state.dataObj.time}
+                                    onChange={this.handleStateChange.bind(this, 'time')}>
+                                    {timeoption.map((option, i) => (
+                                        <MenuItem key={i} value={option} selected={true}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </div>
+
                         </div>
 
                         <div className={classes.offDay}>

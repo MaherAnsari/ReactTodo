@@ -306,7 +306,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center",minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
                                    
@@ -331,7 +331,11 @@ class UserListTable extends Component {
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div onClick={this.onInfoClick.bind(this, row)} className="text-ellpses name-span" style={{cursor:'pointer',color:'#2e3247'}}><span className={classes.name}>{row.fullname}</span>{"("+row.business_name+")"}</div>
+                                                <div style={{ display: "grid", textAlign: "left" }} className=" name-span" onClick={this.onInfoClick.bind(this, row)}>
+                            <span>{row.fullname}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.business_name + " )"}</span>
+                          </div>
+                                                    {/* <div onClick={this.onInfoClick.bind(this, row)} className="text-ellpses name-span" style={{cursor:'pointer',color:'#2e3247'}}><span className={classes.name}>{row.fullname}</span>{"("+row.business_name+")"}</div> */}
                                                 </Tooltip>
 
                                             </TableCell>

@@ -86,7 +86,7 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["","name", "category", "weight", "Hindi Name","",""],
+      tableHeadData: ["","name", "category", "weight","",""],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
       searchedText: "",
@@ -197,7 +197,7 @@ class CommodityTable extends Component {
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i==0 ? '50px':'120px',padding: "14px" }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i < 2 ? "left" : "center",minWidth: i==0 ? '50px':'120px',padding: i < 2 ? 0:  "14px" }}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -212,14 +212,19 @@ class CommodityTable extends Component {
                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                        <img style={{width:'35px',height:'35px'}} src={row.image_url}></img> 
                       </TableCell>
+
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                      {row.name}
+                      <div style={{ display: "grid", textAlign: "left" }}>
+                            <span>{row.name}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.expected_lang + " )"}</span>
+                          </div>
+                    
                       </TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
                       </TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
-                      </TableCell>
+                      {/* <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
+                      </TableCell> */}
                       <TableCell style={{padding: "0px"}}>
                         <Switch
                           checked={row.active}

@@ -143,7 +143,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["market", "district", "state", "Mandi Grade", "APMC", "Mandi Status", "Lat/Long", "Action"],
+      tableHeadData: ["market", "district", "state", "Mandi Grade", "APMC", "Mandi Status", "Lat/Long","Opening Time", "Action"],
       tableHeadDataKey: ["market", "district", "state", "mandi_grade", "mandi_grade_hindi", "apmc_req", "is_open", "loc_lat", ""],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
@@ -372,6 +372,7 @@ class MandiListTable extends Component {
                             <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
                         </TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.opening_time ? row.opening_time : "-") }</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 4)}>
                           <div>
                             {row.businessAddedPlace ?

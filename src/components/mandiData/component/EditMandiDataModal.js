@@ -64,7 +64,9 @@ class EditMandiDataModal extends Component {
             dayArr: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
             dayType: ['first', "second", "third", "fourth", "last"],
             typeArr: ["dates", "every","all"],
-            offDayArr: []
+            offDayArr: [],
+            timeoption:["am","pm"],
+
         }
 
     }
@@ -94,8 +96,23 @@ class EditMandiDataModal extends Component {
             offDayData.push(obj);
 
         }
-        // console.log(offDayData);
-        this.setState({ districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()] ,offDayArr:offDayData});
+        // "openingHour":"00",
+        // "openingMin":"00",
+        // "time":"AM",
+        // "opening_time":"00:00 AM",
+        // let time = "AM";
+        // let openingHour = "00";
+        // let openingMin = "00";
+        let dataObj = this.props.editableData;
+        if(this.props.editableData.opening_time){
+            let str = this.props.editableData.opening_time.split(" ");
+            dataObj['time'] = str[1];
+            dataObj['openingHour'] = str[0].split(":")[0];
+            dataObj['openingMin'] = str[0].split(":")[1];
+        }
+        // console.log(dataObj);
+        this.setState({ districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()] ,offDayArr:offDayData,
+                dataObj:dataObj});
     }
 
     componentWillReceiveProps() {
@@ -131,7 +148,8 @@ class EditMandiDataModal extends Component {
             "mandi_grade_hindi": data["mandi_grade_hindi"],
             "loc_lat": data["loc_lat"],
             "loc_long": data["loc_long"],
-            "mandi_off_date":data["mandi_off_date"]
+            "mandi_off_date":data["mandi_off_date"],
+            "opening_time":data["opening_time"]
         }
         // console.log(payload)
         let resp = await mandiDataService.updateMandiData( payload );
@@ -189,6 +207,7 @@ class EditMandiDataModal extends Component {
             offDayArr.push(str);
         }
         this.state.dataObj.mandi_off_date = offDayArr;
+        this.state.dataObj.opening_time = this.state.dataObj.openingHour+":"+this.state.dataObj.openingMin+" "+this.state.dataObj.time;
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
@@ -221,7 +240,7 @@ class EditMandiDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions } = this.state;
+        const { isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -390,6 +409,44 @@ class EditMandiDataModal extends Component {
                             fullWidth
                         />
                     </div>
+                    <div style={{marginTop:'5px',fontSize:'16px'}}>Mandi Opening Time :</div>                
+                            <div style={{display:'flex'}}>
+                                <TextField
+                                    margin="dense"
+                                    id="openingHour"
+                                    label="Hour"
+                                    type="text"
+                                    style={{ marginRight: '2%',width:'30%' }}
+                                    value={this.state.dataObj.openingHour}
+                                    onChange={this.handleChange.bind(this)}
+                                    fullWidth
+                                />
+                                 <TextField
+                                    margin="dense"
+                                    id="openingMin"
+                                    label="Minute"
+                                    type="text"
+                                    style={{ marginRight: '2%',width:'30%' }}
+                                    value={this.state.dataObj.openingMin}
+                                    onChange={this.handleChange.bind(this)}
+                                    fullWidth
+                                />
+                                  <TextField
+                                    select
+                                    id="time"
+                                    label=""
+                                    type="text"
+                                    style={{ marginRight: '2%', width: '30%' ,paddingTop:'20px'}}
+                                    value={this.state.dataObj.time}
+                                    onChange={this.handleStateChange.bind(this, 'time')}>
+                                    {timeoption.map((option, i) => (
+                                        <MenuItem key={i} value={option} selected={true}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </div>
+
                     </div>
                         <div className={classes.offDay}>
                             Mandi Off Day<i style={{ fontSize: '20px', marginLeft: '5px', color: 'red', cursor: 'pointer' }} onClick={this.onAddOffDayClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
