@@ -56,7 +56,7 @@ class UserFilterOption extends Component {
             commodityList: [],
             open: this.props.openModal,
             dataObj: {},
-            supportingImagesOption: ["All","Yes","No"],
+            supportingImagesOption: {"All":"All","Yes":"yes","No":"no"},
             filterDataArr: []
 
 
@@ -110,9 +110,9 @@ class UserFilterOption extends Component {
                             value={this.state.dataObj.supporting_images }
                             onChange={this.handleStateChange.bind(this, 'supporting_images')}
                         >
-                            {this.state.supportingImagesOption.map((option, i) => (
-                                <MenuItem key={i}  value={option} selected={true}>
-                                    {option}
+                            {Object.keys(this.state.supportingImagesOption).map((keys, i) => (
+                                <MenuItem key={i}  value={this.state.supportingImagesOption[keys]} selected={true}>
+                                    {keys}
                                 </MenuItem>
                             ))}
                         </TextField>
