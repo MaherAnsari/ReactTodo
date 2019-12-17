@@ -60,12 +60,10 @@ const theme = createMuiTheme({
         }
       },
       MuiTablePagination: {
-        selectIcon: {
-          color: "#ffffff"
-        },
-        menuItem: {
-          color: "#000"
+        toolbar: {
+          paddingRight: '250px'
         }
+
       },
       MuiIconButton: {
         colorInherit: {
@@ -82,7 +80,12 @@ const theme = createMuiTheme({
           height: "18px",
           fontSize: "18px"
         }
-      }
+      },
+      MuiTablePagination: {
+        toolbar:{
+          paddingRight:'200px'
+        }
+      },
       // Mui: {
       //   disabled: {
       //     color: "#717070"
@@ -143,7 +146,7 @@ class MandiListTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["market", "district", "state", "Mandi Grade", "APMC", "Mandi Status", "Lat/Long","Opening Time", "Action"],
+      tableHeadData: ["market", "district", "state", "Mandi Grade", "APMC", "Mandi Status", "Lat/Long", "Opening Time", "Action"],
       tableHeadDataKey: ["market", "district", "state", "mandi_grade", "mandi_grade_hindi", "apmc_req", "is_open", "loc_lat", ""],
       tableBodyData: this.props.tableData,
       rawTableBodyData: [],
@@ -320,8 +323,9 @@ class MandiListTable extends Component {
                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
             </div> */}
           </div>
-          <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
-            <Table  className='table-body' stickyHeader aria-label="sticky table">
+          <div>
+          <div style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+            <Table className='table-body' stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                   {this.state.tableHeadData.map((option, i) => (
@@ -372,7 +376,7 @@ class MandiListTable extends Component {
                             <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
                         </TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.opening_time ? row.opening_time : "-") }</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.opening_time ? row.opening_time : "-")}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 4)}>
                           <div>
                             {row.businessAddedPlace ?
@@ -393,23 +397,27 @@ class MandiListTable extends Component {
                   })}
               </TableBody>
               <TableFooter style={{ borderTop: "2px solid #858792" }}>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[25, 50, 100]}
-                    colSpan={6}
-                    count={this.state.tableBodyData.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                    onChangePage={this.handleChangePage.bind(this)}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[25, 50, 100]}
+                  colSpan={6}
+                  count={this.state.tableBodyData.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'rows per page' },
+                    native: true,
+                  }}
+                  onChangePage={this.handleChangePage.bind(this)}
+                  onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                />
+              </TableRow>
+            </TableFooter>
+        
+          </Table>
+          </div>
+        
+
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
@@ -417,6 +425,7 @@ class MandiListTable extends Component {
               {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No data available"}</span>}
           </div>}
+          {/* {this.state.tableBodyData.length > 0 && } */}
           {this.state.showConfirmDialog ?
             <ConfirmDialog
               dialogText={this.state.dialogText}

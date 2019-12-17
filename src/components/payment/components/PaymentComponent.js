@@ -441,9 +441,9 @@ class PaymentComponent extends Component {
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left", textTransform: "capitalize" }}>
                                                     <div className="text-ellpses">
-                                                        {row.buyer_locality ? row.buyer_locality + ", " : ""}
-                                                        {row.buyer_district ? row.buyer_district + ", " : ""}
-                                                        {row.buyer_state ? row.buyer_state : ""}
+                                                        {row.buyer_locality ? row.buyer_locality + " , " : ""}
+                                                        {row.buyer_district ? row.buyer_district + " , " : ""}
+                                                        {row.buyer_state ? row.buyer_state : ""} 
                                                     </div>
                                                 </TableCell>
 

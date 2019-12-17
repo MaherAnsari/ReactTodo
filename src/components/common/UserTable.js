@@ -29,7 +29,7 @@ const theme = createMuiTheme({
             head: {
                 color: '#2e3247',
                 fontWeight: 600,
-                fontSize: '13px !important',
+                fontSize: '12px !important',
                 fontFamily: 'lato !important',
                 textTransform: 'uppercase',
                 lineHeight: "1em"
@@ -41,7 +41,12 @@ const theme = createMuiTheme({
                 fontSize: '14px !important',
                 fontFamily: 'lato !important',
             }
-        }
+        },
+        MuiTablePagination: {
+            toolbar:{
+              paddingRight:'250px'
+            }
+          },
     }
 });
 
@@ -315,6 +320,7 @@ class UserListTable extends Component {
                                    
                                 </TableRow>
                             </TableHead>
+                            
                             <TableBody>
                                 {this.state.tableBodyData && this.state.tableBodyData &&
                                 (rowsPerPage > 0
@@ -323,6 +329,7 @@ class UserListTable extends Component {
                                   )
                                 .map((row, i) => {
                                     return (
+                                      
                                         <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
@@ -334,7 +341,7 @@ class UserListTable extends Component {
                                             </TableCell>
                                             <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                 <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                <div style={{ display: "grid", textAlign: "left" }} className=" name-span" onClick={this.onInfoClick.bind(this, row)}>
+                                                <div style={{ display: "grid", textAlign: "left",cursor:'pointer' }} className=" name-span" onClick={this.onInfoClick.bind(this, row)}>
                             <span>{row.fullname}</span>
                             <span style={{ fontSize: "12px" }}>{"( " + row.business_name + " )"}</span>
                           </div>
@@ -385,11 +392,16 @@ class UserListTable extends Component {
                                             </TableCell>
                                            
                                         </TableRow>
+                                      
                                     );
                                 })}
                             </TableBody>
-
-                            <TableFooter  style={{ borderTop: "2px solid #858792" }}>
+                           
+                        </Table>
+                       
+                    </div>
+                    <Table>
+                    <TableFooter  style={{ borderTop: "2px solid #858792" ,    background: "#fafafa"}}>
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[ 25,50,100 ]}
@@ -406,9 +418,7 @@ class UserListTable extends Component {
                                     />
                                 </TableRow>
                             </TableFooter>
-                        </Table>
-                      
-                    </div>
+                            </Table>
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                             <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>

@@ -35,7 +35,12 @@ const theme = createMuiTheme({
         fontWeight: 500,
         fontSize: '14px !important',
         fontFamily: 'lato !important',
-      }
+      },
+      MuiTablePagination: {
+        toolbar:{
+          paddingRight:'200px'
+        }
+      },
     },
   }
 });
@@ -192,7 +197,8 @@ class CommodityTable extends Component {
                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
             </div>
           </div>
-          <div style={{maxHeight:"80vh",overflowY:"scroll"}}>
+          <div>
+          <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
             <Table  className='table-body' stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
@@ -246,7 +252,11 @@ class CommodityTable extends Component {
                   );
                 })}
               </TableBody>
-              <TableFooter style={{ borderTop: "2px solid #858792" }}>
+              
+            </Table>
+          </div>
+          {this.state.tableBodyData.length > 0  && <Table>
+          <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
                 <TableRow>
                   <TablePagination
                     rowsPerPageOptions={[ 25, 50, 100]}
@@ -263,7 +273,7 @@ class CommodityTable extends Component {
                   />
                 </TableRow>
               </TableFooter>
-            </Table>
+          </Table>}
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>

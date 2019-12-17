@@ -41,6 +41,11 @@ const theme = createMuiTheme({
                 fontFamily: 'lato !important',
             }
         },
+        MuiTablePagination: {
+            toolbar: {
+                paddingRight: '250px'
+            }
+        },
     }
 });
 
@@ -91,7 +96,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info",  "broker_name", "Date", "commodity", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "commodity", "Amount  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -116,7 +121,7 @@ class OrderListTable extends Component {
             showAddOrderModal: false,
 
             showEditDataModal: false,
-            commodityList:[]
+            commodityList: []
         }
         this.getCommodityNames();
     }
@@ -218,7 +223,7 @@ class OrderListTable extends Component {
 
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm A')
-        return <div style={{ width: "95px" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
     }
 
     formatNumberWithComma(x) {
@@ -257,23 +262,24 @@ class OrderListTable extends Component {
 
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page, showAddOrderModal,showEditDataModal, editableData , commodityList} = this.state;
-        const  leftAlignedIndexs  = [0,1,2];
-        const  rightAlignedIndexs  = [6];
+        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
+        const leftAlignedIndexs = [1, 2, 3];
+        const rightAlignedIndexs = [6];
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
-                    {this.state.tableBodyData ?     <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
-            <Table  className='table-body' stickyHeader aria-label="sticky table">
+                    {this.state.tableBodyData ?<div> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
+                        <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell 
-                                        key={option} 
-                                        className={this.getTableCellClass(classes, i)} 
-                                        style={{ minWidth: i === 0 ? "80px" : '120px', 
-                                        textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right": ""
-                                     }}>{option}</TableCell>
+                                        <TableCell
+                                            key={option}
+                                            className={this.getTableCellClass(classes, i)}
+                                            style={{
+                                                minWidth: i === 0 ? "80px" : '120px',
+                                                textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
+                                            }}>{option}</TableCell>
                                     ))}
                                     {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
                                 </TableRow>
@@ -290,7 +296,7 @@ class OrderListTable extends Component {
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
                                                     <span
-                                                        data-toggle="tooltip" data-placement="right" title="info"
+                                                        data-toggle="tooltip" data-placement="center" title="info"
                                                         onClick={this.onInfoClick.bind(this, row)}
                                                         style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px", cursor: "pointer" }}>
                                                         {row.id}
@@ -302,14 +308,14 @@ class OrderListTable extends Component {
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left" ,textTransform: "capitalize"}}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.supplier_mobile + " )"}</span>
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left" ,textTransform: "capitalize"}}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
                                                     </div>
@@ -326,10 +332,10 @@ class OrderListTable extends Component {
                                                     </Tooltip>
                                                 </TableCell> */}
 
-                                                <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
                                                     {row.broker_name}
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", borderBottom: 0 }} >
+                                                <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
@@ -351,23 +357,7 @@ class OrderListTable extends Component {
                                         );
                                     })}
                             </TableBody>
-                            <TableFooter style={{ borderTop: "2px solid #858792" }}>
-                                <TableRow>
-                                    <TablePagination
-                                        rowsPerPageOptions={[25, 50, 100]}
-                                        colSpan={6}
-                                        count={this.state.tableBodyData.length}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        SelectProps={{
-                                            inputProps: { 'aria-label': 'rows per page' },
-                                            native: true,
-                                        }}
-                                        onChangePage={this.handleChangePage.bind(this)}
-                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                                    />
-                                </TableRow>
-                            </TableFooter>
+                          
                         </Table>
                         {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
@@ -375,13 +365,34 @@ class OrderListTable extends Component {
                                 {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                     <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                         </div>}
-                    </div> :
+                       
+                    </div> 
+                    {this.state.tableBodyData.length > 0 && <Table>
+                        <TableFooter style={{ borderTop: "2px solid #858792" , background: "#fafafa"}}>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[25, 50, 100]}
+                                    colSpan={6}
+                                    count={this.state.tableBodyData.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={this.handleChangePage.bind(this)}
+                                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>}
+                    </div>:
                         <div style={{ paddingTop: "14%" }} >
                             <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific Orders"}</span>
                         </div>
                     }
-
+                    
                     {this.state.showAddModal ?
                         <InfoDialog openModal={this.state.open}
                             data={this.state.infoData}
@@ -418,8 +429,8 @@ class OrderListTable extends Component {
                     {showEditDataModal &&
                         <EditOrderDataModal
                             open={showEditDataModal}
-                            commodityList={ commodityList }
-                            editableData={ editableData }
+                            commodityList={commodityList}
+                            editableData={editableData}
                             onOrderDataUpdated={(event) => this.onOrderDataAdded(event)}
                             onEditModalCancel={(event) => this.setState({ showEditDataModal: false })}
                         />}

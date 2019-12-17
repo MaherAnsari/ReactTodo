@@ -69,7 +69,9 @@ class UserInfo extends Component {
             isInfo: false,
             currentView: "userInfo",
             orderList: [],
-            paymentList:[]
+            paymentList:[],
+            orderLabel:"Orders ("+this.props.data.ordercount+")",
+            paymentLabel:"Payments ("+this.props.data.paymentcount+")"
 
 
 
@@ -217,8 +219,8 @@ this.props.onEditModalClosed();
                         aria-label="icon label tabs example"
                     >
                         <Tab label="User Info" value="userInfo" />
-                        <Tab label="Orders" value="orders" />
-                        <Tab label="Payment" value="payment" />
+                        <Tab label={this.state.orderLabel} value="orders" />
+                        <Tab label={this.state.paymentLabel} value="payment" />
                         <Tab label="Edit User" value="editUser" />
                     </Tabs>
                 </Paper></div> 

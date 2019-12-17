@@ -237,7 +237,7 @@ class PriceCollapseView extends Component {
           </div>
           <div   >
             {this.state.expansionpanelHeaderData.length > 0  ? <div style={{
-              marginTop: "18px",maxHeight:"80vh",overflowY:"scroll"
+              marginTop: "18px",maxHeight:"70vh",overflowY:"scroll"
             }}> 
               {this.state.expansionpanelHeaderData &&   (rowsPerPage > 0
                                     ? this.state.expansionpanelHeaderData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -290,7 +290,9 @@ class PriceCollapseView extends Component {
                
                 );
               })}
-              <Table>
+             
+            </div> : < NoDataAvailable style={{ height: '50vh' }} />}
+            {this.state.expansionpanelHeaderData.length > 0  && <Table>
                   <TableFooter style={{ borderTop: "2px solid #858792" }}>
                 <TableRow>
                   <TablePagination
@@ -310,9 +312,7 @@ class PriceCollapseView extends Component {
                   />
                 </TableRow>
               </TableFooter>
-                  </Table>
-            </div> : < NoDataAvailable style={{ height: '50vh' }} />}
-          
+                  </Table>}
           </div>
           {/* {this.state.expansionpanelHeaderData.length == 0 ?  < NoDataAvailable style={{height:'25vh'}}/>:""} */}
           {/* {this.state.expansionpanelHeaderData.length > 0 ? "" : <div className={classes.defaultTemplate}>

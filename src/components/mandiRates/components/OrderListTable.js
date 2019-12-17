@@ -27,6 +27,11 @@ const theme = createMuiTheme({
                 fontFamily: 'lato !important',
             }
         },
+         MuiTablePagination: {
+            toolbar:{
+              paddingRight:'200px'
+            }
+          },
     }
 });
 
