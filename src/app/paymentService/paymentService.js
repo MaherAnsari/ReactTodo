@@ -64,7 +64,18 @@ let paymentService = {
             url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/detail/'+pathparam,
             data : payload
         });
-    }
+    },
+    // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/download?startDate=2019-12-01&endDate=2019-12-11
+    getDownlaodAbleData : async function ( param){
+        return Api({
+            method: 'get',
+            headers: {  
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/download',
+            params : param
+        });
+    },
 
 }
 

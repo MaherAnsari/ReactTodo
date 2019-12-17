@@ -9,6 +9,8 @@ import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
+import Badge from '@material-ui/core/Badge';
+import UserFilterOption from "../../common/UserFilterOption";
 
 const styles = theme => ({
     root: {
@@ -53,7 +55,8 @@ class FilterAreaComponent extends React.Component {
                 { name: "Supplier", id: "supplierid", options: this.props.suppliersList }
             ],
             inputValue: "",
-            date: new Date()
+            date: new Date(),
+            filterOptionData: {},
         }
     }
 
@@ -66,6 +69,8 @@ class FilterAreaComponent extends React.Component {
         }
     }
 
+    
+
     componentWillReceiveProps(nextprops) {
         var data = this.state.configData;
         if (nextprops.buyersList !== data[0]["options"] || nextprops.brokersList !== data[0]["options"] || nextprops.suppliersList !== data[0]["options"]) {
@@ -73,6 +78,44 @@ class FilterAreaComponent extends React.Component {
             data[1]["options"] = nextprops.brokersList;
             data[2]["options"] = nextprops.suppliersList;
             this.setState({ configData: data });
+        }
+    }
+
+    getDataBasedOnFilters = () => {
+        let data = {
+            state: this.state.stateid["value"],
+            district: this.state.districtid["value"],
+            searchVal: this.state.searchedTxt
+        }
+        // console.log(data);
+        if (data["state"] === "") {
+            delete data["state"];
+        }
+        if (data["district"] === "") {
+            delete data["district"];
+        }
+        if (!data["searchVal"] || data["searchVal"] === "") {
+            delete data["searchVal"];
+        }
+
+        if(this.props.role){
+            data['role'] = this.props.role;
+        }
+        if (Object.keys(this.state.filterOptionData).length > 0) {
+            for (var keys in this.state.filterOptionData) {
+                if(this.state.filterOptionData[keys] === "Yes"){
+                    data[keys] = true;
+                }else if(this.state.filterOptionData[keys] === "No"){
+                    data[keys] = false;
+                }else{
+                    data[keys] = this.state.filterOptionData[keys];
+                }
+                
+            }
+        }
+
+        if (Object.keys(data).length > 0) {
+            this.props.onHeaderFilterChange(data);
         }
     }
 
@@ -92,13 +135,15 @@ class FilterAreaComponent extends React.Component {
         if (data["supplierid"] === "") {
             delete data["supplierid"];
         }
-        this.props.getSearchedOrderListData(data);
+
+        var uData = { ...data , ...this.state.filterOptionData}
+
+        this.props.getSearchedOrderListData(uData);
     }
 
 
     getSearchAreaText = (id, event) => {
         try {
-
             this.setState({ [id]: event !== null ? event : "" });
         } catch (err) {
             console.log(err);
@@ -110,32 +155,32 @@ class FilterAreaComponent extends React.Component {
             if (!inputValue) {
                 callback([]);
             }
-            let resp ={};
-            let data ={};
+            let resp = {};
+            let data = {};
             data["searchVal"] = inputValue;
-            if( type === "buyerid"){
-                
+            if (type === "buyerid") {
+
                 data['role'] = 'ca';
                 resp = await buyerService.serchUser(data);
             }
-            if( type === "brokerid"){
+            if (type === "brokerid") {
                 data['role'] = 'broker';
                 resp = await brokerService.serchUser(data);
             }
-            if( type === "supplierid"){
+            if (type === "supplierid") {
                 data['role'] = 'la';
                 resp = await supplierService.serchUser(data);
             }
-        
+
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = [];
-                if( type === "brokerid"){
-                    respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
-                }else{
-                    respData =this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                if (type === "brokerid") {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                } else {
+                    respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
                 }
-                
-                callback( respData );
+
+                callback(respData);
             } else {
                 callback([]);
             }
@@ -154,6 +199,20 @@ class FilterAreaComponent extends React.Component {
             }
         }
         return optionsData;
+    }
+
+
+    onFilterDataAdded(data) {
+        // console.log(data);
+        this.setState({ filterOptionData: data, isFilterDialogOpen: false, open: false })
+    }
+
+    onFilterClick(event) {
+        this.setState({ isFilterDialogOpen: true, open: true });
+    }
+
+    onFilterClose(event) {
+        this.setState({ isFilterDialogOpen: false, open: false });
     }
 
     render() {
@@ -179,13 +238,27 @@ class FilterAreaComponent extends React.Component {
                                                     isClearable={true}
                                                     placeholder={`Select ${obj.name}`}
                                                     defaultOptions={obj.options}
-                                                    loadOptions={this.getOptions.bind(this,obj.id)}
+                                                    loadOptions={this.getOptions.bind(this, obj.id)}
                                                 />
                                             </FormControl>
                                         }
                                     </React.Fragment>
                                 ))}
-                                <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }} onClick={this.getDataBasedOnFilters.bind(this)}>
+                                <div><Badge className={classes.margin} style={{ height: '50px' }} badgeContent={Object.keys(this.state.filterOptionData).length} color="primary">
+                                    <Button component="span" style={{ padding: '5px 10px', fontSize: 12, color: '#b1b1b1', margin: '0px 5px' }} onClick={this.onFilterClick.bind(this)}>
+                                        Filter
+                                </Button>
+                                </Badge></div>
+
+                                {this.state.isFilterDialogOpen && <UserFilterOption
+                                    openModal={this.state.open}
+                                    role={this.props.role}
+                                    filterData={this.state.filterOptionData}
+                                    onEditModalCancel={this.onFilterClose.bind(this)}
+                                    onFilterAdded={this.onFilterDataAdded.bind(this)} />}
+
+                                <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }}
+                                 onClick={this.getDataBasedOnFilters.bind(this)}>
                                     Search
                                 </Button>
                             </form>

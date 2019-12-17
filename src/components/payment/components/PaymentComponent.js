@@ -23,10 +23,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import ImageIcon from '@material-ui/icons/Image';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
+import Utils from '../../../app/common/utils';
 
 
 const theme = createMuiTheme({
@@ -107,7 +106,7 @@ class PaymentComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["Buyer Name/Buyer Mobile", "Location",  "No. of Transactions - in", "No. of Transactions - out","Bijak amount in", "Bijak amount out","Transactions"],
+            tableHeadData: ["Buyer Info", "Location", "No. of Transactions - in", "No. of Transactions - out", "Bijak amount in", "Bijak amount out", "Transactions"],
             tableBodyData: [],
             searchedText: "",
             open: false,
@@ -164,11 +163,12 @@ class PaymentComponent extends Component {
             let resp = await paymentService.getPaymentDetails(params);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result.data;
-                this.setState({ 
-                    defaultData: respData, 
-                    tableBodyData: respData, 
+                this.setState({
+                    defaultData: respData,
+                    tableBodyData: respData,
                     paymentMetaInfo: resp.data.result["metainfo"],
-                    page: 0 });
+                    page: 0
+                });
             }
             this.setState({ showLoader: false })
         } catch (err) {
@@ -204,14 +204,14 @@ class PaymentComponent extends Component {
             payload["searchVal"] = txt;
         }
         var respData = [];
-        var paymentMeta =[];
+        var paymentMeta = [];
         let resp = await paymentService.getPaymentSearchedUser(payload);
         if (resp.data.status === 1 && resp.data.result) {
             respData = resp.data.result.data;
 
-            paymentMeta=resp.data.result["metainfo"]
+            paymentMeta = resp.data.result["metainfo"]
         }
-        this.setState({ tableBodyData: respData,paymentMetaInfo:paymentMeta, searchedText: txt, page: 0 });
+        this.setState({ tableBodyData: respData, paymentMetaInfo: paymentMeta, searchedText: txt, page: 0 });
     }
 
     onDateChaged(data) {
@@ -255,13 +255,26 @@ class PaymentComponent extends Component {
         }
     }
 
+    async handelDownloadClicked() {
+        try {
+            var respData = [];
+            let resp = await paymentService.getDownlaodAbleData(this.state.datePayloads);
+            if (resp.data.status === 1 && resp.data.result) {
+                respData = resp.data.result;
+            }
+            Utils.downloadDataInCSV(respData, "payment_data")
+        } catch (err) {
+            console.log(err);
+            alert( "An error occured while downloading the payment data ");
+        }
+    }
 
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
         const { rowsPerPage, page } = this.state;
-        const  leftAlignedIndexs  = [0,1,2];
-        const  rightAlignedIndexs  = [5,6];
+        const leftAlignedIndexs = [0, 1, 2];
+        const rightAlignedIndexs = [5, 6];
         return (
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
@@ -396,10 +409,12 @@ class PaymentComponent extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} 
-                                        style={{ minWidth: '120px', paddingLeft: i === 0 ? '5px' : '', 
-                                        textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right": ""}}>
-                                        {option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)}
+                                            style={{
+                                                minWidth: '120px', paddingLeft: i === 0 ? '5px' : '',
+                                                textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
+                                            }}>
+                                            {option}</TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
@@ -413,39 +428,39 @@ class PaymentComponent extends Component {
                                             // ["Buyer Name","Buyer Mobile","Location","Amount","No. of Transactions", "Transactions"],
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
 
-                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign: "left" }}>
                                                     {/* {row.buyer_fullname ? row.buyer_fullname : "-"} */}
-                                                {/* </TableCell>
+                                                    {/* </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}> */}
                                                     {/* {row.buyer_mobile ? row.buyer_mobile : "-"} */}
 
-                                                    <div style={{ display: "grid", textAlign: "left" ,textTransform: "capitalize"}}>
-                            <span>{row.buyer_fullname}</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
-                          </div>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                        <span>{row.buyer_fullname}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
+                                                    </div>
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 2)}  style={{ textAlign:"left",textTransform: "capitalize" }}>
+                                                <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left", textTransform: "capitalize" }}>
                                                     <div className="text-ellpses">
                                                         {row.buyer_locality ? row.buyer_locality + ", " : ""}
                                                         {row.buyer_district ? row.buyer_district + ", " : ""}
                                                         {row.buyer_state ? row.buyer_state : ""}
                                                     </div>
                                                 </TableCell>
-                                              
+
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
                                                     {row.b_in ? this.formatNumberWithComma(row.b_in) : "0"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
                                                     {row.b_out ? this.formatNumberWithComma(row.b_out) : "0"}
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39", textAlign:"right" }}>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39", textAlign: "right" }}>
                                                     <div className="text-ellpses">
-                                                    ₹ {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
+                                                        ₹ {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010", textAlign:"right" }}>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010", textAlign: "right" }}>
                                                     <div className="text-ellpses">
-                                                    ₹ {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
+                                                        ₹ {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -516,6 +531,11 @@ class PaymentComponent extends Component {
                     >
                         <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p>Add Transaction</p></div>
+                </div>
+                <div className="updateBtndef" style={{ right: "205px" }}>
+                    <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handelDownloadClicked.bind(this)}>
+                        <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0 }} aria-hidden="true"></i>
+                    </div>
                 </div>
                 {showAddTransactionModal &&
                     <AddTransactionModal
