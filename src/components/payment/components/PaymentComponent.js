@@ -107,7 +107,7 @@ class PaymentComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["Buyer Name", "Buyer Mobile", "Location",  "No. of Transactions - in", "No. of Transactions - out","Bijak amount in", "Bijak amount out","Transactions"],
+            tableHeadData: ["Buyer Name/Buyer Mobile", "Location",  "No. of Transactions - in", "No. of Transactions - out","Bijak amount in", "Bijak amount out","Transactions"],
             tableBodyData: [],
             searchedText: "",
             open: false,
@@ -260,6 +260,8 @@ class PaymentComponent extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
         const { rowsPerPage, page } = this.state;
+        const  leftAlignedIndexs  = [0,1,2];
+        const  rightAlignedIndexs  = [5,6];
         return (
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
@@ -394,7 +396,10 @@ class PaymentComponent extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} 
+                                        style={{ minWidth: '120px', paddingLeft: i === 0 ? '5px' : '', 
+                                        textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right": ""}}>
+                                        {option}</TableCell>
                                     ))}
                                 </TableRow>
                             </TableHead>
@@ -408,16 +413,21 @@ class PaymentComponent extends Component {
                                             // ["Buyer Name","Buyer Mobile","Location","Amount","No. of Transactions", "Transactions"],
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
 
-                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    {row.buyer_fullname ? row.buyer_fullname : "-"}
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}>
+                                                    {/* {row.buyer_fullname ? row.buyer_fullname : "-"} */}
+                                                {/* </TableCell>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}> */}
+                                                    {/* {row.buyer_mobile ? row.buyer_mobile : "-"} */}
+
+                                                    <div style={{ display: "grid", textAlign: "left" ,textTransform: "capitalize"}}>
+                            <span>{row.buyer_fullname}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
+                          </div>
                                                 </TableCell>
-                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    {row.buyer_mobile ? row.buyer_mobile : "-"}
-                                                </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                <TableCell className={this.getTableCellClass(classes, 2)}  style={{ textAlign:"left",textTransform: "capitalize" }}>
                                                     <div className="text-ellpses">
-                                                        {row.buyer_locality ? row.buyer_locality + "," : ""}
-                                                        {row.buyer_district ? row.buyer_district + "," : ""}
+                                                        {row.buyer_locality ? row.buyer_locality + ", " : ""}
+                                                        {row.buyer_district ? row.buyer_district + ", " : ""}
                                                         {row.buyer_state ? row.buyer_state : ""}
                                                     </div>
                                                 </TableCell>
@@ -428,12 +438,12 @@ class PaymentComponent extends Component {
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
                                                     {row.b_out ? this.formatNumberWithComma(row.b_out) : "0"}
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39" }}>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39", textAlign:"right" }}>
                                                     <div className="text-ellpses">
                                                     ₹ {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010" }}>
+                                                <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010", textAlign:"right" }}>
                                                     <div className="text-ellpses">
                                                     ₹ {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
                                                     </div>

@@ -104,6 +104,44 @@ function formatDateData ( apiDate ) {
     }
   }
 
+  function downloadDataInCSV( json , filename ){
+    try{
+        // var json =[
+        //     {
+        //       "Nachname":"Stromberg",
+        //       "Vorname":"Bernd",
+        //       "Benutzername":"strombergbernd12",
+        //       "Password":"Xrz5Bv6A"
+        //     },
+        //     {
+        //       "Nachname":"Heisterkamp",
+        //       "Vorname":"Ernie", 
+        //       "Benutzername":"heisterkampernie12",
+        //       "Password":"aOq24EpF"
+        //     }
+        //   ]
+          
+        //   function toCSV(json) {
+            // json = Object.values(json);
+            var csv = "";
+            var keys = (json[0] && Object.keys(json[0])) || [];
+            csv += keys.join(',') + '\n';
+            for (var line of json) {
+              csv += keys.map(key => line[key]).join(',') + '\n';
+            }
+            console.log(csv);
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(  csv );
+            hiddenElement.target = '_blank';
+            hiddenElement.download = (filename+".csv");
+            hiddenElement.click();
+        //   }
+          
+    }catch( err ){
+        console.log( err );
+    }
+  }
+
 const Utils = {
 
     getToken,
@@ -113,7 +151,8 @@ const Utils = {
     getDistrictData,
     setDistrictData,
     getStateData,
-    formatDateData
+    formatDateData,
+    downloadDataInCSV
 
 }
 

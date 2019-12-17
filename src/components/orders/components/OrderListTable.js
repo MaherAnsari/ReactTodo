@@ -15,6 +15,8 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import ViewSupportingInvoiceModal from '../common/ViewSupportingInvoiceModal';
 import AddOrderModal from '../common/AddOrderModal';
+import Utils from '../../../app/common/utils';
+
 var moment = require('moment');
 
 
@@ -208,6 +210,10 @@ class OrderListTable extends Component {
         });
     }
 
+    handelDownloadClicked=()=>{
+        Utils.downloadDataInCSV(this.state.tableBodyData, "order_data")
+    }
+
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page, showAddOrderModal } = this.state;
@@ -338,6 +344,12 @@ class OrderListTable extends Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Add Order</p></div>
+                    </div>
+
+                        <div className="updateBtndef" style={{ right : "160px"}}>
+                        <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0}}aria-hidden="true"></i>
+                            </div>
                     </div>
                     {showAddOrderModal &&
                         <AddOrderModal
