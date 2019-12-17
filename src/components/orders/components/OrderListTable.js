@@ -16,9 +16,11 @@ import TablePagination from '@material-ui/core/TablePagination';
 import ViewSupportingInvoiceModal from '../common/ViewSupportingInvoiceModal';
 import AddOrderModal from '../common/AddOrderModal';
 import Utils from '../../../app/common/utils';
+import EditOrderDataModal from '../common/EditOrderDataModal';
+import EditIcon from '@material-ui/icons/Edit';
+import commodityService from '../../../app/commodityService/commodityService';
 
 var moment = require('moment');
-
 
 const theme = createMuiTheme({
     overrides: {
@@ -111,8 +113,42 @@ class OrderListTable extends Component {
             showSupportingInvoiceModal: false,
             invoiceModalData: [],
 
-            showAddOrderModal: false
+            showAddOrderModal: false,
 
+            showEditDataModal: false,
+            commodityList:[]
+        }
+        this.getCommodityNames();
+    }
+
+    async getCommodityNames() {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+            } else {
+                this.setState({ commodityList: [] });
+            }
+        } catch (err) {
+            console.error(err)
+            this.setState({ commodityList: [] });
+        }
+    }
+
+    getCommodityNamesArray(data) {
+        try {
+            var listData = [];
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i]["name"]) {
+                        listData.push(data[i]["name"])
+                    }
+                }
+            }
+            return listData;
+        } catch (err) {
+            console.log(err);
+            return [];
         }
     }
 
@@ -205,18 +241,23 @@ class OrderListTable extends Component {
     }
 
     onOrderDataAdded() {
-        this.setState({ showAddOrderModal: false },function(){
+        this.setState({ showAddOrderModal: false }, function () {
             this.props.onOrderAdded();
         });
     }
 
-    handelDownloadClicked=()=>{
+    handelDownloadClicked = () => {
         Utils.downloadDataInCSV(this.state.tableBodyData, "order_data")
+    }
+
+    //edit option
+    handelEditModalOpen(data) {
+        this.setState({ editableData: data, showEditDataModal: true });
     }
 
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page, showAddOrderModal } = this.state;
+        const { rowsPerPage, page, showAddOrderModal,showEditDataModal, editableData , commodityList} = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -225,7 +266,7 @@ class OrderListTable extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? "80px" : '120px' }}>{option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 0 ? "80px" : '120px', textAlign: i === 8 ? "right" : "" }}>{option}</TableCell>
                                     ))}
                                     {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
                                 </TableRow>
@@ -286,9 +327,12 @@ class OrderListTable extends Component {
                                                         padding: "4px 12px",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
-                                                <TableCell className={this.getTableCellClass(classes, 7)} >
-                                                    {/* {row.createdtime.split("T")[0]+"\n"+row.createdtime.split("T")[1] } */}
+                                                <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
                                                     ₹ {this.formatNumberWithComma(row.bijak_amt)}
+                                                    <EditIcon
+                                                        className="material-Icon"
+                                                        onClick={() => this.handelEditModalOpen(row)}
+                                                        style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -346,16 +390,25 @@ class OrderListTable extends Component {
                             }}>Add Order</p></div>
                     </div>
 
-                        <div className="updateBtndef" style={{ right : "160px"}}>
+                    <div className="updateBtndef" style={{ right: "160px" }}>
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handelDownloadClicked.bind(this)}>
-                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0}}aria-hidden="true"></i>
-                            </div>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0 }} aria-hidden="true"></i>
+                        </div>
                     </div>
                     {showAddOrderModal &&
                         <AddOrderModal
                             open={showAddOrderModal}
+                            commodityList={commodityList}
                             onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
                             onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
+                        />}
+                    {showEditDataModal &&
+                        <EditOrderDataModal
+                            open={showEditDataModal}
+                            commodityList={ commodityList }
+                            editableData={ editableData }
+                            onOrderDataUpdated={(event) => this.onOrderDataAdded(event)}
+                            onEditModalCancel={(event) => this.setState({ showEditDataModal: false })}
                         />}
 
                 </Paper>

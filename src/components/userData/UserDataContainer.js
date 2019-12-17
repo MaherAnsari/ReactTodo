@@ -116,6 +116,7 @@ class UserDataContainer extends React.Component {
                        <UserListTable  
                        tableData={this.state.dataList} 
                        onClose={this.getData.bind(this)} 
+                       downloadAbleFileName="user_list_data"
                        commodityList={ this.state.commodityList}  /> 
 
                        <div className="updateBtndef">
@@ -124,6 +125,7 @@ class UserDataContainer extends React.Component {
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD USER</p></div>
                     </div>
+              
                 </Card>    :<Loader />}        
 
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
