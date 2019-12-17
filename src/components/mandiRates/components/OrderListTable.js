@@ -130,13 +130,14 @@ class OrderListTable extends Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
-                    {Object.keys(this.state.tableBodyData).length > 0 ? <div >
+                    {Object.keys(this.state.tableBodyData).length > 0 ? <div  >
                         <Card className={classes.card}>
                             <div className="orderList">
                                 <div style={{ width: "25%" }}>commodity</div>
                                 <div style={{ width: "40%" }}>Min.  &   Modal Price</div>
                                 <div style={{ width: "25%" }}>Max Price</div>
                             </div>
+                            <div style={{maxHeight:"70vh",overflowY:"scroll"}} >
                             {Object.keys(this.state.tableBodyData).map((option) => {
                                 return (<div  key={ option } >
                                     <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{ marginLeft: '5%' }} alt="Smiley face" width="42" height="42" />
@@ -163,6 +164,7 @@ class OrderListTable extends Component {
                                 </div>
                                 )
                             })}
+                            </div>
                         </Card>
                     </div> :
                         <div style={{ paddingTop: "14%" }} >

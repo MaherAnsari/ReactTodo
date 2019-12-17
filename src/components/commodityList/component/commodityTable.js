@@ -192,8 +192,8 @@ class CommodityTable extends Component {
                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
             </div>
           </div>
-          <div >
-            <Table className='table-body'>
+          <div style={{maxHeight:"80vh",overflowY:"scroll"}}>
+            <Table  className='table-body' stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (

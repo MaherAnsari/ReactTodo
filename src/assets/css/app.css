@@ -993,7 +993,7 @@ th, td {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
   
 }
 
@@ -1031,7 +1031,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .table-body{
   color: #2e3247;
   background: #e9eff1;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
 }
 .add-icon{
   font-size: 22px !important;

@@ -105,6 +105,20 @@ class AddOrderModal extends Component {
         this.getCommodityNames();
     }
 
+
+    componentDidMount(){
+        if(this.props.userdata && this.props.userdata.role === "ca"){
+            this.state.addOrderPayload['buyerid'] = this.props.userdata.id;
+            this.state.addOrderPayload['buyer_mobile'] = this.props.userdata.mobile;
+
+        }else if(this.props.userdata && this.props.userdata.role === "la"){
+            this.state.addOrderPayload['supplierid'] = this.props.userdata.id;
+            this.state.addOrderPayload['supplier_mobile'] = this.props.userdata.mobile;
+        }else if(this.props.userdata && this.props.userdata.role === "broker"){
+            this.state.addOrderPayload['brokerid'] = this.props.userdata.id;
+        }
+    }
+
     componentWillReceiveProps() {
         if (this.props !== this.state) {
             this.setState({ open: this.props.openModal });
@@ -389,7 +403,20 @@ class AddOrderModal extends Component {
                 <DialogContent>
 
                     <div style={{ display: "flex" }}>
-                        <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                    {this.props.userdata && this.props.userdata.role === "ca" ?
+
+<TextField
+    margin="dense"
+    id="buyerid"
+    label="Buyer"
+    disabled={true}
+    // error={errorFields["amount"] ? true : false}
+    type="text"
+    style={{ width: '49%' }}
+    value={this.props.userdata.fullname}
+    // onChange={this.handleInputChange.bind(this)}
+    fullWidth />
+: <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
                             <AsyncSelect
                                 cacheOptions
                                 value={buyerid}
@@ -418,10 +445,20 @@ class AddOrderModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "buyerid")}
                             />
-                        </div>
+                        </div>}
                         &nbsp;
                         &nbsp;
-                    <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                        {this.props.userdata && this.props.userdata.role === "la"?<TextField
+                                margin="dense"
+                                id="supplierid"
+                                label="Supplier"
+                                disabled={true}
+                                // error={errorFields["amount"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={this.props.userdata.fullname}
+                                // onChange={this.handleInputChange.bind(this)}
+                                fullWidth /> :  <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
                             <AsyncSelect
                                 cacheOptions
@@ -450,11 +487,21 @@ class AddOrderModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "supplierid")}
                             />
-                        </div>
+                        </div>}
                     </div>
 
                     <div style={{ display: "flex" }}>
-                        <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                    {this.props.userdata && this.props.userdata.role === "broker"?<TextField
+                                margin="dense"
+                                id="brokerid"
+                                label="Broker"
+                                disabled={true}
+                                // error={errorFields["amount"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={this.props.userdata.fullname}
+                                // onChange={this.handleInputChange.bind(this)}
+                                fullWidth /> : <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
                             <AsyncSelect
                                 cacheOptions
                                 value={brokerid}
@@ -483,7 +530,7 @@ class AddOrderModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "brokerid")}
                             />
-                        </div>
+                        </div>}
                         &nbsp;
                         &nbsp;
                         <TextField

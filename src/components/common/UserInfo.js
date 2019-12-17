@@ -227,6 +227,7 @@ this.props.onEditModalClosed();
                     onEditModalClosed={this.handleDialogCancel.bind(this)}
                     onEditModalCancel={this.handleDialogCancel.bind(this)}
                     data={this.state.orderList}
+                    userdata={this.props.data}
                     role={this.props.data.role}
                 /> : ""}
 

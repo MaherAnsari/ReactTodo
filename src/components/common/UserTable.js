@@ -22,6 +22,8 @@ import Utils from '../../app/common/utils';
 import UserFilterDataView from './UserFilterDataView';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+
+
 const theme = createMuiTheme({
     overrides: {
         MuiTableCell: {
@@ -55,7 +57,7 @@ const styles = theme => ({
         paddingLeft: '4px',
         paddingRight: '4px',
         textAlign: 'center',
-        maxWidth: '190px',
+        maxWidth: '180px',
         padding: '12px',
         maxHeight: '40px'
     },
@@ -90,7 +92,10 @@ const styles = theme => ({
         fontWeight: '600',
         fontSize: '15px',
         color: '#242529'
-    }
+    },
+    container: {
+        maxHeight: 440,
+      },
 });
 
 
@@ -296,12 +301,12 @@ class UserListTable extends Component {
                                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
                         </div> */}
                     </div>
-                    <div >
-                        <Table className='table-body'>
+                    <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
+            <Table  className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 4 ? '50px' : '110px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
                                    
@@ -376,6 +381,7 @@ class UserListTable extends Component {
                                     );
                                 })}
                             </TableBody>
+
                             <TableFooter  style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
@@ -394,6 +400,7 @@ class UserListTable extends Component {
                                 </TableRow>
                             </TableFooter>
                         </Table>
+                      
                     </div>
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>

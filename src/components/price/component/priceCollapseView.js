@@ -235,9 +235,9 @@ class PriceCollapseView extends Component {
               /><i className="fa fa-search"></i>
             </div>
           </div>
-          <div >
+          <div   >
             {this.state.expansionpanelHeaderData.length > 0  ? <div style={{
-              marginTop: "18px"
+              marginTop: "18px",maxHeight:"80vh",overflowY:"scroll"
             }}> 
               {this.state.expansionpanelHeaderData &&   (rowsPerPage > 0
                                     ? this.state.expansionpanelHeaderData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

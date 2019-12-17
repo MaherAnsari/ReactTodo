@@ -220,8 +220,8 @@ class OrderListTable extends Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
-                    {this.state.tableBodyData ? <div >
-                        <Table className='table-body'>
+                    {this.state.tableBodyData ?     <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
+            <Table  className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (

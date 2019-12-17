@@ -11,6 +11,8 @@ import TableRow from '@material-ui/core/TableRow';
 import NoDataAvailable from '../common/NoDataAvailable';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import AddOrderModal from '../orders/common/AddOrderModal';
+import orderService from '../../app/orderService/orderService';
 
 const styles = theme => ({
     heading: {
@@ -70,10 +72,12 @@ class OrderTable extends Component {
             open: this.props.openModal, tableBodyData: this.props.data,
             rowsPerPage: 50,
             page: 0,
+            showAddOrderModal:false
         }
 
     }
     componentDidMount() {
+        console.log(this.props.userdata);
      if(this.props.role === "ca"){
         let tableHeadData =  ["supplier_name", "supplier_mobile", "commodity", "Date", "amount"];
         this.setState({ tableHeadData : tableHeadData});
@@ -91,6 +95,26 @@ class OrderTable extends Component {
         this.props.onEditModalCancel();
     }
 
+    async getListData(params) {
+        this.setState({ showLoader: true });
+
+        try {
+            let resp = await orderService.getOrderListData(params);
+
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ tableBodyData: resp.data.result.data });
+            } else {
+                // this.setState({ tableBodyData: [] ,showLoader:false});
+            }
+
+        } catch (err) {
+            console.error(err);
+            if (this.ismounted) {
+                // this.setState({ tableBodyData: [],showLoader:false });
+            }
+        }
+    }
+
 
     handleAddClick(event) {
 
@@ -102,12 +126,38 @@ class OrderTable extends Component {
       handleChangeRowsPerPage = event => {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
       };
+
+      onOrderDataAdded() {
+        this.setState({ showAddOrderModal: false },function(){
+            // this.props.onOrderAdded();
+            let param = {"limit":10000};
+            if (this.props.userdata.role === "ca") {
+                param["buyerid"] = this.props.userdata.mobile;
+            } else if (this.props.userdata.role === "broker") {
+                param["brokerid"] = this.props.userdata.id;
+            } else if (this.props.userdata.role === "la") {
+                param["supplierid"] = this.props.userdata.mobile;
+            }else{
+                param["na"] = this.props.userdata.mobile;
+            }
+            // console.log(param);
+            if (Object.keys(param).length) {
+                this.getListData(param);
+            }
+        });
+    }
+
+    handleClickOpen() {
+       
+        this.setState({ showAddOrderModal: true });
+    }
+
     
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page } = this.state;
         return (<div style={{ width: '100%',marginTop:'50px' }}>
-            <Table className='table-body'>
+            <Table  className='table-body'>
                 <TableHead>
                     <TableRow  >
                         {this.state.tableHeadData.map((option, i) => (
@@ -174,6 +224,22 @@ class OrderTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
+            {this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") &&   <div className="updateBtndef">
+                        <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Add Order</p></div>
+                    </div>}
+                    {this.state.showAddOrderModal &&
+                        <AddOrderModal
+                            open={this.state.showAddOrderModal}
+                            userdata={this.props.userdata}
+                            onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
+                            onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
+                        />}
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
                     dialogText={this.state.dialogText}
