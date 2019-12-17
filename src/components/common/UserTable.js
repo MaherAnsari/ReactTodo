@@ -434,9 +434,9 @@ class UserListTable extends Component {
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
                                        {/* download */}
-                    <div className="updateBtndef" style={{ right : "160px"}}>
-                        <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handelDownloadClicked.bind(this)}>
-                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0}}aria-hidden="true"></i>
+                    <div className="updateBtndef" style={{ right : "160px"}} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89",borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0,color: "white"}}aria-hidden="true"></i>
                             </div>
                     </div>
                 </Paper>

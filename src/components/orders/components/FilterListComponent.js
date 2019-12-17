@@ -10,7 +10,7 @@ import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
 import Badge from '@material-ui/core/Badge';
-import UserFilterOption from "../../common/UserFilterOption";
+import UserFilterOption from "../common/UserFilterOption";
 
 const styles = theme => ({
     root: {
@@ -69,7 +69,7 @@ class FilterAreaComponent extends React.Component {
         }
     }
 
-    
+
 
     componentWillReceiveProps(nextprops) {
         var data = this.state.configData;
@@ -98,19 +98,19 @@ class FilterAreaComponent extends React.Component {
             delete data["searchVal"];
         }
 
-        if(this.props.role){
+        if (this.props.role) {
             data['role'] = this.props.role;
         }
         if (Object.keys(this.state.filterOptionData).length > 0) {
             for (var keys in this.state.filterOptionData) {
-                if(this.state.filterOptionData[keys] === "Yes"){
+                if (this.state.filterOptionData[keys] === "Yes") {
                     data[keys] = true;
-                }else if(this.state.filterOptionData[keys] === "No"){
+                } else if (this.state.filterOptionData[keys] === "No") {
                     data[keys] = false;
-                }else{
+                } else {
                     data[keys] = this.state.filterOptionData[keys];
                 }
-                
+
             }
         }
 
@@ -135,8 +135,11 @@ class FilterAreaComponent extends React.Component {
         if (data["supplierid"] === "") {
             delete data["supplierid"];
         }
-
-        var uData = { ...data , ...this.state.filterOptionData}
+        if (this.state.filterOptionData["supporting_images"] === "All") {
+            delete this.state.filterOptionData["supporting_images"];
+        }
+        
+        var uData = { ...data, ...this.state.filterOptionData }
 
         this.props.getSearchedOrderListData(uData);
     }
@@ -258,7 +261,7 @@ class FilterAreaComponent extends React.Component {
                                     onFilterAdded={this.onFilterDataAdded.bind(this)} />}
 
                                 <Button component="span" style={{ border: '1px solid #e72e89', padding: '5px 10px', fontSize: 12, backgroundColor: '#e72e89', color: '#fff', margin: '0px 10px' }}
-                                 onClick={this.getDataBasedOnFilters.bind(this)}>
+                                    onClick={this.getDataBasedOnFilters.bind(this)}>
                                     Search
                                 </Button>
                             </form>

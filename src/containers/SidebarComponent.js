@@ -67,6 +67,7 @@ class VerticalItem extends React.Component {
         if (routeItem.children[j]["route"] === this.props.active) {
           // this.setState({ isHover : true }, function(){
           this.props.onAccordClicked(routeItem["id"])
+          this.props.onRouteClicked(routeItem.children[j]["name"]);
           // });
           break;
         }
@@ -85,9 +86,10 @@ class VerticalItem extends React.Component {
 
   }
 
-  onSelect(route) {
+  onSelect(data ) {
 
-    this.props.onSelect(route);
+    this.props.onSelect(data.route);
+    this.props.onRouteClicked( data.name );
     // this.toggleHover(true);
 
 
@@ -102,7 +104,7 @@ class VerticalItem extends React.Component {
           return (
             <li className="class_li" key={i.route}
               style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
-              onClick={() => this.onSelect(i.route)} >
+              onClick={() => this.onSelect(i)} >
 
               <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
                 {i.iconClassName}
@@ -132,7 +134,7 @@ class VerticalItem extends React.Component {
             style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {
-                this.onSelect(item.route)
+                this.onSelect(item)
               } else {
                 this.toggleHover(activeAccordian !== item.id ? item.id : "")
               }
@@ -208,6 +210,7 @@ class VerticalNavigation extends React.PureComponent {
               active={activeRoute}
               activeAccordian={this.state.activeAccordian}
               onAccordClicked={(data) => this.setState({ activeAccordian: data })}
+              onRouteClicked={(rname)=>this.props.onRouteClicked(rname)}
               onSelect={this.onRouteChanged.bind(this)}    // this.onRouteChanged(i.route) } //this.props.onChange(i.route)
             />
           ))}
@@ -257,6 +260,7 @@ class ListItems extends React.PureComponent {
             open={this.state.open}
             labname={this.props.labname}
             activeRoute={this.state.activeRoute}
+            onRouteClicked={(rname)=>this.props.onRouteClicked(rname)}
             onChange={this.onRouteChanged.bind(this)}
           />
         </div>

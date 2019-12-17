@@ -31,6 +31,8 @@ import PaymentContainer from '../payment/PaymentContainer';
 import Utils from '../../app/common/utils';
 import MandiRateContainer from '../mandiRates/MandiRateContainer';
 import ChangePasswordPage from '../auth/ChangePasswordPage';
+import Icon from '@material-ui/core/Icon';
+
 
 const drawerWidth = 250;
 
@@ -174,7 +176,8 @@ class Home extends React.Component {
       dbNameList: { 'runningTask': [], 'drainingTask': [], 'failedTask': [], "healthyLabs":{} },
       showUnHealthyList : false,
 
-      showChangePasswordView : false
+      showChangePasswordView : false,
+      currentTabName:""
     };
     this.logoutUser = this.logoutUser.bind(this)
     this.changePasswordViewClick = this.changePasswordViewClick.bind(this)
@@ -294,9 +297,14 @@ class Home extends React.Component {
                       </IconButton>
                   }
                 </Grid>
-              
+                {/* <Grid style={{marginLeft:'5px',padding: "47px 0px"}} > */}
+                    <div style={{color: "white", margin: "auto",display: "flex",width: "22%",height: "25px"}}>
+                    <Icon style={{ color: "#50a1cf", fontSize: "24px" }}>play_arrow</Icon>
+                    <span style={{lineHeight: "26px"}}> {this.state.currentTabName }</span>
+                     </div>
+                {/* </Grid> */}
                 
-                <Grid style={{marginLeft:'80%'}} item xs={2} sm={1}>
+                <Grid style={{marginLeft:'60%'}} item xs={2} sm={1}>
                   {!cookie.load('token')
 
                     ? <div></div>
@@ -352,6 +360,7 @@ class Home extends React.Component {
                       globalModeOption={this.state.isSetGlobal} 
                       isdrawerOpen={this.state.open} 
                       dbImageUrl={this.state.dbImgUrl} 
+                      onRouteClicked={ (rname)=> this.setState({ currentTabName : rname})}
                       labname={this.state.labname} />
             </List>
         </Drawer>
