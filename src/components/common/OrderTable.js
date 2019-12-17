@@ -156,8 +156,8 @@ class OrderTable extends Component {
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page } = this.state;
-        return (<div style={{ width: '100%',marginTop:'50px' }}>
-            <Table  className='table-body'>
+        return (<div style={{ width: '100%',marginTop:'50px', maxHeight:"550px",overflowY:"scroll"}}>
+            <Table stickyHeader aria-label="sticky table" className='table-body'>
                 <TableHead>
                     <TableRow  >
                         {this.state.tableHeadData.map((option, i) => (

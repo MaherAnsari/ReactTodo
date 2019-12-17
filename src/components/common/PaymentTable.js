@@ -152,9 +152,9 @@ class PaymentTable extends Component {
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page } = this.state;
-        return (<div style={{ width: '100%',marginTop:'50px'  }}>
+        return (<div style={{ width: '100%',marginTop:'50px', height:"550px",overflowY:"scroll" }}>
             {/* <AddTransactionModal open={true} /> */}
-            <Table className='table-body'>
+            <Table stickyHeader aria-label="sticky table" className='table-body'>
                 <TableHead>
                     <TableRow  >
                         {this.state.tableHeadData.map((option, i) => (
