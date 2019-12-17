@@ -9,16 +9,9 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-import 'date-fns';
 import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
-import paymentService from '../../../app/paymentService/paymentService';
 import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
 import commodityService from '../../../app/commodityService/commodityService';
@@ -71,13 +64,6 @@ const styles = theme => ({
 
 });
 
-const transactionType = {
-    "b_in": "bijak-in", "b_out": "bijak-out",
-    "b_hist": "historical"
-};
-const payment_modeOption = ["bank", "cash"];
-const cashback_allotted_toOption = ["none", "la", "ca"];
-const creator_roleOption = ["la", "ca"];
 class AddOrderModal extends Component {
 
     constructor(props) {

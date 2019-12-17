@@ -112,7 +112,8 @@ const styles = theme => ({
     textAlign: 'center',
     maxWidth: "120px", //'200px',
     padding: '12px',
-    color: "#022361"
+    // color: "#022361"
+    color: "#2f2f2f"
   },
   titleText: { width: '50%', textAlign: 'left', paddingLeft: '15px', paddingTop: '7px', fontFamily: 'lato !important', },
   defaultTemplate: { height: '30vh', paddingTop: '10vh', },
@@ -195,7 +196,7 @@ class MandiListTable extends Component {
     if (resp.data.status === 1 && resp.data.result) {
       rows = resp.data.result.data;
     }
-    this.setState({ tableBodyData: rows , page: 0});
+    this.setState({ tableBodyData: rows, page: 0 });
   }
 
   handelConfirmUpdate = async () => {
@@ -253,21 +254,21 @@ class MandiListTable extends Component {
       return e => {
         const direction = this.state.sort.column ? (this.state.sort.direction === 'asc' ? 'desc' : 'asc') : 'desc'
         const sortedUsers = this.state.tableBodyData.sort((a, b) => {
-         if(a[column] && a[column] !== null && b[column] && b[column] !== null ){
-          if (typeof (a[column]) === 'string') {
-            const nameA = a[column].toUpperCase() // ignore upper and lowercase
-            const nameB = b[column].toUpperCase() // ignore upper and lowercase
+          if (a[column] && a[column] !== null && b[column] && b[column] !== null) {
+            if (typeof (a[column]) === 'string') {
+              const nameA = a[column].toUpperCase() // ignore upper and lowercase
+              const nameB = b[column].toUpperCase() // ignore upper and lowercase
 
-            if (nameA < nameB)
-              return -1
-            if (nameA > nameB)
-              return 1
-            else return 0
+              if (nameA < nameB)
+                return -1
+              if (nameA > nameB)
+                return 1
+              else return 0
+            }
+            else {
+              return a[column] - b[column]
+            }
           }
-          else {
-            return a[column] - b[column]
-          }
-        }
         })
 
         if (direction === 'desc') {
@@ -284,14 +285,14 @@ class MandiListTable extends Component {
     }
   }
 
-setArrow = (column) => {
+  setArrow = (column) => {
     let iconClass = 'fa fa-arrow-';
-    
+
     if (this.state.sort.column === column) {
       iconClass += this.state.sort.direction === 'asc' ? 'down' : 'up';
     }
     return iconClass;
-    };
+  };
 
 
   render() {
@@ -327,10 +328,10 @@ setArrow = (column) => {
                     <TableCell
                       onClick={this.onSort(tableHeadDataKey[i])}
                       key={option}
-                      style={{ cursor: tableHeadDataKey[i] !== "" ? "pointer" : "unset" }}
+                      style={{ textAlign: i < 3 ? "left" : "center", cursor: tableHeadDataKey[i] !== "" ? "pointer" : "unset" }}
                       className={this.getTableCellClass(classes, i)}>{option}
-                     {tableHeadDataKey[i] !== "" && <i className={this.setArrow( tableHeadDataKey[i] )} aria-hidden="true"></i>}
-                      </TableCell>
+                      {tableHeadDataKey[i] !== "" && <i className={this.setArrow(tableHeadDataKey[i])} aria-hidden="true"></i>}
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -344,14 +345,26 @@ setArrow = (column) => {
                     return (
                       <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                         <TableCell component="th" scope="row" className={this.getTableCustomBgCellClass(classes, 0)}>
-                          {row.market + " (" + row.market_hindi + ")"}</TableCell>
-                        {/* <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                          {row.state_hindi ? row.state_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.district + " (" + row.district_hindi + ")"}</TableCell>
-                        {/* <TableCell className={this.getTableCustomBgCellClass(classes) + " market-val"} >{row.market}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes)}>{row.state + " (" + row.state_hindi + ")"}</TableCell>
+                          <div style={{ display: "grid", textAlign: "left" }}>
+                            <span>{row.market}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.market_hindi + " )"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left" }} >
+                          {/* {row.district + " (" + row.district_hindi + ")"} */}
+                          <div style={{ display: "grid", textAlign: "left" }}>
+                            <span>{row.district}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.district_hindi + " )"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className={this.getTableCellClass(classes)} style={{ textAlign: "left" }}>
+                          <div style={{ display: "grid", textAlign: "left" }}>
+                            <span>{row.state}</span>
+                            <span style={{ fontSize: "12px" }}>{"( " + row.state_hindi + " )"}</span>
+                          </div>
+                        </TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)}> {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi :"-" + ")": "-" }</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)} > {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi : "-" + ")" : "-"}</TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>
