@@ -248,7 +248,9 @@ class ViewTransactionModal extends Component {
         const { groupedTransactionData, transDate, allTransactionsData, expanded,
             supplierNameMapping, buyerInfo, selectedTab,
             showEditTransactionModal } = this.state;
-            const { rowsPerPage, page } = this.state;
+        const { rowsPerPage, page } = this.state;
+        const leftAlignedIndexs = [1, 2];
+        const rightAlignedIndexs = [5];
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -377,7 +379,12 @@ class ViewTransactionModal extends Component {
                                                     <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
                                                         <TableRow   style={{borderBottom: "2px solid #858792"}} >
                                                             {this.state.tableHeadData.map((option, i) => (
-                                                                <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                                                <TableCell 
+                                                                key={option} 
+                                                                className={this.getTableCellClass(classes, i)} 
+                                                                style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '',
+                                                                textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
+                                                             }}>{option}</TableCell>
                                                             ))}
                                                             <TableCell  className={this.getTableCellClass(classes, 0)} style={{ minWidth: '120px', paddingLeft:  '' }}></TableCell>
                                                         </TableRow>
@@ -398,15 +405,15 @@ class ViewTransactionModal extends Component {
                                                                     
                                                                     {row.id ? row.id : "-"}
                                                                     </TableCell>
-                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign:"left"}}>
                                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
                                                                     </TableCell>
-                                                                    <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                                    <TableCell className={this.getTableCellClass(classes, 2)} style={{textAlign:"left"}}>
                                                                         <div className="text-ellpses">
                                                                             {row.supplier_business_name ? row.supplier_business_name : "-"}
                                                                         </div>
                                                                     </TableCell>
-                                                                    <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                                    <TableCell className={this.getTableCellClass(classes, 3)}  >
                                                                         <div className="text-ellpses">
                                                                             {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
                                                                         </div>
@@ -415,7 +422,7 @@ class ViewTransactionModal extends Component {
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                                         {row.payment_mode ? row.payment_mode : "-"}
                                                                     </TableCell>
-                                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign:"right"}}>
                                                                     ₹ {row.amount ? row.amount : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -462,7 +469,12 @@ class ViewTransactionModal extends Component {
                                     <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
                                         <TableRow  style={{borderBottom: "2px solid #858792"}} >
                                             {this.state.tableHeadData.map((option, i) => (
-                                                <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                                                <TableCell 
+                                                key={option} 
+                                                className={this.getTableCellClass(classes, i)} 
+                                                style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '',
+                                                textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
+                                            }}>{option}</TableCell>
                                             ))}
                                              <TableCell className={this.getTableCellClass(classes, 0)} style={{ paddingLeft:  '' }}></TableCell>
                                         </TableRow>
@@ -486,10 +498,10 @@ class ViewTransactionModal extends Component {
                                                                     
                                                         {row.id ? row.id : "-"}
                                                     </TableCell>
-                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>
                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
                                                     </TableCell>
-                                                    <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                    <TableCell className={this.getTableCellClass(classes, 2)} style={{textAlign: "left"}}>
                                                         <div className="text-ellpses">
                                                             {row.supplier_business_name ? row.supplier_business_name : "-"}
                                                         </div>
@@ -503,7 +515,7 @@ class ViewTransactionModal extends Component {
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                         {row.payment_mode ? row.payment_mode : "-"}
                                                     </TableCell>
-                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
                                                     ₹ {row.amount ? row.amount : "-"}
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
