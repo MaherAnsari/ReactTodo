@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import  userListService  from './../../app/userListService/userListService';
+import userListService from './../../app/userListService/userListService';
 import Loader from '../common/Loader';
 import UserListTable from '../common/UserTable';
 import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
 import FileUploader from '../common/fileUploader';
+import sampleFile from '../sampleDownloadFiles/bulk-add-user-data-sample.csv';
 const styles = theme => ({
     root: {
         width: '100%',
@@ -16,7 +17,7 @@ const styles = theme => ({
         // height: '88vh',
         overflow: 'auto',
         fontFamily: 'Lato !important',
-        maxWidth:'1200px'
+        maxWidth: '1200px'
     },
     card: {
         maxWidth: '100%',
@@ -29,33 +30,33 @@ const styles = theme => ({
         alignTtems: 'center',
         display: '-webkit-inline-box'
     },
-  
+
 
 });
 
 
 
 class UserDataContainer extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            showAddModal:false,
-            dataList:null,
-            showLoader:true,
-            commodityList:null,
-            showUploader:false
-          
+            showAddModal: false,
+            dataList: null,
+            showLoader: true,
+            commodityList: null,
+            showUploader: false
+
         };
     }
 
-    
+
 
     async componentDidMount() {
-       this.getData();
-    //    this.getCommodityNames();
-    
+        this.getData();
+        //    this.getCommodityNames();
+
     }
 
     // async getCommodityNames() {
@@ -72,27 +73,27 @@ class UserDataContainer extends React.Component {
     //     }
     // }
 
-   async getData(){
-       this.setState({dataList:null,showAddModal:false,showUploader:false});
-    let resp = await userListService.getUserList();
-    // console.log(resp.data);
-    if ( resp.data.status === 1 && resp.data.result ) {
+    async getData() {
+        this.setState({ dataList: null, showAddModal: false, showUploader: false });
+        let resp = await userListService.getUserList();
+        // console.log(resp.data);
+        if (resp.data.status === 1 && resp.data.result) {
 
-        this.setState({ dataList: resp.data.result.data });
-       
+            this.setState({ dataList: resp.data.result.data });
+
+        }
     }
-   }
     handleClose(event) {
-        this.setState({open :false,showAddModal:false});
+        this.setState({ open: false, showAddModal: false });
         this.getData();
     }
-    onModalCancel(event){
-        this.setState({open :false,showAddModal:false});
+    onModalCancel(event) {
+        this.setState({ open: false, showAddModal: false });
     }
 
-   
+
     handleClickOpen(event) {
-        this.setState({ showAddModal:true,open: true });
+        this.setState({ showAddModal: true, open: true });
     }
 
     async getCommodityNames(txt) {
@@ -109,16 +110,16 @@ class UserDataContainer extends React.Component {
         }
     }
 
-    async handleFileUploader(event){
+    async handleFileUploader(event) {
         // console.log(event);
         try {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
-            alert("Data Successfuly Uploaded ");
-            this.getData();
-               
+                alert("Data Successfuly Uploaded ");
+                this.getData();
+
             }
-           
+
         } catch (err) {
             console.error(err)
             this.getData();
@@ -127,39 +128,65 @@ class UserDataContainer extends React.Component {
 
 
     async getCommodityNames() {
-       
+
     }
 
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ? <Card className={classes.card}>
-                       <UserListTable  
-                       tableData={this.state.dataList} 
-                       onClose={this.getData.bind(this)} 
-                       downloadAbleFileName="user_list_data"
-                       commodityList={ this.state.commodityList}  /> 
 
-                       <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                        <p style={{fontSize: "14px",
-                                    fontFamily: "lato",
-                                    fontWeight: 600}}>ADD USER</p></div>
+                {this.state.dataList ? <Card className={classes.card}>
+
+                    <UserListTable
+                        tableData={this.state.dataList}
+                        onClose={this.getData.bind(this)}
+                        downloadAbleFileName="user_list_data"
+                        commodityList={this.state.commodityList} />
+
+                    <div className="updateBtndef">
+                        <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>ADD USER</p></div>
                     </div>
-              
-                </Card>    :<Loader />}        
+
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
+
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            onClick={this.handleClickOpen.bind(this)}>
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
+
+                </Card> : <Loader />}
 
                 {/* {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
                      onEditModalClosed={this.handleClose.bind(this)}
                      commodityList={ this.state.commodityList}
                      onEditModalCancel={this.onModalCancel.bind(this)}/> :""} */}
-                       {this.state.showAddModal ? <FileUploader openModal={this.state.open}
-                     onEditModalClosed={this.handleFileUploader.bind(this)}
+                {this.state.showAddModal ? <FileUploader openModal={this.state.open}
+                    onEditModalClosed={this.handleFileUploader.bind(this)}
                     //  commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onModalCancel.bind(this)}
-                     /> 
-                     :""}
+                    onEditModalCancel={this.onModalCancel.bind(this)}
+                />
+                    : ""}
             </div>
         );
     }

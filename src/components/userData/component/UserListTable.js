@@ -353,7 +353,9 @@ class UserListTable extends Component {
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
                                                 <Tooltip title={row.default_commodity ? row.default_commodity.join() : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses" >{row.default_commodity ? row.default_commodity.join() : ""}</div>
+                                                    <div className="text-ellpses" >{row.default_commodity ? row.default_commodity.map((comm, cindex)=>{
+                                                        {comm+(cindex !==row.default_commodity.length -1 ? ", ":"")}
+                                                    }) : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)} > 

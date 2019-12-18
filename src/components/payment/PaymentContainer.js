@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import PaymentComponent from './components/PaymentComponent';
-
+import sampleFile from '../sampleDownloadFiles/bulk-add-payment-data-sample.csv';
 
 const styles = theme => ({
     root: {
@@ -55,6 +55,28 @@ class PayOutContainer extends React.Component {
                                 onTransactionAdded={(event)=> this.onTransactionDataAdded()}
                                 onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
                             />} */}
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
+
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            // onClick={this.handleClickOpen.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
                     </div>
                 </Paper>
             </div>

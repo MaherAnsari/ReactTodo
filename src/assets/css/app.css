@@ -1201,3 +1201,33 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
 }
+
+/* downlod sample and upload sample button */
+
+.fixedLeftBtnContainer{
+  width: 100%;
+  margin: 0 auto;
+  position: fixed;
+  bottom: 20px;
+  left: 20%;
+  z-index: 9;
+}
+.fixedLeftBtn{
+  background: #50a1cf;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px 20px 10px 20px;
+  font-family: 'Lato';
+  margin-right: 5px;
+  color: #fff;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  text-align: center;
+  margin:' 0 0 0 0';
+  cursor: pointer;
+  transition: 0.5s;
+  -moz-transition: '0.5s';
+  -webkit-transition: 0.5s;
+  -o-transition: 0.5s;
+}

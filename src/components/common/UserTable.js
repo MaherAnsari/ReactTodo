@@ -100,6 +100,11 @@ const styles = theme => ({
     container: {
         maxHeight: 440,
       },
+    commodityDataClass:{
+        display: "-webkit-box",
+        "-webkit-line-clamp": "2",
+        "-webkit-box-orient": "vertical",
+        overflow: "hidden"}
 });
 
 
@@ -286,6 +291,20 @@ class UserListTable extends Component {
         Utils.downloadDataInCSV(this.state.tableBodyData, this.props.downloadAbleFileName )
     }
 
+    getCommmodityList( commoditCellList ){
+        var formatedCommdityText = "";
+        if(commoditCellList){
+            for( var i = 0; i < commoditCellList.length; i++ ){
+                if( i === 0 ){
+                    formatedCommdityText = commoditCellList[i].charAt(0).toUpperCase()+ commoditCellList[i].slice(1);
+                }else{
+                    formatedCommdityText = formatedCommdityText+ ", "+ commoditCellList[i].charAt(0).toUpperCase()+ commoditCellList[i].slice(1);
+                }
+            }
+        }
+        return formatedCommdityText ;
+    }
+
     render() {
         const { classes } = this.props;
         const { rowsPerPage , page} = this.state;
@@ -367,8 +386,10 @@ class UserListTable extends Component {
                                              
                                              </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 5)} >
-                                                <Tooltip title={row.default_commodity ? row.default_commodity.join() : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses " >{row.default_commodity ? row.default_commodity.join() : ""}</div>
+                                                <Tooltip title={row.default_commodity ? this.getCommmodityList(row.default_commodity) : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                    <div className="text-ellpses " >{row.default_commodity ?  
+                                                       <p className={classes.commodityDataClass} > {this.getCommmodityList(row.default_commodity)} </p>
+                                                        : ""}</div>
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell className={this.getTableCellClass(classes, 4)} > 

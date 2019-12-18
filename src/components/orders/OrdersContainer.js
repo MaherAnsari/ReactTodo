@@ -11,6 +11,7 @@ import supplierService from './../../app/supplierService/supplierService';
 import orderService from './../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
 import DateRangeSelector from "./components/DateRangeSelector";
+import sampleFile from '../sampleDownloadFiles/bulk-add-order-data-sample.csv';
 
 const styles = theme => ({
     root: {
@@ -162,7 +163,28 @@ class OrdersContainer extends React.Component {
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
                     
                    
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
 
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            // onClick={this.handleClickOpen.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
                    
                     {this.state.showLoader ? 
                     <Loader /> : 

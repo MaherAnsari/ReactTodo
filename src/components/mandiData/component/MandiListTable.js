@@ -59,12 +59,6 @@ const theme = createMuiTheme({
           color: "#ffffff"
         }
       },
-      MuiTablePagination: {
-        toolbar: {
-          paddingRight: '250px'
-        }
-
-      },
       MuiIconButton: {
         colorInherit: {
           color: "#ffffff"
@@ -80,18 +74,14 @@ const theme = createMuiTheme({
           height: "18px",
           fontSize: "18px"
         }
-      },
-      MuiTablePagination: {
-        toolbar:{
-          paddingRight:'200px'
-        }
-      },
-      // Mui: {
-      //   disabled: {
-      //     color: "#717070"
-      //   }
-      // }
+      }
     },
+    MuiTablePagination: {
+      toolbar: {
+        paddingRight: '250px'
+      }
+
+    }
   }
 });
 
@@ -396,7 +386,12 @@ class MandiListTable extends Component {
                     );
                   })}
               </TableBody>
-              <TableFooter style={{ borderTop: "2px solid #858792" }}>
+        
+          </Table>
+         
+          </div>
+          <Table>
+          <TableFooter style={{ borderTop: "2px solid #858792" }}>
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[25, 50, 100]}
@@ -413,11 +408,7 @@ class MandiListTable extends Component {
                 />
               </TableRow>
             </TableFooter>
-        
-          </Table>
-          </div>
-        
-
+            </Table>
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
