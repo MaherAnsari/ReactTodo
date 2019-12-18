@@ -57,7 +57,8 @@ class PayOutContainer extends React.Component {
                             />} */}
                     <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
-                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            onClick={() => { window.location.href = sampleFile }}
+                            >
                             <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
