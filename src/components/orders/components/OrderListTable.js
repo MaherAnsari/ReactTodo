@@ -372,7 +372,7 @@ class OrderListTable extends Component {
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                    ₹ {this.formatNumberWithComma(row.bijak_amt)}
+                                                    ₹ {row.bijak_amt ? this.formatNumberWithComma(row.bijak_amt): 0}
                                                     <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
