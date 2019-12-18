@@ -173,12 +173,12 @@ class FilterDataView extends React.Component {
             <Grid container direction="row" alignItems="stretch">
                 <Grid item xs={12} sm={12} md={12}>
                     {this.state.configData &&
-                        <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', color: "#000", borderRadius: "4px" }}>
+                        <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', color: "#000", borderRadius: "4px",zIndex:"999" }}>
                             {this.state.configData.map((obj, index) => (
                                 <React.Fragment key={index}>
                                     {(obj && obj.name && obj.id && obj.id !== "searchInput") ?
                                         <FormControl variant="outlined" className={classes.formControl}
-                                            style={{ flex: 1 }}>
+                                            style={{ flex: 1 ,zIndex:"999"}}>
                                             <Select
                                                 name={obj.name}
                                                 value={this.state[obj.name]}

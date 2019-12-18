@@ -69,6 +69,7 @@ class FilterAreaComponent extends React.Component {
         this.setState({ 
             stateid:suppId
         })
+        this.formatDistrictData("haryana");
     }
 
     componentWillReceiveProps( nextprops ){
@@ -143,7 +144,7 @@ class FilterAreaComponent extends React.Component {
                                     <React.Fragment key={index}>
                                         {(obj && obj.name && obj.id) &&
                                             <FormControl variant="outlined" className={classes.formControl}
-                                                style={{ flex: 1 }}>
+                                            style={{ flex: 1 ,zIndex:"999"}}>
                                                 <Select
                                                     name={obj.name}
                                                     value={obj.name === "State" ? this.state.stateid :this.state[obj.name]}
