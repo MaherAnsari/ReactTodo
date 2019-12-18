@@ -14,11 +14,8 @@ import paymentService from '../../../app/paymentService/paymentService';
 import ViewTransactionModal from './ViewTransactionModal';
 import Loader from '../../common/Loader';
 import AddTransactionModal from './AddTransactionModal';
-
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -26,7 +23,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import Utils from '../../../app/common/utils';
-
+import FileUploader from '../../common/fileUploader';
 
 const theme = createMuiTheme({
     overrides: {
@@ -126,6 +123,7 @@ class PaymentComponent extends Component {
 
             rowsPerPage: 50,
             page: 0,
+            showUploader:false,
 
 
         }
@@ -269,6 +267,26 @@ class PaymentComponent extends Component {
         }
     }
 
+    async handleFileUploader(event){
+        console.log(event);
+        try {
+            let resp = await paymentService.uplaodPayment(event);
+            if (resp.data.status === 1 && resp.data.result) {
+            alert("Data Successfuly Uploaded ");
+           this.getPaymentSearchedUser(" ");
+               this.setState({open:false,showUploader:false});
+            }
+           
+        } catch (err) {
+            console.error(err)
+            this.setState({open:false,showUploader:false});
+            this.getPaymentSearchedUser(" ");
+        }
+    }
+
+    onFileModalCancel(event){
+        this.setState({open:false,showUploader:false});
+    }
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
@@ -527,7 +545,7 @@ class PaymentComponent extends Component {
                     <div
                         className="updateBtnFixed"
                         style={{ display: 'flex' }}
-                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                        onClick={(event) => this.setState({ showUploader: true })}
                     >
                         <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p>Add Transaction</p></div>
@@ -543,6 +561,13 @@ class PaymentComponent extends Component {
                         onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
                         onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
                     />}
+
+{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                     onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                     onEditModalCancel={this.onFileModalCancel.bind(this)}
+                     /> 
+                     :""}
 
             </MuiThemeProvider>
         );

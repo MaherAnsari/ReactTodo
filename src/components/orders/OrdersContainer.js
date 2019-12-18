@@ -12,7 +12,6 @@ import orderService from './../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
 import DateRangeSelector from "./components/DateRangeSelector";
 
-
 const styles = theme => ({
     root: {
         width: '100%',
@@ -46,7 +45,7 @@ class OrdersContainer extends React.Component {
             suppliersList: [],
             orderedListData: undefined,
             showLoader: false,
-            datePayloads: { "startDate": "", "endDate": "" },
+            datePayloads: { "startDate": "", "endDate": "" }
 
         }
         this.ismounted = true;
@@ -146,6 +145,7 @@ class OrdersContainer extends React.Component {
     }
 
 
+
     render() {
         const { classes } = this.props;
         const { showAddModal } = this.state;
@@ -169,6 +169,7 @@ class OrdersContainer extends React.Component {
                     <OrderListTable 
                     tableData={this.state.orderedListData} 
                     onOrderAdded={()=> this.getSearchedOrderListData({}) } />}
+                 
 
                 </Paper>
             </div>
