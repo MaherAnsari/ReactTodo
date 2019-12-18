@@ -8,7 +8,7 @@ import Loader from '../common/Loader';
 import UserListTable from '../common/UserTable';
 import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
-
+import FileUploader from '../common/fileUploader';
 const styles = theme => ({
     root: {
         width: '100%',
@@ -44,7 +44,8 @@ class UserDataContainer extends React.Component {
             showAddModal:false,
             dataList:null,
             showLoader:true,
-            commodityList:null
+            commodityList:null,
+            showUploader:false
           
         };
     }
@@ -72,7 +73,7 @@ class UserDataContainer extends React.Component {
     // }
 
    async getData(){
-       this.setState({dataList:null});
+       this.setState({dataList:null,showAddModal:false,showUploader:false});
     let resp = await userListService.getUserList();
     // console.log(resp.data);
     if ( resp.data.status === 1 && resp.data.result ) {
@@ -108,6 +109,27 @@ class UserDataContainer extends React.Component {
         }
     }
 
+    async handleFileUploader(event){
+        // console.log(event);
+        try {
+            let resp = await userListService.uploadData(event);
+            if (resp.data.status === 1 && resp.data.result) {
+            alert("Data Successfuly Uploaded ");
+            this.getData();
+               
+            }
+           
+        } catch (err) {
+            console.error(err)
+            this.getData();
+        }
+    }
+
+
+    async getCommodityNames() {
+       
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -128,10 +150,16 @@ class UserDataContainer extends React.Component {
               
                 </Card>    :<Loader />}        
 
-                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
+                {/* {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
                      onEditModalClosed={this.handleClose.bind(this)}
                      commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
+                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""} */}
+                       {this.state.showAddModal ? <FileUploader openModal={this.state.open}
+                     onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                     onEditModalCancel={this.onModalCancel.bind(this)}
+                     /> 
+                     :""}
             </div>
         );
     }

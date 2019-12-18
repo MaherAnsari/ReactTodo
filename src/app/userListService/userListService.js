@@ -35,6 +35,17 @@ let userListService = {
         });
     },
 
+    uploadData: async function (props) {
+        return Api({
+            method: 'post',
+            headers: {
+    			"Authorization": Utils.getToken()
+                },
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/user/bulkadd',
+            data: props
+        });
+    },
+
 
 };
 
