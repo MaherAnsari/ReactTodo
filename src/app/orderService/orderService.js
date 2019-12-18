@@ -41,6 +41,16 @@ let orderService = {
             data : payload
         });
     },
+    uploadOrder : async function ( payload ) {
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/order/bulkadd',
+            data : payload
+        });
+    },
 }
 
 export default orderService;

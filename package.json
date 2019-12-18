@@ -15,6 +15,7 @@
     "axios": "^0.18.0",
     "browserslist": "^4.7.3",
     "chart.js": "^2.8.0",
+    "csvtojson": "^2.0.10",
     "date-fns": "^2.8.1",
     "jquery": "^3.4.1",
     "react": "^16.4.2",

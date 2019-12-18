@@ -19,6 +19,8 @@ import Utils from '../../../app/common/utils';
 import EditOrderDataModal from '../common/EditOrderDataModal';
 import EditIcon from '@material-ui/icons/Edit';
 import commodityService from '../../../app/commodityService/commodityService';
+import FileUploader from '../../common/fileUploader';
+import orderService from '../../../app/orderService/orderService';
 
 var moment = require('moment');
 
@@ -121,7 +123,9 @@ class OrderListTable extends Component {
             showAddOrderModal: false,
 
             showEditDataModal: false,
-            commodityList: []
+            commodityList: [],
+            showUploader:false,
+            open:false
         }
         this.getCommodityNames();
     }
@@ -242,7 +246,7 @@ class OrderListTable extends Component {
     }
 
     handleClickOpen() {
-        this.setState({ showAddOrderModal: true })
+        this.setState({ showUploader: true })
     }
 
     onOrderDataAdded() {
@@ -258,6 +262,27 @@ class OrderListTable extends Component {
     //edit option
     handelEditModalOpen(data) {
         this.setState({ editableData: data, showEditDataModal: true });
+    }
+
+    async handleFileUploader(event){
+        console.log(event);
+        try {
+            let resp = await orderService.uploadOrder(event);
+            if (resp.data.status === 1 && resp.data.result) {
+            alert("Data Successfuly Uploaded ");
+            this.props.onOrderAdded();
+               this.setState({open:false,showUploader:false});
+            }
+           
+        } catch (err) {
+            console.error(err)
+            this.setState({open:false,showUploader:false});
+            this.props.onOrderAdded();
+        }
+    }
+
+    onFileModalCancel(event){
+        this.setState({open:false,showUploader:false});
     }
 
     render() {
@@ -434,6 +459,13 @@ class OrderListTable extends Component {
                             onOrderDataUpdated={(event) => this.onOrderDataAdded(event)}
                             onEditModalCancel={(event) => this.setState({ showEditDataModal: false })}
                         />}
+
+{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                     onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                     onEditModalCancel={this.onFileModalCancel.bind(this)}
+                     /> 
+                     :""}
 
                 </Paper>
             </MuiThemeProvider>
