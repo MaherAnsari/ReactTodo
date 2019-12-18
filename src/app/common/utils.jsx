@@ -106,23 +106,6 @@ function formatDateData ( apiDate ) {
 
   function downloadDataInCSV( json , filename ){
     try{
-        // var json =[
-        //     {
-        //       "Nachname":"Stromberg",
-        //       "Vorname":"Bernd",
-        //       "Benutzername":"strombergbernd12",
-        //       "Password":"Xrz5Bv6A"
-        //     },
-        //     {
-        //       "Nachname":"Heisterkamp",
-        //       "Vorname":"Ernie", 
-        //       "Benutzername":"heisterkampernie12",
-        //       "Password":"aOq24EpF"
-        //     }
-        //   ]
-          
-        //   function toCSV(json) {
-            // json = Object.values(json);
             var csv = "";
             var keys = (json[0] && Object.keys(json[0])) || [];
             csv += keys.join(',') + '\n';
@@ -142,6 +125,21 @@ function formatDateData ( apiDate ) {
     }
   }
 
+  function formatNumberWithComma(x) {
+    try {
+        x = x.toString();
+        var lastThree = x.substring(x.length - 3);
+        var otherNumbers = x.substring(0, x.length - 3);
+        if (otherNumbers != '')
+            lastThree = ',' + lastThree;
+        var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        return res;
+    } catch (err) {
+        console.log(err);
+        return x;
+    }
+}
+
 const Utils = {
 
     getToken,
@@ -152,7 +150,8 @@ const Utils = {
     setDistrictData,
     getStateData,
     formatDateData,
-    downloadDataInCSV
+    downloadDataInCSV,
+    formatNumberWithComma
 
 }
 

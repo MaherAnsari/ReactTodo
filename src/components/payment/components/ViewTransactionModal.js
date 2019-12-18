@@ -423,7 +423,7 @@ class ViewTransactionModal extends Component {
                                                                         {row.payment_mode ? row.payment_mode : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign:"right"}}>
-                                                                    ₹ {row.amount ? row.amount : "-"}
+                                                                    ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
 
@@ -516,7 +516,7 @@ class ViewTransactionModal extends Component {
                                                         {row.payment_mode ? row.payment_mode : "-"}
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
-                                                    ₹ {row.amount ? row.amount : "-"}
+                                                    ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
 
