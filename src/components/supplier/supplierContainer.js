@@ -8,6 +8,7 @@ import Loader from '../common/Loader';
 import UserTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
+import sampleFile from '../sampleDownloadFiles/bulk-add-supplier-data-sample.csv';
 
 const styles = theme => ({
     root: {
@@ -98,6 +99,28 @@ class SupplierContainer extends React.Component {
                             }}>ADD SUPPLIER</p></div>
                     </div>
 
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
+
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            // onClick={this.handleClickOpen.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
                 </Card> : <Loader />}
 
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}

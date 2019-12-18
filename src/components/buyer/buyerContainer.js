@@ -7,6 +7,7 @@ import  buyerService  from './../../app/buyerService/buyerService';
 import Loader from '../common/Loader';
 import UserListTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
+import sampleFile from '../sampleDownloadFiles/bulk-add-buyer-data-sample.csv';
 
 const styles = theme => ({
     root: {
@@ -80,12 +81,13 @@ class BuyerContainer extends React.Component {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ? <Card className={classes.card}>
+                {this.state.dataList ? 
+                    <Card className={classes.card}>
                        <UserListTable  
-                       tableData={this.state.dataList} 
-                       role= "ca" 
-                       downloadAbleFileName="buyer_list_data"
-                       onClose={this.getData.bind(this)}   /> 
+                            tableData={this.state.dataList} 
+                            role= "ca" 
+                            downloadAbleFileName="buyer_list_data"
+                            onClose={this.getData.bind(this)}   /> 
 
                        <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex', right:"10px"}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
@@ -93,11 +95,38 @@ class BuyerContainer extends React.Component {
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD BUYER</p></div>
                     </div>
-                </Card>    :<Loader />}        
-{this.state.showAddModal ? <InfoDialog openModal={this.state.open}
-role="ca"
-onEditModalClosed={this.handleClose.bind(this)}
-onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
+
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            // onClick={this.handleClickOpen.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
+                </Card>    :
+                <Loader />}    
+
+                {this.state.showAddModal ? 
+                <InfoDialog 
+                    openModal={this.state.open}
+                    role="ca"
+                    onEditModalClosed={this.handleClose.bind(this)}
+                    onEditModalCancel={this.onModalCancel.bind(this)}/> :
+                ""}
 
             </div>
         );

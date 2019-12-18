@@ -8,6 +8,7 @@ import UserListTable from '../common/UserTable';
 import brokerService from '../../app/brokerService/brokerService';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
+import sampleFile from '../sampleDownloadFiles/bulk-add-broker-data-sample.csv';
 
 const styles = theme => ({
     root: {
@@ -112,6 +113,28 @@ class BrokerContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>ADD BROKER</p></div>
+                    </div>
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
+                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Download sample</p></div>
+                    </div>
+
+                     <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            // onClick={this.handleClickOpen.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
                     </div>
 
                 </Card> : <Loader />}
