@@ -96,14 +96,17 @@ class BuyerContainer extends React.Component {
                                     fontWeight: 600}}>ADD BUYER</p></div>
                     </div>
                     <div className="fixedLeftBtnContainer">
+                    <a download={"bulk-add-buyer-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
-                            onClick={() => { window.open(sampleFile, 'Download'); }}>
+                            // onClick={() => { window.open(sampleFile, 'Download'); }}
+                            >
                             <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Download sample</p></div>
+                            </a>
                     </div>
 
                      <div className="fixedLeftBtnContainer">

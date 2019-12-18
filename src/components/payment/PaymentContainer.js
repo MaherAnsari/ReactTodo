@@ -56,15 +56,16 @@ class PayOutContainer extends React.Component {
                                 onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
                             />} */}
                     <div className="fixedLeftBtnContainer">
-                        <div className="fixedLeftBtn" style={{ display: 'flex' }}
-                            onClick={() => { window.location.href = sampleFile }}
-                            >
+                    <a download={"bulk-add-payment-data-sample.csv"} href={sampleFile} title="sampleFile">
+                        <div className="fixedLeftBtn" style={{ display: 'flex' }}>
                             <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Download sample</p></div>
+                                                    
+                    </a>
                     </div>
 
                      <div className="fixedLeftBtnContainer">
