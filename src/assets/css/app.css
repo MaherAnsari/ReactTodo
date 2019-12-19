@@ -1200,6 +1200,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   -moz-transition: '0.5s';
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
+  cursor: pointer;
 }
 
 /* downlod sample and upload sample button */
