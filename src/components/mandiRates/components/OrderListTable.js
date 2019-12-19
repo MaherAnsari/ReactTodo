@@ -156,19 +156,19 @@ class OrderListTable extends Component {
                                         <div className="commodityDetail">Market Name</div>
                                         {this.state.tableBodyData[option].map((row, i) => {
                                             return (<div key={"data_"+i} className="districtDiv">
-                                                <div style={{ width: "35%" ,display: 'flex',textAlign:'right'}}>
-                                                <p style={{ width: "50%" }}>{this.formatDateAndTime(row.arrival_date)} </p>
-                                                <p style={{  color: "white",
+                                                <div style={{ width: "40%" ,display: 'flex',textAlign:'right'}}>
+                                                <p style={{ width: "30%" }}>{this.formatDateAndTime(row.arrival_date)} </p>
+                                                <p style={{  color: "white",minWidth:'65px',textAlign:'center',
                                                             background:'green',fontSize:'12px',
-                                                            padding: "1px 12px",width:'fit-content',marginLeft:'20%',
+                                                            padding: "1px 12px",width:'fit-content',
                                                             borderRadius: "13px"}}>{row.source} </p>
-                                                    <p style={{ width: "50%" }}> {row.market}</p>
+                                                    <p style={{ width: "55%" }}> {row.market}</p>
                                                 </div>
                                                 <div style={{ width: "35%", display: 'flex',textAlign:'right' }}>
-                                                    <p style={{ width: "50%" }}> ₹ {row.cost.split('-')[0]}</p>
+                                                    <p style={{ width: "50%" }}> ₹ {row.cost ? row.cost.split('-')[0]:"-"}</p>
                                                     <p style={{ width: "50%" }}> ₹ {row.modal_price}</p>
                                                 </div>
-                                                <div style={{ width: "20%" ,textAlign:'right'}}>₹ {row.cost.split('-')[1]}</div>
+                                                <div style={{ width: "20%" ,textAlign:'right'}}>₹ {row.cost ? row.cost.split('-')[1] :"-"}</div>
                                                 <div style={{ width: "10%" }}>
                                                     <Icon className={classes.iconHover} color="error" style={{ cursor:"pointer",fontSize: 30 }} onClick={ this.onGraphViewClicked.bind( this, row , option )} >
                                                         trending_up

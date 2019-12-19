@@ -87,10 +87,16 @@ class OrderTable extends Component {
     }
     componentDidMount() {
         console.log(this.props.data);
-        if (this.props.role === "ca") {
-            let tableHeadData = ["order id", "supplier info", "broker name", "Date", "location", "commodity", "Amount  "];
+        let tableHeadData = ["order id", "buyer info", "broker name", "Date", "location", "commodity", "Amount  "];
+        if (this.props.userdata.role === "ca") {
+            tableHeadData = ["order id", "supplier info", "broker name", "Date", "location", "commodity", "Amount  "];
+        } else if (this.props.userdata.role === "broker") {
+            tableHeadData = ["order id", "supplier info", "buyer info", "Date", "location", "commodity", "Amount  "];
+        } 
+        
+       
             this.setState({ tableHeadData: tableHeadData });
-        }
+       
 
     }
 
@@ -215,7 +221,7 @@ class OrderTable extends Component {
                                         <span
                                             data-toggle="tooltip" data-placement="center" title="info"
                                             // onClick={this.onInfoClick.bind(this, row)}
-                                            style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px", cursor: "pointer" }}>
+                                            style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px"}}>
                                             {row.id}
                                         </span>
                                         <i style={{ paddingTop: "11px" }}
@@ -224,14 +230,14 @@ class OrderTable extends Component {
                                             className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
                                         <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                     </TableCell>
-                                    {this.props.role === "ca" && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {this.props.role !== "la"  && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                         <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                             <span>{row.supplier_name ? row.supplier_name : ""} </span>
                                             <span style={{ fontSize: "12px" }}>{"( " + row.supplier_mobile + " )"}</span>
                                         </div>
                                     </TableCell>}
 
-                                    {(this.props.role === "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {(this.props.role == "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                         <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                             <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                             <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
@@ -249,9 +255,9 @@ class OrderTable extends Component {
                                     </Tooltip>
                                 </TableCell> */}
 
-                                    <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
+                                   {this.props.role !== "broker" && <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
                                         {row.broker_name}
-                                    </TableCell>
+                                    </TableCell>}
                                     <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 
                                         {this.formatDateAndTime(row.createdtime)}
