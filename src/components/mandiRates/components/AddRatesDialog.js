@@ -31,16 +31,12 @@ const styles = theme => ({
         color:'#000',
         fontSize:'20px'
     },
-    close:{
-        color:'#000',
-        fontSize:'20px'
-    }, 
-      card:{
+    card:{
         boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
-    transition: '0.3s',
-    padding: '10px',
-    borderRadius: '10px',
-    marginTop:'15px'
+        transition: '0.3s',
+        padding: '10px',
+        borderRadius: '10px',
+        marginTop:'15px'
     }
 
 

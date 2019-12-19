@@ -78,7 +78,7 @@ class UserFilterOption extends Component {
         this.getCommodityNames();
         let commodityArr = [];
         // console.log(this.props.filterData);
-        let obj = this.props.filterData;
+        // let obj = this.props.filterData;
         if (this.props.filterData['default_commodity']) {
             commodityArr = this.props.filterData['default_commodity'].split(",");
             // console.log(commodityArr);
@@ -141,7 +141,7 @@ class UserFilterOption extends Component {
     }
 
     handelAutoCompleteChange = (event, values) => {
-        var commoditylist = [];
+        // var commoditylist = [];
         // console.log(values);
         let data = this.state.dataObj;
         data["default_commodity"] = values.join();
@@ -151,7 +151,7 @@ class UserFilterOption extends Component {
 
     handleStateChange = (id, event) => {
         let data = this.state.dataObj;
-        let val = event.target.value;
+        // let val = event.target.value;
         data[id] = event.target.value;
         // }
 
@@ -183,7 +183,7 @@ class UserFilterOption extends Component {
             let sortorder = "";
             for (let i = 0; i < arr.length; i++) {
                 // console.log(arr[i]['sortkey'].length);
-                if (i == arr.length - 1 && arr[i]['sortkey'].length) {
+                if (i === arr.length - 1 && arr[i]['sortkey'].length) {
                     sortkey += arr[i]['sortkey'];
                     sortorder += arr[i]['sortorder'];
                 } else if (arr[i]['sortkey'] && arr[i]['sortkey'].length) {
@@ -192,8 +192,8 @@ class UserFilterOption extends Component {
                 }else {
                     var n=sortkey.lastIndexOf(",");
                    sortkey=sortkey.substring(0,n) ;
-                   var n=sortorder.lastIndexOf(",");
-                   sortorder=sortorder.substring(0,n) 
+                   var m=sortorder.lastIndexOf(",");
+                   sortorder=sortorder.substring(0,m) 
                 }
 
             }

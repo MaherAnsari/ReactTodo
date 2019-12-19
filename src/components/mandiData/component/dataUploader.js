@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import mandiDataService from '../../../app/mandiDataService/mandiDataService';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
@@ -38,10 +37,6 @@ const styles = theme => ({
         width: '48%',
         marginTop: '33px',
         marginLeft: '10px'
-    },
-    close: {
-        color: '#000',
-        fontSize: '20px'
     },
     close: {
         color: '#000',
@@ -162,11 +157,11 @@ class DataUploader extends Component {
         for (let i = 0; i < offdata.length; i++) {
             let str = "";
             if (offdata[i]['offType'] === "every") {
-                str = "every" + "|" + offdata[i]['dayType'] + "|" + offdata[i]['day'];
+                str = "every|" + offdata[i]['dayType'] + "|" + offdata[i]['day'];
             } else if (offdata[i]['offType'] === "all") {
-                str = "all" + "|" + offdata[i]['day'];
+                str = "all|" + offdata[i]['day'];
             } else {
-                str = "dates" + "|" + offdata[i]['dates'];
+                str = "dates|" + offdata[i]['dates'];
             }
             // console.log(str);
             offDayArr.push(str);

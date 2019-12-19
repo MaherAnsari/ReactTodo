@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+// import Button from '@material-ui/core/Button';
 import ConfirmDialog from './../../app/common/ConfirmDialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,7 +13,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import AddOrderModal from '../orders/common/AddOrderModal';
 import orderService from '../../app/orderService/orderService';
-import Utils from '../../app/common/utils';
+
 var moment = require('moment');
 
 const styles = theme => ({

@@ -36,29 +36,29 @@ const ampcReqOption = ["All", "Yes", "No"];
 const mandiGradeFilterOption = ["All", "A", "B", "C", "D", "E", "F"];
 const mandiGradeHindiFilterOption = ["All", 'क', 'ख', 'ग', 'घ', 'ङ', 'च'];
 
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight:
-            theme.typography.fontWeightRegular
-        // : theme.typography.fontWeightMedium,
-    };
-}
+// function getStyles(name, personName, theme) {
+//     return {
+//         fontWeight:
+//             theme.typography.fontWeightRegular
+//         // : theme.typography.fontWeightMedium,
+//     };
+// }
 
 
 
 export default function FilterOptionData(viewProps) {
     const classes = useStyles();
-    const theme = useTheme();
-    const [filterOptionsVal, setFilterOptionsVal] = React.useState([]);
+    // const theme = useTheme();
+    // const [filterOptionsVal, setFilterOptionsVal] = React.useState([]);
     const [ampcReqFilterVal, setAmpcReqFilterVal] = React.useState("");
     const [mandiGradeFilterVal, setMandiGradeFilterVal] = React.useState("");
     const [mandiGradeHindiFilterVal, setMandiGradeHindiFilterVal] = React.useState("");
 
     const [filterPayloadObj, setFilterPayloadObj] = React.useState({});
 
-    const handleChange = event => {
-        setFilterOptionsVal(event.target.value);
-    };
+    // const handleChange = event => {
+    //     setFilterOptionsVal(event.target.value);
+    // };
 
     const handleChangeOfAmpcReqFilterVal = event => {
         setAmpcReqFilterVal(event.target.value);

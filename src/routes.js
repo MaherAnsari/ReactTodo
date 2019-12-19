@@ -3,7 +3,6 @@ import { Route, Switch} from "react-router-dom";
 import AppliedRoute from "./containers/AppliedRoute";
 import Home from "./components/common/HomePage";
 import Signin from "./components/auth/SigninPage";
-import ChangePasswordPage from "./components/auth/ChangePasswordPage";
 import NotFound from "./components/common/NotFoundPage";
 export default () =>
   <Switch>

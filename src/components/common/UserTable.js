@@ -43,10 +43,10 @@ const theme = createMuiTheme({
             }
         },
         MuiTablePagination: {
-            toolbar:{
-              paddingRight:'250px'
+            toolbar: {
+                paddingRight: '250px'
             }
-          },
+        },
     }
 });
 
@@ -92,32 +92,39 @@ const styles = theme => ({
         cursor: 'pointer',
         float: 'right'
     },
-    name:{
+    name: {
         fontWeight: '600',
         fontSize: '15px',
         color: '#242529'
     },
     container: {
         maxHeight: 440,
-      },
-    commodityDataClass:{
+    },
+    commodityDataClass: {
         display: "-webkit-box",
         "-webkit-line-clamp": "3",
         "-webkit-box-orient": "vertical",
         overflow: "hidden",
         fontSize: "12px",
         lineHeight: "unset",
-        fontWeight: "bold"
+        // fontWeight: "bold"
+    },
+    commodityitem: {
+        fontSize: "11px",
     }
 });
 
-
+const colorArray = [
+    '#f32379', '#58fee6', '#476096', '#f8ba03', '#ba53c0', 
+    '#2b439a', '#db2929', '#a3b419', '#ffe912','#d96f06', 
+    '#437800', '#c92828','#223999'
+    ]
 class UserListTable extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname(business name)", "mobile", "order/payment","rating","locality/district", "commodity", "role","status"],
+            tableHeadData: ["id", "fullname(business name)", "mobile", "order/payment", "rating", "locality/district", "commodity", "role", "status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -135,8 +142,8 @@ class UserListTable extends Component {
             stateList: this.getStateData(),
 
 
-            rowsPerPage : 50,
-            page:0,
+            rowsPerPage: 50,
+            page: 0,
 
             // commodityList:["dd"]
 
@@ -172,7 +179,7 @@ class UserListTable extends Component {
 
 
         }
-        this.setState({ tableBodyData: rows , page : 0});
+        this.setState({ tableBodyData: rows, page: 0 });
     }
 
 
@@ -190,7 +197,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality ? obj.locality : "-" +"/"+ obj.district ? obj.district : "-";
+        return obj.locality ? obj.locality : "-" + "/" + obj.district ? obj.district : "-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -235,12 +242,12 @@ class UserListTable extends Component {
         }
 
     }
-    hoverOn(){
+    hoverOn() {
         this.setState({ hover: true });
-      }
-      hoverOff(){ 
-        this.setState({ hover: false });    
-      }
+    }
+    hoverOff() {
+        this.setState({ hover: false });
+    }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
@@ -265,13 +272,13 @@ class UserListTable extends Component {
         } else {
             return "#757575";
         }
-      
+
     }
 
     getOrderNoBackgroundColor(obj) {
         if (obj.ordercount === "0" || obj.paymentcount === "0") {
             return "#757575";
-        }  else {
+        } else {
             return "#377c3b";
         }
     }
@@ -280,38 +287,55 @@ class UserListTable extends Component {
     }
 
     handleChangePage = (event, newPage) => {
-        this.setState({ page : newPage });
-      };
+        this.setState({ page: newPage });
+    };
 
-      handleChangeRowsPerPage = event => {
-        this.setState({ page : 0, rowsPerPage : parseInt(event.target.value, 10) });
-      };
+    handleChangeRowsPerPage = event => {
+        this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+    };
 
-      getNameStr(row){
-          return row.fullname +"("+row.business_name+")"
-      }
-
-      handelDownloadClicked=()=>{
-        Utils.downloadDataInCSV(this.state.tableBodyData, this.props.downloadAbleFileName )
+    getNameStr(row) {
+        return row.fullname + "(" + row.business_name + ")"
     }
 
-    getCommmodityList( commoditCellList ){
+    handelDownloadClicked = () => {
+        Utils.downloadDataInCSV(this.state.tableBodyData, this.props.downloadAbleFileName)
+    }
+
+    getCommmodityList2(commoditCellList) {
         var formatedCommdityText = "";
-        if(commoditCellList){
-            for( var i = 0; i < commoditCellList.length; i++ ){
-                if( i === 0 ){
-                    formatedCommdityText = commoditCellList[i].charAt(0).toUpperCase()+ commoditCellList[i].slice(1);
-                }else{
-                    formatedCommdityText = formatedCommdityText+ ", "+ commoditCellList[i].charAt(0).toUpperCase()+ commoditCellList[i].slice(1);
+        if (commoditCellList) {
+            for (var i = 0; i < commoditCellList.length; i++) {
+                if (i === 0) {
+                    formatedCommdityText = commoditCellList[i].charAt(0).toUpperCase() + commoditCellList[i].slice(1);
+                } else {
+                    formatedCommdityText = formatedCommdityText + ", " + commoditCellList[i].charAt(0).toUpperCase() + commoditCellList[i].slice(1);
                 }
             }
         }
-        return formatedCommdityText ;
+        return formatedCommdityText;
+    }
+
+    getCommmodityList(classes, commoditCellList, isTooltip) {
+        if (commoditCellList && typeof (commoditCellList) === "object") {
+            return (
+                <p className={classes.commodityDataClass} style={{ fontSize: isTooltip? "15px":"12px"}}>
+                    {commoditCellList.map((commodity, i) =>
+                        (<span style={{ fontSize: isTooltip ? "15px":"12px", fontFamily: "lato" }}>
+                        <strong style={{ fontSize: isTooltip ? "14px":"13px", fontFamily: "lato", color: isTooltip ? "#ff":(colorArray[ i < colorArray.length ? i: i % colorArray.length  ] )  }}>
+                        {commodity.charAt(0).toUpperCase()}</strong>{commodity.slice(1) + (i !== commoditCellList.length - 1 ? ", " : "")}
+                        </span>)
+                    )}
+                </p>
+            )
+        } else {
+            return ""
+        }
     }
 
     render() {
         const { classes } = this.props;
-        const { rowsPerPage , page} = this.state;
+        const { rowsPerPage, page } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -332,118 +356,124 @@ class UserListTable extends Component {
                                 onChange={this.handelFilter.bind(this)} /><i className="fa fa-search"></i>
                         </div> */}
                     </div>
-                    <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
-            <Table  className='table-body' stickyHeader aria-label="sticky table">
+                    <div style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+                        <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
-                                <TableRow  style={{borderBottom: "2px solid #858792"}} >
+                                <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center",minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '',color:i == 4 ?  "goldenrod":""}}>{i ==4 ?<StarIcon />:option}</TableCell>
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center", minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '', color: i == 4 ? "goldenrod" : "" }}>{i == 4 ? <StarIcon /> : option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
-                                   
+
                                 </TableRow>
                             </TableHead>
-                            
+
                             <TableBody>
                                 {this.state.tableBodyData && this.state.tableBodyData &&
-                                (rowsPerPage > 0
-                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : this.state.tableBodyData
-                                  )
-                                .map((row, i) => {
-                                    return (
-                                      
-                                        <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div style={{  color: "white",
-                                                            background:row.active ? "green":"red",
-                                                            padding: "4px 12px",width:'fit-content',marginLeft:'20%',
-                                                            borderRadius: "13px"}}> {row.id}</div>
-                                                </Tooltip>
-                                            </TableCell>
-                                            <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                <div style={{ display: "grid", textAlign: "left",cursor:'pointer' }} className=" name-span" onClick={this.onInfoClick.bind(this, row)}>
-                            <span>{row.fullname}</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.business_name + " )"}</span>
-                          </div>
-                                                    {/* <div onClick={this.onInfoClick.bind(this, row)} className="text-ellpses name-span" style={{cursor:'pointer',color:'#2e3247'}}><span className={classes.name}>{row.fullname}</span>{"("+row.business_name+")"}</div> */}
-                                                </Tooltip>
+                                    (rowsPerPage > 0
+                                        ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        : this.state.tableBodyData
+                                    )
+                                        .map((row, i) => {
+                                            return (
 
-                                            </TableCell>
-                                      
-                                            <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
+                                                <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                        <Tooltip title={row.active ? "Enabled" : "Disabled"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <div style={{
+                                                                color: "white",
+                                                                background: row.active ? "green" : "red",
+                                                                padding: "4px 12px", width: 'fit-content', marginLeft: '20%',
+                                                                borderRadius: "13px"
+                                                            }}> {row.id}</div>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                        <Tooltip title={row.fullname ? row.fullname : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <div style={{ display: "grid", textAlign: "left", cursor: 'pointer' }} className=" name-span" onClick={this.onInfoClick.bind(this, row)}>
+                                                                <span>{row.fullname}</span>
+                                                                <span style={{ fontSize: "12px" }}>{"( " + row.business_name + " )"}</span>
+                                                            </div>
+                                                            {/* <div onClick={this.onInfoClick.bind(this, row)} className="text-ellpses name-span" style={{cursor:'pointer',color:'#2e3247'}}><span className={classes.name}>{row.fullname}</span>{"("+row.business_name+")"}</div> */}
+                                                        </Tooltip>
 
-                                            <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                <Tooltip title={row.ordercount+"/"+row.paymentcount} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses" style={{  color: "white",
-                                                            background:this.getOrderNoBackgroundColor(row),
-                                                            padding: "4px 12px",width:'fit-content',marginLeft:'20%',
-                                                            borderRadius: "13px"}}>{row.ordercount+"/"+row.paymentcount}</div>
-                                                </Tooltip>
-                                            </TableCell>
-                                            <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
-                                             
-                                             </TableCell>
-                                             <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{this.getInfoSTring(row)}
-                                             
-                                             </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 5)} style={{padding: "0px",lineHeight: "100%", width:"160px"}} >
-                                                <Tooltip title={row.default_commodity ? this.getCommmodityList(row.default_commodity) : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <div className="text-ellpses "  style={{ lineHeight: "unset",maxHeight: "100%"}}>{row.default_commodity ?  
-                                                       <p className={classes.commodityDataClass} > {this.getCommmodityList(row.default_commodity)} </p>
-                                                        : ""}</div>
-                                                </Tooltip>
-                                            </TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 4)} > 
-                                            <span style={{  color: "white",
-                                                            background:this.getBackgroundColor(row),
+                                                    </TableCell>
+
+                                                    <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
+
+                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                        <Tooltip title={row.ordercount + "/" + row.paymentcount} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <div className="text-ellpses" style={{
+                                                                color: "white",
+                                                                background: this.getOrderNoBackgroundColor(row),
+                                                                padding: "4px 12px", width: 'fit-content', marginLeft: '20%',
+                                                                borderRadius: "13px"
+                                                            }}>{row.ordercount + "/" + row.paymentcount}</div>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{row.rating}
+
+                                                    </TableCell>
+                                                    <TableCell style={{ width: "90px" }} className={this.getTableCellClass(classes, 7)} >{this.getInfoSTring(row)}
+
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", lineHeight: "100%", width: "160px" }} >
+                                                        <Tooltip title={row.default_commodity ? this.getCommmodityList(classes, row.default_commodity, true) : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <div className="text-ellpses " style={{ lineHeight: "unset", maxHeight: "100%" }}>{row.default_commodity ?
+                                                                this.getCommmodityList(classes, row.default_commodity, false)
+                                                                : ""}</div>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)} >
+                                                        <span style={{
+                                                            color: "white",
+                                                            background: this.getBackgroundColor(row),
                                                             padding: "4px 12px",
-                                                            borderRadius: "13px"}}> {this.getRole(row)} </span></TableCell>
-                                            <TableCell className={this.getTableCellClass(classes, 6)} >
-                                                <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a' , height: "18px", fontSize: "18px" }} />
-                                                </Tooltip>
-                                                <Tooltip title={row.bijak_verified ? "Bijak Verified : YES" : "Bijak Verified : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red' , height: "18px", fontSize: "18px" }} />
-                                                </Tooltip>
-                                                <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a' , height: "18px", fontSize: "18px" }} />
-                                                </Tooltip>
-                                                <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                    <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a' , height: "18px", fontSize: "18px" }} />
-                                                </Tooltip>
-                                            </TableCell>
-                                           
-                                        </TableRow>
-                                      
-                                    );
-                                })}
+                                                            borderRadius: "13px"
+                                                        }}> {this.getRole(row)} </span></TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 6)} >
+                                                        <Tooltip title={row.profile_completed ? "Profile Completed : YES" : "Profile Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a', height: "18px", fontSize: "18px" }} />
+                                                        </Tooltip>
+                                                        <Tooltip title={row.bijak_verified ? "Bijak Verified : YES" : "Bijak Verified : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <DoneAllIcon className="material-Icon" style={{ color: row.bijak_verified ? '' : 'red', height: "18px", fontSize: "18px" }} />
+                                                        </Tooltip>
+                                                        <Tooltip title={row.bijak_assured ? "Bijak Assured : YES" : "Bijak Assured : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <BeenhereIcon className="material-Icon" style={{ color: row.bijak_assured ? '#507705' : '#0000008a', height: "18px", fontSize: "18px" }} />
+                                                        </Tooltip>
+                                                        <Tooltip title={row.kyc_completed ? "Kyc Completed: YES" : "Kyc Completed : NO"} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                            <HowToRegIcon className="material-Icon" style={{ color: row.kyc_completed ? '#507705' : '#0000008a', height: "18px", fontSize: "18px" }} />
+                                                        </Tooltip>
+                                                    </TableCell>
+
+                                                </TableRow>
+
+                                            );
+                                        })}
                             </TableBody>
-                           
+
                         </Table>
-                       
+
                     </div>
                     <Table>
-                    <TableFooter  style={{ borderTop: "2px solid #858792" ,    background: "#fafafa"}}>
-                                <TableRow>
-                                    <TablePagination
-                                        rowsPerPageOptions={[ 25,50,100 ]}
-                                        colSpan={6}
-                                        count={this.state.tableBodyData.length}
-                                        rowsPerPage={rowsPerPage}
-                                        page={page}
-                                        SelectProps={{
-                                            inputProps: { 'aria-label': 'rows per page' },
-                                            native: true,
-                                        }}
-                                        onChangePage={this.handleChangePage.bind(this)}
-                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                                    />
-                                </TableRow>
-                            </TableFooter>
-                            </Table>
+                        <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[25, 50, 100]}
+                                    colSpan={6}
+                                    count={this.state.tableBodyData.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={this.handleChangePage.bind(this)}
+                                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                             <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
@@ -468,11 +498,11 @@ class UserListTable extends Component {
                         data={this.state.userData}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
-                                       {/* download */}
-                    <div className="updateBtndef" style={{ right : "160px"}} data-toggle="tooltip" data-html="true" title="Download">
-                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89",borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
-                            <i className="fa fa-cloud-download add-icon" style={{marginRight: 0,color: "white"}}aria-hidden="true"></i>
-                            </div>
+                    {/* download */}
+                    <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
                     </div>
                 </Paper>
             </MuiThemeProvider>
