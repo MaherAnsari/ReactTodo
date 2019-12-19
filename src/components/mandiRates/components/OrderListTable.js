@@ -135,6 +135,17 @@ class OrderListTable extends Component {
         var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY')
         return <div style={{ width: "95px" }}> {fdate.split(" ")[0] }</div>
     }
+
+    getBackgroundColor(obj) {
+        if (obj.source === "datagov") {
+            return "#2698d8";
+        } else if (obj.source === 'enam') {
+            return "#00a700";
+        } else  {
+            return "#e84089";
+        } 
+      
+    }
     render() {
         const { classes } = this.props;
         return (
@@ -159,7 +170,7 @@ class OrderListTable extends Component {
                                                 <div style={{ width: "40%" ,display: 'flex',textAlign:'right'}}>
                                                 <p style={{ width: "30%" }}>{this.formatDateAndTime(row.arrival_date)} </p>
                                                 <p style={{  color: "white",minWidth:'65px',textAlign:'center',
-                                                            background:'green',fontSize:'12px',
+                                                            background:this.getBackgroundColor(row),fontSize:'12px',
                                                             padding: "1px 12px",width:'fit-content',
                                                             borderRadius: "13px"}}>{row.source} </p>
                                                     <p style={{ width: "55%" }}> {row.market}</p>
