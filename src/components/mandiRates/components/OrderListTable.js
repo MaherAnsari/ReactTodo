@@ -7,6 +7,7 @@ import '../mandiRate.css';
 import Card from '@material-ui/core/Card';
 import Icon from '@material-ui/core/Icon';
 import MandiGraphModal from '../common/MandiGraphModal';
+var moment = require('moment');
 
 const theme = createMuiTheme({
     overrides: {
@@ -130,6 +131,10 @@ class OrderListTable extends Component {
         }
     }
 
+    formatDateAndTime = (dateval) => {
+        var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY')
+        return <div style={{ width: "95px" }}> {fdate.split(" ")[0] }</div>
+    }
     render() {
         const { classes } = this.props;
         return (
@@ -151,8 +156,15 @@ class OrderListTable extends Component {
                                         <div className="commodityDetail">Market Name</div>
                                         {this.state.tableBodyData[option].map((row, i) => {
                                             return (<div key={"data_"+i} className="districtDiv">
-                                                <div style={{ width: "25%" }}>{row.market}</div>
-                                                <div style={{ width: "45%", display: 'flex',textAlign:'right' }}>
+                                                <div style={{ width: "35%" ,display: 'flex',textAlign:'right'}}>
+                                                <p style={{ width: "50%" }}>{this.formatDateAndTime(row.arrival_date)} </p>
+                                                <p style={{  color: "white",
+                                                            background:'green',fontSize:'12px',
+                                                            padding: "1px 12px",width:'fit-content',marginLeft:'20%',
+                                                            borderRadius: "13px"}}>{row.source} </p>
+                                                    <p style={{ width: "50%" }}> {row.market}</p>
+                                                </div>
+                                                <div style={{ width: "35%", display: 'flex',textAlign:'right' }}>
                                                     <p style={{ width: "50%" }}> ₹ {row.cost.split('-')[0]}</p>
                                                     <p style={{ width: "50%" }}> ₹ {row.modal_price}</p>
                                                 </div>

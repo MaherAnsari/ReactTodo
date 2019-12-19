@@ -280,7 +280,7 @@ class AddTransactionModal extends Component {
         var isValid = true;
         var error = {};
         // console.log(data);
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
+        var nonMandatoryFields = ["bank_id", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;

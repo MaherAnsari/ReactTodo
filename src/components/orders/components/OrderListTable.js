@@ -98,7 +98,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "commodity", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location","commodity", "Amount  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -226,7 +226,7 @@ class OrderListTable extends Component {
     };
 
     formatDateAndTime = (dateval) => {
-        var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm A')
+        var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
     }
 
@@ -246,7 +246,7 @@ class OrderListTable extends Component {
     }
 
     handleClickOpen() {
-        this.setState({ showUploader: true })
+        this.setState({ showAddOrderModal: true })
     }
 
     onOrderDataAdded() {
@@ -284,12 +284,16 @@ class OrderListTable extends Component {
     onFileModalCancel(event){
         this.setState({open:false,showUploader:false});
     }
+    handleUploaderClick(event) {
+        this.setState({ showUploader: true });
+    }
+
 
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
         const leftAlignedIndexs = [1, 2, 3];
-        const rightAlignedIndexs = [6];
+        const rightAlignedIndexs = [7];
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -364,10 +368,13 @@ class OrderListTable extends Component {
 
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 4)} >
+                                                    {row.source_location ?row.source_location :"-"}
+                                                </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{
                                                         color: "white",
-                                                        background: "rgb(58, 126, 63)",
+                                                        background: row.commodity ?"rgb(58, 126, 63)":"",
                                                         padding: "4px 12px",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
@@ -429,6 +436,17 @@ class OrderListTable extends Component {
                             onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
                             invoiceUrlData={this.state.invoiceModalData} />}
 
+<div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            onClick={this.handleUploaderClick.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
                     <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>

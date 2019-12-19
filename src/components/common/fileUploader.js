@@ -76,7 +76,7 @@ class FileUploader extends Component {
         var fileName = file.name;
         var fileSize = file.size;
         var fileExtension = fileName.substring(fileName.indexOf(".") + 1);
-        if (fileSize < 20000000 && fileExtension === 'csv') {
+        if (fileSize < 20000000 ) {
             this.handleFiles(event);
 
         } else {

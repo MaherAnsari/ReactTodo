@@ -287,6 +287,13 @@ class PaymentComponent extends Component {
     onFileModalCancel(event){
         this.setState({open:false,showUploader:false});
     }
+
+    handleUploaderClick(event) {
+        this.setState({ showUploader: true });
+    }
+
+
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
@@ -541,11 +548,22 @@ class PaymentComponent extends Component {
 
                 </Paper> : <Loader />}
 
+                <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                            onClick={this.handleUploaderClick.bind(this)}
+                            >
+                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
+                            <p style={{
+                                fontSize: "14px",
+                                fontFamily: "lato",
+                                fontWeight: 600
+                            }}>Upload file</p></div>
+                    </div>
                 <div className="updateBtndef">
                     <div
                         className="updateBtnFixed"
                         style={{ display: 'flex' }}
-                        onClick={(event) => this.setState({ showUploader: true })}
+                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
                     >
                         <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p>Add Transaction</p></div>

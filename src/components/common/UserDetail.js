@@ -142,7 +142,7 @@ class UserDetail extends Component {
                 <p className={classes.head}>Partner Name : </p><p className={classes.value}>{this.props.data.partner_names}</p>
             </div>
             <div style={{ display: 'flex' }}>
-                <p className={classes.head} style={{width:'15%'}}>Commodity  : </p><p className={classes.value} style={{width:'85%'}}>{this.props.data.default_commodity.join()}</p>
+                <p className={classes.head} style={{width:'15%'}}>Commodity  : </p><p className={classes.value} style={{width:'85%'}}>{this.props.data.default_commodity ? this.props.data.default_commodity.join() :"-"}</p>
             </div>
         </div >
         );

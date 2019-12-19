@@ -88,7 +88,7 @@ class UserDataContainer extends React.Component {
         this.getData();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showAddModal: false });
+        this.setState({ open: false, showAddModal: false ,showUploader:false});
     }
 
 
@@ -126,6 +126,10 @@ class UserDataContainer extends React.Component {
         }
     }
 
+    
+    handleUploaderClick(event) {
+        this.setState({ showUploader: true });
+    }
 
     async getCommodityNames() {
 
@@ -169,7 +173,7 @@ class UserDataContainer extends React.Component {
 
                      <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
-                            onClick={this.handleClickOpen.bind(this)}>
+                            onClick={this.handleUploaderClick.bind(this)}>
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
@@ -180,11 +184,11 @@ class UserDataContainer extends React.Component {
 
                 </Card> : <Loader />}
 
-                {/* {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
+                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
                      onEditModalClosed={this.handleClose.bind(this)}
                      commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""} */}
-                {this.state.showAddModal ? <FileUploader openModal={this.state.open}
+                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
+                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
                     onEditModalClosed={this.handleFileUploader.bind(this)}
                     //  commodityList={ this.state.commodityList}
                     onEditModalCancel={this.onModalCancel.bind(this)}

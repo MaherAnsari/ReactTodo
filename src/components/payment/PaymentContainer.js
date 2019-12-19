@@ -68,17 +68,7 @@ class PayOutContainer extends React.Component {
                     </a>
                     </div>
 
-                     <div className="fixedLeftBtnContainer">
-                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
-                            // onClick={this.handleClickOpen.bind(this)}
-                            >
-                            <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
-                            <p style={{
-                                fontSize: "14px",
-                                fontFamily: "lato",
-                                fontWeight: 600
-                            }}>Upload file</p></div>
-                    </div>
+                   
                     </div>
                 </Paper>
             </div>

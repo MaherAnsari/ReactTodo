@@ -95,7 +95,9 @@ class EditOrderDataModal extends Component {
                 "buyer_mobile": "",
                 "supplier_mobile": "",
                 "commission_rate": "",
-                "commission_unit": ""
+                "commission_unit": "",
+                "target_location":"",
+                "source_location":""
             },
 
             buyerid: "",
@@ -110,11 +112,11 @@ class EditOrderDataModal extends Component {
 
     }
 
-    componentDidMount(){
-        console.log( this.state.orderPayload )
-        if( this.state.orderPayload ){
+    componentDidMount() {
+        console.log(this.state.orderPayload)
+        if (this.state.orderPayload) {
 
-            
+
             let attachmentArrayVal = this.state.attachmentArray;
             if (this.state.orderPayload && this.state.orderPayload["supporting_images"] && this.state.orderPayload["supporting_images"] !== null) {
                 for (var i = 0; i < this.state.orderPayload["supporting_images"].length; i++) {
@@ -126,12 +128,12 @@ class EditOrderDataModal extends Component {
                     attachmentArrayVal.push(imgObj)
                 }
             }
-    
+
             this.setState({
-                attachmentArray : attachmentArrayVal,
-                buyerid: [{ label:  this.state.orderPayload["buyer_name"] ,value: this.state.orderPayload["buyer_mobile"] }],
-                supplierid: [{ label:  this.state.orderPayload["supplier_name"] ,value :  this.state.orderPayload["supplier_mobile"] }],
-                brokerid: [{ value: this.state.orderPayload["brokerid"] ,label: this.state.orderPayload["broker_name"] }],
+                attachmentArray: attachmentArrayVal,
+                buyerid: [{ label: this.state.orderPayload["buyer_name"], value: this.state.orderPayload["buyer_mobile"] }],
+                supplierid: [{ label: this.state.orderPayload["supplier_name"], value: this.state.orderPayload["supplier_mobile"] }],
+                brokerid: [{ value: this.state.orderPayload["brokerid"], label: this.state.orderPayload["broker_name"] }],
             })
         }
     }
@@ -246,7 +248,7 @@ class EditOrderDataModal extends Component {
             if (this.checkForInvalidFields(payload)) {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
-                var resp = await orderService.updateExistingOrder( id , payload);
+                var resp = await orderService.updateExistingOrder(id, payload);
                 console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully updated this order ");
@@ -269,7 +271,7 @@ class EditOrderDataModal extends Component {
                 formateddata[key] = data[key];
             }
 
-            if( key === "active"){
+            if (key === "active") {
                 formateddata[key] = data[key];
             }
 
@@ -297,13 +299,13 @@ class EditOrderDataModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status",
-         "remark", "other_info","commission_rate","commission_unit"]
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status","brokerid",
+            "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
                 isValid = false;
-                console.log( key )
+                console.log(key)
             }
         }
         this.setState({ errorFields: error });
@@ -384,7 +386,7 @@ class EditOrderDataModal extends Component {
         if (id === "active") {
             data[id] = event.target.checked;
         }
-        console.log( data )
+        console.log(data)
         this.setState({ orderPayload: data });
     };
 
@@ -406,18 +408,18 @@ class EditOrderDataModal extends Component {
                 </DialogTitle>
                 <DialogContent>
 
-                       <div >
-                                <span style={{ lineHeight: "40px", fontFamily:"lato", fontSize:"17px" }}>Enable / disable order</span>
-                                <Switch
-                                    classes={{ root: classes.muiSwitchroot }}
-                                    checked={orderPayload.active}
-                                    onChange={this.handleStateChange.bind(this, "active")}
-                                    value={orderPayload.active}
-                                    color="primary"
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                />
+                    <div >
+                        <span style={{ lineHeight: "40px", fontFamily: "lato", fontSize: "17px" }}>Enable / disable order</span>
+                        <Switch
+                            classes={{ root: classes.muiSwitchroot }}
+                            checked={orderPayload.active}
+                            onChange={this.handleStateChange.bind(this, "active")}
+                            value={orderPayload.active}
+                            color="primary"
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        />
 
-                            </div>
+                    </div>
 
                     <div style={{ display: "flex" }}>
                         <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
@@ -707,6 +709,31 @@ class EditOrderDataModal extends Component {
                         </TextField>
                     </div>
                     <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="source_location"
+                            label="Source Location"
+                            type="text"
+                            error={errorFields["source_location"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={orderPayload.source_location}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                        &nbsp;
+<TextField
+                            margin="dense"
+                            id="target_location"
+                            label="Target Location"
+                            error={errorFields["target_location"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={orderPayload.target_location}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                    </div>
+                    <div style={{ display: "flex" }} >
                         <TextField
                             margin="dense"
                             id="transport_info"
@@ -719,7 +746,7 @@ class EditOrderDataModal extends Component {
                             fullWidth />
                     </div>
 
-                    
+
                     {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                         <div style={{ fontFamily: "lato", padding: "10px" }}>
                             Uploaded Images
@@ -730,7 +757,7 @@ class EditOrderDataModal extends Component {
                             //     <img src={key} alt={key} height="150px" />
                             // </div>
                             <div key={"imhs_" + i} className="transaction-supporting-image">
-                                <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px"  width="150px" />
+                                <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px" width="150px" />
                                 <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                     <i className="fa fa-trash fa-lg"></i>
                                 </div>

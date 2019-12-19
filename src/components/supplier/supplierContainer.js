@@ -9,6 +9,8 @@ import UserTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
 import sampleFile from '../sampleDownloadFiles/bulk-add-supplier-data-sample.csv';
+import FileUploader from '../common/fileUploader';
+import userListService from './../../app/userListService/userListService';
 
 const styles = theme => ({
     root: {
@@ -44,7 +46,8 @@ class SupplierContainer extends React.Component {
             open: false,
             showAddModal: false,
             dataList: null,
-            showLoader: true
+            showLoader: true,
+            showUploader:false
 
         };
     }
@@ -57,7 +60,7 @@ class SupplierContainer extends React.Component {
     }
 
     async getData() {
-        this.setState({ dataList: null });
+        this.setState({ dataList: null ,showAddModal: false, showUploader: false  });
         let resp = await supplierService.getSupplierList();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
@@ -71,12 +74,35 @@ class SupplierContainer extends React.Component {
         this.getData();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showAddModal: false });
+        this.setState({ open: false, showAddModal: false,showUploader:false });
     }
 
 
     handleClickOpen(event) {
         this.setState({ showAddModal: true, open: true });
+    }
+
+
+    
+    async handleFileUploader(event) {
+        // console.log(event);
+        try {
+            let resp = await userListService.uploadData(event);
+            if (resp.data.status === 1 && resp.data.result) {
+                alert("Data Successfuly Uploaded ");
+                this.getData();
+
+            }
+
+        } catch (err) {
+            console.error(err)
+            this.getData();
+        }
+    }
+
+    
+    handleUploaderClick(event) {
+        this.setState({ showUploader: true });
     }
     render() {
         const { classes } = this.props;
@@ -115,7 +141,7 @@ class SupplierContainer extends React.Component {
 
                      <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
-                            // onClick={this.handleClickOpen.bind(this)}
+                            onClick={this.handleUploaderClick.bind(this)}
                             >
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
                             <p style={{
@@ -130,6 +156,13 @@ class SupplierContainer extends React.Component {
                     onEditModalClosed={this.handleClose.bind(this)}
                     role="la"
                     onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+
+{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                    onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                    onEditModalCancel={this.onModalCancel.bind(this)}
+                />
+                    : ""}
             </div>
         );
     }

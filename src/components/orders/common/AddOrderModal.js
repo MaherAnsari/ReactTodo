@@ -90,7 +90,9 @@ class AddOrderModal extends Component {
                 "buyer_mobile": "",
                 "supplier_mobile": "",
                 "commission_rate": "",
-                "commission_unit": ""
+                "commission_unit": "",
+                "target_location":"",
+                "source_location":""
             },
 
             buyerid: "",
@@ -106,15 +108,15 @@ class AddOrderModal extends Component {
     }
 
 
-    componentDidMount(){
-        if(this.props.userdata && this.props.userdata.role === "ca"){
+    componentDidMount() {
+        if (this.props.userdata && this.props.userdata.role === "ca") {
             this.state.addOrderPayload['buyerid'] = this.props.userdata.id;
             this.state.addOrderPayload['buyer_mobile'] = this.props.userdata.mobile;
 
-        }else if(this.props.userdata && this.props.userdata.role === "la"){
+        } else if (this.props.userdata && this.props.userdata.role === "la") {
             this.state.addOrderPayload['supplierid'] = this.props.userdata.id;
             this.state.addOrderPayload['supplier_mobile'] = this.props.userdata.mobile;
-        }else if(this.props.userdata && this.props.userdata.role === "broker"){
+        } else if (this.props.userdata && this.props.userdata.role === "broker") {
             this.state.addOrderPayload['brokerid'] = this.props.userdata.id;
         }
     }
@@ -302,8 +304,8 @@ class AddOrderModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status",
-         "remark", "other_info","commission_rate","commission_unit"]
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status","brokerid",
+            "remark", "other_info", "commission_rate", "commission_unit","target_location","source_location"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -403,134 +405,134 @@ class AddOrderModal extends Component {
                 <DialogContent>
 
                     <div style={{ display: "flex" }}>
-                    {this.props.userdata && this.props.userdata.role === "ca" ?
+                        {this.props.userdata && this.props.userdata.role === "ca" ?
 
-<TextField
-    margin="dense"
-    id="buyerid"
-    label="Buyer"
-    disabled={true}
-    // error={errorFields["amount"] ? true : false}
-    type="text"
-    style={{ width: '49%' }}
-    value={this.props.userdata.fullname}
-    // onChange={this.handleInputChange.bind(this)}
-    fullWidth />
-: <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                            <AsyncSelect
-                                cacheOptions
-                                value={buyerid}
-                                id={"reactSelectCustom"}
-                                name={"buyerid"}
-                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                onChange={(item) => {
-                                    this.setState({ buyerid: item }, function () {
-                                        var data = addOrderPayload;
-                                        if (errorFields["buyerid"]) {
-                                            delete errorFields["buyerid"];
-                                        }
-                                        if (item && item !== null) {
-                                            data["buyerid"] = tempVar[item["label"]]["id"];
-                                            data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["buyerid"] = "";
-                                            data["buyer_mobile"] = "";
-                                        }
-                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select buyer..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "buyerid")}
-                            />
-                        </div>}
-                        &nbsp;
-                        &nbsp;
-                        {this.props.userdata && this.props.userdata.role === "la"?<TextField
+                            <TextField
                                 margin="dense"
-                                id="supplierid"
-                                label="Supplier"
+                                id="buyerid"
+                                label="Buyer"
                                 disabled={true}
                                 // error={errorFields["amount"] ? true : false}
                                 type="text"
                                 style={{ width: '49%' }}
                                 value={this.props.userdata.fullname}
                                 // onChange={this.handleInputChange.bind(this)}
-                                fullWidth /> :  <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                                fullWidth />
+                            : <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                                <AsyncSelect
+                                    cacheOptions
+                                    value={buyerid}
+                                    id={"reactSelectCustom"}
+                                    name={"buyerid"}
+                                    // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                    onChange={(item) => {
+                                        this.setState({ buyerid: item }, function () {
+                                            var data = addOrderPayload;
+                                            if (errorFields["buyerid"]) {
+                                                delete errorFields["buyerid"];
+                                            }
+                                            if (item && item !== null) {
+                                                data["buyerid"] = tempVar[item["label"]]["id"];
+                                                data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                            } else {
+                                                data["buyerid"] = "";
+                                                data["buyer_mobile"] = "";
+                                            }
+                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                        })
+                                    }}
+                                    isSearchable={true}
+                                    isClearable={true}
+                                    placeholder={`Select buyer..`}
+                                    defaultOptions={[]}
+                                    loadOptions={this.getOptions.bind(this, "buyerid")}
+                                />
+                            </div>}
+                        &nbsp;
+                        &nbsp;
+                        {this.props.userdata && this.props.userdata.role === "la" ? <TextField
+                            margin="dense"
+                            id="supplierid"
+                            label="Supplier"
+                            disabled={true}
+                            // error={errorFields["amount"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={this.props.userdata.fullname}
+                            // onChange={this.handleInputChange.bind(this)}
+                            fullWidth /> : <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
-                            <AsyncSelect
-                                cacheOptions
-                                value={supplierid}
-                                id={"reactSelectCustom"}
-                                name={"supplierid"}
-                                onChange={(item) => {
-                                    this.setState({ supplierid: item }, function () {
-                                        if (errorFields["supplierid"]) {
-                                            delete errorFields["supplierid"];
-                                        }
-                                        var data = addOrderPayload;
-                                        if (item && item !== null) {
-                                            data["supplierid"] = tempVar[item["label"]]["id"];
-                                            data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["supplierid"] = "";
-                                            data["supplier_mobile"] = "";
-                                        }
-                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select supplier..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "supplierid")}
-                            />
-                        </div>}
+                                <AsyncSelect
+                                    cacheOptions
+                                    value={supplierid}
+                                    id={"reactSelectCustom"}
+                                    name={"supplierid"}
+                                    onChange={(item) => {
+                                        this.setState({ supplierid: item }, function () {
+                                            if (errorFields["supplierid"]) {
+                                                delete errorFields["supplierid"];
+                                            }
+                                            var data = addOrderPayload;
+                                            if (item && item !== null) {
+                                                data["supplierid"] = tempVar[item["label"]]["id"];
+                                                data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
+                                            } else {
+                                                data["supplierid"] = "";
+                                                data["supplier_mobile"] = "";
+                                            }
+                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                        })
+                                    }}
+                                    isSearchable={true}
+                                    isClearable={true}
+                                    placeholder={`Select supplier..`}
+                                    defaultOptions={[]}
+                                    loadOptions={this.getOptions.bind(this, "supplierid")}
+                                />
+                            </div>}
                     </div>
 
                     <div style={{ display: "flex" }}>
-                    {this.props.userdata && this.props.userdata.role === "broker"?<TextField
-                                margin="dense"
-                                id="brokerid"
-                                label="Broker"
-                                disabled={true}
-                                // error={errorFields["amount"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={this.props.userdata.fullname}
-                                // onChange={this.handleInputChange.bind(this)}
-                                fullWidth /> : <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                            <AsyncSelect
-                                cacheOptions
-                                value={brokerid}
-                                id={"reactSelectCustom"}
-                                name={"brokerid"}
-                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                onChange={(item) => {
-                                    this.setState({ brokerid: item }, function () {
-                                        var data = addOrderPayload;
-                                        if (errorFields["brokerid"]) {
-                                            delete errorFields["brokerid"];
-                                        }
-                                        if (item && item !== null) {
-                                            data["brokerid"] = tempVar[item["label"]]["id"];
-                                            // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["brokerid"] = "";
-                                            // data["buyer_mobile"] = "";
-                                        }
-                                        this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select broker..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "brokerid")}
-                            />
-                        </div>}
+                        {this.props.userdata && this.props.userdata.role === "broker" ? <TextField
+                            margin="dense"
+                            id="brokerid"
+                            label="Broker"
+                            disabled={true}
+                            // error={errorFields["amount"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={this.props.userdata.fullname}
+                            // onChange={this.handleInputChange.bind(this)}
+                            fullWidth /> : <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                                <AsyncSelect
+                                    cacheOptions
+                                    value={brokerid}
+                                    id={"reactSelectCustom"}
+                                    name={"brokerid"}
+                                    // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                    onChange={(item) => {
+                                        this.setState({ brokerid: item }, function () {
+                                            var data = addOrderPayload;
+                                            if (errorFields["brokerid"]) {
+                                                delete errorFields["brokerid"];
+                                            }
+                                            if (item && item !== null) {
+                                                data["brokerid"] = tempVar[item["label"]]["id"];
+                                                // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                            } else {
+                                                data["brokerid"] = "";
+                                                // data["buyer_mobile"] = "";
+                                            }
+                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                        })
+                                    }}
+                                    isSearchable={true}
+                                    isClearable={true}
+                                    placeholder={`Select broker..`}
+                                    defaultOptions={[]}
+                                    loadOptions={this.getOptions.bind(this, "brokerid")}
+                                />
+                            </div>}
                         &nbsp;
                         &nbsp;
                         <TextField
@@ -721,6 +723,32 @@ class AddOrderModal extends Component {
                                 </MenuItem>
                             ))}
                         </TextField>
+                    </div>
+
+                    <div style={{ display: "flex" }} >
+
+                        <TextField
+                            margin="dense"
+                            id="source_location"
+                            label="Source Location"
+                            type="text"
+                            error={errorFields["source_location"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.source_location}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                        &nbsp;
+                        &nbsp;
+<TextField
+                            margin="dense"
+                            id="target_location"
+                            label="Target Location"
+                            error={errorFields["target_location"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.target_location}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
                     </div>
                     <div style={{ display: "flex" }} >
                         <TextField

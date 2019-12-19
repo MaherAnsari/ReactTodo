@@ -117,7 +117,7 @@ class UserListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["id", "fullname(business_name)", "mobile", "Order/Payment","rating","Location", "commodity", "role","status"],
+            tableHeadData: ["id", "fullname(business name)", "mobile", "order/payment","rating","locality/district", "commodity", "role","status"],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",

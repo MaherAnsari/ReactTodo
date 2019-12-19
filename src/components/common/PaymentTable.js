@@ -13,6 +13,8 @@ import Utils from '../../app/common/utils';
 import paymentService from '../../app/paymentService/paymentService';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+var moment = require('moment');
+
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -152,13 +154,17 @@ class PaymentTable extends Component {
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page } = this.state;
+        const leftAlignedIndexs = [0, 1];
+        const rightAlignedIndexs = [4];
         return (<div style={{ width: '100%',marginTop:'50px', height:"550px",overflowY:"scroll" }}>
             {/* <AddTransactionModal open={true} /> */}
             <Table stickyHeader aria-label="sticky table" className='table-body'>
                 <TableHead>
                     <TableRow  >
                         {this.state.tableHeadData.map((option, i) => (
-                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '22px' : '' }}>{option}</TableCell>
+                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ minWidth: '120px', paddingLeft: i === 0 ? '10px' : ''
+                                , textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : "", 
+                                paddingRight: i === 4 ? "10px" : '',textTransform: 'uppercase' }}>{option}</TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
@@ -168,17 +174,17 @@ class PaymentTable extends Component {
 
                             <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
                              {this.props.userdata.role === "la" ?   
-                              <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                              <TableCell component="th"  style={{ paddingLeft:'10px', textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
                               {row.buyer_fullname ? row.buyer_fullname : "-"}
                           </TableCell>
-                             :<TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                             :<TableCell component="th"  style={{paddingLeft:'10px',  textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
                                     {row.supplier_fullname ? row.supplier_fullname : "-"}
                                 </TableCell>}
-                                {this.props.userdata.role === "la" ?  <TableCell className={this.getTableCellClass(classes, 2)}>
+                                {this.props.userdata.role === "la" ?  <TableCell style={{  textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
                                     <div className="text-ellpses">
                                         {row.buyer_business_name ? row.buyer_business_name : "-"}
                                     </div>
-                                </TableCell>:      <TableCell className={this.getTableCellClass(classes, 2)}>
+                                </TableCell>:      <TableCell style={{ textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
                                     <div className="text-ellpses">
                                         {row.supplier_business_name ? row.supplier_business_name : "-"}
                                     </div>
@@ -199,7 +205,7 @@ class PaymentTable extends Component {
                                 borderRadius: "13px"}} >   {row.payment_mode ? row.payment_mode : "-"} </span>
                                 
                                 </TableCell>
-                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) }}>
+                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type),textAlign:"right",paddingRight:'10px' }}>
                                     ₹ {row.amount ? row.amount : "-"}
                                 </TableCell>
 
