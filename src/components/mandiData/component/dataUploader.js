@@ -71,8 +71,8 @@ class DataUploader extends Component {
                 "type": "l",
                 "openingHour":"00",
                 "openingMin":"00",
-                "time":"AM",
-                "opening_time":"00:00 AM"
+                "time":"am",
+                "opening_time":"00:00 am"
 
             },
             mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
