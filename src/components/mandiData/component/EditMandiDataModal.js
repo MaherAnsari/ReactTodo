@@ -434,7 +434,7 @@ class EditMandiDataModal extends Component {
                                   <TextField
                                     select
                                     id="time"
-                                    label=""
+                                    label="Time"
                                     type="text"
                                     style={{ marginRight: '2%', width: '30%' ,paddingTop:'20px'}}
                                     value={this.state.dataObj.time}
