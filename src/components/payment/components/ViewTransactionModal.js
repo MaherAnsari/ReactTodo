@@ -240,6 +240,15 @@ class ViewTransactionModal extends Component {
       handleChangeRowsPerPage = event => {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
       };
+
+      handelRefreshModal( event ){
+          this.setState({             
+            groupedTransactionData: undefined,
+            allTransactionsData: undefined}, function(){
+                this.getTransactionList(this.state.mobileNumber, this.state.transDate);
+            })
+        
+      }
     
 
 
@@ -306,8 +315,8 @@ class ViewTransactionModal extends Component {
                                     </MuiPickersUtilsProvider>
                                 </MuiThemeProvider>
                             </div>
-                            <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
-                                close
+                            <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelRefreshModal(event) }}>
+                                Refresh
                             </Button>
                         </Toolbar>
                     </AppBar>

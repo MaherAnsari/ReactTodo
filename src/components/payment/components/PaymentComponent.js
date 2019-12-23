@@ -303,6 +303,10 @@ class PaymentComponent extends Component {
        return "0";
     }
 
+    handelRefreshData(){
+        this.getPaymentInfoDetails(this.state.datePayloads);
+    }
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
@@ -313,11 +317,13 @@ class PaymentComponent extends Component {
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
                     <div style={{ display: 'flex' }}>
+                    <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" class="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                         <input
                             type="text"
                             placeholder="Search Buyer..."
                             className="search-input"
+                            style={{ width: "82%" }}
                             onChange={this.handelFilter.bind(this)} />
                         <i style={{ marginTop: 22 }} className="fa fa-search"></i>
                     </div>
