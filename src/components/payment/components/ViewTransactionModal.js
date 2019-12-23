@@ -7,7 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
+import CachedIcon from '@material-ui/icons/Cached';
 import Slide from '@material-ui/core/Slide';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -245,7 +245,7 @@ class ViewTransactionModal extends Component {
           this.setState({             
             groupedTransactionData: undefined,
             allTransactionsData: undefined}, function(){
-                this.getTransactionList(this.state.mobileNumber, this.state.transDate);
+this.getTransactionList(this.state.mobileNumber, this.state.transDate);
             })
         
       }
@@ -265,12 +265,13 @@ class ViewTransactionModal extends Component {
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
                     <AppBar className={classes.appBar}>
                         <Toolbar>
-                            <IconButton
+                        <IconButton
                                 edge="start"
+                                data-toggle="tooltip" data-html="true" title="Refresh"
                                 color="inherit"
-                                onClick={(event) => { this.handelModalClose(event) }}
+                                onClick={(event) => { this.handelRefreshModal(event) }}
                                 aria-label="close">
-                                <CloseIcon />
+                                <CachedIcon  style={{color:"#50a1cf"}}/>
                             </IconButton>
                             <Typography
                                 variant="h6"
@@ -315,8 +316,8 @@ class ViewTransactionModal extends Component {
                                     </MuiPickersUtilsProvider>
                                 </MuiThemeProvider>
                             </div>
-                            <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelRefreshModal(event) }}>
-                                Refresh
+                            <Button autoFocus className={classes.closeBtn} color="inherit" onClick={(event) => { this.handelModalClose(event) }}>
+                                Close
                             </Button>
                         </Toolbar>
                     </AppBar>
