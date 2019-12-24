@@ -104,6 +104,11 @@ class SupplierContainer extends React.Component {
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
+
+    handelRefreshData( event ){
+        this.getData();
+    }
+    
     render() {
         const { classes } = this.props;
         return (
@@ -112,6 +117,7 @@ class SupplierContainer extends React.Component {
                     <UserTable
                         tableData={this.state.dataList}
                         role="la"
+                        handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                         downloadAbleFileName="supplier_list_data"
                         onClose={this.getData.bind(this)} />
 

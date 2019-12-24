@@ -131,8 +131,8 @@ class UserDataContainer extends React.Component {
         this.setState({ showUploader: true });
     }
 
-    async getCommodityNames() {
-
+    handelRefreshData( event ){
+        this.getData();
     }
 
     render() {
@@ -146,6 +146,7 @@ class UserDataContainer extends React.Component {
                         tableData={this.state.dataList}
                         onClose={this.getData.bind(this)}
                         downloadAbleFileName="user_list_data"
+                        handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                         commodityList={this.state.commodityList} />
 
                     <div className="updateBtndef">

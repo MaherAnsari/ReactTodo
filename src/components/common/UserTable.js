@@ -344,6 +344,7 @@ class UserListTable extends Component {
                         <UserFilterDataView
                             stateList={this.state.stateList}
                             role={this.props.role}
+                            onRefreshButtonClicked={(event)=>this.props.handelRefreshButtonClicked( event )}
                             //   districtList={this.state.districtList}
                             //   districtData={Utils.getDistrictData()}
                             onHeaderFilterChange={this.handelFilter.bind(this)}

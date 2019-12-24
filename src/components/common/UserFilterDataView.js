@@ -184,6 +184,11 @@ class UserFilterDataView extends React.Component {
       onFilterClose(event){
         this.setState({isFilterDialogOpen:false,open:false});
       }
+
+      handelRefreshData( event ){
+        this.props.onRefreshButtonClicked();
+      }
+
     render() {
         const { classes } = this.props;
         return (
@@ -192,11 +197,20 @@ class UserFilterDataView extends React.Component {
                 <Grid item xs={12} sm={12} md={12}>
                     {this.state.configData &&
                         <form className={classes.root} autoComplete="off" style={{ padding: '15px 0px', color: "#000", borderRadius: "4px" }}>
+                           <i 
+                                onClick={(event) => this.handelRefreshData(event)} 
+                                style={{ padding: "18px 0px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} 
+                                data-toggle="tooltip" 
+                                data-html="true" 
+                                title="Refresh" 
+                                class="fa fa-refresh" 
+                                aria-hidden="true"></i>
                             {this.state.configData.map((obj, index) => (
                                 <React.Fragment key={index}>
                                     {(obj && obj.name && obj.id && obj.id !== "searchInput") ?
                                         <FormControl variant="outlined" className={classes.formControl}
                                         style={{ flex: 1 ,zIndex:"999"}}>
+
                                             <Select
                                                 name={obj.name}
                                                 value={this.state[obj.name]}

@@ -101,6 +101,11 @@ class BuyerContainer extends React.Component {
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
+
+    handelRefreshData( event ){
+        this.getData();
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -111,6 +116,7 @@ class BuyerContainer extends React.Component {
                             tableData={this.state.dataList} 
                             role= "ca" 
                             downloadAbleFileName="buyer_list_data"
+                            handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                             onClose={this.getData.bind(this)}   /> 
 
                        <div className="updateBtndef">

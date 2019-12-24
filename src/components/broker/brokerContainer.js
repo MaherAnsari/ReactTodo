@@ -118,6 +118,10 @@ class BrokerContainer extends React.Component {
         this.setState({ showUploader: true });
     }
 
+    handelRefreshData( event ){
+        this.getData();
+    }
+    
     render() {
         const { classes } = this.props;
         return (
@@ -127,6 +131,7 @@ class BrokerContainer extends React.Component {
                     tableData={this.state.dataList} 
                     role="broker" 
                     downloadAbleFileName="broker_list_data"
+                    handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                     commodityList={this.state.commodityList} 
                     onClose={this.getData.bind(this)} />
                     
