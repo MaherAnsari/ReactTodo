@@ -44,6 +44,11 @@ const theme = createMuiTheme({
                 fontFamily: 'lato !important',
             }
         },
+        MuiTablePagination: {
+            toolbar: {
+                paddingRight: '270px'
+            }
+        },
     }
 });
 
@@ -123,7 +128,7 @@ class PaymentComponent extends Component {
 
             rowsPerPage: 50,
             page: 0,
-            showUploader:false,
+            showUploader: false,
 
 
         }
@@ -263,47 +268,47 @@ class PaymentComponent extends Component {
             Utils.downloadDataInCSV(respData, "payment_data")
         } catch (err) {
             console.log(err);
-            alert( "An error occured while downloading the payment data ");
+            alert("An error occured while downloading the payment data ");
         }
     }
 
-    async handleFileUploader(event){
+    async handleFileUploader(event) {
         console.log(event);
         try {
             let resp = await paymentService.uplaodPayment(event);
             if (resp.data.status === 1 && resp.data.result) {
-            alert("Data Successfuly Uploaded ");
-           this.getPaymentSearchedUser(" ");
-               this.setState({open:false,showUploader:false});
+                alert("Data Successfuly Uploaded ");
+                this.getPaymentSearchedUser(" ");
+                this.setState({ open: false, showUploader: false });
             }
-           
+
         } catch (err) {
             console.error(err)
-            this.setState({open:false,showUploader:false});
+            this.setState({ open: false, showUploader: false });
             this.getPaymentSearchedUser(" ");
         }
     }
 
-    onFileModalCancel(event){
-        this.setState({open:false,showUploader:false});
+    onFileModalCancel(event) {
+        this.setState({ open: false, showUploader: false });
     }
 
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    getPaymentInOutInfo(type,key){
-       let arr =  this.state.paymentMetaInfo
-       for(let i=0 ;i<arr.length;i++){
-                let obj = arr[i];
-                if(type == obj['transaction_type']){
-                    return this.formatNumberWithComma(obj[key]);
-                }
-       }
-       return "0";
+    getPaymentInOutInfo(type, key) {
+        let arr = this.state.paymentMetaInfo
+        for (let i = 0; i < arr.length; i++) {
+            let obj = arr[i];
+            if (type == obj['transaction_type']) {
+                return this.formatNumberWithComma(obj[key]);
+            }
+        }
+        return "0";
     }
 
-    handelRefreshData(){
+    handelRefreshData() {
         this.getPaymentInfoDetails(this.state.datePayloads);
     }
 
@@ -317,7 +322,7 @@ class PaymentComponent extends Component {
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
                     <div style={{ display: 'flex' }}>
-                    <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" class="fa fa-refresh" aria-hidden="true"></i>
+                        <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" class="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                         <input
                             type="text"
@@ -342,7 +347,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            ₹ {this.getPaymentInOutInfo('b_in','sum')}
+                                            ₹ {this.getPaymentInOutInfo('b_in', 'sum')}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
@@ -370,7 +375,7 @@ class PaymentComponent extends Component {
                                                 className={classes.inline}
                                                 style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                             >
-                                               {this.getPaymentInOutInfo('b_in','count')}
+                                                {this.getPaymentInOutInfo('b_in', 'count')}
                                             </Typography>
                                         </React.Fragment>
                                         } secondary={
@@ -397,7 +402,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            ₹ {this.getPaymentInOutInfo('b_out','sum')}
+                                            ₹ {this.getPaymentInOutInfo('b_out', 'sum')}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
@@ -424,7 +429,7 @@ class PaymentComponent extends Component {
                                             className={classes.inline}
                                             style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
-                                            {this.getPaymentInOutInfo('b_out','count')}
+                                            {this.getPaymentInOutInfo('b_out', 'count')}
                                         </Typography>
                                     </React.Fragment>
                                     } secondary={
@@ -444,8 +449,8 @@ class PaymentComponent extends Component {
 
                         </div>
                     </div>}
-                    {this.state.tableBodyData ? <div >
-                        <Table className='table-body'>
+                    {this.state.tableBodyData ? <div><div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
+                        <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
@@ -483,7 +488,7 @@ class PaymentComponent extends Component {
                                                     <div className="text-ellpses">
                                                         {row.buyer_locality ? row.buyer_locality + " , " : ""}
                                                         {row.buyer_district ? row.buyer_district + " , " : ""}
-                                                        {row.buyer_state ? row.buyer_state : ""} 
+                                                        {row.buyer_state ? row.buyer_state : ""}
                                                     </div>
                                                 </TableCell>
 
@@ -518,7 +523,20 @@ class PaymentComponent extends Component {
                                         );
                                     })}
                             </TableBody>
-                            <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                            
+                        </Table>
+                        {this.state.tableBodyData.length > 0 ? "" :
+                            <div className={classes.defaultTemplate}>
+                                {this.state.searchedText.length > 0 ?
+                                    <span className={classes.defaultSpan}>
+                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
+                                        {"Your serach does not match any list"} </span> :
+                                    <span className={classes.defaultSpan}>
+                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
+                            </div>}
+                    </div>
+                    {this.state.tableBodyData.length > 0 &&  <Table>
+                    <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[25, 50, 100]}
@@ -535,38 +553,29 @@ class PaymentComponent extends Component {
                                     />
                                 </TableRow>
                             </TableFooter>
-                        </Table>
-                        {this.state.tableBodyData.length > 0 ? "" :
-                            <div className={classes.defaultTemplate}>
-                                {this.state.searchedText.length > 0 ?
-                                    <span className={classes.defaultSpan}>
-                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
-                                        {"Your serach does not match any list"} </span> :
-                                    <span className={classes.defaultSpan}>
-                                        <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
-                            </div>}
+                    </Table>}
                     </div> :
                         <div style={{ paddingTop: "14%" }} >
                             <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific Orders"}</span>
                         </div>
-                    }
+                        }
                     {this.state.showTransactionModal &&
-                        <ViewTransactionModal
-                            open={this.state.showTransactionModal}
-                            onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
-                            buyerInfo={this.state.buyerInfo}
-                            transDate={this.state.datePayloads}
-                            onTransactionEdited={() => this.getPaymentInfoDetails(this.state.datePayloads)}
-                            mobileNumber={this.state.mobileNumber} />
-                    }
+                            <ViewTransactionModal
+                                open={this.state.showTransactionModal}
+                                onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
+                                buyerInfo={this.state.buyerInfo}
+                                transDate={this.state.datePayloads}
+                                onTransactionEdited={() => this.getPaymentInfoDetails(this.state.datePayloads)}
+                                mobileNumber={this.state.mobileNumber} />
+                        }
 
                 </Paper> : <Loader />}
 
-                <div className="fixedLeftBtnContainer">
-                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left: "16%", background: "#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
-                            >
+                        >
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
@@ -574,41 +583,41 @@ class PaymentComponent extends Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div>
-                <div className="updateBtndef">
-                    <div
-                        className="updateBtnFixed"
-                        style={{ display: 'flex' }}
-                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
-                    >
-                        <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                        <p>Add Transaction</p></div>
-                </div>
-                <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
-                    <div className="updateBtnFixed" style={{ display: 'flex',background: "#e72e89",borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
-                        <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                    <div className="updateBtndef">
+                        <div
+                            className="updateBtnFixed"
+                            style={{ display: 'flex' }}
+                            onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                        >
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p>Add Transaction</p></div>
                     </div>
-                </div>
-                {showAddTransactionModal &&
-                    <AddTransactionModal
-                        open={showAddTransactionModal}
-                        onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
-                        onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
-                    />}
+                    <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    {showAddTransactionModal &&
+                        <AddTransactionModal
+                            open={showAddTransactionModal}
+                            onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                            onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
+                        />}
 
-{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                     onEditModalClosed={this.handleFileUploader.bind(this)}
-                    //  commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onFileModalCancel.bind(this)}
-                     /> 
-                     :""}
+                    {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onFileModalCancel.bind(this)}
+                    />
+                        : ""}
 
             </MuiThemeProvider>
         );
-    }
-}
-
+            }
+        }
+        
 PaymentComponent.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-
+                    classes: PropTypes.object.isRequired,
+            };
+            
 export default withStyles(styles)(PaymentComponent);

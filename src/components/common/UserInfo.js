@@ -15,7 +15,7 @@ import commodityService from '../../app/commodityService/commodityService';
 import orderService from '../../app/orderService/orderService';
 import  PaymentTable from './PaymentTable';
 import paymentService from '../../app/paymentService/paymentService';
-
+import CreditLimitDialog from './CreditLimitDialog';
 
 const theme = createMuiTheme({
     overrides: {
@@ -222,6 +222,7 @@ this.props.onEditModalClosed();
                         <Tab label={this.state.orderLabel} value="orders" />
                         <Tab label={this.state.paymentLabel} value="payment" />
                         <Tab label="Edit User" value="editUser" />
+                        <Tab label="Credit Limit" value="creditLimit" />
                     </Tabs>
                 </Paper></div> 
 
@@ -252,6 +253,11 @@ this.props.onEditModalClosed();
                     data={this.state.paymentList}
                     userdata={this.props.data}
                     role={this.props.data.role}
+                /> : ""}
+                    {this.state.currentView === 'creditLimit' ? <CreditLimitDialog openModal={this.state.open}
+                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                    userdata={this.props.data}
                 /> : ""}
 
             </DialogContent>
