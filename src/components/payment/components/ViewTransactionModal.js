@@ -28,11 +28,15 @@ import EditIcon from '@material-ui/icons/Edit';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import 'date-fns';
 import EditTransactionModal from '../common/EditTransactionModal';
-import Tooltip from '@material-ui/core/Tooltip';
 import Utils from './../../../app/common/utils';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-  
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ConfirmDialog from '../../../app/common/ConfirmDialog';
+import tickIcon from "../../../assets/images/icons/check.svg";
+import faqIconReddish from "../../../assets/images/icons/faq_redish.svg";
+// import transactionIcon from "../../../assets/images/icons/transaction.svg";
 
 const theme = createMuiTheme({
     overrides: {
@@ -103,6 +107,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const statusOption = ["pending","settled"];
+
 class ViewTransactionModal extends Component {
 
     constructor(props) {
@@ -112,7 +118,7 @@ class ViewTransactionModal extends Component {
             groupedTransactionData: undefined,
             allTransactionsData: undefined,
             mobileNumber: this.props.mobileNumber,
-            tableHeadData: ["id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Amount", "Supporting images"],
+            tableHeadData: ["status","id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Amount", "Supporting images"],
             expanded: "",
             invoiceModalData: [],
             showImageInvoiceModal: false,
@@ -129,7 +135,15 @@ class ViewTransactionModal extends Component {
             
             rowsPerPage: 50,
             page: 0,
-      
+
+            statusAnchorEl:null,
+            statusdropActionOpen: "",
+            confirmDialogData:{ 
+                                "text": "Are you sure to update the status of this payment?",
+                                "title":"Are you sure to update the status of this payment?",
+                            },
+            showConfirmStatusDialoge: false,
+            statusUpdateObj:{}
         }
     }
 
@@ -245,11 +259,93 @@ class ViewTransactionModal extends Component {
           this.setState({             
             groupedTransactionData: undefined,
             allTransactionsData: undefined}, function(){
-this.getTransactionList(this.state.mobileNumber, this.state.transDate);
+                this.getTransactionList(this.state.mobileNumber, this.state.transDate);
             })
         
       }
     
+
+      handelStatusOptionClick( id, event ){
+            this.setState({statusAnchorEl : event.currentTarget, statusdropActionOpen : id});
+      }
+
+      handelStatusOptionClose( id, event){
+          this.setState({statusAnchorEl : "", statusdropActionOpen : ""});
+      }
+
+      onStatusChanged( row, updatedOption){
+        var statusUpdateObj_val = this.state.statusUpdateObj;
+        statusUpdateObj_val["id"] = row["id"];
+        statusUpdateObj_val["status"] = updatedOption;
+        statusUpdateObj_val["pay_id"] = row["pay_id"];
+        console.log( statusUpdateObj_val )
+        this.setState({ 
+            showConfirmStatusDialoge : true, 
+            statusUpdateObj: statusUpdateObj_val,
+            statusdropActionOpen:"",
+            statusAnchorEl: ""  });
+      }
+
+      getStatusOption( event , row ){
+        return(
+        <span style={{ width: "40px", height: "20px", paddingLeft:"15%"}}>
+        <IconButton
+         style={{ padding: "4px"}}
+         data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === null ? "pending" : row["status"] }
+          aria-label="more"
+          aria-controls={"long-menu"+row["id"] }
+          aria-haspopup="true"
+          onClick={this.handelStatusOptionClick.bind( event, row["id"] )}
+        >
+        <img src={row["status"] === "pending" || row["status"] === null ?  faqIconReddish : tickIcon } alt="statusIcon" 
+        style={{
+            height: "22px",
+            width: "22px"}}/>
+          {/* <AccountBalanceWalletSharpIcon 
+          style={{ color: row["status"] === "pending" || row["status"] === null ? "#d66b1f" : "green" }} /> */}
+        </IconButton>
+        <Menu
+          id={"long-menu"+row["id"] }
+          anchorEl={this.state.statusAnchorEl}
+          keepMounted
+          open={this.state.statusdropActionOpen === row["id"] }
+          onClose={this.handelStatusOptionClose.bind( event, row["id"]  )}
+          PaperProps={{
+            style: {
+              maxHeight: 40 * 4.5,
+              width: 200,
+            },
+          }}
+        >
+          {statusOption.map(option => (
+            <MenuItem key={option} selected={option === row["status"] } onClick={ ( event )=> this.onStatusChanged(row, option)}>
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
+      </span>)
+      }
+
+      async handelConfirmUpdate( event ){
+        console.log( this.state.statusUpdateObj)
+        this.setState({showConfirmStatusDialoge : false });
+        this.updatePaymentStatus( this.state.statusUpdateObj )
+      }
+
+      updatePaymentStatus = async ( payload ) => {
+        try {
+            let resp = await paymentService.updateStatusOfPayment( payload );
+            if (resp.data.status === 1 ) {
+              alert( "Successfully updated ");
+              this.handelRefreshModal()
+            } else {
+              alert( "An error occured while updating the status")
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+      
 
 
     render() {
@@ -258,8 +354,8 @@ this.getTransactionList(this.state.mobileNumber, this.state.transDate);
             supplierNameMapping, buyerInfo, selectedTab,
             showEditTransactionModal } = this.state;
         const { rowsPerPage, page } = this.state;
-        const leftAlignedIndexs = [1, 2];
-        const rightAlignedIndexs = [5];
+        const leftAlignedIndexs = [0,1, 2,3];
+        const rightAlignedIndexs = [6];
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -405,7 +501,10 @@ this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                                 <TableRow key={'table_' + i} style={{ background: i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
-                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
+                                                                        { this.getStatusOption(this, row)}
+                                                                    </TableCell>
+                                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>
                                                                     
                                                                    { !row.active && 
                                                                    <i className="fa fa-circle"
@@ -499,7 +598,10 @@ this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
-                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
+                                                        { this.getStatusOption(this, row)}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>                                                   
                                                     { !row.active && 
                                                                    <i className="fa fa-circle"
                                                                       data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} 
@@ -524,6 +626,7 @@ this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                                                     
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                         {row.payment_mode ? row.payment_mode : "-"}
+                                                        {/* <span id="livetransactionId"> <img className="livetransaction" src={transactionIcon} alt="transacionIcon"/></span> */}
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
                                                     ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
@@ -602,7 +705,16 @@ this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
 
+            {this.state.showConfirmStatusDialoge &&
+                <ConfirmDialog
+                    dialogText={this.state.confirmDialogData["text"]}
+                    dialogTitle={this.state.confirmDialogData["tittle"]}
+                    show={this.state.showConfirmStatusDialoge}
+                    onConfirmed={this.handelConfirmUpdate.bind( this )}
+                    onCanceled={()=> this.setState({ showConfirmStatusDialoge : false })} /> }
+
             </div>);
+
     }
 }
 

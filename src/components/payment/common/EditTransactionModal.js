@@ -77,7 +77,7 @@ const transactionType = {
     "b_in": "bijak-in", "b_out": "bijak-out",
     "b_hist": "historical"
 };
-const payment_modeOption = ["bank", "cash"];
+const payment_modeOption = ["bank", "cash", "bijak"];
 const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
 
