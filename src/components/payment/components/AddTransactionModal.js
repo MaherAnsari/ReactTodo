@@ -71,7 +71,7 @@ const transactionType = {
     "b_in": "bijak-in", "b_out": "bijak-out",
     "b_hist": "historical"
 };
-const payment_statusOption = ["pending","settled"];
+// const payment_statusOption = ["pending","pending_approved"];
 const payment_modeOption = ["bank", "cash","bijak"];
 const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
@@ -96,7 +96,7 @@ class AddTransactionModal extends Component {
                 "transaction_date": new Date(),
                 "cashback_value": "",
                 "cashback_allotted_to": "",
-                "status":""
+                // "status":""
             },
 
             buyerid: "",
@@ -232,7 +232,7 @@ class AddTransactionModal extends Component {
 
                 payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
                 payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
-                payload["status"] = payload["status"] !== "none" ? (payload["status"] !== ""? payload["status"] : null)  : null;
+                // payload["status"] = payload["status"] !== "none" ? (payload["status"] !== ""? payload["status"] : null)  : null;
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
                 // console.log (  payloadData["data"] )
                 // return;
@@ -283,7 +283,7 @@ class AddTransactionModal extends Component {
         var isValid = true;
         var error = {};
         // console.log(data);
-        var nonMandatoryFields = ["bank_id", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason","status"]
+        var nonMandatoryFields = ["bank_id", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -670,7 +670,7 @@ class AddTransactionModal extends Component {
                             ))}
                         </TextField>
                     </div>
-                    <div style={{ display: "flex", marginTop: 4 }} >
+                    {/* <div style={{ display: "flex", marginTop: 4 }} >
 
                     <TextField
                         select
@@ -689,7 +689,7 @@ class AddTransactionModal extends Component {
                         ))}
                     </TextField>
                     &nbsp;
-                    </div>
+                    </div> */}
                     <div >
 
                         <Grid container direction="row" alignItems="stretch">

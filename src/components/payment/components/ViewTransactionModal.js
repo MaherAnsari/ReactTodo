@@ -37,6 +37,8 @@ import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import tickIcon from "../../../assets/images/icons/check.svg";
 import faqIconReddish from "../../../assets/images/icons/faq_redish.svg";
 // import transactionIcon from "../../../assets/images/icons/transaction.svg";
+import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -107,7 +109,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusOption = ["pending","settled"];
+const statusOption = ["pending","pending_approved"];
 
 class ViewTransactionModal extends Component {
 
@@ -118,7 +120,7 @@ class ViewTransactionModal extends Component {
             groupedTransactionData: undefined,
             allTransactionsData: undefined,
             mobileNumber: this.props.mobileNumber,
-            tableHeadData: ["status","id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Amount", "Supporting images"],
+            tableHeadData: ["status","id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
             expanded: "",
             invoiceModalData: [],
             showImageInvoiceModal: false,
@@ -287,6 +289,28 @@ class ViewTransactionModal extends Component {
       }
 
       getStatusOption( event , row ){
+          if( row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak"){
+            if(row["status"] === "pending_approved"){
+                return( <Fab
+                    variant="extended"
+                    size="small"
+                    aria-label="PAYOUT"
+                    // onClick={this.handelTransactionInvoiceModal.bind(this, row)}
+                    style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 15px" }}
+                >
+                   PAYOUT
+            </Fab>)
+            }else if(row["status"] === "pending" || row["status"] === null ){
+               return(this.getActionAbleIcon( event , row ));
+            }
+        }else{
+            return ( <AccountBalanceWalletSharpIcon 
+                
+                style={{color:"gray", marginLeft:"15%"}}/>);
+        }
+      }
+
+      getActionAbleIcon( event , row ){
         return(
         <span style={{ width: "40px", height: "20px", paddingLeft:"15%"}}>
         <IconButton
@@ -502,7 +526,7 @@ class ViewTransactionModal extends Component {
                                                                 <TableRow key={'table_' + i} style={{ background: i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
-                                                                        { this.getStatusOption(this, row)}
+                                                                        {this.getStatusOption(this, row)}
                                                                     </TableCell>
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>
                                                                     
@@ -530,6 +554,9 @@ class ViewTransactionModal extends Component {
                                                                     
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                                         {row.payment_mode ? row.payment_mode : "-"}
+                                                                    </TableCell>
+                                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                        {row.transaction_type ? row.transaction_type : "-"}
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign:"right"}}>
                                                                     ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
@@ -599,7 +626,7 @@ class ViewTransactionModal extends Component {
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
-                                                        { this.getStatusOption(this, row)}
+                                                    {this.getStatusOption(this, row)}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>                                                   
                                                     { !row.active && 
@@ -628,6 +655,9 @@ class ViewTransactionModal extends Component {
                                                         {row.payment_mode ? row.payment_mode : "-"}
                                                         {/* <span id="livetransactionId"> <img className="livetransaction" src={transactionIcon} alt="transacionIcon"/></span> */}
                                                     </TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 4)}>
+                                                                        {row.transaction_type ? row.transaction_type : "-"}
+                                                                    </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
                                                     ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
                                                     </TableCell>
