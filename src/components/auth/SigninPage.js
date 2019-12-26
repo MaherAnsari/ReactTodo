@@ -467,6 +467,7 @@ class SignIn extends React.Component {
                             this.setState({
                                 userdata: user
                             })
+                            
                             // Auth.currentAuthenticatedUser({
                             // }).then(user => {
                             //     console.log(user);

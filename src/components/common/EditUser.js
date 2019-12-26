@@ -457,7 +457,7 @@ class EditUser extends Component {
                     label="bijak Credit Limit"
                     type="number"
                     maxLength="10"
-                    disabled={this.state.isInfo}
+                    disabled={true}
                     // disabled={this.state.isUpdate} 
                     style={{ marginRight: '2%', width: '48%' }}
                     value={this.state.dataObj.bijak_credit_limit}

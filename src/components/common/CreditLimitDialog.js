@@ -5,7 +5,8 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import TextField from '@material-ui/core/TextField';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
 import Button from '@material-ui/core/Button';
-
+import creditLimitService from './../../app/creditLimitService/creditLimitService';
+var moment = require('moment');
 const theme = createMuiTheme({
   overrides: {
     head: {
@@ -41,7 +42,31 @@ const styles = theme => ({
   },
   button: {
     height: '35px',
+    marginTop: '10px',
+    background: '#060a3b',
+    color: '#fff'
+  },
+  header: {
+    height: "25px",
+    background: '#e9eff1',
+    color: '#000',
+    padding: '3px',
+    fontSize: '14px',
+    display: 'flex',
+    borderRadius: '8px',
     marginTop: '20px'
+  },
+  row: {
+    display: 'flex',
+    height: '20px',
+    padding: '2px',
+    fontSize: '12px',
+    color: '#000'
+  },
+  credit: {
+    marginTop: '15px',
+    fontWeight: 'bold',
+    fontSize: '18px'
   }
 
 });
@@ -52,15 +77,50 @@ class CreditLimitDialog extends Component {
     super(props);
     this.state = {
       obj: {
-        "bijak_credit_limit": 0,
-        "remark": ""
+        "bijak_credit_limit": "",
+        "remarks": "",
+        "mobile": this.props.userdata.mobile,
+        "id": this.props.userdata.id
       },
-      showConfirmDialog:false
+      showConfirmDialog: false,
+      tableBodyData: []
 
     }
   }
   componentDidMount() {
     //  console.log(this.props.userdata);
+
+
+    this.getCreditHiistory();
+  }
+
+
+  async getCreditHiistory() {
+    let param = {};
+    let obj = {
+      "bijak_credit_limit": "",
+      "remarks": "",
+      "mobile": this.props.userdata.mobile,
+      "id": this.props.userdata.id
+    }
+    this.setState({ showConfirmDialog: false, obj: obj });
+    if (this.props.userdata.mobile && this.props.userdata.id) {
+      param['mobile'] = this.props.userdata.mobile;
+      param['id'] = this.props.userdata.id;
+
+
+      try {
+        let resp = await creditLimitService.getHistory(param);
+        if (resp.data.status === 1 && resp.data.result) {
+          this.setState({ tableBodyData: resp.data.result });
+        } else {
+          this.setState({ tableBodyData: [] });
+        }
+      } catch (err) {
+        console.error(err)
+        this.setState({ tableBodyData: [] });
+      }
+    }
   }
 
 
@@ -78,55 +138,100 @@ class CreditLimitDialog extends Component {
   }
   handelConfirmUpdate = async () => {
     console.log(this.state.obj);
+    try {
+      let resp = await creditLimitService.updateCreditLimit(this.state.obj);
+      if (resp.data.status === 1 && resp.data.result) {
+        this.getCreditHiistory();
+      } else {
+        this.getCreditHiistory();
+      }
+    } catch (err) {
+      console.error(err)
+      this.getCreditHiistory();
+    }
   }
 
   handleAddClick(event) {
-  
+    console.log(this.state.obj);
     let dialogText = "Are you sure  to update ?";
+    if (this.state.obj.bijak_credit_limit && this.state.obj.bijak_credit_limit !== "" && this.state.obj.remarks && this.state.obj.remarks !== "") {
+      this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
+    } else {
+      alert("Please check required field");
+    }
 
-    this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
 
   }
+
+  formatDateAndTime = (dateval) => {
+    var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm')
+    // console.log(fdate);
+    return fdate;
+}
+
   render() {
     const { classes } = this.props;
     return (
-      <div className={classes.root}>
-        <TextField
-          margin="dense"
-          id="bijak_credit_limit"
-          label="bijak Credit Limit"
-          type="number"
-          maxLength="10"
-          // disabled={this.state.isUpdate} 
-          style={{ width: '55%' }}
-          value={this.state.obj.bijak_credit_limit}
-          onChange={this.handleChange.bind(this)}
-          fullWidth
-        />
-        <div style={{ display: "flex" }}>
+      <MuiThemeProvider>
+        <div className={classes.root}>
           <TextField
             margin="dense"
-            id="remark"
-            label="Remark"
-            type="text"
-            style={{ marginRight: '2%', width: '55%' }}
-            value={this.state.obj.remark}
+            id="bijak_credit_limit"
+            label="bijak Credit Limit"
+            type="number"
+            maxLength="10"
+            // disabled={this.state.isUpdate} 
+            style={{ width: '55%' }}
+            value={this.state.obj.bijak_credit_limit}
             onChange={this.handleChange.bind(this)}
             fullWidth
+            required
           />
-          <Button className={classes.button} onClick={this.handleAddClick.bind(this)} color="primary">UPDATE</Button>
+          <div style={{ display: "flex" }}>
+            <TextField
+              margin="dense"
+              id="remarks"
+              label="Remark"
+              type="text"
+              style={{ marginRight: '2%', width: '55%' }}
+              value={this.state.obj.remarks}
+              onChange={this.handleChange.bind(this)}
+              fullWidth
+              required
+            />
+            <Button className={classes.button} onClick={this.handleAddClick.bind(this)} color="primary">UPDATE</Button>
+          </div>
+          <div className={classes.credit}>Credit History :</div>
+          <div className={classes.header}>
+            <div style={{ width: "20%", marginLeft: '5px' }}>update By</div>
+            <div style={{ width: "20%" }}>Credit Value</div>
+            <div style={{ width: "20%" }}>Updated Time</div>
+            <div style={{ width: "40%" }}>Remark</div>
+          </div>
+          {(this.state.tableBodyData && this.state.tableBodyData.length>0) ? <div style={{ maxHeight: "40vh", overflowY: "scroll" }} >
+            {this.state.tableBodyData.map((option, i) => {
+              return (<div className={classes.row} style={{ background: i % 2 == 0 ? '#fff' : '#e8e8e8' }} key={option} >
+                <div style={{ width: "20%", marginLeft: '5px' }}>{option.updateBy}</div>
+                <div style={{ width: "20%" }}>{option.bijak_credit_limit}</div>
+                <div style={{ width: "20%" }}>{this.formatDateAndTime(option.createddate)}</div>
+                <div style={{ width: "40%", textOverflow: "ellipsis", overflow: 'overlay' }}>{option.remarks}</div>
+              </div>
+              )
+            })}
+          </div> :<div style={{textAlign:'center',marginTop:'20px',fontSize:'20px'}}> No History Available</div>}
+          <div>
+
+          </div>
+          {this.state.showConfirmDialog ?
+            <ConfirmDialog
+              dialogText={this.state.dialogText}
+              dialogTitle={this.state.dialogTitle}
+              show={this.state.showConfirmDialog}
+              onConfirmed={this.handelConfirmUpdate}
+              onCanceled={this.handelCancelUpdate} /> : ""}
         </div>
 
-        {this.state.showConfirmDialog ?
-          <ConfirmDialog
-            dialogText={this.state.dialogText}
-            dialogTitle={this.state.dialogTitle}
-            show={this.state.showConfirmDialog}
-            onConfirmed={this.handelConfirmUpdate}
-            onCanceled={this.handelCancelUpdate} /> : ""}
-      </div>
-
-      // </MuiThemeProvider>
+      </MuiThemeProvider>
     );
   }
 }
