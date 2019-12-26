@@ -198,6 +198,12 @@ this.props.onEditModalClosed();
             console.error(err);
         }
     }
+
+
+    onLimitChange(event){
+        // console.log(event);
+        this.props.onLimitUpdate(event);
+    }
     render() {
         const { classes } = this.props;
         return (     <MuiThemeProvider theme={theme}>
@@ -258,6 +264,7 @@ this.props.onEditModalClosed();
                     onEditModalClosed={this.handleDialogCancel.bind(this)}
                     onEditModalCancel={this.handleDialogCancel.bind(this)}
                     userdata={this.props.data}
+                    onLimitChange= {this.onLimitChange.bind(this)}
                 /> : ""}
 
             </DialogContent>

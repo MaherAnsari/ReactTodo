@@ -144,6 +144,7 @@ class UserListTable extends Component {
 
             rowsPerPage: 50,
             page: 0,
+            isLimitUpdate:false
 
             // commodityList:["dd"]
 
@@ -227,6 +228,10 @@ class UserListTable extends Component {
     }
     onModalCancel(event) {
         this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
+        if(this.state.isLimitUpdate){
+            this.props.handelRefreshButtonClicked();
+        }
+        
     }
 
 
@@ -333,6 +338,12 @@ class UserListTable extends Component {
         }
     }
 
+    changeLimitSucces(event){
+        // alert(event);
+        let obj = this.state.userData;
+        obj['bijak_credit_limit'] = event;
+        this.setState({userData:obj,isLimitUpdate:true});
+    }
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page } = this.state;
@@ -485,6 +496,7 @@ class UserListTable extends Component {
                         onEditModalClosed={this.handleClose.bind(this)}
                         data={this.state.userData}
                         isInfo={this.state.isInfo}
+                        onLimitUpdate= {this.changeLimitSucces.bind(this)}
                         commodityList={this.props.commodityList}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
                     {this.state.showConfirmDialog ?

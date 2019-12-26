@@ -138,10 +138,12 @@ class CreditLimitDialog extends Component {
   }
   handelConfirmUpdate = async () => {
     console.log(this.state.obj);
+    let limit =  this.state.obj.bijak_credit_limit;
     try {
       let resp = await creditLimitService.updateCreditLimit(this.state.obj);
       if (resp.data.status === 1 && resp.data.result) {
         this.getCreditHiistory();
+        this.props.onLimitChange(limit);
       } else {
         this.getCreditHiistory();
       }

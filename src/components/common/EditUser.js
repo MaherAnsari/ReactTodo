@@ -75,12 +75,12 @@ class EditUser extends Component {
 
             }
 
-            console.log(this.props.data);
+            // console.log(this.props.data);
 
             this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo,commodityList:this.props.commodityList });
         }
 
-        console.log(this.state.dataObj); 
+        // console.log(this.state.dataObj); 
         //getting the Commodity Names for ten drop Down  
        
     }
