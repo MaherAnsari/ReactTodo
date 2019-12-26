@@ -109,7 +109,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusOption = ["pending","pending_approved"];
+const statusOption = ["pending_approved"];
 
 class ViewTransactionModal extends Component {
 
