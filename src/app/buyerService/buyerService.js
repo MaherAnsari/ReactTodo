@@ -11,7 +11,7 @@ let buyerService = {
                 "Authorization": Utils.getToken()
             },
             url: param ?'/user/list/buyer/' + param : '/user/list/buyer' 
-        });
+        },1);
     },
     addMandiData: async function (props) {
         return Api({
@@ -19,9 +19,9 @@ let buyerService = {
             headers: {
     			"Authorization": Utils.getToken()
     			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/addAdditionalPlace',
+            url: 'mandi/addAdditionalPlace',
             data: props
-        });
+        },1);
     },
     serchUser: async function (param) {
         return Api({
@@ -31,7 +31,7 @@ let buyerService = {
             },
             url: '/user/list',
             params:param
-        });
+        },1);
     }
 
 

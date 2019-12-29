@@ -12,7 +12,7 @@ let priceService = {
             },
             url: '/rate/list',
             params:param
-        });
+        },1);
     },
     getBuyerList: async function (param) {
         return Api({
@@ -21,7 +21,7 @@ let priceService = {
                 "Authorization": Utils.getToken()
             },
             url: param ? '/rate/list/buyer/' +param : '/rate/list/buyer'
-        });
+        },1);
     },
     getBroketList: async function (param) {
         return Api({
@@ -30,7 +30,7 @@ let priceService = {
                 "Authorization": Utils.getToken()
             },
             url: param ? '/rate/list/broker/' +param : '/rate/list/broker'
-        });
+        },1);
     },
     getCommodityList: async function (param) {
         return Api({
@@ -39,7 +39,7 @@ let priceService = {
                 "Authorization": Utils.getToken()
             },
             url: '/commodity/distinctlist'
-        });
+        },1);
     },
     addPrice: async function (props) {
         return Api({
@@ -49,7 +49,7 @@ let priceService = {
     			},
             url: '/rate/add',
             data: props
-        });
+        },1);
     },
     deleteMandi: async function (id) {
         return Api({
@@ -57,8 +57,8 @@ let priceService = {
             headers: {
     			"Authorization": Utils.getToken()
     			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/'+id
-        });
+            url: 'mandi/deleteAdditionalPlace/'+id
+        },1);
     },
 
 

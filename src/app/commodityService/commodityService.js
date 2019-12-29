@@ -11,7 +11,7 @@ let commodityService = {
                 "Authorization": Utils.getToken()
             },
             url: '/commodity/distinctlist?lang=hindi'
-        });
+        },1);
     },
     updateCommodity: async function (param) {
         return Api({
@@ -21,7 +21,7 @@ let commodityService = {
             },
             url: '/commodity/update',
             data: param
-        });
+        },1);
     },
     getCommodityData: async function (param) {
         return Api({
@@ -31,7 +31,7 @@ let commodityService = {
             },
             url: '/commodity/mandi/rate',
             data: param
-        });
+        },1);
     }
 
 
