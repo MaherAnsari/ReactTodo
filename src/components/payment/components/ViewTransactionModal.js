@@ -109,7 +109,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusOption = ["pending_approved"];
+const statusOption = ["approved"];
 
 class ViewTransactionModal extends Component {
 
@@ -290,7 +290,7 @@ class ViewTransactionModal extends Component {
 
       getStatusOption( event , row ){
           if( row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak"){
-            if(row["status"] === "pending_approved"){
+            if(row["status"] === "approved"){
                 return( <Fab
                     variant="extended"
                     size="small"
@@ -300,7 +300,7 @@ class ViewTransactionModal extends Component {
                 >
                    PAYOUT
             </Fab>)
-            }else if(row["status"] === "pending" || row["status"] === null ){
+            }else if(row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ){
                return(this.getActionAbleIcon( event , row ));
             }
         }else{
@@ -315,13 +315,13 @@ class ViewTransactionModal extends Component {
         <span style={{ width: "40px", height: "20px", paddingLeft:"15%"}}>
         <IconButton
          style={{ padding: "4px"}}
-         data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === null ? "pending" : row["status"] }
+         data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ? "pending_approved" : row["status"] }
           aria-label="more"
           aria-controls={"long-menu"+row["id"] }
           aria-haspopup="true"
           onClick={this.handelStatusOptionClick.bind( event, row["id"] )}
         >
-        <img src={row["status"] === "pending" || row["status"] === null ?  faqIconReddish : tickIcon } alt="statusIcon" 
+        <img src={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ?  faqIconReddish : tickIcon } alt="statusIcon" 
         style={{
             height: "22px",
             width: "22px"}}/>
