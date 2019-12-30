@@ -36,9 +36,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import tickIcon from "../../../assets/images/icons/check.svg";
 import faqIconReddish from "../../../assets/images/icons/faq_redish.svg";
+import failedIcon from "../../../assets/images/icons/failed.svg";
+import approvedIcon from "../../../assets/images/icons/approved.svg";
 // import transactionIcon from "../../../assets/images/icons/transaction.svg";
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
-
+import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
 
 const theme = createMuiTheme({
     overrides: {
@@ -109,7 +111,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusOption = ["approved"];
+const statusOption = ["approved", "failed"];
+
 
 class ViewTransactionModal extends Component {
 
@@ -145,7 +148,8 @@ class ViewTransactionModal extends Component {
                                 "title":"Are you sure to update the status of this payment?",
                             },
             showConfirmStatusDialoge: false,
-            statusUpdateObj:{}
+            statusUpdateObj:{},
+            showStatusChangeModal: false,
         }
     }
 
@@ -262,34 +266,17 @@ class ViewTransactionModal extends Component {
             groupedTransactionData: undefined,
             allTransactionsData: undefined}, function(){
                 this.getTransactionList(this.state.mobileNumber, this.state.transDate);
-            })
-        
+            });
       }
     
 
-      handelStatusOptionClick( id, event ){
-            this.setState({statusAnchorEl : event.currentTarget, statusdropActionOpen : id});
+      handelStatusOptionClick( row, event ){
+            this.setState({ showStatusChangeModal : true, statusUpdateObj: row });
       }
 
-      handelStatusOptionClose( id, event){
-          this.setState({statusAnchorEl : "", statusdropActionOpen : ""});
-      }
-
-      onStatusChanged( row, updatedOption){
-        var statusUpdateObj_val = this.state.statusUpdateObj;
-        statusUpdateObj_val["id"] = row["id"];
-        statusUpdateObj_val["status"] = updatedOption;
-        statusUpdateObj_val["pay_id"] = row["pay_id"];
-        console.log( statusUpdateObj_val )
-        this.setState({ 
-            showConfirmStatusDialoge : true, 
-            statusUpdateObj: statusUpdateObj_val,
-            statusdropActionOpen:"",
-            statusAnchorEl: ""  });
-      }
 
       getStatusOption( event , row ){
-          if( row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak"){
+          if( (row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak") ||  (row["transaction_type"] === "b_in" && row["payment_mode"] === "bank") ){
             if(row["status"] === "approved"){
                 return( <Fab
                     variant="extended"
@@ -299,14 +286,32 @@ class ViewTransactionModal extends Component {
                     style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 15px" }}
                 >
                    PAYOUT
-            </Fab>)
+            </Fab>);
             }else if(row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ){
-               return(this.getActionAbleIcon( event , row ));
+               return(
+                   this.getActionAbleIcon( event , row )
+                );
+            }else if(row["status"] === "failed" ){
+                return(<span 
+                        style={{ paddingLeft: "15%"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        title={row["status"] }>
+                            <img src={row["status"] === "failed" ?  failedIcon : "" } alt="failedIcon" 
+                                style={{ height: "22px",width: "22px"}}/>
+                    </span>)
+            }else if(row["status"] === "approved" ){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={row["status"] === "approved" ?  approvedIcon : "" } alt="approvedIcon" 
+                        style={{ height: "22px",width: "22px"}}/>
+                </span>)
             }
         }else{
-            return ( <AccountBalanceWalletSharpIcon 
-                
-                style={{color:"gray", marginLeft:"15%"}}/>);
+            return ( <AccountBalanceWalletSharpIcon style={{color:"gray", marginLeft:"15%"}}/>);
         }
       }
 
@@ -314,63 +319,20 @@ class ViewTransactionModal extends Component {
         return(
         <span style={{ width: "40px", height: "20px", paddingLeft:"15%"}}>
         <IconButton
-         style={{ padding: "4px"}}
-         data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ? "pending_approved" : row["status"] }
-          aria-label="more"
-          aria-controls={"long-menu"+row["id"] }
-          aria-haspopup="true"
-          onClick={this.handelStatusOptionClick.bind( event, row["id"] )}
+            style={{ padding: "4px"}}
+            data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ? "pending_approved" : row["status"] }
+            aria-label="more"
+            aria-controls={"long-menu"+row["id"] }
+            aria-haspopup="true"
+            onClick={this.handelStatusOptionClick.bind( event, row )}
         >
         <img src={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ?  faqIconReddish : tickIcon } alt="statusIcon" 
-        style={{
-            height: "22px",
-            width: "22px"}}/>
-          {/* <AccountBalanceWalletSharpIcon 
-          style={{ color: row["status"] === "pending" || row["status"] === null ? "#d66b1f" : "green" }} /> */}
+            style={{ height: "22px",width: "22px"}}/>
         </IconButton>
-        <Menu
-          id={"long-menu"+row["id"] }
-          anchorEl={this.state.statusAnchorEl}
-          keepMounted
-          open={this.state.statusdropActionOpen === row["id"] }
-          onClose={this.handelStatusOptionClose.bind( event, row["id"]  )}
-          PaperProps={{
-            style: {
-              maxHeight: 40 * 4.5,
-              width: 200,
-            },
-          }}
-        >
-          {statusOption.map(option => (
-            <MenuItem key={option} selected={option === row["status"] } onClick={ ( event )=> this.onStatusChanged(row, option)}>
-              {option}
-            </MenuItem>
-          ))}
-        </Menu>
       </span>)
       }
 
-      async handelConfirmUpdate( event ){
-        console.log( this.state.statusUpdateObj)
-        this.setState({showConfirmStatusDialoge : false });
-        this.updatePaymentStatus( this.state.statusUpdateObj )
-      }
-
-      updatePaymentStatus = async ( payload ) => {
-        try {
-            let resp = await paymentService.updateStatusOfPayment( payload );
-            if (resp.data.status === 1 ) {
-              alert( "Successfully updated ");
-              this.handelRefreshModal()
-            } else {
-              alert( "An error occured while updating the status")
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
       
-
 
     render() {
         const { classes } = this.props;
@@ -735,13 +697,15 @@ class ViewTransactionModal extends Component {
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
 
-            {this.state.showConfirmStatusDialoge &&
-                <ConfirmDialog
-                    dialogText={this.state.confirmDialogData["text"]}
-                    dialogTitle={this.state.confirmDialogData["tittle"]}
-                    show={this.state.showConfirmStatusDialoge}
-                    onConfirmed={this.handelConfirmUpdate.bind( this )}
-                    onCanceled={()=> this.setState({ showConfirmStatusDialoge : false })} /> }
+
+                    {/* for status change and reason add */}
+                    {this.state.showStatusChangeModal &&
+                    <SelectTransactionTypeModal
+                        openModal={this.state.showStatusChangeModal}
+                        rowDataObj={ this.state.statusUpdateObj }
+                        onUpdateSuccessFull={ (event) => {this.setState({ showStatusChangeModal: false, statusUpdateObj: {} }); this.handelRefreshModal() }}
+                        onStatusUpdateObjClose={() => { this.setState({ showStatusChangeModal: false, statusUpdateObj: {} }) }}
+                         />}
 
             </div>);
 
