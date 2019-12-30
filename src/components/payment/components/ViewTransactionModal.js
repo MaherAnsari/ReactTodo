@@ -301,7 +301,7 @@ class ViewTransactionModal extends Component {
                         style={{ paddingLeft: "15%"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
-                        title={row["status"] }>
+                        title={row["status"].toUpperCase() +(row["reason"] ? "\nReason : "+ row["reason"]: "")  }>
                             <img src={row["status"] === "failed" ?  failedIcon : "" } alt="failedIcon" 
                                 style={{ height: "22px",width: "22px"}}/>
                     </span>)
