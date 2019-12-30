@@ -3,12 +3,28 @@ import cookie from 'react-cookies';
 import { Auth } from "aws-amplify";
 // import Utils from '../app/common/utils';
 // let currentUrl = window.location.href;
-let baseUrl =  'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/';
+
+// let baseUrl =  'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/';
+
+var hostName = window.location.hostname; 
+const baseUrl = ( hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?     
+`https://lwjh5tmr5k.execute-api.ap-south-1.amazonaws.com/prod/`:
+`https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/`; 
 
 
+
+const baseUrl1 =(hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?  
+`https://mh53vat5i6.execute-api.ap-south-1.amazonaws.com/prod/`:
+`https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/` ; 
 const client = axios.create({
   baseURL: baseUrl
 });
+
+
+const client1 = axios.create({
+  baseURL: baseUrl1
+});
+
 
 
 client.defaults.headers.common['Accept'] = 'application/json';
@@ -17,7 +33,7 @@ client.defaults.headers.common['Accept'] = 'application/json';
 /**
  * Request Wrapper with default success/error actions
  */
-const request = function (options) {
+const request = function (options,type) {
      
 
   const errorHandlingForApiResponse = function (response) {
@@ -85,9 +101,17 @@ const request = function (options) {
     return { data:{ status: 0, result: undefined,  message: "Oops an error occured" }};
 }
 }
+if(type === 1){
   return client(options)
-    .then(errorHandlingForApiResponse)
-    .catch(onErrorOfAuthentication);
+  .then(errorHandlingForApiResponse)
+  .catch(onErrorOfAuthentication);
+}
+if(type === 2){
+  return client1(options)
+  .then(errorHandlingForApiResponse)
+  .catch(onErrorOfAuthentication);
+}
+  
 }
 
 

@@ -467,7 +467,7 @@ class UserListTable extends Component {
                         </Table>
 
                     </div>
-                    <Table>
+                    {this.state.tableBodyData.length > 0 && <Table>
                         <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
                             <TableRow>
                                 <TablePagination
@@ -485,7 +485,7 @@ class UserListTable extends Component {
                                 />
                             </TableRow>
                         </TableFooter>
-                    </Table>
+                    </Table>}
                     {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                         {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                             <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>

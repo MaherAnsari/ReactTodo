@@ -10,9 +10,9 @@ let creditLimitService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/user/creditLimitChangeHistory',
+            url: 'user/creditLimitChangeHistory',
             params: param
-        });
+        },2);
     },
     updateCreditLimit: async function (param) {
         return Api({
@@ -20,9 +20,9 @@ let creditLimitService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/user/updateCreditLimit',
+            url: 'user/updateCreditLimit',
             data: param
-        });
+        },2);
     },
 
 

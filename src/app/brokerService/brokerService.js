@@ -11,7 +11,7 @@ let brokerService = {
                 "Authorization": Utils.getToken()
             },
             url: param ?'/user/list/broker' + param : '/user/list/broker' 
-        });
+        },1);
     },
     addMandiData: async function (props) {
         return Api({
@@ -19,9 +19,9 @@ let brokerService = {
             headers: {
     			"Authorization": Utils.getToken()
     			},
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/addAdditionalPlace',
+            url: 'mandi/addAdditionalPlace',
             data: props
-        });
+        },1);
     },
     serchUser: async function (param) {
         return Api({
@@ -31,7 +31,7 @@ let brokerService = {
             },
             url: '/user/list',
             params:param
-        });
+        },1);
     },
 
 

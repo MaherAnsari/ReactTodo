@@ -12,7 +12,7 @@ let orderService = {
             },
             url: '/order/detail/user',
             params: params
-        });
+        },1);
     },
 // /https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/order/detail
     addNewOrder : async function ( payload ) {
@@ -23,7 +23,7 @@ let orderService = {
             },
             url: '/order/detail',
             data : payload
-        });
+        },1);
     },
 
     // https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/order/detail/7
@@ -39,7 +39,7 @@ let orderService = {
             },
             url: 'order/detail/'+id,
             data : payload
-        });
+        },1);
     },
     uploadOrder : async function ( payload ) {
         return Api({
@@ -47,9 +47,9 @@ let orderService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/order/bulkadd',
+            url: 'order/bulkadd',
             data : payload
-        });
+        },2);
     },
 }
 

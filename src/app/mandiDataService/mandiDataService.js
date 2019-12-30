@@ -10,8 +10,8 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/search/' + param
-        });
+            url: 'search/' + param
+        },1);
     },
     addMandiData: async function (props) {
         return Api({
@@ -19,9 +19,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/addAdditionalPlace',
+            url: 'mandi/addAdditionalPlace',
             data: props
-        });
+        },1);
     },
     deleteMandi: async function ( id ) {
         return Api({
@@ -29,8 +29,8 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace/' + id
-        });
+            url: 'mandi/deleteAdditionalPlace/' + id
+        },1);
     },
     getDistrictList: async function (id) {
         return Api({
@@ -39,7 +39,7 @@ let mandiDataService = {
                 "Authorization": Utils.getToken()
             },
             url: '/list/state/district'
-        });
+        },1);
     },
     commoditypricetrendGraphData: async function ( params ) {
         // var params = {
@@ -53,9 +53,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/commoditypricetrend',
+            url: 'mandi/commoditypricetrend',
             params: params
-        });
+        },1);
     },
     
     // added on 02-12-19  @binod
@@ -66,9 +66,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/dashboard/market/search',
+            url: 'dashboard/market/search',
             params: param
-        });
+        },2);
     },
 
     updateMandiData : async function ( payload ) {
@@ -78,9 +78,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/dashboard/market/update',
+            url: 'dashboard/market/update',
             data: payload
-        });
+        },2);
     },
     deleteSpecificMandi: async function ( market ) {
         let param ={
@@ -91,9 +91,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/mandi/deleteAdditionalPlace',
+            url: 'mandi/deleteAdditionalPlace',
             params: param
-        });
+        },1);
     },
 
 
@@ -106,7 +106,7 @@ let mandiDataService = {
             },
             url: '/mandi/nearlist',
             params: params
-        });
+        },1);
     },
     addCommodityRates: async function (props) {
         return Api({
@@ -114,9 +114,9 @@ let mandiDataService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/commodity/market/price',
+            url: 'commodity/market/price',
             data: props
-        });
+        },2);
     }
 
 };

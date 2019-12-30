@@ -10,8 +10,8 @@ let userListService = {
             headers: {
                 // "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list'
-        });
+            url: 'user/list'
+        },1);
     },
     addUserData: async function (isUpdate,id,props) {
         return Api({
@@ -21,7 +21,7 @@ let userListService = {
                 },
             url: isUpdate ? '/user/detail/'+id : '/user/detail',
             data: props
-        });
+        },1);
     },
 
     serchUser: async function (param) {
@@ -30,9 +30,9 @@ let userListService = {
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: 'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/user/list' ,
+            url: 'user/list' ,
             params: param
-        });
+        },1);
     },
 
     uploadData: async function (props) {
@@ -41,9 +41,9 @@ let userListService = {
             headers: {
     			"Authorization": Utils.getToken()
                 },
-            url: 'https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/user/bulkadd',
+            url: 'user/bulkadd',
             data: props
-        });
+        },2);
     },
 
 
