@@ -9,13 +9,13 @@ import { Auth } from "aws-amplify";
 var hostName = window.location.hostname; 
 const baseUrl = ( hostName.indexOf('bijakdashboardproduction') === -1) ?  
 `https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/` :  
-`https://ne69x2fox6.execute-api.ap-south-1.amazonaws.com/staging/`; 
+`https://lwjh5tmr5k.execute-api.ap-south-1.amazonaws.com/prod/`; 
 
 
 
 const baseUrl1 =(hostName.indexOf('bijakdashboardproduction') === -1) ?  
 `https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/` :  
-`https://u5f42vi2gg.execute-api.ap-south-1.amazonaws.com/staging/`; 
+`https://mh53vat5i6.execute-api.ap-south-1.amazonaws.com/prod/`; 
 const client = axios.create({
   baseURL: baseUrl
 });
