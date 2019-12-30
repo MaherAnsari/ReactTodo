@@ -129,8 +129,6 @@ class EditTransactionModal extends Component {
     }
 
     handleInputChange(event) {
-        // event.stopPropagation();
-        console.log("--------------------->")
         event.preventDefault()
         var intejarIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be intejar
         var errors = this.state.errorFields;
@@ -155,7 +153,6 @@ class EditTransactionModal extends Component {
             editTransactionPayload: addTransactionPayloadVal,
             errorFields: errors
         })
-        console.log(addTransactionPayloadVal)
     }
     handleDialogCancel(event) {
         this.props.onEditModalCancel();
@@ -165,9 +162,6 @@ class EditTransactionModal extends Component {
     getSearchAreaText(id, event) {
 
         try {
-            console.log(id)
-
-
             this.setState({ [id]: event !== null ? event : "" });
         } catch (err) {
             console.log(err);
@@ -237,10 +231,7 @@ class EditTransactionModal extends Component {
                 payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
                 payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
                 payloadData["data"] = this.removeBlankNonMandatoryFields(payload);
-                // console.log (  payloadData["data"] )
-                // return;
                 var resp = await paymentService.updatePayementInfo(id, payloadData);
-                console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this transaction ");
                     this.props.onTransactionUpdated();
@@ -367,7 +358,6 @@ class EditTransactionModal extends Component {
 
             Storage.get("payment/" + file.name)
                 .then(result => {
-                    console.log(result.split("?")[0]);
                     attachmentObj["image_url"] = result.split("?")[0];
                     attachmentArray.push(attachmentObj)
                     this.setState({
@@ -376,7 +366,6 @@ class EditTransactionModal extends Component {
                     });
                 })
                 .catch(err => console.log(err));
-            console.log(data)
         }
         ).catch(err => {
             this.setState({

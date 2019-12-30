@@ -203,7 +203,7 @@ class UserFilterDataView extends React.Component {
                                 data-toggle="tooltip" 
                                 data-html="true" 
                                 title="Refresh" 
-                                class="fa fa-refresh" 
+                                className="fa fa-refresh" 
                                 aria-hidden="true"></i>
                             {this.state.configData.map((obj, index) => (
                                 <React.Fragment key={index}>

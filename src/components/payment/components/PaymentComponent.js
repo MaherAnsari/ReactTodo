@@ -273,7 +273,6 @@ class PaymentComponent extends Component {
     }
 
     async handleFileUploader(event) {
-        console.log(event);
         try {
             let resp = await paymentService.uplaodPayment(event);
             if (resp.data.status === 1 && resp.data.result) {
@@ -322,7 +321,7 @@ class PaymentComponent extends Component {
             <MuiThemeProvider theme={theme}>
                 {!showLoader ? <Paper className={classes.root} >
                     <div style={{ display: 'flex' }}>
-                        <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" class="fa fa-refresh" aria-hidden="true"></i>
+                        <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                         <input
                             type="text"

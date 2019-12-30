@@ -41,6 +41,8 @@ import approvedIcon from "../../../assets/images/icons/approved.svg";
 // import transactionIcon from "../../../assets/images/icons/transaction.svg";
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
+import PayoutModal from '../common/PayoutModal';
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -150,6 +152,9 @@ class ViewTransactionModal extends Component {
             showConfirmStatusDialoge: false,
             statusUpdateObj:{},
             showStatusChangeModal: false,
+
+            showPayoutModal: false,
+            payoutData: undefined,
         }
     }
 
@@ -282,7 +287,7 @@ class ViewTransactionModal extends Component {
                     variant="extended"
                     size="small"
                     aria-label="PAYOUT"
-                    // onClick={this.handelTransactionInvoiceModal.bind(this, row)}
+                    onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
                     style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 15px" }}
                 >
                    PAYOUT
@@ -706,6 +711,12 @@ class ViewTransactionModal extends Component {
                         onUpdateSuccessFull={ (event) => {this.setState({ showStatusChangeModal: false, statusUpdateObj: {} }); this.handelRefreshModal() }}
                         onStatusUpdateObjClose={() => { this.setState({ showStatusChangeModal: false, statusUpdateObj: {} }) }}
                          />}
+
+             {this.state.showPayoutModal && this.state.payoutData && 
+                    <PayoutModal
+                        openPayoutModal={this.state.showPayoutModal}
+                        onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
+                        payoutData={this.state.payoutData} />}
 
             </div>);
 

@@ -96,6 +96,16 @@ let paymentService = {
             url: 'payment/updatePaymentStatus',
             data : payload
         },2);
+    },
+    getBankAcctDetails  : async function ( id ){
+        // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/getBankDetails/{id}
+        return Api({
+            method: 'get',
+            headers: {  
+                "Authorization": Utils.getToken()
+            },
+            url: 'payment/getBankDetails/'+id,
+        },2);
     }
 }
 

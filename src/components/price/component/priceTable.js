@@ -205,7 +205,7 @@ class PriceTable extends Component {
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.rate}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 2)}>{row.qnt}</TableCell>
                       <TableCell className={this.getTableCellClass(classes, 4)}>
-                       {row.unit}<i style={{marginLeft:'6px',color:'#61cb42',fontSize:'20px',fontWeight:'bold'}} onClick= {this.onEditPriceCLick.bind(this,row)} class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                       {row.unit}<i style={{marginLeft:'6px',color:'#61cb42',fontSize:'20px',fontWeight:'bold'}} onClick= {this.onEditPriceCLick.bind(this,row)} className="fa fa-pencil-square-o" aria-hidden="true"></i>
                       </TableCell>
                     </TableRow>
                   );

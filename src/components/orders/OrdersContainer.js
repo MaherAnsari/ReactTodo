@@ -159,7 +159,7 @@ class OrdersContainer extends React.Component {
             <div className={classes.root}>
                 <Paper className={classes.card} >
                     <div style={{display:"flex"}}>
-                    <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" class="fa fa-refresh" aria-hidden="true"></i>
+                    <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                     </div>
                     <FilterListComponent

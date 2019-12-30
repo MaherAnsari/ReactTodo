@@ -106,7 +106,6 @@ class AddTransactionModal extends Component {
             attachmentArray: []
 
         }
-        // console.log(this.props);
 
     }
 
@@ -151,7 +150,6 @@ class AddTransactionModal extends Component {
             addTransactionPayload: addTransactionPayloadVal,
             errorFields: errors
         })
-        // console.log(addTransactionPayloadVal)
     }
     handleDialogCancel(event) {
         this.props.onEditModalCancel();
@@ -161,9 +159,6 @@ class AddTransactionModal extends Component {
     getSearchAreaText(id, event) {
 
         try {
-            console.log(id)
-
-
             this.setState({ [id]: event !== null ? event : "" });
         } catch (err) {
             console.log(err);
@@ -232,12 +227,8 @@ class AddTransactionModal extends Component {
 
                 payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
                 payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
-                // payload["status"] = payload["status"] !== "none" ? (payload["status"] !== ""? payload["status"] : null)  : null;
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
-                // console.log (  payloadData["data"] )
-                // return;
                 var resp = await paymentService.addPayemtData(payloadData);
-                console.log(resp);
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this transaction ");
                     this.props.onTransactionAdded();
@@ -282,7 +273,6 @@ class AddTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        // console.log(data);
         var nonMandatoryFields = ["bank_id", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
@@ -342,7 +332,6 @@ class AddTransactionModal extends Component {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
-            let data = result
             let attachmentObj = {
                 bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
                 filename: file.name,
@@ -352,7 +341,6 @@ class AddTransactionModal extends Component {
 
             Storage.get("payment/" + file.name)
                 .then(result => {
-                    console.log(result.split("?")[0]);
                     attachmentObj["image_url"] = result.split("?")[0];
                     attachmentArray.push(attachmentObj)
                     this.setState({
@@ -361,13 +349,11 @@ class AddTransactionModal extends Component {
                     });
                 })
                 .catch(err => console.log(err));
-            console.log(data)
         }
         ).catch(err => {
             this.setState({
                 isFileUpload: false
             })
-            let data = err
             console.log(err)
         }
         );
