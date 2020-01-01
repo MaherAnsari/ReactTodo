@@ -154,29 +154,19 @@ class PayoutModal extends Component {
     onConfirmPayout = async (  ) => {
         try {
             let payload = {};
-            // {
-            //     "id":232,
-            //      "name": "Sanchit jain",
-            //      "contact": "9205627721",
-            //      "type": "Loader",
-            //      "amount":1,
-            //      "reference_id": "sanchit",
-            //      "notes": {
-            //      }
-            //     }
             payload["id"] = this.props.payoutData["id"];
             payload["name"] = this.props.payoutData["supplier_fullname"]; 
             payload["contact"] = this.props.payoutData["supplier_mobile"];
             payload["type"] = "Loader";
             payload["amount"] = this.props.payoutData["amount"];
-            // payload["amount"] ="1";
             payload["reference_id"] = this.props.payoutData["supplier_fullname"];
             payload["notes"] = {} ;
 
             let resp = await paymentService.confirmPayout( payload );
             if (resp.data.status === 1) {
                 console.log(resp.data.result)
-                alert( "Successfully completed")
+                alert( "Successfully completed");
+                this.props.onPayoutSuccessfull();
             } else {
                 alert("An error occured while payout");
             }
