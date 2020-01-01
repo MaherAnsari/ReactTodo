@@ -31,13 +31,12 @@ import EditTransactionModal from '../common/EditTransactionModal';
 import Utils from './../../../app/common/utils';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import tickIcon from "../../../assets/images/icons/check.svg";
 import faqIconReddish from "../../../assets/images/icons/faq_redish.svg";
 import failedIcon from "../../../assets/images/icons/failed.svg";
 import approvedIcon from "../../../assets/images/icons/approved.svg";
+import hourglassIcon from "../../../assets/images/icons/hourglass.svg";
+import cancelledIcon from "../../../assets/images/icons/cancelled.svg";
 // import transactionIcon from "../../../assets/images/icons/transaction.svg";
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
@@ -282,7 +281,38 @@ class ViewTransactionModal extends Component {
 
       getStatusOption( event , row ){
           if( (row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak") ||  (row["transaction_type"] === "b_in" && row["payment_mode"] === "bank") ){
-            if(row["status"] === "approved"){
+            
+           if(  row["status"] === "payout_reversed" ||
+                row["status"] === "payout_cancelled" || 
+                row["status"] === "payout_rejected" ){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ cancelledIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+            } else if(row["status"] === "payout_processed"){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+            } else if(
+                row["status"] === "payout_initiated" || 
+                row["status"] === "payout_queued" || 
+                row["status"] === "payout_pending" || 
+                row["status"] === "payout_processing"){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ hourglassIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+            } else if(row["status"] === "approved"){
                 return( <Fab
                     variant="extended"
                     size="small"
@@ -305,15 +335,6 @@ class ViewTransactionModal extends Component {
                             <img src={row["status"] === "failed" ?  failedIcon : "" } alt="failedIcon" 
                                 style={{ height: "22px",width: "22px"}}/>
                     </span>)
-            }else if(row["status"] === "approved" ){
-                return(<span 
-                    style={{ paddingLeft: "15%"}}  
-                    data-toggle="tooltip" 
-                    data-placement="center" 
-                    title={row["status"] }>
-                    <img src={row["status"] === "approved" ?  approvedIcon : "" } alt="approvedIcon" 
-                        style={{ height: "22px",width: "22px"}}/>
-                </span>)
             }
         }else{
             return ( <AccountBalanceWalletSharpIcon style={{color:"gray", marginLeft:"15%"}}/>);

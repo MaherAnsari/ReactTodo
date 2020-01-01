@@ -151,6 +151,42 @@ class PayoutModal extends Component {
         }
     }
 
+    onConfirmPayout = async (  ) => {
+        try {
+            let payload = {};
+            // {
+            //     "id":232,
+            //      "name": "Sanchit jain",
+            //      "contact": "9205627721",
+            //      "type": "Loader",
+            //      "amount":1,
+            //      "reference_id": "sanchit",
+            //      "notes": {
+            //      }
+            //     }
+            payload["id"] = this.props.payoutData["id"];
+            payload["name"] = this.props.payoutData["supplier_fullname"]; 
+            payload["contact"] = this.props.payoutData["supplier_mobile"];
+            payload["type"] = "Loader";
+            payload["amount"] = this.props.payoutData["amount"];
+            // payload["amount"] ="1";
+            payload["reference_id"] = this.props.payoutData["supplier_fullname"];
+            payload["notes"] = {} ;
+
+            let resp = await paymentService.confirmPayout( payload );
+            if (resp.data.status === 1) {
+                console.log(resp.data.result)
+                alert( "Successfully completed")
+            } else {
+                alert("An error occured while payout");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occured while payout")
+        }
+    }
+
+
     render() {
         const { classes } = this.props;
         const { acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData, errorFields } = this.state;
@@ -199,7 +235,7 @@ class PayoutModal extends Component {
                                     <div style={{ textAlign: "center", paddingTop: "10px" }}>
                                         <Button
                                             variant="contained"
-                                            // onClick={(event) => this.onNewAccountSaveClicked(event)}
+                                            onClick={(event) => this.onConfirmPayout()}
                                             style={{ background: "blue", color: "#fff" }}>
                                             CONFIRM PAYOUT
                             </Button>

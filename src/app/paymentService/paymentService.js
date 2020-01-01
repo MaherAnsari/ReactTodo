@@ -106,6 +106,17 @@ let paymentService = {
             },
             url: 'payment/getBankDetails/'+id,
         },2);
+    },
+    confirmPayout  : async function ( payload ){
+        // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/getBankDetails/{id}
+        return Api({
+            method: 'post',
+            headers: {  
+                "Authorization": Utils.getToken()
+            },
+            url: "/user/payout",
+            data: payload
+        },3);
     }
 }
 
