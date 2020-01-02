@@ -86,7 +86,7 @@ class SelectTransactionTypeModal extends Component {
         var obj = {};
         obj["id"] = row["id"];
         obj["status"] = statusUpdateObj_val["status"];
-        obj["reason"] = statusUpdateObj_val["reason"];
+        obj["reason"] = statusUpdateObj_val["reason"] && statusUpdateObj_val["reason"] !== "" ? statusUpdateObj_val["reason"] : "-";
         obj["pay_id"] = row["pay_id"];
         console.log( this.checkIfValidDataForUpload( obj ))
         if(this.checkIfValidDataForUpload( obj ) ){
