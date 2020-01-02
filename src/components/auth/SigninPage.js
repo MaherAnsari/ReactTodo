@@ -404,13 +404,13 @@ class SignIn extends React.Component {
     async handleSigninSubmit(e) {
         e.preventDefault()
         this.setState({ disabledLoginBtn: true })
-        console.log(this.state.user);
+        // console.log(this.state.user);
         // console.log('Entered:', this.state)
         try {
 
             var data = await Auth.signIn(this.state.user.username, this.state.user.password);
             if (data) {
-                console.log(data)
+                // console.log(data)
                 this.setState({
                     userdata: data
                 })
@@ -447,7 +447,7 @@ class SignIn extends React.Component {
 
     async handleNewPassword(e) {
         e.preventDefault()
-        console.log(this.state.user);
+        // console.log(this.state.user);
         try {
             // Auth.completeNewPassword()
             Auth.signIn(this.state.user.username, this.state.user.password)

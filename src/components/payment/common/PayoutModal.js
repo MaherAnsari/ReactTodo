@@ -16,6 +16,13 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import paymentService from '../../../app/paymentService/paymentService';
 import Loader from '../../common/Loader';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Utils from './../../../app/common/utils';
 
 
 const styles = theme => ({
@@ -68,9 +75,10 @@ class PayoutModal extends Component {
             //     ifsc:"ICICI003890",
             //     acctName:"Sanchit Jain"
             // }
-            acctDetails: undefined
+            acctDetails: undefined,
+            transferType:"NEFT"
         }
-        console.log(this.props.payoutData)
+        // console.log(this.props.payoutData)
     }
 
     componentWillMount() {
@@ -81,7 +89,7 @@ class PayoutModal extends Component {
         try {
             let resp = await paymentService.getBankAcctDetails(id);
             if (resp.data.status === 1) {
-                console.log(resp.data.result)
+                // console.log(resp.data.result)
                 this.setState({ acctDetails: resp.data.result })
             } else {
                 alert("An error occured while getting the account details");
@@ -127,7 +135,7 @@ class PayoutModal extends Component {
             addAccountData: addAccountDataVal,
             errorFields: errors
         })
-        console.log(addAccountDataVal)
+        // console.log(addAccountDataVal)
     }
 
     checkForInvalidFields(data) {
@@ -161,10 +169,11 @@ class PayoutModal extends Component {
             payload["amount"] = this.props.payoutData["amount"];
             payload["reference_id"] = this.props.payoutData["supplier_fullname"];
             payload["notes"] = {} ;
+            payload["mode"] = this.state.transferType ;
 
             let resp = await paymentService.confirmPayout( payload );
             if (resp.data.status === 1) {
-                console.log(resp.data.result)
+                // console.log(payload)
                 alert( "Successfully completed");
                 this.props.onPayoutSuccessfull();
             } else {
@@ -176,10 +185,16 @@ class PayoutModal extends Component {
         }
     }
 
+    handelPaymentThroughChanged( event ){
+        this.setState({
+            transferType: event.target.value
+        });
+    }
+
 
     render() {
         const { classes } = this.props;
-        const { acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData, errorFields } = this.state;
+        const { transferType, acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -203,7 +218,7 @@ class PayoutModal extends Component {
                             <React.Fragment>
                                 <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
                                     <span className={classes.actcardtext} style={{ width: "60%" }}> Supplier Name  : &nbsp; <strong> {payoutData["supplier_fullname"]}</strong>  </span>
-                                    <span className={classes.actcardtext} > Amount  : &nbsp;<strong style={{ color: "red" }}> ₹ {payoutData["amount"]}  </strong></span> </div>
+                                    <span className={classes.actcardtext} > Amount  : &nbsp;<strong style={{ color: "red" }}> ₹ { Utils.formatNumberWithComma(payoutData["amount"])}  </strong></span> </div>
 
                                 <div className={classes.actCardc} >
                                     <div className={classes.actcardtext} style={{
@@ -221,6 +236,29 @@ class PayoutModal extends Component {
                                             Oops no bank account available.
                                     </div>}
                                 </div>
+                                <div>
+                                {acctDetails !== "-" && acctDetails !== "" && <FormControl component="fieldset" style={{padding: "5px"}}>
+                                <FormLabel component="legend" style={{ fontSize: "15px",fontFamily: "lato"}}>Select transfer type</FormLabel>
+                                <RadioGroup aria-label="position" name="position" value={transferType} onChange={this.handelPaymentThroughChanged.bind(this)}  row>
+                                    <FormControlLabel
+                                    value="NEFT"
+                                    control={<Radio color="primary" />}
+                                    label="NEFT"
+                                    style={{ fontSize: "14px",fontFamily: "lato"}}
+                                    labelPlacement="end"
+                                    />  
+                                    <FormControlLabel
+                                    value="IMPS"
+                                    control={<Radio color="primary" />}
+                                    label="IMPS"
+                                    disabled={payoutData["amount"] > 200000}
+                                    style={{ fontSize: "14px",fontFamily: "lato"}}
+                                    labelPlacement="end"
+                                    />
+                                </RadioGroup>
+                                {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
+                                </FormControl>}
+                                    </div>
                                 {acctDetails !== "-" && acctDetails !== "" &&
                                     <div style={{ textAlign: "center", paddingTop: "10px" }}>
                                         <Button

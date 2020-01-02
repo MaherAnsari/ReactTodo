@@ -100,7 +100,7 @@ const styles = theme => ({
         color: "#fff"
     },
     dataHeader: {
-        width: "25%"
+        width: "20%"
     },
     lightTooltip: {
         fontSize: '15px',
@@ -245,7 +245,7 @@ class ViewTransactionModal extends Component {
     formateDateForApi(data) {
         if (data && data !== "") {
             var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" + (dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
             return dateVal;
         } else {
             return "";
@@ -432,16 +432,19 @@ class ViewTransactionModal extends Component {
 
                     <div style={{ textAlign: "center", display: "flex", padding: "10px", marginBottom: "5px", boxShadow: "2px -1px 15px 0px rgba(0,0,0,0.75)" }}>
                         <div className={classes.dataHeader}>
-                            In amount : <span style={{ color: "rgb(56, 122, 57)" }}>₹ {(buyerInfo["b_in_amount"] ? buyerInfo["b_in_amount"] : "0")}</span>
+                            In amount : <span style={{ color: "rgb(56, 122, 57)" }}>₹ {(buyerInfo["b_in_amount"] ? Utils.formatNumberWithComma(buyerInfo["b_in_amount"]) : "0")}</span>
                         </div >
                         <div className={classes.dataHeader}>
-                            Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>₹ {(buyerInfo["b_out_amount"] ? buyerInfo["b_out_amount"] : "0")}</span>
+                            Out amount : <span style={{ color: "rgb(212, 58, 58)" }}>₹ {(buyerInfo["b_out_amount"] ? Utils.formatNumberWithComma(buyerInfo["b_out_amount"]) : "0")}</span>
                         </div>
                         <div className={classes.dataHeader}>
-                            Total outstanding balance : <span style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["total_outstanding_balance"] ? buyerInfo["total_outstanding_balance"] : "0")}</span>
+                            Outstanding balance : <span style={{ color: buyerInfo["total_outstanding_balance"] && buyerInfo["total_outstanding_balance"] > 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["total_outstanding_balance"] ? Utils.formatNumberWithComma(buyerInfo["total_outstanding_balance"]) : "0")}</span>
                         </div>
                         <div className={classes.dataHeader} style={{ color: "rgb(230, 0, 138)" }}>
-                            Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["bijak_credit_limit"] ? buyerInfo["bijak_credit_limit"] : "0")}</span>
+                            Bijak credit limit : <span style={{ color: buyerInfo["bijak_credit_limit"] && buyerInfo["bijak_credit_limit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["bijak_credit_limit"] ? Utils.formatNumberWithComma(buyerInfo["bijak_credit_limit"] ): "0")}</span>
+                        </div>
+                        <div className={classes.dataHeader} >
+                            Available credit : <span style={{ color: buyerInfo["available_credit"] && buyerInfo["available_credit"] < 0 ? "rgb(212, 58, 58)" : "rgb(56, 122, 57)" }} >₹ {(buyerInfo["available_credit"] ? Utils.formatNumberWithComma(buyerInfo["available_credit"]) : "0")}</span>
                         </div>
                     </div>
 

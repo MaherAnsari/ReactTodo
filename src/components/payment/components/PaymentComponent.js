@@ -152,7 +152,7 @@ class PaymentComponent extends Component {
     formateDateForApi(data) {
         if (data && data !== "") {
             var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + (dateVal.getMonth() + 1 < 10 ? "" + dateVal.getMonth() + 1 : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" +( dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
             return dateVal;
         } else {
             return "";

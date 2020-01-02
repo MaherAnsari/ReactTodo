@@ -65,14 +65,16 @@ class SelectTransactionTypeModal extends Component {
         console.log( data )
         var isValid = true;
         var errors =  {};
-        if( !data["reason"] || data["reason"] === ""){
-            isValid = false;
-            errors["reason"] = true;
-        }
         if( !data["status"] || data["status"] === ""){
             isValid = false;
             errors["status"] = true;
         }
+
+        if( data["status"] === "failed" && (!data["reason"] || data["reason"] === "")){
+            isValid = false;
+            errors["reason"] = true;
+        }
+
         this.setState({ errorFields : errors });
         return isValid;
     }
