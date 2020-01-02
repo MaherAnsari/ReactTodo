@@ -70,9 +70,11 @@ class SelectTransactionTypeModal extends Component {
             errors["status"] = true;
         }
 
-        if( data["status"] === "failed" && (!data["reason"] || data["reason"] === "")){
+        if( data["status"] !== "approved"){
+            if(!data["reason"] || data["reason"] === ""){
             isValid = false;
             errors["reason"] = true;
+        }
         }
 
         this.setState({ errorFields : errors });
@@ -85,11 +87,11 @@ class SelectTransactionTypeModal extends Component {
 
         var obj = {};
         obj["id"] = row["id"];
-        obj["status"] = statusUpdateObj_val["status"];
-        obj["reason"] = statusUpdateObj_val["reason"] && statusUpdateObj_val["reason"] !== "" ? statusUpdateObj_val["reason"] : "-";
-        obj["pay_id"] = row["pay_id"];
-        console.log( this.checkIfValidDataForUpload( obj ))
-        if(this.checkIfValidDataForUpload( obj ) ){
+        console.log( this.checkIfValidDataForUpload( statusUpdateObj_val ))
+        if(this.checkIfValidDataForUpload( statusUpdateObj_val ) ){
+            obj["status"] = statusUpdateObj_val["status"];
+            obj["reason"] = statusUpdateObj_val["reason"] && statusUpdateObj_val["reason"] !== "" ? statusUpdateObj_val["reason"] : "-";
+            obj["pay_id"] = row["pay_id"];
             this.updatePaymentStatus( obj );
         }
     }
