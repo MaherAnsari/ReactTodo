@@ -177,11 +177,11 @@ class PayoutModal extends Component {
                 alert( "Successfully completed");
                 this.props.onPayoutSuccessfull();
             } else {
-                alert("An error occured while payout");
+                alert(  resp && resp.data && resp.data.message  ? resp.data.message: "An error occured while payout");
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while payout")
+            alert( resp && resp.data && resp.data.message ? resp.data.message: "An error occured while payout");
         }
     }
 
