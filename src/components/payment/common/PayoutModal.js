@@ -181,7 +181,7 @@ class PayoutModal extends Component {
             }
         } catch (err) {
             console.error(err);
-            alert( resp && resp.data && resp.data.message ? resp.data.message: "An error occured while payout");
+            alert( "Oops an error occured while payout");
         }
     }
 
