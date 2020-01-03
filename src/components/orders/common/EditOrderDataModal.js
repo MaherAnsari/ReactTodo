@@ -300,7 +300,8 @@ class EditOrderDataModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status","brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location"]
+            "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location",
+            "supplier_locality"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -392,7 +393,7 @@ class EditOrderDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { orderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const { orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -422,7 +423,7 @@ class EditOrderDataModal extends Component {
                     </div>
 
                     <div style={{ display: "flex" }}>
-                        <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                        {/* <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
                             <AsyncSelect
                                 cacheOptions
                                 value={buyerid}
@@ -451,10 +452,22 @@ class EditOrderDataModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "buyerid")}
                             />
-                        </div>
+                        </div> */}
+                    
+                        <TextField
+                            margin="dense"
+                            id="Buyer_name"
+                            label="Buyer name"
+                            type="text"
+                            disabled={true}
+                            style={{ width: '49%' }}
+                            value={orderPayload.buyer_name}
+                            onChange={() => { }}
+                            fullWidth />
+
                         &nbsp;
                         &nbsp;
-                    <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                    {/* <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
                             <AsyncSelect
                                 cacheOptions
@@ -483,7 +496,17 @@ class EditOrderDataModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "supplierid")}
                             />
-                        </div>
+                        </div> */}
+                        <TextField
+                            margin="dense"
+                            id="supplier_name"
+                            label="supplier name"
+                            type="text"
+                            disabled={true}
+                            style={{ width: '49%' }}
+                            value={orderPayload.supplier_name}
+                            onChange={() => { }}
+                            fullWidth />
                     </div>
 
                     <div style={{ display: "flex" }}>
