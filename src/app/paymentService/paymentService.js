@@ -117,6 +117,17 @@ let paymentService = {
             url: "/user/payout",
             data: payload
         },3);
+    },
+    // Get Todays Payment Table Data 
+    getTodaysPaymentDataApi  : async function ( ){
+        // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/today
+        return Api({
+            method: 'get',
+            headers: {  
+                "Authorization": Utils.getToken()
+            },
+            url: "/payment/today"
+        },2);
     }
 }
 

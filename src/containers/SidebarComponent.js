@@ -33,6 +33,7 @@ const _items = [
       { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
+      { name: "Today's Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
     ]
   },
   {

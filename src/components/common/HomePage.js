@@ -28,6 +28,7 @@ import mandiDataService from '../../app/mandiDataService/mandiDataService';
 import CommodityContainer from '../commodityList/commodityContainer';
 import OrdersContainer from '../orders/OrdersContainer';
 import PaymentContainer from '../payment/PaymentContainer';
+import TodaysPaymentContainer from '../todaysPayments/TodaysPaymentContainer';
 import Utils from '../../app/common/utils';
 import MandiRateContainer from '../mandiRates/MandiRateContainer';
 import ChangePasswordPage from '../auth/ChangePasswordPage';
@@ -375,6 +376,7 @@ class Home extends React.Component {
           <Route path='/home/orders-list' exact component={OrdersContainer} />
           <Route path='/home/mandi-rates' exact component={MandiRateContainer} />
           <Route path='/home/payment' exact component={PaymentContainer} />
+          <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
          </main>
 
          {showChangePasswordView && 
