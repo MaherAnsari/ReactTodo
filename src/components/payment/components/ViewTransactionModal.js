@@ -37,6 +37,8 @@ import failedIcon from "../../../assets/images/icons/failed.svg";
 import approvedIcon from "../../../assets/images/icons/approved.svg";
 import hourglassIcon from "../../../assets/images/icons/hourglass.svg";
 import cancelledIcon from "../../../assets/images/icons/cancelled.svg";
+import payment_InitatedIcon from "../../../assets/images/icons/payment_Initated.svg";
+import payment_failureIcon from "../../../assets/images/icons/payment_failure.svg";
 // import transactionIcon from "../../../assets/images/icons/transaction.svg";
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
@@ -282,7 +284,23 @@ class ViewTransactionModal extends Component {
       getStatusOption( event , row ){
           if( (row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak") ||  (row["transaction_type"] === "b_in" && row["payment_mode"] === "bank") ){
             
-           if(  row["status"] === "payout_reversed" ||
+            if(  row["status"] === "transaction_failed" ){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ payment_failureIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+               }else if(  row["status"] === "transaction_initiated" ){
+            return(<span 
+                style={{ paddingLeft: "15%"}}  
+                data-toggle="tooltip" 
+                data-placement="center" 
+                title={row["status"] }>
+                <img src={ payment_InitatedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+            </span> );
+           }else if(  row["status"] === "payout_reversed" ||
                 row["status"] === "payout_cancelled" || 
                 row["status"] === "payout_rejected" ){
                 return(<span 
