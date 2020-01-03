@@ -88,7 +88,7 @@ const request = function (options,type) {
   const onErrorOfAuthentication = function (error) {
     try{
     var errorStatus =   error.message === "Network Error" ?401: error.response.data.statusCode ;
-    var errorMsg = error.message || "Oops there is an error.";
+    var errorMsg = error.message || error.data.message ||"Oops there is an error.";
     if(parseInt(errorStatus,10) === 401 ){
         Auth.signOut()
             .then(data => {

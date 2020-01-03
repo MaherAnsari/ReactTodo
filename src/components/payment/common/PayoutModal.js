@@ -24,7 +24,6 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Utils from './../../../app/common/utils';
 
-
 const styles = theme => ({
 
     dialogPaper: {
@@ -63,7 +62,7 @@ class PayoutModal extends Component {
             payoutData: this.props.payoutData,
             acctData: [1, 2, 3],
             selectedAcctInfo: undefined,
-            currentPayoutView: "defaultPayout", //selectAccount, addAccount,
+            currentPayoutView: "defaultPayout", //selectAccount, addAccount,loading
             addAccountData: {
                 actno: "",
                 ifsc: "",
@@ -161,6 +160,7 @@ class PayoutModal extends Component {
 
     onConfirmPayout = async (  ) => {
         try {
+            this.setState({currentPayoutView :"loading"});
             let payload = {};
             payload["id"] = this.props.payoutData["id"];
             payload["name"] = this.props.payoutData["supplier_fullname"]; 
@@ -179,8 +179,10 @@ class PayoutModal extends Component {
             } else {
                 alert(  resp && resp.data && resp.data.message  ? resp.data.message: "An error occured while payout");
             }
+            this.setState({currentPayoutView :"defaultPayout"});
         } catch (err) {
             console.error(err);
+            this.setState({currentPayoutView :"defaultPayout"});
             alert( "Oops an error occured while payout");
         }
     }
@@ -232,7 +234,7 @@ class PayoutModal extends Component {
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                         </span> :
-                                        <div style={{ padding: "14px" }} className={classes.actcardtext}>
+                                        <div style={{ padding: "14px" }} className={classes.actcardtext} onClick={(event) => this.onConfirmPayout()}>
                                             Oops no bank account available.
                                     </div>}
                                 </div>
@@ -353,6 +355,10 @@ class PayoutModal extends Component {
                         <React.Fragment>
                             <div> Available bijak credit : Rs. 50,000 </div>
                             <div> Amount for payout      : Rs. {payoutData["amount"]} </div>
+                        </React.Fragment>}
+                        {currentPayoutView === "loading" &&
+                        <React.Fragment>
+                            <Loader primaryText={"Please wait.."}/>
                         </React.Fragment>}
                 </DialogContent>
             </Dialog>
