@@ -76,8 +76,8 @@ class EditOrderDataModal extends Component {
             orderPayload: this.props.editableData,
             orderPayloadToUpdate: {
                 "active": "",
-                "buyerid": "",
-                "supplierid": "",
+                // "buyerid": "",
+                // "supplierid": "",
                 "brokerid": "",
                 "commodity": "",
                 "rate": "",
@@ -131,8 +131,8 @@ class EditOrderDataModal extends Component {
 
             this.setState({
                 attachmentArray: attachmentArrayVal,
-                buyerid: [{ label: this.state.orderPayload["buyer_name"], value: this.state.orderPayload["buyer_mobile"] }],
-                supplierid: [{ label: this.state.orderPayload["supplier_name"], value: this.state.orderPayload["supplier_mobile"] }],
+                // buyerid: [{ label: this.state.orderPayload["buyer_name"], value: this.state.orderPayload["buyer_mobile"] }],
+                // supplierid: [{ label: this.state.orderPayload["supplier_name"], value: this.state.orderPayload["supplier_mobile"] }],
                 brokerid: [{ value: this.state.orderPayload["brokerid"], label: this.state.orderPayload["broker_name"] }],
             })
         }
