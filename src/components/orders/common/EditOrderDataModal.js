@@ -16,6 +16,7 @@ import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
 import orderService from '../../../app/orderService/orderService';
 import Switch from '@material-ui/core/Switch';
+import Loader from '../../common/Loader';
 
 
 const styles = theme => ({
@@ -108,7 +109,8 @@ class EditOrderDataModal extends Component {
             tempVar: {},
             errorFields: {},
             attachmentArray: [],
-            commodityList: this.props.commodityList
+            commodityList: this.props.commodityList,
+            showLoader: false
 
         }
 
@@ -248,18 +250,18 @@ class EditOrderDataModal extends Component {
             var payload = this.state.orderPayload;
             var id = payload.id;
             if (this.checkForInvalidFields(payload)) {
+                this.setState({ showLoader : true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
-                    // console.log(resp);
-                    if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ showLoader : false });
+                    if (resp.data.status === 0 && resp.data.result) {
                         alert("Successfully updated this order ");
                         this.props.onOrderDataUpdated();
                     } else {
                         alert("There was an error while updating this order");
                     }
-              
             } else {
                 alert("please fill the mandatory fields highlighted");
             }
@@ -398,7 +400,7 @@ class EditOrderDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const {showLoader, orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -406,6 +408,7 @@ class EditOrderDataModal extends Component {
                 // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
@@ -840,6 +843,8 @@ class EditOrderDataModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
         </div>
         );

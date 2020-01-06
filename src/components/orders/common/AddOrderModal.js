@@ -16,7 +16,7 @@ import brokerService from '../../../app/brokerService/brokerService';
 import { Storage } from 'aws-amplify';
 import commodityService from '../../../app/commodityService/commodityService';
 import orderService from '../../../app/orderService/orderService';
-
+import Loader from '../../common/Loader';
 
 const styles = theme => ({
     heading: {
@@ -102,7 +102,8 @@ class AddOrderModal extends Component {
             tempVar: {},
             errorFields: {},
             attachmentArray: [],
-            commodityList: []
+            commodityList: [],
+            showLoader: false
 
         }
         this.getCommodityNames();
@@ -257,10 +258,12 @@ class AddOrderModal extends Component {
             var payload = this.state.addOrderPayload;
 
             if (this.checkForInvalidFields(payload)) {
+                this.setState({ showLoader : true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
                 var resp = await orderService.addNewOrder(payloadData);
                 console.log(resp);
+                this.setState({ showLoader : false });
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this order ");
                     this.props.onOrderDataAdded();
@@ -389,7 +392,7 @@ class AddOrderModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const { showLoader, addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -397,6 +400,7 @@ class AddOrderModal extends Component {
                 // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
@@ -820,6 +824,8 @@ class AddOrderModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.addOrder.bind(this)} color="primary">Add</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
         </div>
         );
