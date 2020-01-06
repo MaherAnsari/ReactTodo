@@ -13,7 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import { Storage } from 'aws-amplify';
-
+import Loader from '../../common/Loader';
 
 const styles = theme => ({
 
@@ -60,7 +60,8 @@ class EditCommodityList extends Component {
             open: this.props.openModal,
             editableDataObj: this.props.editableData,
             isEditableField: false,
-            attachmentArray: []
+            attachmentArray: [],
+            showLoader: false
         }
     }
 
@@ -152,7 +153,9 @@ class EditCommodityList extends Component {
 
 
     async updateCommodity(payload) {
+        this.setState({ showLoader : true});
         let resp = await commodityService.updateCommodity(payload);
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Successfully Update");
             this.props.onEditModalClosed();
@@ -231,13 +234,14 @@ class EditCommodityList extends Component {
 
     render() {
         const { classes } = this.props;
-        const { editableDataObj, isEditableField } = this.state;
+        const {showLoader, editableDataObj, isEditableField } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
                     id="form-dialog-title">
@@ -375,6 +379,8 @@ class EditCommodityList extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog

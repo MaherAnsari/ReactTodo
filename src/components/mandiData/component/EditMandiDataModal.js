@@ -11,6 +11,8 @@ import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
+import Loader from '../../common/Loader';
+
 const styles = theme => ({
 
     dialogPaper: {
@@ -66,6 +68,7 @@ class EditMandiDataModal extends Component {
             typeArr: ["dates", "every","all"],
             offDayArr: [],
             timeoption:["am","pm"],
+            showLoader: false
 
         }
 
@@ -140,6 +143,7 @@ class EditMandiDataModal extends Component {
 
     handelConfirmUpdate = async () => {
         // console.log(this.state.dataObj);
+        this.setState({ showLoader : true });
         var data = this.state.dataObj;
         var payload = {
             "market": data["market"],
@@ -153,6 +157,7 @@ class EditMandiDataModal extends Component {
         }
         // console.log(payload)
         let resp = await mandiDataService.updateMandiData( payload );
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
             this.props.onEditModalClosed();
@@ -240,13 +245,14 @@ class EditMandiDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
+        const { showLoader, isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Edit Mandi Data</p>  </DialogTitle>
                 <DialogContent>
                 <div style={{ display: 'flex' }}>
@@ -522,6 +528,8 @@ class EditMandiDataModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog

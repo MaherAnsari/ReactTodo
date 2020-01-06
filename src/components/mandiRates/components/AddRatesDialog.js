@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Loader from '../../common/Loader';
 
 const styles = theme => ({
 
@@ -61,7 +62,8 @@ class AddRatesDialog extends Component {
             "districtMap": Utils.getDistrictData(),
             "marketList":[],
             "districtList": [],
-            "commodityList":[]
+            "commodityList":[],
+            showLoader: false
 
         }
         this.handleCommodityChange = this.handleCommodityChange.bind(this);
@@ -114,15 +116,16 @@ class AddRatesDialog extends Component {
     }
 
     handelConfirmUpdate = async () => {
-       
+        this.setState({ showLoader : true,showConfirmDialog: false });
         let resp = await mandiDataService.addCommodityRates(this.state.dataObj);
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
             this.props.onEditModalClosed();
         } else {
             alert("Opps there was an error, while adding");
         }
-        this.setState({ showConfirmDialog: false, alertData: {} });
+        this.setState({  alertData: {} });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -169,12 +172,14 @@ class AddRatesDialog extends Component {
     }
     render() {
         const { classes } = this.props;
+        const { showLoader } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Add Mandi Data</p>  </DialogTitle>
                 <DialogContent>
                 <TextField
@@ -291,6 +296,8 @@ class AddRatesDialog extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Add</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
