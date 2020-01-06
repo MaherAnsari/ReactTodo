@@ -320,7 +320,7 @@ class TodaysPaymentTable extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
-        const rightAlignedIndexs = [6];
+        const rightAlignedIndexs = [7];
         return (
             
             <div>

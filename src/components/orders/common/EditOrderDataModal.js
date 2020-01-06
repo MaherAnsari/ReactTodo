@@ -67,6 +67,8 @@ const styles = theme => ({
 
 });
 
+const statusOption = ["pending","settled","partial_settled"];
+
 class EditOrderDataModal extends Component {
 
     constructor(props) {
@@ -248,14 +250,16 @@ class EditOrderDataModal extends Component {
             if (this.checkForInvalidFields(payload)) {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
+                var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
-                console.log(resp);
-                if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully updated this order ");
-                    this.props.onOrderDataUpdated();
-                } else {
-                    alert("There was an error while updating this order");
-                }
+                    // console.log(resp);
+                    if (resp.data.status === 1 && resp.data.result) {
+                        alert("Successfully updated this order ");
+                        this.props.onOrderDataUpdated();
+                    } else {
+                        alert("There was an error while updating this order");
+                    }
+              
             } else {
                 alert("please fill the mandatory fields highlighted");
             }
@@ -299,11 +303,12 @@ class EditOrderDataModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status","brokerid",
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile","brokerid",
             "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location",
             "supplier_locality"]
         for (var key in data) {
-            if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
+            // console.log( key +"---"+data[key])
+            if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "" && data[key] === null) {
                 error[key] = true;
                 isValid = false;
                 console.log(key)
@@ -662,7 +667,7 @@ class EditOrderDataModal extends Component {
                             fullWidth />
                         &nbsp;
                         &nbsp;
-                        <TextField
+                        {/* <TextField
                             margin="dense"
                             id="status"
                             label="Status"
@@ -671,7 +676,24 @@ class EditOrderDataModal extends Component {
                             style={{ width: '49%' }}
                             value={orderPayload.status}
                             onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            fullWidth /> */}
+                            <TextField
+                            select
+                            id="status"
+                            name="status"
+                            label="Status"
+                            error={errorFields["status"] ? true : false}
+                            type="text"
+                        
+                            style={{ width: '49%', marginTop: "1%" }}
+                            value={orderPayload.status}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {statusOption.map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </div>
 
                     <div style={{ display: "flex" }} >
