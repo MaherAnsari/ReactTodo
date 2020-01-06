@@ -16,7 +16,7 @@ import Utils from './../../app/common/utils';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from './../../app/commodityService/commodityService';
-
+import Loader from './Loader';
 
 const styles = theme => ({
     heading: {
@@ -136,7 +136,7 @@ class InfoDialog extends Component {
             ],
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
-
+            showLoader: false
 
 
         }
@@ -262,8 +262,9 @@ class InfoDialog extends Component {
             reqObj['data'][0] = obj;
         }
         // let resp = {};
+        this.setState({ showLoader : true, showConfirmDialog: false  });
         let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
-
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
 
             this.props.onEditModalClosed();
@@ -336,11 +337,13 @@ class InfoDialog extends Component {
     }
     render() {
         const { classes } = this.props;
+        const { showLoader } = this.state;
         return (<div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
+             { !showLoader ? <div>
                     <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px'}}>User Data
 </div>  </DialogTitle> 
             <DialogContent> 
@@ -640,6 +643,8 @@ class InfoDialog extends Component {
                 {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
+            </div>:
+                 <Loader primaryText="Please wait.."/>}
         </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
