@@ -63,6 +63,7 @@ const styles = theme => ({
     },
 
 });
+const statusOption = ["pending","settled","partial_settled"];
 
 class AddOrderModal extends Component {
 
@@ -304,7 +305,7 @@ class AddOrderModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile", "status","brokerid",
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile","brokerid",
             "remark", "other_info", "commission_rate", "commission_unit","target_location","source_location"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
@@ -656,15 +657,22 @@ class AddOrderModal extends Component {
                         &nbsp;
                         &nbsp;
                         <TextField
-                            margin="dense"
+                            select
                             id="status"
+                            name="status"
                             label="Status"
                             error={errorFields["status"] ? true : false}
                             type="text"
-                            style={{ width: '49%' }}
+                            defaultValue={"pending"}
+                            style={{ width: '49%', marginTop: "1%" }}
                             value={addOrderPayload.status}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            onChange={this.handleInputChange.bind(this)}>
+                            {statusOption.map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </div>
 
                     <div style={{ display: "flex" }} >
