@@ -63,7 +63,10 @@ class AddRatesDialog extends Component {
             "marketList":[],
             "districtList": [],
             "commodityList":[],
-            showLoader: false
+            showLoader: false,
+            showConfirmDialog: false,
+            dialogText: "", 
+            dialogTitle: "",
 
         }
         this.handleCommodityChange = this.handleCommodityChange.bind(this);
@@ -116,7 +119,7 @@ class AddRatesDialog extends Component {
     }
 
     handelConfirmUpdate = async () => {
-        this.setState({ showLoader : true,showConfirmDialog: false });
+        this.setState({ showConfirmDialog: false, showLoader : true });
         let resp = await mandiDataService.addCommodityRates(this.state.dataObj);
         this.setState({ showLoader : false });
         if (resp.data.status === 1) {
@@ -172,7 +175,8 @@ class AddRatesDialog extends Component {
     }
     render() {
         const { classes } = this.props;
-        const { showLoader } = this.state;
+        const { showLoader , showConfirmDialog} = this.state;
+        console.log( showLoader , showConfirmDialog )
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -299,11 +303,11 @@ class AddRatesDialog extends Component {
                 </div>:
                  <Loader primaryText="Please wait.."/>}
             </Dialog>
-            {this.state.showConfirmDialog ?
+            {showConfirmDialog ?
                 <ConfirmDialog
                     dialogText={this.state.dialogText}
                     dialogTitle={this.state.dialogTitle}
-                    show={this.state.showConfirmDialog}
+                    show={showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
         </div>

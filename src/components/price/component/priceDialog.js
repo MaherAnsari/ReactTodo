@@ -116,7 +116,7 @@ class PriceDialog extends Component {
 
     handelConfirmUpdate = async () => {
         // console.log(this.state.dataObj);
-        this.setState({ showLoader : true });
+        this.setState({ showConfirmDialog: false,showLoader : true });
         let obj = { 'data': this.state.dataObj }
         let resp = await priceService.addPrice(obj);
         this.setState({ showLoader : false });
@@ -126,7 +126,7 @@ class PriceDialog extends Component {
         } else {
             alert("Opps there was an error, while adding");
         }
-        this.setState({ showSweetAlert: false, alertData: {} });
+        this.setState({ showConfirmDialog: false, alertData: {} });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
