@@ -11,6 +11,7 @@ import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Loader from '../../common/Loader';
 
 const styles = theme => ({
     heading: {
@@ -79,7 +80,8 @@ class PriceDialog extends Component {
                 "buyer_mobile": null
             },
             commodityList: [],
-            unitArr: ["quintal", "ton"]
+            unitArr: ["quintal", "ton"],
+            showLoader: false
         }
 
         this._isMounted = false;
@@ -114,9 +116,10 @@ class PriceDialog extends Component {
 
     handelConfirmUpdate = async () => {
         // console.log(this.state.dataObj);
-
+        this.setState({ showLoader : true });
         let obj = { 'data': this.state.dataObj }
         let resp = await priceService.addPrice(obj);
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Succesfully submitted");
             this.props.onEditModalClosed();
@@ -209,11 +212,13 @@ class PriceDialog extends Component {
     }
     render() {
         const { classes } = this.props;
+        const {showLoader } = this.state;
         return (<div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
+            { !showLoader ? <div>
             <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Commodity Price Data</p>  </DialogTitle>
             <DialogContent>
               {!this.props.isUpdate &&  <div >
@@ -359,6 +364,8 @@ class PriceDialog extends Component {
                 <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">{this.props.isUpdate ? "Update":"Add"}</Button>
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </DialogActions>
+            </div>:
+                 <Loader primaryText="Please wait.."/>}
         </Dialog>
 
             {this.state.showConfirmDialog ?

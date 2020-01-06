@@ -20,6 +20,7 @@ import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import paymentService from '../../../app/paymentService/paymentService';
 import { Storage } from 'aws-amplify';
+import Loader from '../../common/Loader';
 
 const styles = theme => ({
     heading: {
@@ -103,7 +104,8 @@ class AddTransactionModal extends Component {
             supplierid: "",
             tempVar: {},
             errorFields: {},
-            attachmentArray: []
+            attachmentArray: [],
+            showLoader: false
 
         }
 
@@ -223,12 +225,14 @@ class AddTransactionModal extends Component {
             var payload = this.state.addTransactionPayload;
 
             if (this.checkForInvalidFields(payload)) {
+                this.setState({ showLoader : true });
                 payload["images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
 
                 payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
                 payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
                 var resp = await paymentService.addPayemtData(payloadData);
+                this.setState({ showLoader : false });
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this transaction ");
                     this.props.onTransactionAdded();
@@ -368,7 +372,7 @@ class AddTransactionModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { addTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
+        const { showLoader, addTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -376,6 +380,7 @@ class AddTransactionModal extends Component {
                 disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
+                { !showLoader ? <div>
                 <DialogTitle
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
@@ -725,6 +730,8 @@ class AddTransactionModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.addTransaction.bind(this)} color="primary">Add</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+                </div>:
+                 <Loader primaryText="Please wait.."/>}
             </Dialog>
         </div>
         );
