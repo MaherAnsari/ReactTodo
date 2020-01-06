@@ -250,7 +250,7 @@ class EditOrderDataModal extends Component {
             if (this.checkForInvalidFields(payload)) {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
-                var resp= { data:{ status : 1, result:{} }}
+                // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
                     // console.log(resp);
                     if (resp.data.status === 1 && resp.data.result) {
