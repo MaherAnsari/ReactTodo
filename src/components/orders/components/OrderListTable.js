@@ -21,6 +21,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import commodityService from '../../../app/commodityService/commodityService';
 import FileUploader from '../../common/fileUploader';
 import orderService from '../../../app/orderService/orderService';
+import Fab from '@material-ui/core/Fab';
 
 var moment = require('moment');
 
@@ -98,7 +99,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location","commodity", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location","commodity", "status", "Amount  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -288,12 +289,28 @@ class OrderListTable extends Component {
         this.setState({ showUploader: true });
     }
 
+    getActionButton( row ){
+        if( row && (row["status"] !== "settled" || row["status"] === null ) ){
+        return( <Fab
+            variant="extended"
+            size="small"
+            aria-label="PAYOUT"
+            // onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
+            style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 8px" }}
+        >
+           Pay via credit
+    </Fab>);
+    }else{
+        return (<span> {row["status"] } </span>)
+    }
+    }
+
 
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
         const leftAlignedIndexs = [1, 2, 3];
-        const rightAlignedIndexs = [7];
+        const rightAlignedIndexs = [8];
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -378,6 +395,9 @@ class OrderListTable extends Component {
                                                         padding: "4px 12px",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
+                                                     <TableCell className={this.getTableCellClass(classes, 4)} >
+                                                    {this.getActionButton( row )}
+                                                </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
                                                     ₹ {row.bijak_amt ? this.formatNumberWithComma(row.bijak_amt): 0}
                                                     <EditIcon
