@@ -8,11 +8,11 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../app/common/utils';
-
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from '../../app/commodityService/commodityService';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import Loader from './Loader';
 
 const theme = createMuiTheme({
     overrides: {
@@ -51,7 +51,7 @@ class EditUser extends Component {
             stateList: Utils.getStateData(),
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
-
+            showLoader: false
 
 
         }
@@ -178,8 +178,9 @@ class EditUser extends Component {
         }
         // let resp = {}; 
         // console.log(reqObj);
+        this.setState({ showLoader : true, showConfirmDialog: false  });
         let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
-
+        this.setState({ showLoader : false });
         if (resp.data.status === 1) {
 
             this.props.onEditModalClosed();
@@ -187,7 +188,7 @@ class EditUser extends Component {
         } else {
             alert("Opps there was an error, while adding");
         }
-        this.setState({ showConfirmDialog: false, alertData: {} });
+        this.setState({ alertData: {} });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -255,9 +256,10 @@ class EditUser extends Component {
 
     render() {
         const { classes } = this.props;
+        const { showLoader } = this.state;
         return (
             <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px',marginTop:'50px'  }}>
-
+            { !showLoader ? <div>
             <div style={{ display: 'flex' }}>
                 <TextField
                     margin="dense"
@@ -552,6 +554,9 @@ class EditUser extends Component {
                 <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </div>
+            </div>:
+                 <Loader primaryText="Please wait.."/>}
+            
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
                     dialogText={this.state.dialogText}
