@@ -65,9 +65,9 @@ class PayoutOrderModal extends Component {
             selectedAcctInfo: undefined,
             currentPayoutView: "defaultPayout", //selectAccount, addAccount,loading
             addAccountData: {
-                actno: "",
-                ifsc: "",
-                actholdername: ""
+                bank_account_number: "",
+                bank_ifsc_code: "",
+                bank_account_holder_name: ""
             },
             errorFields: {},
             acctDetails: undefined,
@@ -145,7 +145,7 @@ class PayoutOrderModal extends Component {
 
     handleInputChange(event) {
         event.preventDefault()
-        var intejarIds = ["actno"]; // this values need to be intejar
+        var intejarIds = ["bank_account_number"]; // this values need to be intejar
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -189,9 +189,9 @@ class PayoutOrderModal extends Component {
             this.setState({ currentPayoutView: "defaultPayout" }, function () {
                 let acctDetails = this.state.acctDetails;
                 acctDetails = { bank_account_holder_name: "", bank_account_number: "", bank_ifsc_code: "" }
-                acctDetails["bank_account_holder_name"] = this.state.addAccountData["actholdername"];
-                acctDetails["bank_account_number"] = this.state.addAccountData["actno"];
-                acctDetails["bank_ifsc_code"] = this.state.addAccountData["ifsc"];
+                acctDetails["bank_account_holder_name"] = this.state.addAccountData["bank_account_holder_name"];
+                acctDetails["bank_account_number"] = this.state.addAccountData["bank_account_number"];
+                acctDetails["bank_ifsc_code"] = this.state.addAccountData["bank_ifsc_code"];
                 this.setState({ acctDetails: acctDetails })
             });
         } else {
@@ -227,9 +227,9 @@ class PayoutOrderModal extends Component {
                 "transaction_date": this.formateDateForApi(new Date()),
 
                 "bank_detail": {
-                    "account_holder_name": this.state.addAccountData["actholdername"],
-                    "account_number": this.state.addAccountData["actno"],
-                    "account_ifsc": this.state.addAccountData["ifsc"],
+                    "account_holder_name": this.state.addAccountData["bank_account_holder_name"],
+                    "account_number": this.state.addAccountData["bank_account_number"],
+                    "account_ifsc": this.state.addAccountData["bank_ifsc_code"],
                 },
                 "order_id": this.state.payoutData["app_order_id"]
             };
@@ -238,7 +238,7 @@ class PayoutOrderModal extends Component {
             this.setState({ currentPayoutView: "selectAccount" });
             if (resp.data.status === 1) {
                 alert("Successfully added");
-                this.onPayoutSuccessfull();
+                this.props.onPayoutSuccessfull();
             } else {
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details");
             }
@@ -265,9 +265,9 @@ class PayoutOrderModal extends Component {
     //         payload["mode"] = this.state.transferType;
 
     //         // payload["bank_detail"] = {
-    //         //     "account_holder_name": this.state.addAccountData["actholdername"],
-    //         //     "account_number": this.state.addAccountData["actno"],
-    //         //     "account_ifsc": this.state.addAccountData["ifsc"],
+    //         //     "account_holder_name": this.state.addAccountData["bank_account_holder_name"],
+    //         //     "account_number": this.state.addAccountData["bank_account_number"],
+    //         //     "account_ifsc": this.state.addAccountData["bank_ifsc_code"],
     //         // };
     //         // payload["order_id"] = this.state.payoutData["app_order_id"];
     //         console.log(payload)
@@ -457,7 +457,7 @@ class PayoutOrderModal extends Component {
                                         <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
                                             style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
                                         {selectedAcctInfo &&
-                                            <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout", acctDetails: selectedAcctInfo })}
+                                            <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout", acctDetails: selectedAcctInfo, addAccountData:selectedAcctInfo })}
                                                 style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button>}
                                     </div>
                                 </div>}
@@ -469,34 +469,34 @@ class PayoutOrderModal extends Component {
                             <div >
                                 <TextField
                                     margin="dense"
-                                    id="actno"
-                                    error={errorFields["actno"] ? true : false}
+                                    id="bank_account_number"
+                                    error={errorFields["bank_account_number"] ? true : false}
                                     label="Account number"
                                     type="text"
                                     style={{ width: '100%' }}
-                                    value={addAccountData.actno}
+                                    value={addAccountData.bank_account_number}
                                     onChange={this.handleInputChange.bind(this)}
                                     fullWidth />
 
                                 <TextField
                                     margin="dense"
-                                    id="ifsc"
+                                    id="bank_ifsc_code"
                                     label="Ifsc"
-                                    error={errorFields["ifsc"] ? true : false}
+                                    error={errorFields["bank_ifsc_code"] ? true : false}
                                     type="text"
                                     style={{ width: '100%' }}
-                                    value={addAccountData.ifsc}
+                                    value={addAccountData.bank_ifsc_code}
                                     onChange={this.handleInputChange.bind(this)}
                                     fullWidth />
 
                                 <TextField
                                     margin="dense"
-                                    id="actholdername"
+                                    id="bank_account_holder_name"
                                     label="Name of Account holder"
-                                    error={errorFields["actholdername"] ? true : false}
+                                    error={errorFields["bank_account_holder_name"] ? true : false}
                                     type="text"
                                     style={{ width: '100%' }}
-                                    value={addAccountData.actholdername}
+                                    value={addAccountData.bank_account_holder_name}
                                     onChange={this.handleInputChange.bind(this)}
                                     fullWidth />
                             </div>

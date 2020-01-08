@@ -21,6 +21,15 @@ import supplierService from '../../../app/supplierService/supplierService';
 import paymentService from '../../../app/paymentService/paymentService';
 import { Storage } from 'aws-amplify';
 import Loader from '../../common/Loader';
+import orderService from '../../../app/orderService/orderService';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 
 const styles = theme => ({
     heading: {
@@ -107,13 +116,14 @@ class AddTransactionModal extends Component {
             errorFields: {},
             attachmentArray: [],
             showLoader: false,
-            showAcctDetailsView: false,
-
+            currentAddTransactionView : "addPayment",// "enterAcctDetails", // "selectAccount"
             "bank_detail": {
                 "account_holder_name": "",
                 "account_number": "",
                 "account_ifsc": ""
-            }
+            },
+            acctDataArray: undefined,
+            selectedAcctInfo: undefined,
 
         }
 
@@ -145,7 +155,7 @@ class AddTransactionModal extends Component {
         }
         var val = event.target.value;
         var addTransactionPayloadVal = this.state.addTransactionPayload;
-        if (intejarIds.indexOf(id) > -1) {
+        if ( intejarIds.indexOf(id) > -1 ) {
             if (val === "" || !isNaN(val)) {
                 addTransactionPayloadVal[id] = Number(val);
             }
@@ -249,7 +259,10 @@ class AddTransactionModal extends Component {
         var transData = this.state.addTransactionPayload;
         if (this.checkForInvalidFields(transData)) {
             if (transData["payment_mode"] === "bank" && transData["transaction_type"] === "b_in") {
-                this.setState({ showAcctDetailsView: true });
+                // this.setState({ currentAddTransactionView : "selectAccount" },
+                //  function(){
+                    this.getBankDetails(transData["supplier_mobile"]);
+                // });
             } else {
                 this.addTransaction();
             }
@@ -257,6 +270,27 @@ class AddTransactionModal extends Component {
             alert("Please fill the mandatory fields highlighted");
         }
     }
+
+    getBankDetails = async (mobile) => {
+        try {
+            this.setState({ showLoader: true });
+            let resp = await orderService.getOrderAcount(mobile);
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                if (resp.data.result) {
+                    this.setState({ currentAddTransactionView: "selectAccount", acctDataArray: resp.data.result || [] });
+                } else {
+                    this.setState({  acctDataArray : resp.data.result })
+                }
+            } else {
+                alert("An error occured while getting the account details");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occured while getting the account details")
+        }
+    }
+
 
     checkForInvalidFieldsOfAccount(data) {
         var isValid = true;
@@ -418,9 +452,18 @@ class AddTransactionModal extends Component {
         this.setState({ dateval: addTransactionPayloadVal })
     }
 
+    handelAccountSelection(actInfo, event) {
+        let bank_detailVal = this.state.bank_detail;
+        bank_detailVal["account_holder_name"] = actInfo["bank_account_holder_name"];
+        bank_detailVal["account_number"] = actInfo["bank_account_number"];
+        bank_detailVal["account_ifsc"] = actInfo["bank_ifsc_code"];
+        this.setState({ selectedAcctInfo: actInfo,  bank_detail :bank_detailVal })
+    }
+
     render() {
         const { classes } = this.props;
-        const { bank_detail, showAcctDetailsView, showLoader, addTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
+        const { bank_detail, currentAddTransactionView , showLoader, addTransactionPayload, 
+            supplierid, buyerid, tempVar, errorFields , acctDataArray, selectedAcctInfo } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -436,7 +479,8 @@ class AddTransactionModal extends Component {
                             Add Transaction</p>
                     </DialogTitle>
                     <DialogContent>
-                        {!showAcctDetailsView ? <React.Fragment>
+                        {currentAddTransactionView === "addPayment" && 
+                        <React.Fragment>
                             <div style={{ display: "flex" }}>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
                                     <Grid container style={{ width: "49%" }} >
@@ -752,9 +796,55 @@ class AddTransactionModal extends Component {
                                 </Grid>
                             </div>
 
-                        </React.Fragment>
-                            :
-                            <React.Fragment>
+                        </React.Fragment>}
+
+                        {currentAddTransactionView === "selectAccount" &&
+                        <React.Fragment>
+                                <div>
+                                    {acctDataArray && acctDataArray.length > 0 ?
+                                        <div> Select an Account </div> :
+                                        <div> Please add an account to continue </div>}
+                                    <List className={classes.root}>
+                                        {acctDataArray && acctDataArray.map(obj => {
+                                            const labelId = `checkbox-list-label-${obj["id"]}`;
+                                            return (
+                                                <ListItem key={obj["id"]} role={undefined} dense button
+                                                    onClick={this.handelAccountSelection.bind(this, obj)}>
+                                                    <ListItemIcon>
+                                                        <Checkbox
+                                                            edge="start"
+                                                            checked={selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false}
+                                                            tabIndex={-1}
+                                                            disableRipple={false}
+                                                            inputProps={{ 'aria-labelledby': labelId }}
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        id={labelId}
+                                                        primary={obj["bank_account_holder_name"]}
+                                                        secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
+                                                    {(selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false) &&
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton edge="end" aria-label="comments">
+                                                                <CheckCircleOutlineIcon style={{ color: "green" }} />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>}
+                                                </ListItem>
+                                            );
+                                        })}
+                                    </List>
+                                    <div>
+                                        <Button variant="contained" onClick={(event) => this.setState({ currentAddTransactionView: "enterAcctDetails" })}
+                                            style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
+                                        {selectedAcctInfo &&
+                                            <Button variant="contained" onClick={(event) =>this.onTransactionDataAddedWithAccount(event)}
+                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>}
+                                    </div>
+                                </div>
+                        </React.Fragment>}
+
+                        {currentAddTransactionView === "enterAcctDetails" && 
+                        <React.Fragment>
                                 <div> Enter the following details </div>
                                 <div style={{ paddingBottom: "50px" }}>
                                     <TextField
@@ -798,7 +888,7 @@ class AddTransactionModal extends Component {
                         }
 
                     </DialogContent>
-                    {!showAcctDetailsView && <DialogActions>
+                    {currentAddTransactionView === "addPayment" && <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.onTransactionDataAdded.bind(this)} color="primary">Add</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                     </DialogActions>}
