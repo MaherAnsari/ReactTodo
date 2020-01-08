@@ -80,7 +80,6 @@ class PayoutOrderModal extends Component {
     }
 
     componentWillMount() {
-        console.log(this.props.payoutData)
         this.getAvailableCredit(this.props.payoutData["buyer_mobile"]);
         this.getBankDetails(this.props.payoutData["supplier_mobile"]);
         this.setState({ transactionAmount: this.props.payoutData["unsettled_amount"] ? this.props.payoutData["unsettled_amount"] : 0 })
@@ -90,13 +89,11 @@ class PayoutOrderModal extends Component {
         try {
             let resp = await orderService.getOrderAcount(mobile);
             if (resp.data.status === 1) {
-                console.log(resp.data.result)
                 if (resp.data.result) {
                     this.setState({ currentPayoutView: "selectAccount", acctData: resp.data.result || [] });
                 } else {
                     this.setState({ acctDetails: resp.data.result, acctData: resp.data.result })
                 }
-
             } else {
                 alert("An error occured while getting the account details");
             }
@@ -106,21 +103,16 @@ class PayoutOrderModal extends Component {
         }
     }
 
-
     getAvailableCredit = async (mobile) => {
         try {
             let payload = { "data": { "ca_mobile": mobile } };
             let resp = await orderService.getAvailableCredit(payload);
             if (resp.data.status === 1) {
-
-                console.log(resp)
-                console.log(resp.data.result && resp.data.result !== "-")
                 if (resp.data.result && resp.data.result !== "-") {
                     this.setState({ availableCreditAmount: resp.data.result })
                 } else {
                     this.setState({ availableCreditAmountError: resp.data["message"] })
                 }
-
             } else {
                 alert("An error occured while getting the available credit details");
             }
@@ -241,11 +233,8 @@ class PayoutOrderModal extends Component {
                 },
                 "order_id": this.state.payoutData["app_order_id"]
             };
-            payloadData["data"].push( payload )
-            console.log(payloadData)
-            console.log(payload)
+            payloadData["data"].push(payload)
             let resp = await paymentService.addPayemtData(payloadData);
-            console.log(resp)
             this.setState({ currentPayoutView: "selectAccount" });
             if (resp.data.status === 1) {
                 alert("Successfully added");
@@ -309,8 +298,8 @@ class PayoutOrderModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount, transferType,
-            acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData,
+        const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount,
+            transferType, acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData,
             errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
