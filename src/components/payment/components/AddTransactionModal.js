@@ -69,7 +69,8 @@ const styles = theme => ({
 });
 
 const transactionType = {
-    "b_in": "bijak-in", "b_out": "bijak-out",
+    "b_in": "bijak-in",
+    // "b_out": "bijak-out",
     "b_hist": "historical"
 };
 // const payment_statusOption = ["pending","pending_approved"];

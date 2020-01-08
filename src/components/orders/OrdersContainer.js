@@ -118,8 +118,7 @@ class OrdersContainer extends React.Component {
         if (this.state.datePayloads["endDate"] !== "") {
             params["endDate"] = this.state.datePayloads["endDate"];
         }
-
-
+        // params["supplierid"] = "9953368723";
         this.setState({ showLoader: true });
         try {
             let resp = await orderService.getOrderListData(params);
@@ -130,6 +129,7 @@ class OrdersContainer extends React.Component {
                     this.setState({ orderedListData: [], showLoader: false });
                 }
             }
+
         } catch (err) {
             console.error(err);
             if (this.ismounted) { this.setState({ orderedListData: [], showLoader: false }); }
@@ -154,7 +154,6 @@ class OrdersContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { showAddModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >

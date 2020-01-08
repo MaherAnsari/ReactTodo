@@ -508,6 +508,29 @@ class InfoDialog extends Component {
                         fullWidth
                     />
                 </div>
+                <div style={{ display: 'flex' }}>
+                <TextField
+                        margin="dense"
+                        id="unsettled_amount"
+                        label="Unsettled Amount"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.unsettled_amount}
+                        fullWidth
+                    />
+
+                <TextField
+                        margin="dense"
+                        id="creator_role"
+                        label="Creater Role"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.creator_role}
+                        fullWidth
+                    />
+                    </div>
                 <div style={{padding: "12px 0px", color: "#9e9e9e"}}>
                 {(this.state.dataObj["supporting_images"] && 
                         this.state.dataObj["supporting_images"] !== null && 

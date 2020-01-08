@@ -51,6 +51,28 @@ let orderService = {
             data : payload
         },2);
     },
+    getOrderAcount : async function ( mobile ) {
+//  https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/getBankDetails/{mobile}
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/getBankDetails/'+mobile
+        },2);
+    },
+    
+    getAvailableCredit : async function ( payload ) {
+        //https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/getAvailableCredit
+                return Api({
+                    method: 'post',
+                    headers: {
+                        "Authorization": Utils.getToken()
+                    },
+                    url: "/payment/getAvailableCredit",
+                    data: payload
+                },2);
+            },
 }
 
 export default orderService;

@@ -22,6 +22,8 @@ import commodityService from '../../../app/commodityService/commodityService';
 import FileUploader from '../../common/fileUploader';
 import orderService from '../../../app/orderService/orderService';
 import Fab from '@material-ui/core/Fab';
+import PayoutOrderModal from '../common/PayoutOrderModal';
+
 
 var moment = require('moment');
 
@@ -99,7 +101,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location","commodity", "status", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location", "commodity", "", "Amount  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -125,10 +127,13 @@ class OrderListTable extends Component {
 
             showEditDataModal: false,
             commodityList: [],
-            showUploader:false,
-            open:false
+            showUploader: false,
+            open: false,
+
+            showPayoutModal:false,
+            payoutData : undefined
         }
-        this.getCommodityNames();
+        // this.getCommodityNames();
     }
 
     async getCommodityNames() {
@@ -265,44 +270,45 @@ class OrderListTable extends Component {
         this.setState({ editableData: data, showEditDataModal: true });
     }
 
-    async handleFileUploader(event){
+    async handleFileUploader(event) {
         console.log(event);
         try {
             let resp = await orderService.uploadOrder(event);
             if (resp.data.status === 1 && resp.data.result) {
-            alert("Data Successfuly Uploaded ");
-            this.props.onOrderAdded();
-               this.setState({open:false,showUploader:false});
+                alert("Data Successfuly Uploaded ");
+                this.props.onOrderAdded();
+                this.setState({ open: false, showUploader: false });
             }
-           
+
         } catch (err) {
             console.error(err)
-            this.setState({open:false,showUploader:false});
+            this.setState({ open: false, showUploader: false });
             this.props.onOrderAdded();
         }
     }
 
-    onFileModalCancel(event){
-        this.setState({open:false,showUploader:false});
+    onFileModalCancel(event) {
+        this.setState({ open: false, showUploader: false });
     }
+
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    getActionButton( row ){
-        if( row && (row["status"] !== "settled" || row["status"] === null ) ){
-        return( <Fab
-            variant="extended"
-            size="small"
-            aria-label="PAYOUT"
-            // onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
-            style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 8px" }}
-        >
-           Pay via credit
+    getActionButton(row) {
+        if (row &&  row["unsettled_amount"] > 0  && (row["status"] !== "settled" || row["status"] === null)) {
+            return (<Fab
+                variant="extended"
+                size="small"
+                aria-label="PAYOUT"
+                onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
+                style={{ textTransform: "none", background: "#108ad0", color: "#ffffff", padding: "0 8px" }}
+            >
+                Pay via credit
     </Fab>);
-    }else{
-        return (<span> {row["status"] } </span>)
-    }
+        } else {
+            return (<span> {row["status"]} </span>)
+        }
     }
 
 
@@ -314,7 +320,7 @@ class OrderListTable extends Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
-                    {this.state.tableBodyData ?<div> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
+                    {this.state.tableBodyData ? <div> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
                         <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
@@ -323,7 +329,7 @@ class OrderListTable extends Component {
                                             key={option}
                                             className={this.getTableCellClass(classes, i)}
                                             style={{
-                                                minWidth: i === 0 ? "80px" : '120px',
+                                                minWidth: i === 0 ? "100px" : '120px',
                                                 textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
                                             }}>{option}</TableCell>
                                     ))}
@@ -386,20 +392,20 @@ class OrderListTable extends Component {
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} >
-                                                    {row.source_location ?row.source_location :"-"}
+                                                    {row.source_location ? row.source_location : "-"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{
                                                         color: "white",
-                                                        background: row.commodity ?"rgb(58, 126, 63)":"",
+                                                        background: row.commodity ? "rgb(58, 126, 63)" : "",
                                                         padding: "4px 12px",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
-                                                     <TableCell className={this.getTableCellClass(classes, 4)} >
-                                                    {this.getActionButton( row )}
+                                                <TableCell className={this.getTableCellClass(classes, 4)} >
+                                                    {this.getActionButton(row)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                    ₹ {row.bijak_amt ? this.formatNumberWithComma(row.bijak_amt): 0}
+                                                    ₹ {row.bijak_amt ? this.formatNumberWithComma(row.bijak_amt) : 0}
                                                     <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
@@ -409,7 +415,7 @@ class OrderListTable extends Component {
                                         );
                                     })}
                             </TableBody>
-                          
+
                         </Table>
                         {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
@@ -417,34 +423,34 @@ class OrderListTable extends Component {
                                 {"Your serach does not match any list"} </span> : <span className={classes.defaultSpan}>
                                     <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                         </div>}
-                       
-                    </div> 
-                    {this.state.tableBodyData.length > 0 && <Table>
-                        <TableFooter style={{ borderTop: "2px solid #858792" , background: "#fafafa"}}>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[25, 50, 100]}
-                                    colSpan={6}
-                                    count={this.state.tableBodyData.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    SelectProps={{
-                                        inputProps: { 'aria-label': 'rows per page' },
-                                        native: true,
-                                    }}
-                                    onChangePage={this.handleChangePage.bind(this)}
-                                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>}
-                    </div>:
+
+                    </div>
+                        {this.state.tableBodyData.length > 0 && <Table>
+                            <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[25, 50, 100]}
+                                        colSpan={6}
+                                        count={this.state.tableBodyData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={this.handleChangePage.bind(this)}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                    />
+                                </TableRow>
+                            </TableFooter>
+                        </Table>}
+                    </div> :
                         <div style={{ paddingTop: "14%" }} >
                             <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific Orders"}</span>
                         </div>
                     }
-                    
+
                     {this.state.showAddModal ?
                         <InfoDialog openModal={this.state.open}
                             data={this.state.infoData}
@@ -456,10 +462,10 @@ class OrderListTable extends Component {
                             onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
                             invoiceUrlData={this.state.invoiceModalData} />}
 
-<div className="fixedLeftBtnContainer">
-                        <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
+                    <div className="fixedLeftBtnContainer">
+                        <div className="fixedLeftBtn" style={{ display: 'flex', left: "16%", background: "#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
-                            >
+                        >
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
@@ -478,8 +484,8 @@ class OrderListTable extends Component {
                     </div>
 
                     <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
-                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89",borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
-                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white"}} aria-hidden="true"></i>
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div>
                     {showAddOrderModal &&
@@ -498,12 +504,21 @@ class OrderListTable extends Component {
                             onEditModalCancel={(event) => this.setState({ showEditDataModal: false })}
                         />}
 
-{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                     onEditModalClosed={this.handleFileUploader.bind(this)}
-                    //  commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onFileModalCancel.bind(this)}
-                     /> 
-                     :""}
+                    {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onFileModalCancel.bind(this)}
+                    />
+                        : ""}
+
+                    {this.state.showPayoutModal && this.state.payoutData &&
+                        <PayoutOrderModal
+                            openPayoutModal={this.state.showPayoutModal}
+                            onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
+                            onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
+                                this.props.onOrderAdded();
+                            })}
+                            payoutData={this.state.payoutData} />}
 
                 </Paper>
             </MuiThemeProvider>

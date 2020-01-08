@@ -84,7 +84,8 @@ class AddOrderModal extends Component {
                 "supporting_images": [],
                 "transport_info": "",
                 "author_name": "",
-                "author_mobile": "",
+                // "author_mobile": "",
+                "creator_role":"",
                 "status": "",
                 "remark": "",
                 "other_info": "",
@@ -308,7 +309,7 @@ class AddOrderModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name", "author_mobile","brokerid",
+        var nonMandatoryFields = ["transport_info", "type", "author_name","brokerid",
             "remark", "other_info", "commission_rate", "commission_unit","target_location","source_location"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
@@ -648,7 +649,7 @@ class AddOrderModal extends Component {
                     </div>
 
                     <div style={{ display: "flex" }} >
-                        <TextField
+                        {/* <TextField
                             margin="dense"
                             id="author_mobile"
                             label="Author mobile number"
@@ -657,7 +658,25 @@ class AddOrderModal extends Component {
                             style={{ width: '49%' }}
                             value={addOrderPayload.author_mobile}
                             onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            fullWidth /> */}
+
+                        <TextField
+                            select
+                            id="creator_role"
+                            name="creator_role"
+                            label="Creater Role"
+                            error={errorFields["creator_role"] ? true : false}
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={addOrderPayload.creator_role}
+                            onChange={this.handleInputChange.bind(this)}>
+                            {["la", "ca"].map((key, i) => (
+                                <MenuItem key={i} value={key} selected={true}>
+                                    {key}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
                         &nbsp;
                         &nbsp;
                         <TextField
