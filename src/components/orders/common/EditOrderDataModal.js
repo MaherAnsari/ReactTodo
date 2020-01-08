@@ -384,7 +384,6 @@ class EditOrderDataModal extends Component {
             this.setState({
                 isFileUpload: false
             })
-            let data = err
             console.log(err)
         }
         );

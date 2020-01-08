@@ -224,7 +224,7 @@ class InfoDialog extends Component {
     }
 
     handelAutoCompleteChange = (event, values) => {
-        var commoditylist = [];
+        // var commoditylist = [];
         console.log(values);
         let data = this.state.dataObj;
         // if (values.length > 0) {

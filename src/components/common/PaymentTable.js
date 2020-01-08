@@ -13,7 +13,6 @@ import Utils from '../../app/common/utils';
 import paymentService from '../../app/paymentService/paymentService';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-var moment = require('moment');
 
 const styles = theme => ({
     heading: {

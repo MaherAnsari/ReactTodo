@@ -62,7 +62,7 @@ class PriceContainer extends React.Component {
 
     }
     async getPriceList() {
-        let param = {"role":this.state.type == 'buyer' ?"ca":"broker"}
+        let param = {"role":this.state.type === 'buyer' ?"ca":"broker"}
         let resp = await priceService.getPriceList(param);
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data});

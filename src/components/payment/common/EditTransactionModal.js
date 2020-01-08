@@ -353,7 +353,7 @@ class EditTransactionModal extends Component {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
-            let data = result
+        
             let attachmentObj = {
                 bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
                 filename: file.name,
@@ -376,7 +376,7 @@ class EditTransactionModal extends Component {
             this.setState({
                 isFileUpload: false
             })
-            let data = err
+
             console.log(err)
         }
         );
@@ -398,7 +398,7 @@ class EditTransactionModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, editTransactionPayload, supplierid, buyerid, tempVar, errorFields } = this.state;
+        const { showLoader, editTransactionPayload, supplierid, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}

@@ -248,7 +248,7 @@ class PaymentComponent extends Component {
             x = x.toString();
             var lastThree = x.substring(x.length - 3);
             var otherNumbers = x.substring(0, x.length - 3);
-            if (otherNumbers != '')
+            if (otherNumbers !== '')
                 lastThree = ',' + lastThree;
             var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
             return res;
@@ -300,7 +300,7 @@ class PaymentComponent extends Component {
         let arr = this.state.paymentMetaInfo
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
-            if (type == obj['transaction_type']) {
+            if (type === obj['transaction_type']) {
                 return this.formatNumberWithComma(obj[key]);
             }
         }
