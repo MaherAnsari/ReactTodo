@@ -137,7 +137,7 @@ class PayoutOrderModal extends Component {
     }
 
     handelAccountSelection(actInfo, event) {
-        this.setState({ selectedAcctInfo: actInfo , acctDetails : actInfo})
+        this.setState({ selectedAcctInfo: actInfo })
     }
 
     handleTransactionAmtInputChange(event) {
