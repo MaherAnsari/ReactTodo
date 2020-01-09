@@ -133,7 +133,7 @@ class OrderListTable extends Component {
             showPayoutModal:false,
             payoutData : undefined
         }
-        // this.getCommodityNames();
+        this.getCommodityNames();
     }
 
     async getCommodityNames() {

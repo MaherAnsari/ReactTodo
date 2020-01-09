@@ -257,7 +257,7 @@ class EditOrderDataModal extends Component {
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
                 this.setState({ showLoader : false });
-                    if (resp.data.status === 0 && resp.data.result) {
+                    if (resp.data.status === 1 && resp.data.result) {
                         alert("Successfully updated this order ");
                         this.props.onOrderDataUpdated();
                     } else {
@@ -308,10 +308,16 @@ class EditOrderDataModal extends Component {
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name" ,"brokerid",
             "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location",
-            "supplier_locality"]
+            "supplier_locality"];
+        var extraMandatoryFields = ["creator_role"];
         for (var key in data) {
             // console.log( key +"---"+data[key])
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "" && data[key] === null) {
+                error[key] = true;
+                isValid = false;
+                console.log(key)
+            }
+            if(extraMandatoryFields.indexOf( key ) > -1 && (data[key] === "" || data[key] === null) ){
                 error[key] = true;
                 isValid = false;
                 console.log(key)
