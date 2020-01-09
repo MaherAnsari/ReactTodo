@@ -13,6 +13,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import AddOrderModal from '../orders/common/AddOrderModal';
 import orderService from '../../app/orderService/orderService';
+import Utils from '../../app/common/utils';
 
 var moment = require('moment');
 
@@ -161,20 +162,6 @@ class OrderTable extends Component {
             }
         });
     }
-    formatNumberWithComma(x) {
-        try {
-            x = x.toString();
-            var lastThree = x.substring(x.length - 3);
-            var otherNumbers = x.substring(0, x.length - 3);
-            if (otherNumbers != '')
-                lastThree = ',' + lastThree;
-            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-            return res;
-        } catch (err) {
-            console.log(err);
-            return x;
-        }
-    }
 
     handleClickOpen() {
 
@@ -273,7 +260,7 @@ class OrderTable extends Component {
                                             borderRadius: "13px"
                                         }}>{row.commodity}</span> </TableCell>
                                     <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right", paddingRight: '10px' }}>
-                                        ₹ {this.formatNumberWithComma(row.bijak_amt)}
+                                        ₹ {Utils.formatNumberWithComma(row.bijak_amt)}
 
                                     </TableCell>
                                 </TableRow>

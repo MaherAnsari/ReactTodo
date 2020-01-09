@@ -243,21 +243,6 @@ class PaymentComponent extends Component {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
     };
 
-    formatNumberWithComma(x) {
-        try {
-            x = x.toString();
-            var lastThree = x.substring(x.length - 3);
-            var otherNumbers = x.substring(0, x.length - 3);
-            if (otherNumbers !== '')
-                lastThree = ',' + lastThree;
-            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-            return res;
-        } catch (err) {
-            console.log(err);
-            return x;
-        }
-    }
-
     async handelDownloadClicked() {
         try {
             var respData = [];
@@ -301,7 +286,7 @@ class PaymentComponent extends Component {
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
             if (type === obj['transaction_type']) {
-                return this.formatNumberWithComma(obj[key]);
+                return Utils.formatNumberWithComma(obj[key]);
             }
         }
         return "0";
@@ -492,19 +477,19 @@ class PaymentComponent extends Component {
                                                 </TableCell>
 
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#387a39" }}>
-                                                    {row.b_in ? this.formatNumberWithComma(row.b_in) : "0"}
+                                                    {row.b_in ? Utils.formatNumberWithComma(row.b_in) : "0"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: "#f91010" }}>
-                                                    {row.b_out ? this.formatNumberWithComma(row.b_out) : "0"}
+                                                    {row.b_out ? Utils.formatNumberWithComma(row.b_out) : "0"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#387a39", textAlign: "right" }}>
                                                     <div className="text-ellpses">
-                                                        ₹ {row.b_in_amount ? this.formatNumberWithComma(row.b_in_amount) : "0"}
+                                                        ₹ {row.b_in_amount ? Utils.formatNumberWithComma(row.b_in_amount) : "0"}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 3)} style={{ color: "#f91010", textAlign: "right" }}>
                                                     <div className="text-ellpses">
-                                                        ₹ {row.b_out_amount ? this.formatNumberWithComma(row.b_out_amount) : "0"}
+                                                        ₹ {row.b_out_amount ? Utils.formatNumberWithComma(row.b_out_amount) : "0"}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)}>

@@ -135,7 +135,7 @@ function formatDateData ( apiDate ) {
         var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
         return res;
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         return x;
     }
 }

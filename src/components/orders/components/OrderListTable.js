@@ -236,21 +236,6 @@ class OrderListTable extends Component {
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
     }
 
-    formatNumberWithComma(x) {
-        try {
-            x = x.toString();
-            var lastThree = x.substring(x.length - 3);
-            var otherNumbers = x.substring(0, x.length - 3);
-            if (otherNumbers != '')
-                lastThree = ',' + lastThree;
-            var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-            return res;
-        } catch (err) {
-            console.log(err);
-            return x;
-        }
-    }
-
     handleClickOpen() {
         this.setState({ showAddOrderModal: true })
     }
@@ -405,7 +390,7 @@ class OrderListTable extends Component {
                                                     {this.getActionButton(row)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                    ₹ {row.bijak_amt ? this.formatNumberWithComma(row.bijak_amt) : 0}
+                                                    ₹ {row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
                                                     <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
