@@ -323,7 +323,7 @@ class PayoutOrderModal extends Component {
                         (acctDetails ?
                             <React.Fragment>
                                 <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
-                                    <span className={classes.actcardtext} style={{ width: "60%" }}> Supplier Name  : &nbsp; <strong> {payoutData["supplier_name"]}</strong>  </span>
+                                    <span className={classes.actcardtext} style={{ width: "52%" }}> Supplier Name  : &nbsp; <strong> {payoutData["supplier_name"]}</strong>  </span>
                                     <span className={classes.actcardtext} > Max credit amount  : &nbsp;<strong style={{ color: "red" }}> ₹ {Utils.formatNumberWithComma(availableCreditAmount)}  </strong></span>
                                 </div>
 
