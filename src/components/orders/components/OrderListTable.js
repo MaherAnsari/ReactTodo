@@ -376,7 +376,7 @@ class OrderListTable extends Component {
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.supplier_mobile + " )"}</span>
@@ -384,7 +384,7 @@ class OrderListTable extends Component {
                                                 </TableCell>
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>

@@ -509,7 +509,9 @@ class TodaysPaymentTable extends Component {
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row)}>
+                                                        <div className=" name-span">
                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
+                                                        </div>
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
                                                         <div className="text-ellpses">

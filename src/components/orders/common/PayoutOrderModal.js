@@ -405,7 +405,7 @@ class PayoutOrderModal extends Component {
                                             disabled={showAmountexceedError}
                                             onClick={(event) => this.onNewBankAccountAdded()}
                                             style={{ background: showAmountexceedError ? "gray" : "blue", color: "#fff" }}>
-                                            CONFIRM PAYOUT
+                                            REQUEST PAYOUT
                             </Button>
                                     </div>}
                             </React.Fragment>
