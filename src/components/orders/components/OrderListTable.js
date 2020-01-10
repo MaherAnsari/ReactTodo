@@ -23,7 +23,7 @@ import FileUploader from '../../common/fileUploader';
 import orderService from '../../../app/orderService/orderService';
 import Fab from '@material-ui/core/Fab';
 import PayoutOrderModal from '../common/PayoutOrderModal';
-
+import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 
 var moment = require('moment');
 
@@ -131,7 +131,12 @@ class OrderListTable extends Component {
             open: false,
 
             showPayoutModal:false,
-            payoutData : undefined
+            payoutData : undefined,
+
+            showUserInfo: false,
+            userInfoData : undefined,
+            isLimitUpdate: false,
+            userId: undefined
         }
         this.getCommodityNames();
     }
@@ -296,6 +301,32 @@ class OrderListTable extends Component {
         }
     }
 
+    onUserInfoModalCancel(event) {
+        this.setState({ showUserInfo : false,  isInfo: false });
+        if(this.state.isLimitUpdate){
+            this.props.onOrderAdded();
+        }
+    }
+
+    changeLimitSucces(event){
+        let obj = this.state.userInfoData;
+        obj['bijak_credit_limit'] = event;
+        this.setState({ userInfoData:obj, isLimitUpdate:true });
+    }
+
+    handleUserInfoClose(event) {
+        this.setState({ showUserInfo: false, isInfo: false });
+    }
+
+    onUserInfoClicked = ( info, type , event) => {
+        let id = "";
+        if( type === "supplier_name"){
+            id = info["supplier_mobile"];
+        }else{
+            id = info["buyer_mobile"];
+        }
+        this.setState({ userId :id,  showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+    }
 
     render() {
         const { classes } = this.props;
@@ -345,14 +376,16 @@ class OrderListTable extends Component {
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                    onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.supplier_mobile + " )"}</span>
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                    onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
                                                     </div>
@@ -504,6 +537,16 @@ class OrderListTable extends Component {
                                 this.props.onOrderAdded();
                             })}
                             payoutData={this.state.payoutData} />}
+
+                    {this.state.showUserInfo ? 
+                        <BusinessInfoDialog 
+                            openModal={this.state.showUserInfo}
+                            onEditModalClosed={this.handleUserInfoClose.bind(this)}
+                            data={this.state.userInfoData}
+                            isInfo={true}
+                            userId={ this.state.userId}
+                            onLimitUpdate= {this.changeLimitSucces.bind(this)}
+                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
 
                 </Paper>
             </MuiThemeProvider>

@@ -36,6 +36,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
+import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 
 const theme = createMuiTheme({
     overrides: {
@@ -138,6 +139,10 @@ class TodaysPaymentTable extends Component {
 
             showPayoutModal: false,
             payoutData: undefined,
+
+            showUserInfo: false,
+            userInfoData : undefined,
+            isLimitUpdate: false
         }
     }
 
@@ -315,6 +320,28 @@ class TodaysPaymentTable extends Component {
         return "0";
     }
 
+    
+    onUserInfoModalCancel(event) {
+        this.setState({ showUserInfo : false,  isInfo: false });
+        if(this.state.isLimitUpdate){
+            this.getTodaysTransactionList();
+        }
+    }
+
+    changeLimitSucces(event){
+        let obj = this.state.userInfoData;
+        obj['bijak_credit_limit'] = event;
+        this.setState({ userInfoData:obj, isLimitUpdate:true });
+    }
+
+    handleUserInfoClose(event) {
+        this.setState({ showUserInfo: false, isInfo: false });
+    }
+
+    onUserInfoClicked = (info, event) => {
+        this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+    }
+
 
     render() {
         const { classes } = this.props;
@@ -480,7 +507,8 @@ class TodaysPaymentTable extends Component {
                                                                     
                                                         {row.id ? row.id : "-"}
                                                     </TableCell>
-                                                    <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left"}}>
+                                                    <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}
+                                                    onClick={this.onUserInfoClicked.bind(this, row)}>
                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
@@ -603,6 +631,16 @@ class TodaysPaymentTable extends Component {
                             this.getTodaysTransactionList();
                         })}
                         payoutData={this.state.payoutData} />}
+
+                                {this.state.showUserInfo ? 
+                        <BusinessInfoDialog 
+                            openModal={this.state.showUserInfo}
+                            onEditModalClosed={this.handleUserInfoClose.bind(this)}
+                            data={this.state.userInfoData}
+                            isInfo={true}
+                            userId={ this.state.userInfoData["supplier_mobile"]}
+                            onLimitUpdate= {this.changeLimitSucces.bind(this)}
+                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
                         </MuiThemeProvider>
             </div>);
 

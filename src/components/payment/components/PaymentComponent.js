@@ -24,6 +24,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import Utils from '../../../app/common/utils';
 import FileUploader from '../../common/fileUploader';
+import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 
 const theme = createMuiTheme({
     overrides: {
@@ -129,6 +130,10 @@ class PaymentComponent extends Component {
             rowsPerPage: 50,
             page: 0,
             showUploader: false,
+
+            showUserInfo: false,
+            userInfoData : undefined,
+            isLimitUpdate: false
 
 
         }
@@ -294,6 +299,27 @@ class PaymentComponent extends Component {
 
     handelRefreshData() {
         this.getPaymentInfoDetails(this.state.datePayloads);
+    }
+
+    onUserInfoModalCancel(event) {
+        this.setState({ showUserInfo : false,  isInfo: false });
+        if(this.state.isLimitUpdate){
+            this.handelRefreshData();
+        }
+    }
+
+    changeLimitSucces(event){
+        let obj = this.state.userInfoData;
+        obj['bijak_credit_limit'] = event;
+        this.setState({ userInfoData:obj, isLimitUpdate:true });
+    }
+
+    handleUserInfoClose(event) {
+        this.setState({ showUserInfo: false, isInfo: false });
+    }
+
+    onInfoClick = (info, event) => {
+        this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
     }
 
     render() {
@@ -463,7 +489,8 @@ class PaymentComponent extends Component {
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}> */}
                                                     {/* {row.buyer_mobile ? row.buyer_mobile : "-"} */}
 
-                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}} 
+                                                        onClick={this.onInfoClick.bind(this, row)}>
                                                         <span>{row.buyer_fullname}</span>
                                                         <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
                                                     </div>
@@ -594,6 +621,16 @@ class PaymentComponent extends Component {
                         onEditModalCancel={this.onFileModalCancel.bind(this)}
                     />
                         : ""}
+
+                    {this.state.showUserInfo ? 
+                        <BusinessInfoDialog 
+                            openModal={this.state.showUserInfo}
+                            onEditModalClosed={this.handleUserInfoClose.bind(this)}
+                            data={this.state.userInfoData}
+                            isInfo={true}
+                            userId={ this.state.userInfoData["buyer_mobile"]}
+                            onLimitUpdate= {this.changeLimitSucces.bind(this)}
+                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
 
             </MuiThemeProvider>
         );
