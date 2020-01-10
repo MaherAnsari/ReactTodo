@@ -167,7 +167,7 @@ class EditUser extends Component {
         let obj = this.state.dataObj;
         let reqObj = {}
         if (this.state.isUpdate) {
-            delete obj.mobile;
+            // delete obj.mobile;
             delete obj.createdtime;
             delete obj.updatedtime;
             reqObj = { 'data': obj };
@@ -267,7 +267,7 @@ class EditUser extends Component {
                     label="Mobile"
                     type="number"
                     maxLength="10"
-                    disabled={this.state.isInfo}
+                    disabled={true}
                     style={{ marginRight: '2%', width: '48%' }}
                     value={this.state.dataObj.mobile}
                     onChange={this.handleChange.bind(this)}
