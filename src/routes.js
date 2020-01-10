@@ -20,6 +20,7 @@ export default () =>
     <AppliedRoute path="/home/mandi-rates" exact component={Home}  />
     <AppliedRoute path="/home/payment" exact component={Home}  />
     <AppliedRoute path="/home/todays-payment" exact component={Home}  />
+    <AppliedRoute path="/home/add-bank-account" exact component={Home}  />
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
   </Switch>;
