@@ -343,6 +343,7 @@ class PayoutOrderModal extends Component {
                                         label="Amount for payout"
                                         type="text"
                                         style={{ width: '36%' }}
+                                        disabled={true}
                                         value={transactionAmount}
                                         onChange={this.handleTransactionAmtInputChange.bind(this)}
                                         fullWidth />

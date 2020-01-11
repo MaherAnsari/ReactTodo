@@ -63,7 +63,7 @@ const styles = theme => ({
     },
 
 });
-const statusOption = ["pending","settled","partial_settled"];
+const statusOption = ["pending", "settled", "partial_settled"];
 
 class AddOrderModal extends Component {
 
@@ -79,22 +79,22 @@ class AddOrderModal extends Component {
                 "rate": "",
                 "qnt": "",
                 "unit": "",
-                "type": "",
+                "type": "bilti",
                 "bijak_amt": "",
                 "supporting_images": [],
                 "transport_info": "",
                 "author_name": "",
                 // "author_mobile": "",
-                "creator_role":"",
-                "status": "",
+                "creator_role": "",
+                "status": "pending",
                 "remark": "",
                 "other_info": "",
                 "buyer_mobile": "",
                 "supplier_mobile": "",
                 "commission_rate": "",
                 "commission_unit": "",
-                "target_location":"",
-                "source_location":""
+                "target_location": "",
+                "source_location": ""
             },
 
             buyerid: "",
@@ -257,14 +257,14 @@ class AddOrderModal extends Component {
         try {
             var payloadData = { "data": [] };
             var payload = this.state.addOrderPayload;
-
+            // console.log()
             if (this.checkForInvalidFields(payload)) {
-                this.setState({ showLoader : true });
+                this.setState({ showLoader: true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
                 var resp = await orderService.addNewOrder(payloadData);
                 console.log(resp);
-                this.setState({ showLoader : false });
+                this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully added this order ");
                     this.props.onOrderDataAdded();
@@ -294,6 +294,7 @@ class AddOrderModal extends Component {
             }
 
         }
+        console.log(formateddata);
         return formateddata;
     }
 
@@ -309,8 +310,8 @@ class AddOrderModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name","brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit","target_location","source_location"]
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
+            "remark", "other_info", "commission_rate", "commission_unit", "rate","qnt","unit"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -401,105 +402,107 @@ class AddOrderModal extends Component {
                 // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle
-                    style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
-                    id="form-dialog-title">
-                    <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Add Order</p>
-                </DialogTitle>
-                <DialogContent>
+                {!showLoader ? <div>
+                    <DialogTitle
+                        style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
+                        id="form-dialog-title">
+                        <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                            Add Order</p>
+                    </DialogTitle>
+                    <DialogContent>
 
-                    <div style={{ display: "flex" }}>
-                        {this.props.userdata && this.props.userdata.role === "ca" ?
+                        <div style={{ display: "flex" }}>
+                            {this.props.userdata && this.props.userdata.role === "ca" ?
 
-                            <TextField
+                                <TextField
+                                    margin="dense"
+                                    id="buyerid"
+                                    label="Buyer"
+                                    disabled={true}
+                                    // error={errorFields["amount"] ? true : false}
+                                    type="text"
+                                    style={{ width: '49%' }}
+                                    value={this.props.userdata.fullname}
+                                    // onChange={this.handleInputChange.bind(this)}
+                                    fullWidth />
+                                : <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                                    <AsyncSelect
+                                        cacheOptions
+                                        value={buyerid}
+                                        id={"reactSelectCustom"}
+                                        name={"buyerid"}
+                                        // onChange={( item )=>{ this.setState({ buyerid : item  })}}
+                                        onChange={(item) => {
+                                            this.setState({ buyerid: item }, function () {
+                                                var data = addOrderPayload;
+                                                if (errorFields["buyerid"]) {
+                                                    delete errorFields["buyerid"];
+                                                }
+                                                if (item && item !== null) {
+                                                    data["buyerid"] = tempVar[item["label"]]["id"];
+                                                    data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                                    data["target_location"]= tempVar[item["label"]]["locality"]
+                                                } else {
+                                                    data["buyerid"] = "";
+                                                    data["buyer_mobile"] = "";
+                                                }
+                                                this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                            })
+                                        }}
+                                        isSearchable={true}
+                                        isClearable={true}
+                                        placeholder={`Select buyer..`}
+                                        defaultOptions={[]}
+                                        loadOptions={this.getOptions.bind(this, "buyerid")}
+                                    />
+                                </div>}
+                            &nbsp;
+                            &nbsp;
+                        {this.props.userdata && this.props.userdata.role === "la" ? <TextField
                                 margin="dense"
-                                id="buyerid"
-                                label="Buyer"
+                                id="supplierid"
+                                label="Supplier"
                                 disabled={true}
                                 // error={errorFields["amount"] ? true : false}
                                 type="text"
                                 style={{ width: '49%' }}
                                 value={this.props.userdata.fullname}
                                 // onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
-                            : <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                                <AsyncSelect
-                                    cacheOptions
-                                    value={buyerid}
-                                    id={"reactSelectCustom"}
-                                    name={"buyerid"}
-                                    // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                    onChange={(item) => {
-                                        this.setState({ buyerid: item }, function () {
-                                            var data = addOrderPayload;
-                                            if (errorFields["buyerid"]) {
-                                                delete errorFields["buyerid"];
-                                            }
-                                            if (item && item !== null) {
-                                                data["buyerid"] = tempVar[item["label"]]["id"];
-                                                data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                            } else {
-                                                data["buyerid"] = "";
-                                                data["buyer_mobile"] = "";
-                                            }
-                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                        })
-                                    }}
-                                    isSearchable={true}
-                                    isClearable={true}
-                                    placeholder={`Select buyer..`}
-                                    defaultOptions={[]}
-                                    loadOptions={this.getOptions.bind(this, "buyerid")}
-                                />
-                            </div>}
-                        &nbsp;
-                        &nbsp;
-                        {this.props.userdata && this.props.userdata.role === "la" ? <TextField
-                            margin="dense"
-                            id="supplierid"
-                            label="Supplier"
-                            disabled={true}
-                            // error={errorFields["amount"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={this.props.userdata.fullname}
-                            // onChange={this.handleInputChange.bind(this)}
-                            fullWidth /> : <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                                fullWidth /> : <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
-                                <AsyncSelect
-                                    cacheOptions
-                                    value={supplierid}
-                                    id={"reactSelectCustom"}
-                                    name={"supplierid"}
-                                    onChange={(item) => {
-                                        this.setState({ supplierid: item }, function () {
-                                            if (errorFields["supplierid"]) {
-                                                delete errorFields["supplierid"];
-                                            }
-                                            var data = addOrderPayload;
-                                            if (item && item !== null) {
-                                                data["supplierid"] = tempVar[item["label"]]["id"];
-                                                data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
-                                            } else {
-                                                data["supplierid"] = "";
-                                                data["supplier_mobile"] = "";
-                                            }
-                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                        })
-                                    }}
-                                    isSearchable={true}
-                                    isClearable={true}
-                                    placeholder={`Select supplier..`}
-                                    defaultOptions={[]}
-                                    loadOptions={this.getOptions.bind(this, "supplierid")}
-                                />
-                            </div>}
-                    </div>
+                                    <AsyncSelect
+                                        cacheOptions
+                                        value={supplierid}
+                                        id={"reactSelectCustom"}
+                                        name={"supplierid"}
+                                        onChange={(item) => {
+                                            this.setState({ supplierid: item }, function () {
+                                                if (errorFields["supplierid"]) {
+                                                    delete errorFields["supplierid"];
+                                                }
+                                                var data = addOrderPayload;
+                                                if (item && item !== null) {
+                                                    data["supplierid"] = tempVar[item["label"]]["id"];
+                                                    data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
+                                                    data["source_location"]= tempVar[item["label"]]["locality"]
+                                                } else {
+                                                    data["supplierid"] = "";
+                                                    data["supplier_mobile"] = "";
+                                                }
+                                                this.setState({ addOrderPayload: data, errorFields: errorFields })
+                                            })
+                                        }}
+                                        isSearchable={true}
+                                        isClearable={true}
+                                        placeholder={`Select supplier..`}
+                                        defaultOptions={[]}
+                                        loadOptions={this.getOptions.bind(this, "supplierid")}
+                                    />
+                                </div>}
+                        </div>
 
-                    <div style={{ display: "flex" }}>
-                        {this.props.userdata && this.props.userdata.role === "broker" ? <TextField
+                        <div style={{ display: "flex" }}>
+                            {/* {this.props.userdata && this.props.userdata.role === "broker" ? <TextField
                             margin="dense"
                             id="brokerid"
                             label="Broker"
@@ -538,117 +541,172 @@ class AddOrderModal extends Component {
                                     defaultOptions={[]}
                                     loadOptions={this.getOptions.bind(this, "brokerid")}
                                 />
-                            </div>}
+                            </div>} */}
+
+                            <TextField
+                                select
+                                id="creator_role"
+                                name="creator_role"
+                                label="Creater Role"
+                                error={errorFields["creator_role"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' ,marginTop:'5px'}}
+                                value={addOrderPayload.creator_role}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["la", "ca"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            &nbsp;
+                            &nbsp;
+                        <TextField
+                                select
+                                id="commodity"
+                                error={errorFields["commodity"] ? true : false}
+                                name="commodity"
+                                label="Commodity"
+                                type="text"
+                                style={{ width: '49%', marginTop: '1%' }}
+                                value={addOrderPayload.commodity}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {commodityList.map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="source_location"
+                                label="Source Location"
+                                type="text"
+                                error={errorFields["source_location"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.source_location}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                            &nbsp;
+<TextField
+                                margin="dense"
+                                id="target_location"
+                                label="Target Location"
+                                error={errorFields["target_location"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.target_location}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex", marginTop: 4 }} >
+
+                            <TextField
+                                margin="dense"
+                                id="bijak_amt"
+                                label="Bijak Amount"
+                                type="text"
+                                error={errorFields["bijak_amt"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.bijak_amt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+
+                            &nbsp;
                         &nbsp;
-                        &nbsp;
-                        <TextField
-                            select
-                            id="commodity"
-                            error={errorFields["commodity"] ? true : false}
-                            name="commodity"
-                            label="Commodity"
-                            type="text"
-                            style={{ width: '49%', marginTop: '1%' }}
-                            value={addOrderPayload.commodity}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {commodityList.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }} >
+<TextField
+                                select
+                                id="type"
+                                name="type"
+                                label="Type"
+                                error={errorFields["type"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop:'5px'}}
+                                value={addOrderPayload.type}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["bilti", "commission"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div style={{ display: "flex" }} >
 
+                            <TextField
+                                margin="dense"
+                                id="rate"
+                                label="Rate"
+                                type="text"
+                                error={errorFields["rate"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.rate}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                          &nbsp;
                         <TextField
-                            margin="dense"
-                            id="rate"
-                            label="Rate"
-                            type="text"
-                            error={errorFields["rate"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.rate}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                      &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="qnt"
-                            label="Quantity"
-                            error={errorFields["qnt"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.qnt}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                                margin="dense"
+                                id="qnt"
+                                label="Quantity"
+                                error={errorFields["qnt"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.qnt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
 
-                    <div style={{ display: "flex", marginTop: 4 }} >
 
-                        <TextField
-                            select
-                            id="unit"
-                            error={errorFields["unit"] ? true : false}
-                            name="unit"
-                            label="Unit"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.unit}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["quintal", "ton"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        &nbsp;
-                    &nbsp;
-                        <TextField
-                            select
-                            id="type"
-                            name="type"
-                            label="Type"
-                            error={errorFields["type"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.type}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["none", "commission"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
 
-                    <div style={{ display: "flex" }} >
+                        <div style={{ display: "flex" }} >
+                            <TextField
+                                select
+                                id="unit"
+                                error={errorFields["unit"] ? true : false}
+                                name="unit"
+                                label="Unit"
+                                type="text"
+                                style={{ width: '49%',marginTop:'5px' }}
+                                value={addOrderPayload.unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["quintal", "ton"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
 
-                        <TextField
-                            margin="dense"
-                            id="bijak_amt"
-                            label="Bijak Amount"
-                            type="text"
-                            error={errorFields["bijak_amt"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.bijak_amt}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                      &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="author_name"
-                            label="Author name"
-                            error={errorFields["author_name"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.author_name}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                            &nbsp;
+                          &nbsp;
+                          <TextField
+                                margin="dense"
+                                id="transport_info"
+                                label="Transport info"
+                                error={errorFields["transport_info"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.transport_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        {/* <TextField
+                                margin="dense"
+                                id="author_name"
+                                label="Author name"
+                                error={errorFields["author_name"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.author_name}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth /> */}
+                        </div>
 
-                    <div style={{ display: "flex" }} >
+                        {/* <div style={{ display: "flex" }} > */}
                         {/* <TextField
                             margin="dense"
                             id="author_mobile"
@@ -660,7 +718,7 @@ class AddOrderModal extends Component {
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth /> */}
 
-                        <TextField
+                        {/* <TextField
                             select
                             id="creator_role"
                             name="creator_role"
@@ -696,155 +754,131 @@ class AddOrderModal extends Component {
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </div>
+                    </div> */}
 
-                    <div style={{ display: "flex" }} >
+                        {/* <div style={{ display: "flex" }} >
 
-                        <TextField
-                            margin="dense"
-                            id="remark"
-                            error={errorFields["remark"] ? true : false}
-                            label="Remarks"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.remark}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                            <TextField
+                                margin="dense"
+                                id="remark"
+                                error={errorFields["remark"] ? true : false}
+                                label="Remarks"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.remark}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
                         &nbsp;
-                    &nbsp;
                         <TextField
-                            margin="dense"
-                            id="other_info"
-                            label="Other Info"
-                            error={errorFields["other_info"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.other_info}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                                margin="dense"
+                                id="other_info"
+                                label="Other Info"
+                                error={errorFields["other_info"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.other_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div> */}
 
 
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="commission_rate"
-                            label="Commision rate"
-                            error={errorFields["commission_rate"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.commission_rate}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
+                        {/* <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="commission_rate"
+                                label="Commision rate"
+                                error={errorFields["commission_rate"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.commission_rate}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
                         &nbsp;
-                    &nbsp;
                         <TextField
-                            select
-                            id="commission_unit"
-                            name="commission_unit"
-                            label="Commission unit"
-                            error={errorFields["commission_unit"] ? true : false}
-                            type="text"
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={addOrderPayload.commission_unit}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["quintal", "ton"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
+                                select
+                                id="commission_unit"
+                                name="commission_unit"
+                                label="Commission unit"
+                                error={errorFields["commission_unit"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop: "1%" }}
+                                value={addOrderPayload.commission_unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["quintal", "ton"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div> */}
 
-                    <div style={{ display: "flex" }} >
 
-                        <TextField
-                            margin="dense"
-                            id="source_location"
-                            label="Source Location"
-                            type="text"
-                            error={errorFields["source_location"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.source_location}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
-<TextField
-                            margin="dense"
-                            id="target_location"
-                            label="Target Location"
-                            error={errorFields["target_location"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.target_location}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="transport_info"
-                            label="Transport info"
-                            error={errorFields["transport_info"] ? true : false}
-                            type="text"
-                            style={{ width: '100%' }}
-                            value={addOrderPayload.transport_info}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                        {/* <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="transport_info"
+                                label="Transport info"
+                                error={errorFields["transport_info"] ? true : false}
+                                type="text"
+                                style={{ width: '100%' }}
+                                value={addOrderPayload.transport_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div> */}
 
-                    <div >
+                        <div >
 
-                        <Grid container direction="row" alignItems="stretch">
-                            <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
-                                <input
-                                    className={classes.input}
-                                    id="flat-button2-file"
-                                    type="file"
-                                    onClick={(event) => {
-                                        event.target.value = null
-                                    }}
-                                    onChange={this.fileChangedHandler.bind(this)}
-                                />
-                                <label htmlFor="flat-button2-file">
-                                    <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
-                                        Choose supporting images
+                            <Grid container direction="row" alignItems="stretch">
+                                <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                    <input
+                                        className={classes.input}
+                                        id="flat-button2-file"
+                                        type="file"
+                                        onClick={(event) => {
+                                            event.target.value = null
+                                        }}
+                                        onChange={this.fileChangedHandler.bind(this)}
+                                    />
+                                    <label htmlFor="flat-button2-file">
+                                        <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                            Choose supporting images
                             </Button>
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12}>
-                                {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
-                                    <React.Fragment>
-                                        {this.state.attachmentArray.map((indUpload, index) => (
-                                            <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
-                                                <React.Fragment>
-                                                    <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
-                                                        <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={12} md={10} >
-                                                        <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12}>
+                                    {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
+                                        <React.Fragment>
+                                            {this.state.attachmentArray.map((indUpload, index) => (
+                                                <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
+                                                    <React.Fragment>
+                                                        <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
+                                                            <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
+                                                        </Grid>
+                                                        <Grid item xs={12} sm={12} md={10} >
+                                                            <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
 
-                                                    </Grid>
-                                                    <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
-                                                        <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
-                                                    </Grid>
-                                                </React.Fragment>
-                                            </Grid>
-                                        ))}
-                                    </React.Fragment>
-                                }
+                                                        </Grid>
+                                                        <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
+                                                            <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
+                                                        </Grid>
+                                                    </React.Fragment>
+                                                </Grid>
+                                            ))}
+                                        </React.Fragment>
+                                    }
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </div>
+                        </div>
 
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.addOrder.bind(this)} color="primary">Add</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.addOrder.bind(this)} color="primary">Add</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
             </Dialog>
         </div>
         );

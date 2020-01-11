@@ -68,7 +68,7 @@ const styles = theme => ({
 
 });
 
-const statusOption = ["pending","settled","partial_settled"];
+const statusOption = ["pending", "settled", "partial_settled"];
 
 class EditOrderDataModal extends Component {
 
@@ -86,13 +86,13 @@ class EditOrderDataModal extends Component {
                 "rate": "",
                 "qnt": "",
                 "unit": "",
-                "type": "",
+                "type": "BILTI",
                 "bijak_amt": "",
                 "supporting_images": [],
                 "transport_info": "",
                 "author_name": "",
                 // "author_mobile": "",
-                "creator_role":"",
+                "creator_role": "",
                 "status": "",
                 "remark": "",
                 "other_info": "",
@@ -100,8 +100,8 @@ class EditOrderDataModal extends Component {
                 "supplier_mobile": "",
                 "commission_rate": "",
                 "commission_unit": "",
-                "target_location":"",
-                "source_location":""
+                "target_location": "",
+                "source_location": ""
             },
 
             buyerid: "",
@@ -251,18 +251,18 @@ class EditOrderDataModal extends Component {
             var payload = this.state.orderPayload;
             var id = payload.id;
             if (this.checkForInvalidFields(payload)) {
-                this.setState({ showLoader : true });
+                this.setState({ showLoader: true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
-                this.setState({ showLoader : false });
-                    if (resp.data.status === 1 && resp.data.result) {
-                        alert("Successfully updated this order ");
-                        this.props.onOrderDataUpdated();
-                    } else {
-                        alert("There was an error while updating this order");
-                    }
+                this.setState({ showLoader: false });
+                if (resp.data.status === 1 && resp.data.result) {
+                    alert("Successfully updated this order ");
+                    this.props.onOrderDataUpdated();
+                } else {
+                    alert("There was an error while updating this order");
+                }
             } else {
                 alert("please fill the mandatory fields highlighted");
             }
@@ -306,9 +306,8 @@ class EditOrderDataModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["transport_info", "type", "author_name" ,"brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "target_location","source_location",
-            "supplier_locality"];
+        var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit"];
         var extraMandatoryFields = ["creator_role"];
         for (var key in data) {
             // console.log( key +"---"+data[key])
@@ -317,7 +316,7 @@ class EditOrderDataModal extends Component {
                 isValid = false;
                 console.log(key)
             }
-            if(extraMandatoryFields.indexOf( key ) > -1 && (data[key] === "" || data[key] === null) ){
+            if (extraMandatoryFields.indexOf(key) > -1 && (data[key] === "" || data[key] === null)) {
                 error[key] = true;
                 isValid = false;
                 console.log(key)
@@ -406,7 +405,7 @@ class EditOrderDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const {showLoader, orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const { showLoader, orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -414,30 +413,30 @@ class EditOrderDataModal extends Component {
                 // disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle
-                    style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
-                    id="form-dialog-title">
-                    <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Edit Order</p>
-                </DialogTitle>
-                <DialogContent>
+                {!showLoader ? <div>
+                    <DialogTitle
+                        style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
+                        id="form-dialog-title">
+                        <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                            Edit Order</p>
+                    </DialogTitle>
+                    <DialogContent>
 
-                    <div >
-                        <span style={{ lineHeight: "40px", fontFamily: "lato", fontSize: "17px" }}>Enable / disable order</span>
-                        <Switch
-                            classes={{ root: classes.muiSwitchroot }}
-                            checked={orderPayload.active}
-                            onChange={this.handleStateChange.bind(this, "active")}
-                            value={orderPayload.active}
-                            color="primary"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
+                        <div >
+                            <span style={{ lineHeight: "40px", fontFamily: "lato", fontSize: "17px" }}>Enable / disable order</span>
+                            <Switch
+                                classes={{ root: classes.muiSwitchroot }}
+                                checked={orderPayload.active}
+                                onChange={this.handleStateChange.bind(this, "active")}
+                                value={orderPayload.active}
+                                color="primary"
+                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                            />
 
-                    </div>
+                        </div>
 
-                    <div style={{ display: "flex" }}>
-                        {/* <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                        <div style={{ display: "flex" }}>
+                            {/* <div style={{ borderBottom: errorFields["buyerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
                             <AsyncSelect
                                 cacheOptions
                                 value={buyerid}
@@ -467,20 +466,20 @@ class EditOrderDataModal extends Component {
                                 loadOptions={this.getOptions.bind(this, "buyerid")}
                             />
                         </div> */}
-                    
-                        <TextField
-                            margin="dense"
-                            id="Buyer_name"
-                            label="Buyer name"
-                            type="text"
-                            disabled={true}
-                            style={{ width: '49%' }}
-                            value={orderPayload.buyer_name}
-                            onChange={() => { }}
-                            fullWidth />
 
-                        &nbsp;
-                        &nbsp;
+                            <TextField
+                                margin="dense"
+                                id="Buyer_name"
+                                label="Buyer name"
+                                type="text"
+                                disabled={true}
+                                style={{ width: '49%' }}
+                                value={orderPayload.buyer_name}
+                                onChange={() => { }}
+                                fullWidth />
+
+                            &nbsp;
+                            &nbsp;
                     {/* <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
                             <AsyncSelect
@@ -511,20 +510,20 @@ class EditOrderDataModal extends Component {
                                 loadOptions={this.getOptions.bind(this, "supplierid")}
                             />
                         </div> */}
-                        <TextField
-                            margin="dense"
-                            id="supplier_name"
-                            label="supplier name"
-                            type="text"
-                            disabled={true}
-                            style={{ width: '49%' }}
-                            value={orderPayload.supplier_name}
-                            onChange={() => { }}
-                            fullWidth />
-                    </div>
+                            <TextField
+                                margin="dense"
+                                id="supplier_name"
+                                label="supplier name"
+                                type="text"
+                                disabled={true}
+                                style={{ width: '49%' }}
+                                value={orderPayload.supplier_name}
+                                onChange={() => { }}
+                                fullWidth />
+                        </div>
 
-                    <div style={{ display: "flex" }}>
-                        <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
+                        <div style={{ display: "flex" }}>
+                            {/* <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
                             <AsyncSelect
                                 cacheOptions
                                 value={brokerid}
@@ -553,320 +552,319 @@ class EditOrderDataModal extends Component {
                                 defaultOptions={[]}
                                 loadOptions={this.getOptions.bind(this, "brokerid")}
                             />
-                        </div>
-                        &nbsp;
-                        &nbsp;
-                        <TextField
-                            select
-                            id="commodity"
-                            error={errorFields["commodity"] ? true : false}
-                            name="commodity"
-                            label="Commodity"
-                            type="text"
-                            style={{ width: '49%', marginTop: '1%' }}
-                            value={orderPayload.commodity}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {commodityList.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }} >
-
-                        <TextField
-                            margin="dense"
-                            id="rate"
-                            label="Rate"
-                            type="text"
-                            error={errorFields["rate"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={orderPayload.rate}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                      &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="qnt"
-                            label="Quantity"
-                            error={errorFields["qnt"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.qnt}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-                    <div style={{ display: "flex", marginTop: 4 }} >
-
-                        <TextField
-                            select
-                            id="unit"
-                            error={errorFields["unit"] ? true : false}
-                            name="unit"
-                            label="Unit"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.unit}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["quintal", "ton"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        &nbsp;
-                    &nbsp;
-                        <TextField
-                            select
-                            id="type"
-                            name="type"
-                            label="Type"
-                            error={errorFields["type"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.type}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["none", "commission"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-
-                    <div style={{ display: "flex" }} >
-
-                        <TextField
-                            margin="dense"
-                            id="bijak_amt"
-                            label="Bijak Amount"
-                            type="text"
-                            error={errorFields["bijak_amt"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={orderPayload.bijak_amt}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                      &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="author_name"
-                            label="Author name"
-                            error={errorFields["author_name"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.author_name}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-                    <div style={{ display: "flex" }} >
-                        {/* <TextField
-                            margin="dense"
-                            id="author_mobile"
-                            label="Author mobile number"
-                            type="text"
-                            error={errorFields["author_mobile"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={orderPayload.author_mobile}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth /> */}
-                             <TextField
-                            select
-                            id="creator_role"
-                            name="creator_role"
-                            label="Creater Role"
-                            error={errorFields["creator_role"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.creator_role}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["la", "ca"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        &nbsp;
-                        &nbsp;
-                        {/* <TextField
-                            margin="dense"
-                            id="status"
-                            label="Status"
-                            error={errorFields["status"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.status}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth /> */}
+                        </div> */}
                             <TextField
-                            select
-                            id="status"
-                            name="status"
-                            label="Status"
-                            error={errorFields["status"] ? true : false}
-                            type="text"
-                        
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={orderPayload.status}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {statusOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-
-                    <div style={{ display: "flex" }} >
-
+                                select
+                                id="creator_role"
+                                name="creator_role"
+                                label="Creater Role"
+                                error={errorFields["creator_role"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop: '5px' }}
+                                value={orderPayload.creator_role}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["la", "ca"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            &nbsp;
+                            &nbsp;
                         <TextField
-                            margin="dense"
-                            id="remark"
-                            error={errorFields["remark"] ? true : false}
-                            label="Remarks"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.remark}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                    &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="other_info"
-                            label="Other Info"
-                            error={errorFields["other_info"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.other_info}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                                select
+                                id="commodity"
+                                error={errorFields["commodity"] ? true : false}
+                                name="commodity"
+                                label="Commodity"
+                                type="text"
+                                style={{ width: '49%', marginTop: '1%' }}
+                                value={orderPayload.commodity}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {commodityList.map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
 
+                        <div style={{ display: "flex" }} >
 
-                    <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="commission_rate"
-                            label="Commision rate"
-                            error={errorFields["commission_rate"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.commission_rate}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                    &nbsp;
-                        <TextField
-                            select
-                            id="commission_unit"
-                            name="commission_unit"
-                            label="Commission unit"
-                            error={errorFields["commission_unit"] ? true : false}
-                            type="text"
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={orderPayload.commission_unit}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["quintal", "ton"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }} >
-
-                        <TextField
-                            margin="dense"
-                            id="source_location"
-                            label="Source Location"
-                            type="text"
-                            error={errorFields["source_location"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={orderPayload.source_location}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
+                            <TextField
+                                margin="dense"
+                                id="source_location"
+                                label="Source Location"
+                                type="text"
+                                error={errorFields["source_location"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={orderPayload.source_location}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                            &nbsp;
 <TextField
-                            margin="dense"
-                            id="target_location"
-                            label="Target Location"
-                            error={errorFields["target_location"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={orderPayload.target_location}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-                    <div style={{ display: "flex" }} >
+                                margin="dense"
+                                id="target_location"
+                                label="Target Location"
+                                error={errorFields["target_location"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.target_location}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+                        <div style={{ display: "flex" }} >
+
+
                         <TextField
-                            margin="dense"
-                            id="transport_info"
-                            label="Transport info"
-                            error={errorFields["transport_info"] ? true : false}
-                            type="text"
-                            style={{ width: '100%' }}
-                            value={orderPayload.transport_info}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                                margin="dense"
+                                id="bijak_amt"
+                                label="Bijak Amount"
+                                type="text"
+                                error={errorFields["bijak_amt"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={orderPayload.bijak_amt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                           
+                            &nbsp;
+                          &nbsp;
+
+                          <TextField
+                                select
+                                id="type"
+                                name="type"
+                                label="Type"
+                                error={errorFields["type"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' ,marginTop:'5px'}}
+                                value={orderPayload.type}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["bilti", "commission"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        
+                        </div>
+
+                        <div style={{ display: "flex", marginTop: 4 }} >
+
+                        <TextField
+                                select
+                                id="unit"
+                                error={errorFields["unit"] ? true : false}
+                                name="unit"
+                                label="Unit"
+                                type="text"
+                                style={{ width: '49%',marginTop:'5px' }}
+                                value={orderPayload.unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["quintal", "ton"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            &nbsp;
+                        &nbsp;
+                      
+                        <TextField
+                                margin="dense"
+                                id="qnt"
+                                label="Quantity"
+                                error={errorFields["qnt"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.qnt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+                        <TextField
+                                margin="dense"
+                                id="rate"
+                                label="Rate"
+                                type="text"
+                                error={errorFields["rate"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={orderPayload.rate}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                          &nbsp;
+                          <TextField
+                                margin="dense"
+                                id="transport_info"
+                                label="Transport info"
+                                error={errorFields["transport_info"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.transport_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                      
+                        </div>
+{/* 
+                        <div style={{ display: "flex" }} >
+                          
+                             <TextField
+                                margin="dense"
+                                id="author_name"
+                                label="Author name"
+                                error={errorFields["author_name"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.author_name}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                            &nbsp;
+                  
+                            <TextField
+                                select
+                                id="status"
+                                name="status"
+                                label="Status"
+                                error={errorFields["status"] ? true : false}
+                                type="text"
+
+                                style={{ width: '49%', marginTop: "1%" }}
+                                value={orderPayload.status}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {statusOption.map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="remark"
+                                error={errorFields["remark"] ? true : false}
+                                label="Remarks"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.remark}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                        &nbsp;
+                        <TextField
+                                margin="dense"
+                                id="other_info"
+                                label="Other Info"
+                                error={errorFields["other_info"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.other_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
 
 
-                    {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
-                        <div style={{ fontFamily: "lato", padding: "10px" }}>
-                            Uploaded Images
+                        <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="commission_rate"
+                                label="Commision rate"
+                                error={errorFields["commission_rate"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.commission_rate}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                        &nbsp;
+                        <TextField
+                                select
+                                id="commission_unit"
+                                name="commission_unit"
+                                label="Commission unit"
+                                error={errorFields["commission_unit"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop: "1%" }}
+                                value={orderPayload.commission_unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["quintal", "ton"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div> */}
+
+                        {/* <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="transport_info"
+                                label="Transport info"
+                                error={errorFields["transport_info"] ? true : false}
+                                type="text"
+                                style={{ width: '100%' }}
+                                value={orderPayload.transport_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div> */}
+
+
+                        {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                Uploaded Images
                         </div>}
-                    <div style={{ display: "flex" }}>
-                        {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
-                            // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
-                            //     <img src={key} alt={key} height="150px" />
-                            // </div>
-                            <div key={"imhs_" + i} className="transaction-supporting-image">
-                                <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px" width="150px" />
-                                <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
-                                    <i className="fa fa-trash fa-lg"></i>
+                        <div style={{ display: "flex" }}>
+                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                //     <img src={key} alt={key} height="150px" />
+                                // </div>
+                                <div key={"imhs_" + i} className="transaction-supporting-image">
+                                    <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                        <i className="fa fa-trash fa-lg"></i>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    {(this.state.attachmentArray && this.state.attachmentArray.length === 0) &&
-                        <div style={{ fontFamily: "lato", padding: "10px" }}>
-                            No supporting images uploaded yet. you can add by clicking below
+                            ))}
+                        </div>
+                        {(this.state.attachmentArray && this.state.attachmentArray.length === 0) &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                No supporting images uploaded yet. you can add by clicking below
                         </div>}
-                    <div >
-                        <Grid container direction="row" alignItems="stretch">
-                            <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
-                                <input
-                                    className={classes.input}
-                                    id="flat-button2-file"
-                                    type="file"
-                                    style={{ width: "50% !important" }}
-                                    onClick={(event) => {
-                                        event.target.value = null
-                                    }}
-                                    onChange={this.fileChangedHandler.bind(this)}
-                                />
-                                <label htmlFor="flat-button2-file">
-                                    <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
-                                        change/add supporting images
+                        <div >
+                            <Grid container direction="row" alignItems="stretch">
+                                <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                    <input
+                                        className={classes.input}
+                                        id="flat-button2-file"
+                                        type="file"
+                                        style={{ width: "50% !important" }}
+                                        onClick={(event) => {
+                                            event.target.value = null
+                                        }}
+                                        onChange={this.fileChangedHandler.bind(this)}
+                                    />
+                                    <label htmlFor="flat-button2-file">
+                                        <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                            change/add supporting images
                             </Button>
-                                </label>
+                                    </label>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </div>
+                        </div>
 
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
             </Dialog>
         </div>
         );
