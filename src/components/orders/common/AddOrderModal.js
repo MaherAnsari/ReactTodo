@@ -220,10 +220,12 @@ class AddOrderModal extends Component {
                 var respData = [];
                 if (type === "brokerid") {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                    this.setTempArray(resp.data.result.data,"id");
                 } else {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                    this.setTempArray(resp.data.result.data,"mobile");
                 }
-                this.setTempArray(resp.data.result.data);
+                
                 callback(respData);
             } else {
                 callback([]);
@@ -234,10 +236,10 @@ class AddOrderModal extends Component {
         }
     }
 
-    setTempArray(data) {
+    setTempArray(data , type ) {
         var tempVarVal = this.state.tempVar;
         for (var i = 0; i < data.length; i++) {
-            tempVarVal[data[i]["fullname"]] = data[i];
+            tempVarVal[data[i][type]] = data[i];
         }
         this.setState({ tempVar: tempVarVal });
     }
@@ -247,7 +249,7 @@ class AddOrderModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey], value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey]+" ("+data[i][valuekey]+" )", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -438,8 +440,8 @@ class AddOrderModal extends Component {
                                                 delete errorFields["buyerid"];
                                             }
                                             if (item && item !== null) {
-                                                data["buyerid"] = tempVar[item["label"]]["id"];
-                                                data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
+                                                data["buyerid"] = tempVar[item["value"]]["id"];
+                                                data["buyer_mobile"] = tempVar[item["value"]]["mobile"];
                                             } else {
                                                 data["buyerid"] = "";
                                                 data["buyer_mobile"] = "";
@@ -480,8 +482,8 @@ class AddOrderModal extends Component {
                                             }
                                             var data = addOrderPayload;
                                             if (item && item !== null) {
-                                                data["supplierid"] = tempVar[item["label"]]["id"];
-                                                data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
+                                                data["supplierid"] = tempVar[item["value"]]["id"];
+                                                data["supplier_mobile"] = tempVar[item["value"]]["mobile"];
                                             } else {
                                                 data["supplierid"] = "";
                                                 data["supplier_mobile"] = "";
@@ -523,7 +525,7 @@ class AddOrderModal extends Component {
                                                 delete errorFields["brokerid"];
                                             }
                                             if (item && item !== null) {
-                                                data["brokerid"] = tempVar[item["label"]]["id"];
+                                                data["brokerid"] = tempVar[item["value"]]["id"];
                                                 // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
                                             } else {
                                                 data["brokerid"] = "";

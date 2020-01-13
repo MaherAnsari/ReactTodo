@@ -7,11 +7,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
-import orderService from '../../app/orderService/orderService';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
-
+import commonService from '../../app/commonService/commonService';
 
 const styles = theme => ({
     root: {
@@ -41,19 +40,23 @@ class AddBankAccountContainer extends React.Component {
             acctData: [],
             currentPayoutView: "default", //selectAccount, addAccount,loading
             addAccountData: {
-                bank_account_number: "",
-                bank_ifsc_code: "",
-                bank_account_holder_name: ""
+                account_number: "",
+                ifsc: "",
+                name: "",
+                bank_name: ""
+
             },
-            errorFields: {}
+
+            errorFields: {},
+            currentSelectedUserDetails: undefined
         }
     }
 
-    getBankDetails = async (mobile) => {
+    getBankDetails = async (userData) => {
         try {
-            
-            this.setState({ showLoader: true });
-            let resp = await orderService.getOrderAcount(mobile);
+            this.setState({ showLoader: true, currentSelectedUserDetails: userData });
+            let param = { "mobile": userData["mobile"] };
+            let resp = await commonService.getbankDetail(param);
             if (resp.data.status === 1) {
                 if (resp.data.result) {
                     this.setState({ showLoader: false, currentPayoutView: "selectAccount", acctData: resp.data.result || [] });
@@ -62,6 +65,7 @@ class AddBankAccountContainer extends React.Component {
                 }
             } else {
                 alert("An error occured while getting the account details");
+                this.setState({ showLoader: false});
             }
         } catch (err) {
             console.error(err);
@@ -71,7 +75,7 @@ class AddBankAccountContainer extends React.Component {
 
     handleInputChange(event) {
         event.preventDefault()
-        var intejarIds = ["bank_account_number"]; // this values need to be intejar
+        var intejarIds = ["account_number"]; // this values need to be intejar
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -102,31 +106,96 @@ class AddBankAccountContainer extends React.Component {
             acctData: [],
             currentPayoutView: "default",
             addAccountData: {
-                bank_account_number: "",
-                bank_ifsc_code: "",
-                bank_account_holder_name: ""
+                account_number: "",
+                ifsc: "",
+                name: "",
+                bank_name: ""
             },
-            errorFields: {}
+            errorFields: {},
+            currentSelectedUserDetails: undefined
         })
     }
 
     getStatusIcon(status) {
-        if (status === "validated") {
+        if ( !status ) {
             return "check";
-        } else if (status === "pending") {
-            return "cached";
         } else {
             return "disc_full";
         }
     }
 
     getStatusIconColor(status) {
-        if (status === "validated") {
+        if (!status) {
             return "green";
-        } else if (status === "pending") {
-            return "yellow";
         } else {
             return "red";
+        }
+    }
+
+    getStatusText( status ){
+        if (!status) {
+            return " Verified";
+        } 
+        // else if ( !status) {
+        //     return "Verified";
+        // }
+         else {
+            return " Non Verified";
+        }
+    }
+
+    checkIfAccountInputDetaisAreValid() {
+        let isValid = true;
+        var data = this.state.addAccountData;
+        let error = {};
+        for (var key in data) {
+            if (data[key] === "") {
+                isValid = false;
+                error[key] = true;
+            }
+        }
+        this.setState({ errorFields: error })
+        return isValid;
+    }
+
+
+    onNewAccountAddClicked = async () => {
+        try {
+            if (this.checkIfAccountInputDetaisAreValid()) {
+                this.setState({ showLoader: true });
+                let userData = this.state.currentSelectedUserDetails;
+                let payload = {
+                    "id": userData["id"],
+                    "name": userData["fullname"],
+                    "mobile": userData["mobile"],
+                    "type": "Loader",
+                    "bank_account": {
+                        account_number: this.state.addAccountData["account_number"]+"",
+                        ifsc: this.state.addAccountData["ifsc"],
+                        name: this.state.addAccountData["name"],
+                        bank_name: this.state.addAccountData["bank_name"]
+                    }
+                }
+                let resp = await commonService.addbankDetail( payload );
+                if (resp.data.status === 1) {
+                    if (resp.data.result) {
+                        this.setState({ showLoader: false, currentPayoutView: "selectAccount" }, function () {
+                            alert("Successfully Added");
+                            this.getBankDetails(this.state.currentSelectedUserDetails)
+                        });
+                    } else {
+                        this.setState({ showLoader: false })
+                        alert("An error occured while adding the account details");
+                    }
+                } else {
+                    this.setState({ showLoader: false })
+                    alert("An error occured while adding the account details. Please check the details and try again");
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            this.setState({ showLoader: false })
+            alert("An error occured while adding the account details")
         }
     }
 
@@ -156,17 +225,27 @@ class AddBankAccountContainer extends React.Component {
                                                 <ListItem key={obj["id"]} role={undefined} dense button style={{ background: index % 2 === 0 ? "#f1f1f1" : "#f9f9f9" }}>
                                                     <ListItemText
                                                         id={labelId}
-                                                        primary={obj["bank_account_holder_name"]}
-                                                        secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
-                                                    <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["status"]) }}>
-                                                        {this.getStatusIcon(obj["status"])}
+                                                        primary={obj["name"]}
+                                                        secondary={"IFSC : " + obj["ifsc"] + ", Account no. : " + obj["account"]} />
+                                                    <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
+                                                        {this.getStatusIcon(obj["pending_validation"])}
                                                     </Icon>
+                                                    { this.getStatusText(obj["pending_validation"]) }
                                                 </ListItem>
                                             );
                                         })}
                                     </List>
                                     <div style={{ paddingTop: "24px" }}>
-                                        <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
+                                        <Button variant="contained" 
+                                        onClick={(event) => 
+                                            this.setState({ errorFields:{},
+                                                            currentPayoutView: "addAccount", 
+                                                            addAccountData: {
+                                                                                account_number: "",
+                                                                                ifsc: "",
+                                                                                name: "",
+                                                                                bank_name: ""
+                                                                            }})}
                                             style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
 
                                     </div>
@@ -179,47 +258,58 @@ class AddBankAccountContainer extends React.Component {
                                     <div style={{ padding: "0px 20%" }}>
                                         <TextField
                                             margin="dense"
-                                            id="bank_account_number"
-                                            error={errorFields["bank_account_number"] ? true : false}
+                                            id="account_number"
+                                            error={errorFields["account_number"] ? true : false}
                                             label="Account number"
                                             type="text"
                                             style={{ width: '100%' }}
-                                            value={addAccountData.bank_account_number}
+                                            value={addAccountData.account_number}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
                                         <TextField
                                             margin="dense"
-                                            id="bank_ifsc_code"
+                                            id="bank_name"
+                                            error={errorFields["bank_name"] ? true : false}
+                                            label="Bank name "
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={addAccountData.bank_name}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            fullWidth />
+
+                                        <TextField
+                                            margin="dense"
+                                            id="ifsc"
                                             label="Ifsc"
-                                            error={errorFields["bank_ifsc_code"] ? true : false}
+                                            error={errorFields["ifsc"] ? true : false}
                                             type="text"
                                             style={{ width: '100%' }}
-                                            value={addAccountData.bank_ifsc_code}
+                                            value={addAccountData.ifsc}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
                                         <TextField
                                             margin="dense"
-                                            id="bank_account_holder_name"
+                                            id="name"
                                             label="Name of Account holder"
-                                            error={errorFields["bank_account_holder_name"] ? true : false}
+                                            error={errorFields["name"] ? true : false}
                                             type="text"
                                             style={{ width: '100%' }}
-                                            value={addAccountData.bank_account_holder_name}
+                                            value={addAccountData.name}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
                                     </div>
                                     <div style={{ paddingTop: "24px" }}>
-                                        <Button variant="contained" onClick={(event) => this.onNewAccountSaveClicked(event)}
-                                            style={{ background: "blue", color: "#fff" }}>Save </Button>
+                                        <Button variant="contained" onClick={(event) => this.onNewAccountAddClicked(event)}
+                                            style={{ background: "blue", color: "#fff" }}> Add </Button>
                                         <Button variant="contained"
                                             onClick={(event) => this.setState({
                                                 currentPayoutView: "selectAccount",
                                                 addAccountData: {
-                                                    bank_account_number: "",
-                                                    bank_ifsc_code: "",
-                                                    bank_account_holder_name: ""
+                                                    account_number: "",
+                                                    ifsc: "",
+                                                    name: ""
                                                 }
                                             })}
                                             style={{ marginLeft: "5px", background: "red", color: "#fff" }}>Cancel </Button>

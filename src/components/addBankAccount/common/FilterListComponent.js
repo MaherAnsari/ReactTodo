@@ -55,6 +55,7 @@ class FilterAreaComponent extends React.Component {
             inputValue: "",
             date: new Date(),
             filterOptionData: {},
+            tempData : {}
         }
     }
 
@@ -86,13 +87,15 @@ class FilterAreaComponent extends React.Component {
 
         // var uData = { data }
         if (this.state.supplierid["value"]) {
-            this.props.getSearchedOrderListData(this.state.supplierid["value"]);
+            this.props.getSearchedOrderListData( this.state.tempData[ this.state.supplierid["value"] ]);
         }
     }
 
 
-    getSearchAreaText = (id, event) => {
+    getSearchAreaText = (obj , event) => {
         try {
+
+            let id = obj["id"];
             this.setState({ [id]: event !== null ? event : "" });
             if (event === null) {
                 this.props.onsearchCleared();
@@ -145,10 +148,13 @@ class FilterAreaComponent extends React.Component {
     formatDataForDropDown(data, labelKey, valuekey) {
 
         var optionsData = [];
+        var tempDataMappings = {};
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey], value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+")", value: data[i][valuekey] });
+                tempDataMappings[ data[i][valuekey] ] = data[i];
             }
+            this.setState({tempData : tempDataMappings });
         }
         return optionsData;
     }
@@ -170,7 +176,7 @@ class FilterAreaComponent extends React.Component {
                                                     cacheOptions
                                                     value={this.state[obj.name]}
                                                     name={obj.name}
-                                                    onChange={this.getSearchAreaText.bind(this, obj.id)}
+                                                    onChange={this.getSearchAreaText.bind(this, obj)}
                                                     isSearchable={true}
                                                     isClearable={true}
                                                     placeholder={`Select ${obj.name}`}

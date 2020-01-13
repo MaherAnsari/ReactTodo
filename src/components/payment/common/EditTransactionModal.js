@@ -193,7 +193,7 @@ class EditTransactionModal extends Component {
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = [];
                 respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
-                this.setTempArray(resp.data.result.data);
+                this.setTempArray(resp.data.result.data, "mobile");
                 callback(respData);
             } else {
                 callback([]);
@@ -204,10 +204,10 @@ class EditTransactionModal extends Component {
         }
     }
 
-    setTempArray(data) {
+    setTempArray(data, type) {
         var tempVarVal = this.state.tempVar;
         for (var i = 0; i < data.length; i++) {
-            tempVarVal[data[i]["fullname"]] = data[i];
+            tempVarVal[data[i][type]] = data[i];
         }
         this.setState({ tempVar: tempVarVal });
     }
@@ -217,7 +217,7 @@ class EditTransactionModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey], value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey]+ " ("+data[i][valuekey]+")", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -494,8 +494,8 @@ class EditTransactionModal extends Component {
                                         }
                                         var data = editTransactionPayload;
                                         if (item && item !== null) {
-                                            data["supplierid"] = tempVar[item["label"]]["id"];
-                                            data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
+                                            data["supplierid"] = tempVar[item["value"]]["id"];
+                                            data["supplier_mobile"] = tempVar[item["value"]]["mobile"];
                                         } else {
                                             data["supplierid"] = "";
                                             data["supplier_mobile"] = "";
