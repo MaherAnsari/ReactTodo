@@ -213,10 +213,12 @@ class EditOrderDataModal extends Component {
                 var respData = [];
                 if (type === "brokerid") {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
+                    this.setTempArray(resp.data.result.data, "id");
                 } else {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
+                    this.setTempArray(resp.data.result.data, "mobile");
                 }
-                this.setTempArray(resp.data.result.data);
+               
                 callback(respData);
             } else {
                 callback([]);
@@ -227,10 +229,10 @@ class EditOrderDataModal extends Component {
         }
     }
 
-    setTempArray(data) {
+    setTempArray(data, type) {
         var tempVarVal = this.state.tempVar;
         for (var i = 0; i < data.length; i++) {
-            tempVarVal[data[i]["fullname"]] = data[i];
+            tempVarVal[data[i][type]] = data[i];
         }
         this.setState({ tempVar: tempVarVal });
     }
@@ -240,7 +242,7 @@ class EditOrderDataModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey], value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey] +" ("+ data[i][valuekey] +")", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -537,7 +539,7 @@ class EditOrderDataModal extends Component {
                                             delete errorFields["brokerid"];
                                         }
                                         if (item && item !== null) {
-                                            data["brokerid"] = tempVar[item["label"]]["id"];
+                                            data["brokerid"] = tempVar[item["value"]]["id"];
                                             // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
                                         } else {
                                             data["brokerid"] = "";

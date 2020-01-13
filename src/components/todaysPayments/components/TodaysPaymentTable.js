@@ -342,6 +342,9 @@ class TodaysPaymentTable extends Component {
         this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
     }
 
+    handelRefreshData(){
+        this.handelRefreshModal();
+    }
 
     render() {
         const { classes } = this.props;
@@ -355,6 +358,14 @@ class TodaysPaymentTable extends Component {
            
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
+                        <i 
+                            onClick={(event) => this.handelRefreshData(event)} 
+                            style={{ padding: "12px",lineHeight: "50px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} 
+                            data-toggle="tooltip" 
+                            data-html="true" 
+                            title="Refresh" 
+                            className="fa fa-refresh" 
+                            aria-hidden="true"></i>
                             <List style={{ display: "contents" }}>
                                 <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
                                     <ListItemAvatar>

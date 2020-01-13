@@ -33,7 +33,7 @@ import Utils from '../../app/common/utils';
 import MandiRateContainer from '../mandiRates/MandiRateContainer';
 import ChangePasswordPage from '../auth/ChangePasswordPage';
 import Icon from '@material-ui/core/Icon';
-
+import AddBankAccountContainer from '../addBankAccount/AddBankAccountContainer';
 
 const drawerWidth = 250;
 
@@ -377,6 +377,7 @@ class Home extends React.Component {
           <Route path='/home/mandi-rates' exact component={MandiRateContainer} />
           <Route path='/home/payment' exact component={PaymentContainer} />
           <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
+          <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
          </main>
 
          {showChangePasswordView && 

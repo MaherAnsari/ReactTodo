@@ -34,6 +34,7 @@ const _items = [
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
       { name: "Today's Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
+      { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
     ]
   }
   // {
