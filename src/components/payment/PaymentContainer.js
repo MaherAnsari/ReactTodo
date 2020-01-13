@@ -38,7 +38,7 @@ class PayOutContainer extends React.Component {
                 <Paper className={classes.card} >
                     <div>
                         <PaymentComponent />
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-payment-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}>
                             <i className="fa fa-cloud-download add-icon" aria-hidden="true"></i>
@@ -49,7 +49,7 @@ class PayOutContainer extends React.Component {
                             }}>Download sample</p></div>
                                                     
                     </a>
-                    </div>
+                    </div> */}
 
                    
                     </div>

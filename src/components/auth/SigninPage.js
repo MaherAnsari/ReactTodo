@@ -435,7 +435,7 @@ class SignIn extends React.Component {
 
                 // console.log(cookie);
 
-                this.props.history.push("/home/mandi-data");
+                this.props.history.push("/home/buyer-list");
 
 
             }
@@ -481,9 +481,9 @@ class SignIn extends React.Component {
                             cookie.save('username', username, { path: '/' });
                             var userId = user.username;
                             cookie.save('userId', userId, { path: '/' });
-                            // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
+                            // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
 
-                            this.props.history.push("/home/mandi-data");
+                            this.props.history.push("/home/buyer-list");
 
                         }).catch(e => {
                             console.log(e);
@@ -521,9 +521,9 @@ class SignIn extends React.Component {
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
-                // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
+                // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
 
-                this.props.history.push("/home/mandi-data");
+                this.props.history.push("/home/buyer-list");
 
             } else {
                 alert("failed in login");
@@ -554,9 +554,9 @@ class SignIn extends React.Component {
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
-                // this.props.history.push("/" + Utils.getDbName() + "/home/mandi-data");
+                // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
 
-                this.props.history.push("/home/mandi-data");
+                this.props.history.push("/home/buyer-list");
 
             } else {
                 alert("failed in login");
@@ -568,9 +568,9 @@ class SignIn extends React.Component {
 
     render() {
         if (cookie.load('token')) {
-            // return <Redirect to={"/" + Utils.getDbName() + "/home/mandi-data"} />;
+            // return <Redirect to={"/" + Utils.getDbName() + "/home/buyer-list"} />;
 
-            return <Redirect to={"/home/mandi-data"} />;
+            return <Redirect to={"/home/buyer-list"} />;
 
         }
 

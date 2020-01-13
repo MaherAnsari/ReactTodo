@@ -366,8 +366,8 @@ class Home extends React.Component {
             </List>
         </Drawer>
         <main className={classes.content} style={this.state.open ? { marginLeft: '250px' } : { marginLeft: '56px' }}>
-          <Route path='/home/mandi-data' exact component={MandiDataContainer} />
-          <Route path='/home/user-list' exact component={UserDataContainer} />
+          {/* <Route path='/home/mandi-data' exact component={MandiDataContainer} /> */}
+          {/* <Route path='/home/user-list' exact component={UserDataContainer} /> */}
           <Route path='/home/buyer-list' exact component={BuyerContainer} />
           <Route path='/home/broker-list' exact component={BrokerContainer} />
           <Route path='/home/supplier-list' exact component={SupplierContainer} />

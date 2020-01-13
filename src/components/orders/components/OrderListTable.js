@@ -480,7 +480,7 @@ class OrderListTable extends Component {
                             onInvoiceModalClose={() => { this.setState({ showSupportingInvoiceModal: false, invoiceModalData: [] }) }}
                             invoiceUrlData={this.state.invoiceModalData} />}
 
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left: "16%", background: "#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
                         >
@@ -490,7 +490,7 @@ class OrderListTable extends Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
                     <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
@@ -501,11 +501,11 @@ class OrderListTable extends Component {
                             }}>Add Order</p></div>
                     </div>
 
-                    <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
+                    {/* <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
-                    </div>
+                    </div> */}
                     {showAddOrderModal &&
                         <AddOrderModal
                             open={showAddOrderModal}

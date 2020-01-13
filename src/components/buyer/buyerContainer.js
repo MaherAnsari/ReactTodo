@@ -125,7 +125,7 @@ class BuyerContainer extends React.Component {
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD BUYER</p></div>
                     </div>
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-buyer-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -149,7 +149,7 @@ class BuyerContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
                 </Card>    :
                 <Loader />}    
 
