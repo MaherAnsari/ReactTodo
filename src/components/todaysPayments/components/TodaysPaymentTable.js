@@ -355,7 +355,12 @@ class TodaysPaymentTable extends Component {
           (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") ){
         if(  data &&
              data["bank_details"] &&
-             (data["status"] === "payout_processed" || data["status"] === "transaction_initiated" || data["status"] === "payout_initiated") &&
+             (data["status"] === "payout_processed" || 
+             data["status"] === "transaction_initiated" || 
+             data["status"] === "payout_initiated" || 
+             data["status"] === "payout_queued" || 
+             data["status"] === "payout_pending" || 
+             data["status"] === "payout_processing") &&
              data["bank_details"] !== "-" && 
              data["bank_details"]["bank_account_number"] &&
              data["bank_details"]["bank_ifsc_code"] && 
