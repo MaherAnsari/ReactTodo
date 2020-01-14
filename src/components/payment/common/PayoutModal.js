@@ -234,7 +234,7 @@ class PayoutModal extends Component {
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                         </span> :
-                                        <div style={{ padding: "14px" }} className={classes.actcardtext} onClick={(event) => this.onConfirmPayout()}>
+                                        <div style={{ padding: "14px" }} className={classes.actcardtext} >
                                             Oops no bank account available.
                                     </div>}
                                 </div>
@@ -303,11 +303,11 @@ class PayoutModal extends Component {
                             })}
                         </List>
                         <div>
-                            <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
-                                style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
+                            {/* <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
+                                style={{ background: "blue", color: "#fff" }}>Add a new Account</Button> */}
                             {selectedAcctInfo &&
                                 <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "selectAmount" })}
-                                    style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button>}
+                                    style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>}
                         </div>
                     </React.Fragment>}
 

@@ -133,7 +133,7 @@ class AddBankAccountContainer extends React.Component {
     }
 
     getStatusText( status ){
-        if (!status) {
+        if (status ) {
             return " Verified";
         } 
         // else if ( !status) {
@@ -228,9 +228,9 @@ class AddBankAccountContainer extends React.Component {
                                                         primary={obj["name"]}
                                                         secondary={"IFSC : " + obj["ifsc"] + ", Account no. : " + obj["account"]} />
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
-                                                        {this.getStatusIcon(obj["pending_validation"])}
+                                                        {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    { this.getStatusText(obj["pending_validation"]) }
+                                                    <span style={{ "textTransform": "capitalize"}}>{ obj["status"] ?  obj["status"] :"" } </span>
                                                 </ListItem>
                                             );
                                         })}

@@ -43,6 +43,7 @@ import payment_failureIcon from "../../../assets/images/icons/payment_failure.sv
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
 import PayoutModal from '../common/PayoutModal';
+import TransactionIfoModal from '../common/TransactionIfoModal';
 
 
 const theme = createMuiTheme({
@@ -156,6 +157,9 @@ class ViewTransactionModal extends Component {
 
             showPayoutModal: false,
             payoutData: undefined,
+
+            showTransactionInfoDialog: false,
+            transactionInfoData : undefined
         }
     }
 
@@ -376,7 +380,24 @@ class ViewTransactionModal extends Component {
       </span>)
       }
 
-      
+      checkIfAccountInfoAvaialble( data ){
+        if( (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
+          (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") ){
+        if(  data &&
+             data["bank_details"] &&
+             (data["status"] === "payout_processed" || data["status"] === "transaction_initiated" || data["status"] === "payout_initiated") &&
+             data["bank_details"] !== "-" && 
+             data["bank_details"]["bank_account_number"] &&
+             data["bank_details"]["bank_ifsc_code"] && 
+             data["bank_details"]["bank_account_holder_name"]){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+      }
 
     render() {
         const { classes } = this.props;
@@ -385,7 +406,7 @@ class ViewTransactionModal extends Component {
             showEditTransactionModal } = this.state;
         const { rowsPerPage, page } = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
-        const rightAlignedIndexs = [6];
+        const rightAlignedIndexs = [7];
         return (
             <div>
                 <Dialog fullScreen open={true} onClose={(event) => { this.handelModalClose(event) }} TransitionComponent={Transition}>
@@ -635,6 +656,11 @@ class ViewTransactionModal extends Component {
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
+
+                                                    {this.checkIfAccountInfoAvaialble( row ) ? <i className="fa fa-info-circle" aria-hidden="true" 
+                                                             onClick={(event )=> this.setState({ showTransactionInfoDialog : true , transactionInfoData : row  })}
+                                                                            style={{ color: "#e72e89",marginLeft:"10px", cursor: "pointer", height: "18px", fontSize:"22px" }} /> : ""}
+
                                                     {this.getStatusOption(this, row)}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>                                                   
@@ -762,6 +788,13 @@ class ViewTransactionModal extends Component {
                             this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                         })}
                         payoutData={this.state.payoutData} />}
+
+                        {this.state.showTransactionInfoDialog && 
+                        <TransactionIfoModal
+                            open={ this.state.showTransactionInfoDialog }
+                            onTransactionInfoModalClose = {()=> this.setState({ showTransactionInfoDialog : false , transactionInfoData : undefined  })}
+                            transactionInfoData={this.state.transactionInfoData}
+                        />}
 
             </div>);
 

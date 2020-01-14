@@ -62,7 +62,7 @@ class PayoutOrderModal extends Component {
             open: this.props.openPayoutModal,
             payoutData: this.props.payoutData,
             acctData: [1, 2, 3],
-            selectedAcctInfo: undefined,
+            selectedAcctInfoIndex: undefined,
             currentPayoutView: "defaultPayout", //selectAccount, addAccount,loading
             addAccountData: {
                 bank_account_number: "",
@@ -128,8 +128,14 @@ class PayoutOrderModal extends Component {
         this.props.onPayoutModalClose();
     }
 
-    handelAccountSelection(actInfo, event) {
-        this.setState({ selectedAcctInfo: actInfo })
+    handelAccountSelection( actInfo ,index , event) {
+        console.log( index )
+        // console.log( event.target.id  )
+        console.log( actInfo  )
+        this.setState({ 
+            selectedAcctInfoIndex : index,
+            acctDetails : actInfo,
+            addAccountData : actInfo })
     }
 
     handleTransactionAmtInputChange(event) {
@@ -299,7 +305,7 @@ class PayoutOrderModal extends Component {
     render() {
         const { classes } = this.props;
         const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount,
-            transferType, acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData,
+            transferType, acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
             errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
@@ -424,17 +430,18 @@ class PayoutOrderModal extends Component {
                                 <div>
                                     {acctData && acctData.length > 0 ?
                                         <div> Select an Account </div> :
-                                        <div> Please add an account to continue </div>}
+                                        <div style={{padding: "20px"}}> No account found. Please add an account to continue </div>}
                                     <List className={classes.root}>
-                                        {acctData.map(obj => {
-                                            const labelId = `checkbox-list-label-${obj["id"]}`;
+                                        {acctData.map((obj, index) => {
+                                            const labelId = `checkbox-list-label-${obj["bank_account_number"]}`;
                                             return (
-                                                <ListItem key={obj["id"]} role={undefined} dense button
-                                                    onClick={this.handelAccountSelection.bind(this, obj)}>
+                                                <ListItem key={"list_"+index} role={undefined} dense button
+                                                    id={index}
+                                                    onClick={this.handelAccountSelection.bind(this, obj, index )}>
                                                     <ListItemIcon>
                                                         <Checkbox
                                                             edge="start"
-                                                            checked={selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false}
+                                                            checked={selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false}
                                                             tabIndex={-1}
                                                             disableRipple={false}
                                                             inputProps={{ 'aria-labelledby': labelId }}
@@ -444,7 +451,7 @@ class PayoutOrderModal extends Component {
                                                         id={labelId}
                                                         primary={obj["bank_account_holder_name"]}
                                                         secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
-                                                    {(selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false) &&
+                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ? selectedAcctInfoIndex === index : false) &&
                                                         <ListItemSecondaryAction>
                                                             <IconButton edge="end" aria-label="comments">
                                                                 <CheckCircleOutlineIcon style={{ color: "green" }} />
@@ -455,11 +462,11 @@ class PayoutOrderModal extends Component {
                                         })}
                                     </List>
                                     <div>
-                                        <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
-                                            style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
-                                        {selectedAcctInfo &&
-                                            <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout", acctDetails: selectedAcctInfo, addAccountData:selectedAcctInfo })}
-                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button>}
+                                        {/* <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
+                                            style={{ background: "blue", color: "#fff" }}>Add a new Account</Button> */}
+                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ?
+                                            <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout" })}
+                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button> :""}
                                     </div>
                                 </div>}
                         </React.Fragment>}
