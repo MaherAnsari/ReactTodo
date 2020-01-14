@@ -123,7 +123,7 @@ class AddTransactionModal extends Component {
                 "account_ifsc": ""
             },
             acctDataArray: undefined,
-            selectedAcctInfo: undefined,
+            selectedAcctInfoIndex: undefined,
 
         }
 
@@ -452,18 +452,20 @@ class AddTransactionModal extends Component {
         this.setState({ dateval: addTransactionPayloadVal })
     }
 
-    handelAccountSelection(actInfo, event) {
+    handelAccountSelection(actInfo, index, event) {
         let bank_detailVal = this.state.bank_detail;
+        console.log(actInfo)
+        console.log(index)
         bank_detailVal["account_holder_name"] = actInfo["bank_account_holder_name"];
         bank_detailVal["account_number"] = actInfo["bank_account_number"];
         bank_detailVal["account_ifsc"] = actInfo["bank_ifsc_code"];
-        this.setState({ selectedAcctInfo: actInfo, bank_detail: bank_detailVal })
+        this.setState({ selectedAcctInfoIndex: index , bank_detail: bank_detailVal })
     }
 
     render() {
         const { classes } = this.props;
         const { bank_detail, currentAddTransactionView, showLoader, addTransactionPayload,
-            supplierid, buyerid, tempVar, errorFields, acctDataArray, selectedAcctInfo } = this.state;
+                supplierid, buyerid, tempVar, errorFields, acctDataArray, selectedAcctInfoIndex } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -800,20 +802,20 @@ class AddTransactionModal extends Component {
 
                         {currentAddTransactionView === "selectAccount" &&
                             <React.Fragment>
-                                <div>
+                                <div style={{padding : "30px"}}>
                                     {acctDataArray && acctDataArray.length > 0 ?
                                         <div> Select an Account </div> :
                                         <div style={{padding: "20px"}}>We cannot find any account associated with this user.{"\n"}Please add an account to add this transactions </div>}
                                     <List className={classes.root}>
-                                        {acctDataArray && acctDataArray.map(obj => {
-                                            const labelId = `checkbox-list-label-${obj["id"]}`;
+                                        {acctDataArray && acctDataArray.map((obj, index) => {
+                                            const labelId = `checkbox-list-label-${index}`;
                                             return (
-                                                <ListItem key={obj["id"]} role={undefined} dense button
-                                                    onClick={this.handelAccountSelection.bind(this, obj)}>
+                                                <ListItem key={index} role={undefined} dense button
+                                                    onClick={this.handelAccountSelection.bind(this, obj, index)}>
                                                     <ListItemIcon>
                                                         <Checkbox
                                                             edge="start"
-                                                            checked={selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false}
+                                                            checked={selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false}
                                                             tabIndex={-1}
                                                             disableRipple={false}
                                                             inputProps={{ 'aria-labelledby': labelId }}
@@ -823,7 +825,7 @@ class AddTransactionModal extends Component {
                                                         id={labelId}
                                                         primary={obj["bank_account_holder_name"]}
                                                         secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
-                                                    {(selectedAcctInfo && selectedAcctInfo["id"] ? selectedAcctInfo["id"] === obj["id"] : false) &&
+                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ?  selectedAcctInfoIndex === index  : false) &&
                                                         <ListItemSecondaryAction>
                                                             <IconButton edge="end" aria-label="comments">
                                                                 <CheckCircleOutlineIcon style={{ color: "green" }} />
@@ -835,9 +837,9 @@ class AddTransactionModal extends Component {
                                     </List>
                                     <div>
 
-                                        {selectedAcctInfo &&
+                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ?
                                             <Button variant="contained" onClick={(event) => this.onTransactionDataAddedWithAccount(event)}
-                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>}
+                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>:""}
                                             <Button variant="contained" onClick={this.handleDialogCancel.bind(this)}
                                                 style={{ background: "blue", color: "#fff" }}>Cancel</Button>
                                     </div>

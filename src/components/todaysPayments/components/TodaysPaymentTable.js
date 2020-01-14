@@ -37,6 +37,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
+import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 
 const theme = createMuiTheme({
     overrides: {
@@ -142,7 +143,10 @@ class TodaysPaymentTable extends Component {
 
             showUserInfo: false,
             userInfoData : undefined,
-            isLimitUpdate: false
+            isLimitUpdate: false,
+
+            showTransactionInfoDialog: false,
+            transactionInfoData : undefined
         }
     }
 
@@ -346,6 +350,25 @@ class TodaysPaymentTable extends Component {
         this.handelRefreshModal();
     }
 
+    checkIfAccountInfoAvaialble( data ){
+        if( (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
+          (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") ){
+        if(  data &&
+             data["bank_details"] &&
+             (data["status"] === "payout_processed" || data["status"] === "transaction_initiated" || data["status"] === "payout_initiated") &&
+             data["bank_details"] !== "-" && 
+             data["bank_details"]["bank_account_number"] &&
+             data["bank_details"]["bank_ifsc_code"] && 
+             data["bank_details"]["bank_account_holder_name"]){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+      }
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
@@ -507,7 +530,12 @@ class TodaysPaymentTable extends Component {
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                     <TableCell component="th" scope="row" className={classes.tableCell}  style={{textAlign: "left"}} >
+                                                   <div>
+                                                        {this.checkIfAccountInfoAvaialble( row ) ? <i className="fa fa-info-circle" aria-hidden="true" 
+                                                             onClick={(event )=> this.setState({ showTransactionInfoDialog : true , transactionInfoData : row  })}
+                                                                            style={{ color: "#e72e89",marginRight:"10px", cursor: "pointer", height: "18px", fontSize:"22px" }} /> : ""}
                                                     {this.getStatusOption(this, row)}
+                                                    </div>
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left"}}>                                                   
                                                     { !row.active && 
@@ -654,6 +682,13 @@ class TodaysPaymentTable extends Component {
                             userId={ this.state.userInfoData["supplier_mobile"]}
                             onLimitUpdate= {this.changeLimitSucces.bind(this)}
                             onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
+
+                    {this.state.showTransactionInfoDialog && 
+                        <TransactionIfoModal
+                            open={ this.state.showTransactionInfoDialog }
+                            onTransactionInfoModalClose = {()=> this.setState({ showTransactionInfoDialog : false , transactionInfoData : undefined  })}
+                            transactionInfoData={this.state.transactionInfoData}
+                        />}
                         </MuiThemeProvider>
             </div>);
 

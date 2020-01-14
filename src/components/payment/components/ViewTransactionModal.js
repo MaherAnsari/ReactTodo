@@ -556,6 +556,9 @@ class ViewTransactionModal extends Component {
                                                                 <TableRow key={'table_' + i} style={{ background: i % 2 === 0 ? "#e5e8ec" : "#fff", borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
 
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}  style={{textAlign: "left"}} >
+                                                                    {this.checkIfAccountInfoAvaialble( row ) ? <i className="fa fa-info-circle" aria-hidden="true" 
+                                                             onClick={(event )=> this.setState({ showTransactionInfoDialog : true , transactionInfoData : row  })}
+                                                                            style={{ color: "#e72e89",marginLeft:"10px", cursor: "pointer", height: "18px", fontSize:"22px" }} /> : ""}
                                                                         {this.getStatusOption(this, row)}
                                                                     </TableCell>
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign: "left"}}>
