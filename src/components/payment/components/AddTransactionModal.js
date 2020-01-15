@@ -174,29 +174,33 @@ class AddTransactionModal extends Component {
 
 
     handleBankDetailsChange(event) {
-        var intejarIds = ["account_number"]; // this values need to be intejar
-        var errors = this.state.errorFields;
-        var id = event.target.id;
-        if (!id && id === undefined) {
-            id = event.target.name;
-        }
-        var val = event.target.value;
-        var bankData = this.state.bank_detail;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                bankData[id] = Number(val);
+        try {
+            var intejarIds = ["account_number"]; // this values need to be intejar
+            var errors = this.state.errorFields;
+            var id = event.target.id;
+            if (!id && id === undefined) {
+                id = event.target.name;
             }
-        } else {
-            bankData[id] = val;
-        }
+            var val = event.target.value;
+            var bankData = this.state.bank_detail;
+            if (intejarIds.indexOf(id) > -1) {
+                if (val === "" || !isNaN(val)) {
+                    bankData[id] = Number(val);
+                }
+            } else {
+                bankData[id] = val ? val.toUpperCase() : val ;
+            }
 
-        if (errors.hasOwnProperty(id)) {
-            delete errors[id];
+            if (errors.hasOwnProperty(id)) {
+                delete errors[id];
+            }
+            this.setState({
+                bank_detail: bankData,
+                errorFields: errors
+            })
+        } catch (err) {
+            console.log(err)
         }
-        this.setState({
-            bank_detail: bankData,
-            errorFields: errors
-        })
     }
 
     handleDialogCancel(event) {
@@ -459,13 +463,13 @@ class AddTransactionModal extends Component {
         bank_detailVal["account_holder_name"] = actInfo["bank_account_holder_name"];
         bank_detailVal["account_number"] = actInfo["bank_account_number"];
         bank_detailVal["account_ifsc"] = actInfo["bank_ifsc_code"];
-        this.setState({ selectedAcctInfoIndex: index , bank_detail: bank_detailVal })
+        this.setState({ selectedAcctInfoIndex: index, bank_detail: bank_detailVal })
     }
 
     render() {
         const { classes } = this.props;
         const { bank_detail, currentAddTransactionView, showLoader, addTransactionPayload,
-                supplierid, buyerid, tempVar, errorFields, acctDataArray, selectedAcctInfoIndex } = this.state;
+            supplierid, buyerid, tempVar, errorFields, acctDataArray, selectedAcctInfoIndex } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -802,10 +806,10 @@ class AddTransactionModal extends Component {
 
                         {currentAddTransactionView === "selectAccount" &&
                             <React.Fragment>
-                                <div style={{padding : "30px"}}>
+                                <div style={{ padding: "30px" }}>
                                     {acctDataArray && acctDataArray.length > 0 ?
                                         <div> Select an Account </div> :
-                                        <div style={{padding: "20px"}}>We cannot find any account associated with this user.{"\n"}Please add an account to add this transactions </div>}
+                                        <div style={{ padding: "20px" }}>We cannot find any account associated with this user.{"\n"}Please add an account to add this transactions </div>}
                                     <List className={classes.root}>
                                         {acctDataArray && acctDataArray.map((obj, index) => {
                                             const labelId = `checkbox-list-label-${index}`;
@@ -824,8 +828,8 @@ class AddTransactionModal extends Component {
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={obj["bank_account_holder_name"]}
-                                                        secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
-                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ?  selectedAcctInfoIndex === index  : false) &&
+                                                        secondary={"IFSC : " + (obj["bank_ifsc_code"] ? obj["bank_ifsc_code"].toUpperCase() : obj["bank_ifsc_code"]) + ", Account no. : " + obj["bank_account_number"]} />
+                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false) &&
                                                         <ListItemSecondaryAction>
                                                             <IconButton edge="end" aria-label="comments">
                                                                 <CheckCircleOutlineIcon style={{ color: "green" }} />
@@ -837,11 +841,11 @@ class AddTransactionModal extends Component {
                                     </List>
                                     <div>
 
-                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ?
+                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ?
                                             <Button variant="contained" onClick={(event) => this.onTransactionDataAddedWithAccount(event)}
-                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>:""}
-                                            <Button variant="contained" onClick={this.handleDialogCancel.bind(this)}
-                                                style={{ background: "blue", color: "#fff" }}>Cancel</Button>
+                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button> : ""}
+                                        <Button variant="contained" onClick={this.handleDialogCancel.bind(this)}
+                                            style={{ background: "blue", color: "#fff" }}>Cancel</Button>
                                     </div>
                                 </div>
                             </React.Fragment>}
@@ -867,7 +871,7 @@ class AddTransactionModal extends Component {
                                         label="Ifsc"
                                         error={errorFields["account_ifsc"] ? true : false}
                                         type="text"
-                                        style={{ width: '100%' }}
+                                        style={{ width: '100%', textTransform: "uppercase" }}
                                         value={bank_detail.account_ifsc}
                                         onChange={this.handleBankDetailsChange.bind(this)}
                                         fullWidth />

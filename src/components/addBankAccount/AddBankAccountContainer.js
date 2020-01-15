@@ -65,7 +65,7 @@ class AddBankAccountContainer extends React.Component {
                 }
             } else {
                 alert("An error occured while getting the account details");
-                this.setState({ showLoader: false});
+                this.setState({ showLoader: false });
             }
         } catch (err) {
             console.error(err);
@@ -74,31 +74,39 @@ class AddBankAccountContainer extends React.Component {
     }
 
     handleInputChange(event) {
-        event.preventDefault()
-        var intejarIds = ["account_number"]; // this values need to be intejar
-        var errors = this.state.errorFields;
-        var id = event.target.id;
-        if (!id && id === undefined) {
-            id = event.target.name;
-        }
-        var val = event.target.value;
-        var addAccountDataVal = this.state.addAccountData;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                addAccountDataVal[id] = Number(val);
+        try {
+            event.preventDefault();
+            var intejarIds = ["account_number"]; // this values need to be intejar
+            var errors = this.state.errorFields;
+            var id = event.target.id;
+            if (!id && id === undefined) {
+                id = event.target.name;
             }
-        } else {
-            addAccountDataVal[id] = val;
-        }
+            var val = event.target.value;
+            var addAccountDataVal = this.state.addAccountData;
+            if (intejarIds.indexOf(id) > -1) {
+                if (val === "" || !isNaN(val)) {
+                    addAccountDataVal[id] = Number(val);
+                }
+            } else {
+                if( id === "bank_name"){
+                    addAccountDataVal[id] = val;
+                }else{
+                    addAccountDataVal[id] = val ? val.toUpperCase() : val;
+                }
+            }
 
-        if (errors.hasOwnProperty(id)) {
-            delete errors[id];
+            if (errors.hasOwnProperty(id)) {
+                delete errors[id];
+            }
+            this.setState({
+                addAccountData: addAccountDataVal,
+                errorFields: errors
+            })
+            // console.log(addAccountDataVal)
+        } catch (err) {
+            console.log(err)
         }
-        this.setState({
-            addAccountData: addAccountDataVal,
-            errorFields: errors
-        })
-        // console.log(addAccountDataVal)
     }
 
     onsearchCleared(event) {
@@ -117,7 +125,7 @@ class AddBankAccountContainer extends React.Component {
     }
 
     getStatusIcon(status) {
-        if ( !status ) {
+        if (!status) {
             return "check";
         } else {
             return "disc_full";
@@ -132,14 +140,14 @@ class AddBankAccountContainer extends React.Component {
         }
     }
 
-    getStatusText( status ){
-        if (status ) {
+    getStatusText(status) {
+        if (status) {
             return " Verified";
-        } 
+        }
         // else if ( !status) {
         //     return "Verified";
         // }
-         else {
+        else {
             return " Non Verified";
         }
     }
@@ -170,13 +178,13 @@ class AddBankAccountContainer extends React.Component {
                     "mobile": userData["mobile"],
                     "type": "Loader",
                     "bank_account": {
-                        account_number: this.state.addAccountData["account_number"]+"",
+                        account_number: this.state.addAccountData["account_number"] + "",
                         ifsc: this.state.addAccountData["ifsc"],
                         name: this.state.addAccountData["name"],
                         bank_name: this.state.addAccountData["bank_name"]
                     }
                 }
-                let resp = await commonService.addbankDetail( payload );
+                let resp = await commonService.addbankDetail(payload);
                 if (resp.data.status === 1) {
                     if (resp.data.result) {
                         this.setState({ showLoader: false, currentPayoutView: "selectAccount" }, function () {
@@ -226,26 +234,28 @@ class AddBankAccountContainer extends React.Component {
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={obj["name"]}
-                                                        secondary={"IFSC : " + obj["ifsc"] + ", Account no. : " + obj["account"]} />
+                                                        secondary={"IFSC : " + (obj["ifsc"] ? obj["ifsc"].toUpperCase() : "") + ", Account no. : " + obj["account"]} />
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    <span style={{ "textTransform": "capitalize"}}>{ obj["status"] ?  obj["status"] :"" } </span>
+                                                    <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>
                                                 </ListItem>
                                             );
                                         })}
                                     </List>
                                     <div style={{ paddingTop: "24px" }}>
-                                        <Button variant="contained" 
-                                        onClick={(event) => 
-                                            this.setState({ errorFields:{},
-                                                            currentPayoutView: "addAccount", 
-                                                            addAccountData: {
-                                                                                account_number: "",
-                                                                                ifsc: "",
-                                                                                name: "",
-                                                                                bank_name: ""
-                                                                            }})}
+                                        <Button variant="contained"
+                                            onClick={(event) =>
+                                                this.setState({
+                                                    errorFields: {},
+                                                    currentPayoutView: "addAccount",
+                                                    addAccountData: {
+                                                        account_number: "",
+                                                        ifsc: "",
+                                                        name: "",
+                                                        bank_name: ""
+                                                    }
+                                                })}
                                             style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
 
                                     </div>
@@ -284,7 +294,7 @@ class AddBankAccountContainer extends React.Component {
                                             label="Ifsc"
                                             error={errorFields["ifsc"] ? true : false}
                                             type="text"
-                                            style={{ width: '100%' }}
+                                            style={{ width: '100%', textTransform: "uppercase" }}
                                             value={addAccountData.ifsc}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />

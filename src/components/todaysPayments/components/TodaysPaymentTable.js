@@ -38,6 +38,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
+var moment = require('moment');
 
 const theme = createMuiTheme({
     overrides: {
@@ -374,6 +375,11 @@ class TodaysPaymentTable extends Component {
     }
       }
 
+      formatDateAndTime = (dateval) => {
+        var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+    }
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
@@ -564,7 +570,8 @@ class TodaysPaymentTable extends Component {
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
                                                         <div className="text-ellpses">
-                                                            {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
+                                                            {/* {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"} */}
+                                                            {row.createdtime ? this.formatDateAndTime(row.createdtime): "-"}
                                                         </div>
                                                     </TableCell>
                                                     

@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from '../../common/Loader';
+var moment = require('moment');
 
 const styles = theme => ({
 
@@ -44,7 +45,7 @@ class TransactionIfoModal extends Component {
         super(props);
         this.state = {
             open: this.props.open,
-            transactionInfoData : this.props.transactionInfoData,
+            transactionInfoData: this.props.transactionInfoData,
             showLoader: false
 
         }
@@ -53,15 +54,20 @@ class TransactionIfoModal extends Component {
     componentWillMount() { }
 
 
-    
+
     handleDialogCancel(event) {
         this.setState({ open: false })
         this.props.onTransactionInfoModalClose();
     }
 
+    formatDateAndTime = (dateval) => {
+        var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
+        return <div style={{  display: "inline-block" }}> {fdate.split(" ")[0] + ", " + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader , transactionInfoData} = this.state;
+        const { showLoader, transactionInfoData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
@@ -69,44 +75,64 @@ class TransactionIfoModal extends Component {
                 disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                {!showLoader ? 
-                <div>
-                    <DialogTitle
-                        style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
-                        id="form-dialog-title">
-                        <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                            Transaction Info</p>
-                    </DialogTitle>
-                    <DialogContent>
-                        <React.Fragment>
-                            <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
-                                <span className={classes.actcardtext} style={{ width: "60%" }}> Utr  :
-                                 &nbsp; <strong> {transactionInfoData["utr"] && transactionInfoData["utr"] !== "-"? transactionInfoData["utr"]  : "N.A" }</strong>  </span>
-                            </div>
-
-                            <div className={classes.actCardc} >
-                                <div className={classes.actcardtext} style={{
-                                    textDecoration: "underline",
-                                    textTransform: "uppercase",
-                                    paddingBottom: "4px"
-                                }}> Account details </div>
-                                {transactionInfoData && transactionInfoData["bank_details"] &&
-                                transactionInfoData["bank_details"]  !== "-" && transactionInfoData["bank_details"]  !== "" ?
-                                    <span>
-                                        <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;<strong className={classes.actcardtext} > { transactionInfoData["bank_details"]["bank_account_number"]} </strong> </div>
-                                        <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} > { transactionInfoData["bank_details"]["bank_ifsc_code"]} </strong> </div>
-                                        <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > { transactionInfoData["bank_details"]["bank_account_holder_name"]} </strong> </div>
-                                    </span> :
-                                    <div style={{ padding: "14px" }} className={classes.actcardtext}>
-                                        Oops no bank account available.
+                {!showLoader ?
+                    <div>
+                        <DialogTitle
+                            style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
+                            id="form-dialog-title">
+                            <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                                Transaction Info</p>
+                        </DialogTitle>
+                        <DialogContent>
+                            <React.Fragment>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> Order Id   </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["linked_order_id"] && transactionInfoData["linked_order_id"] !== "-" ? transactionInfoData["linked_order_id"] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> Utr   </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["utr"] && transactionInfoData["utr"] !== "-" ? transactionInfoData["utr"] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> Mode   </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["mode"] && transactionInfoData["mode"] !== "-" ? transactionInfoData["mode"] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> Status   </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["status"] && transactionInfoData["status"] !== "-" ? transactionInfoData["status"] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> Transaction Date/Time    </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["createdtime"] && transactionInfoData["createdtime"] !== "-" ? this.formatDateAndTime( transactionInfoData["createdtime"] ) : "N.A"}</strong>  </span>
+                                </div>
+                                <div className={classes.actCardc} >
+                                    <div className={classes.actcardtext} style={{
+                                        textDecoration: "underline",
+                                        textTransform: "uppercase",
+                                        paddingBottom: "4px"
+                                    }}> Account details </div>
+                                    {transactionInfoData && transactionInfoData["bank_details"] &&
+                                        transactionInfoData["bank_details"] !== "-" && transactionInfoData["bank_details"] !== "" ?
+                                        <span>
+                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;<strong className={classes.actcardtext} > {transactionInfoData["bank_details"]["bank_account_number"]} </strong> </div>
+                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{textTransform: "uppercase"}} > {transactionInfoData["bank_details"]["bank_ifsc_code"]} </strong> </div>
+                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {transactionInfoData["bank_details"]["bank_account_holder_name"]} </strong> </div>
+                                        </span> :
+                                        <div style={{ padding: "14px" }} className={classes.actcardtext}>
+                                            Oops no bank account available.
                                     </div>}
-                            </div>
+                                </div>
                             </React.Fragment>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                    </DialogActions>
-                </div> :
+                        </DialogContent>
+                        <DialogActions>
+                            <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
+                        </DialogActions>
+                    </div> :
                     <Loader primaryText="Please wait.." />}
             </Dialog>
         </div>

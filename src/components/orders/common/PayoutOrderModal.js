@@ -128,14 +128,15 @@ class PayoutOrderModal extends Component {
         this.props.onPayoutModalClose();
     }
 
-    handelAccountSelection( actInfo ,index , event) {
-        console.log( index )
+    handelAccountSelection(actInfo, index, event) {
+        console.log(index)
         // console.log( event.target.id  )
-        console.log( actInfo  )
-        this.setState({ 
-            selectedAcctInfoIndex : index,
-            acctDetails : actInfo,
-            addAccountData : actInfo })
+        console.log(actInfo)
+        this.setState({
+            selectedAcctInfoIndex: index,
+            acctDetails: actInfo,
+            addAccountData: actInfo
+        })
     }
 
     handleTransactionAmtInputChange(event) {
@@ -150,30 +151,34 @@ class PayoutOrderModal extends Component {
     }
 
     handleInputChange(event) {
-        event.preventDefault()
-        var intejarIds = ["bank_account_number"]; // this values need to be intejar
-        var errors = this.state.errorFields;
-        var id = event.target.id;
-        if (!id && id === undefined) {
-            id = event.target.name;
-        }
-        var val = event.target.value;
-        var addAccountDataVal = this.state.addAccountData;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                addAccountDataVal[id] = Number(val);
+        event.preventDefault();
+        try {
+            var intejarIds = ["bank_account_number"]; // this values need to be intejar
+            var errors = this.state.errorFields;
+            var id = event.target.id;
+            if (!id && id === undefined) {
+                id = event.target.name;
             }
-        } else {
-            addAccountDataVal[id] = val;
-        }
+            var val = event.target.value;
+            var addAccountDataVal = this.state.addAccountData;
+            if (intejarIds.indexOf(id) > -1) {
+                if (val === "" || !isNaN(val)) {
+                    addAccountDataVal[id] = Number(val);
+                }
+            } else {
+                addAccountDataVal[id] = val ? val.toUpperCase() : "";
+            }
 
-        if (errors.hasOwnProperty(id)) {
-            delete errors[id];
+            if (errors.hasOwnProperty(id)) {
+                delete errors[id];
+            }
+            this.setState({
+                addAccountData: addAccountDataVal,
+                errorFields: errors
+            })
+        } catch (err) {
+            console.log(err)
         }
-        this.setState({
-            addAccountData: addAccountDataVal,
-            errorFields: errors
-        })
         // console.log(addAccountDataVal)
     }
 
@@ -349,7 +354,7 @@ class PayoutOrderModal extends Component {
                                         label="Amount for payout"
                                         type="text"
                                         style={{ width: '36%' }}
-                                        disabled={true}
+                                        // disabled={true}
                                         value={transactionAmount}
                                         onChange={this.handleTransactionAmtInputChange.bind(this)}
                                         fullWidth />
@@ -374,7 +379,7 @@ class PayoutOrderModal extends Component {
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;
                                                     <strong className={classes.actcardtext} > {acctDetails["bank_account_number"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;
-                                                    <strong className={classes.actcardtext} > {acctDetails["bank_ifsc_code"]} </strong> </div>
+                                                    <strong className={classes.actcardtext} style={{ textTransform: "uppercase" }} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;
                                                     <strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                         </span> :
@@ -427,17 +432,17 @@ class PayoutOrderModal extends Component {
                                 <div style={{ padding: "22px", textAlign: "center" }}>
                                     {availableCreditAmountError}
                                 </div> :
-                                <div style={{padding:"30px"}}>
+                                <div style={{ padding: "30px" }}>
                                     {acctData && acctData.length > 0 ?
                                         <div> Select an Account </div> :
-                                        <div style={{padding: "20px"}}> No account found. Please add an account to continue </div>}
+                                        <div style={{ padding: "20px" }}> No account found. Please add an account to continue </div>}
                                     <List className={classes.root}>
                                         {acctData.map((obj, index) => {
                                             const labelId = `checkbox-list-label-${obj["bank_account_number"]}`;
                                             return (
-                                                <ListItem key={"list_"+index} role={undefined} dense button
+                                                <ListItem key={"list_" + index} role={undefined} dense button
                                                     id={index}
-                                                    onClick={this.handelAccountSelection.bind(this, obj, index )}>
+                                                    onClick={this.handelAccountSelection.bind(this, obj, index)}>
                                                     <ListItemIcon>
                                                         <Checkbox
                                                             edge="start"
@@ -450,8 +455,8 @@ class PayoutOrderModal extends Component {
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={obj["bank_account_holder_name"]}
-                                                        secondary={"IFSC : " + obj["bank_ifsc_code"] + ", Account no. : " + obj["bank_account_number"]} />
-                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ? selectedAcctInfoIndex === index : false) &&
+                                                        secondary={"IFSC : " + (obj["bank_ifsc_code"] ? obj["bank_ifsc_code"].toUpperCase() : obj["bank_ifsc_code"]) + ", Account no. : " + obj["bank_account_number"]} />
+                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false) &&
                                                         <ListItemSecondaryAction>
                                                             <IconButton edge="end" aria-label="comments">
                                                                 <CheckCircleOutlineIcon style={{ color: "green" }} />
@@ -464,9 +469,9 @@ class PayoutOrderModal extends Component {
                                     <div>
                                         {/* <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
                                             style={{ background: "blue", color: "#fff" }}>Add a new Account</Button> */}
-                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0  ?
+                                        {selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ?
                                             <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout" })}
-                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button> :""}
+                                                style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Continue</Button> : ""}
                                     </div>
                                 </div>}
                         </React.Fragment>}
@@ -492,7 +497,7 @@ class PayoutOrderModal extends Component {
                                     label="Ifsc"
                                     error={errorFields["bank_ifsc_code"] ? true : false}
                                     type="text"
-                                    style={{ width: '100%' }}
+                                    style={{ width: '100%', textTransform: "uppercase" }}
                                     value={addAccountData.bank_ifsc_code}
                                     onChange={this.handleInputChange.bind(this)}
                                     fullWidth />

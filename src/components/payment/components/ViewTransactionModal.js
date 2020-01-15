@@ -44,7 +44,7 @@ import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWall
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
 import PayoutModal from '../common/PayoutModal';
 import TransactionIfoModal from '../common/TransactionIfoModal';
-
+var moment = require('moment');
 
 const theme = createMuiTheme({
     overrides: {
@@ -405,6 +405,11 @@ class ViewTransactionModal extends Component {
     }
       }
 
+      formatDateAndTime = (dateval) => {
+        var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+    }
+    
     render() {
         const { classes } = this.props;
         const { groupedTransactionData, transDate, allTransactionsData, expanded,
@@ -586,9 +591,12 @@ class ViewTransactionModal extends Component {
                                                                         </div>
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 3)}  >
-                                                                        <div className="text-ellpses">
+                                                                        {/* <div className="text-ellpses">
                                                                             {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
-                                                                        </div>
+                                                                        </div> */}
+                                                                          <div className="text-ellpses">
+                                                            {row.createdtime ? this.formatDateAndTime(row.createdtime): "-"}
+                                                        </div>
                                                                     </TableCell>
                                                                     
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
@@ -691,7 +699,7 @@ class ViewTransactionModal extends Component {
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 3)}>
                                                         <div className="text-ellpses">
-                                                            {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
+                                                            {row.createdtime ? this.formatDateAndTime(row.createdtime): "-"}
                                                         </div>
                                                     </TableCell>
                                                     

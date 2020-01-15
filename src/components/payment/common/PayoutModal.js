@@ -231,7 +231,7 @@ class PayoutModal extends Component {
                                     {acctDetails !== "-" && acctDetails !== "" ?
                                         <span>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_number"]} </strong> </div>
-                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_ifsc_code"]} </strong> </div>
+                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{textTransform: "uppercase"}} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                         </span> :
                                         <div style={{ padding: "14px" }} className={classes.actcardtext} >
@@ -332,7 +332,7 @@ class PayoutModal extends Component {
                                 label="Ifsc"
                                 error={errorFields["ifsc"] ? true : false}
                                 type="text"
-                                style={{ width: '100%' }}
+                                style={{ width: '100%', textTransform: "uppercase" }}
                                 value={addAccountData.ifsc}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
