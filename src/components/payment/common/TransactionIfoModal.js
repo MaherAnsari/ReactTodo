@@ -7,7 +7,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from '../../common/Loader';
+import PreviewReceiptModal from '../../common/PreviewReceiptModal';
 var moment = require('moment');
+
+
 
 const styles = theme => ({
 
@@ -46,7 +49,8 @@ class TransactionIfoModal extends Component {
         this.state = {
             open: this.props.open,
             transactionInfoData: this.props.transactionInfoData,
-            showLoader: false
+            showLoader: false,
+            showReceiptPreview: false
 
         }
     }
@@ -67,7 +71,7 @@ class TransactionIfoModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, transactionInfoData } = this.state;
+        const { showLoader, transactionInfoData , showReceiptPreview} = this.state;
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
@@ -84,7 +88,7 @@ class TransactionIfoModal extends Component {
                                 Transaction Info</p>
                         </DialogTitle>
                         <DialogContent>
-                            <React.Fragment>
+                            { !showReceiptPreview ? <React.Fragment>
                                 <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
                                     <span className={classes.actcardtext} style={{ width: "35%" }}> Order Id   </span> :
                             <span className={classes.actcardtext} style={{ width: "60%" }}>
@@ -127,14 +131,22 @@ class TransactionIfoModal extends Component {
                                             Oops no bank account available.
                                     </div>}
                                 </div>
-                            </React.Fragment>
+                            </React.Fragment>: 
+                            <PreviewReceiptModal 
+                            open ={showReceiptPreview}      
+                            OnPrevieCancled={()=> this.setState({ showReceiptPreview : false })}
+                            transactionInfoData={transactionInfoData}/>}
+
                         </DialogContent>
                         <DialogActions>
-                            <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
+                        <Button className={classes.formCancelBtn} onClick={()=>this.setState({ showReceiptPreview : true })} color="primary">Preview Receipt</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
                         </DialogActions>
                     </div> :
                     <Loader primaryText="Please wait.." />}
             </Dialog>
+
+           
         </div>
         );
     }
