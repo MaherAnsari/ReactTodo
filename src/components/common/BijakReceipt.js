@@ -1,16 +1,14 @@
 import React from 'react';
-import "./recepit.css"
-
+import "./recepit.css";
+import Html2Pdf from 'js-html2pdf';
 import Utils from '../../app/common/utils';
 import logo from '../../assets/images/bijak_logo.png';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 const $ = window["jQuery"];
 var moment = require('moment');
 
 const formatDateAndTime = (dateval) => {
     var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
-    return <div style={{  display: "inline-block" }}> {fdate.split(" ")[0] + ", " + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+    return <div style={{ display: "inline-block" }}> {fdate.split(" ")[0] + ", " + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
 }
 
 let bijakReceipt = {
@@ -43,7 +41,7 @@ let bijakReceipt = {
                             <tr>
                                 <td className="order_info_cell">{transactionInfoData["linked_order_id"] ? transactionInfoData["linked_order_id"] : "-"}</td>
                                 <td className="order_info_cell">{transactionInfoData["pay_id"] ? transactionInfoData["pay_id"] : "-"}</td>
-                                <td className="order_info_cell highlighted">₹ {transactionInfoData["amount"] ? Utils.formatNumberWithComma(transactionInfoData["amount"] ) : "-"}</td>
+                                <td className="order_info_cell highlighted">₹ {transactionInfoData["amount"] ? Utils.formatNumberWithComma(transactionInfoData["amount"]) : "-"}</td>
                             </tr>
                         </table>
                     </div>
@@ -62,14 +60,14 @@ let bijakReceipt = {
                             </tr>
                             <tr>
                                 <td className="sender_info_cell fs14">{transactionInfoData["buyer_business_name"] ? transactionInfoData["buyer_business_name"] : "-"},
-                                <div>{transactionInfoData["buyer_locality"] ? transactionInfoData["buyer_locality"]+"," : " "}</div>
-                                <div>{transactionInfoData["buyer_district"] ? transactionInfoData["buyer_district"]+"," : " "}  {transactionInfoData["buyer_state"] ? transactionInfoData["buyer_state"]+"," : " "} </div>
-                                <div>{transactionInfoData["buyer_mobile"] ? transactionInfoData["buyer_mobile"] : "-"}</div>
+                                <div>{transactionInfoData["buyer_locality"] ? transactionInfoData["buyer_locality"] + "," : " "}</div>
+                                    <div>{transactionInfoData["buyer_district"] ? transactionInfoData["buyer_district"] + "," : " "}  {transactionInfoData["buyer_state"] ? transactionInfoData["buyer_state"] + "," : " "} </div>
+                                    <div>{transactionInfoData["buyer_mobile"] ? transactionInfoData["buyer_mobile"] : "-"}</div>
                                 </td>
                                 <td className="sender_info_cell fs14">
                                     {transactionInfoData["supplier_business_name"] ? transactionInfoData["supplier_business_name"] : "-"},
-                                    <div>{transactionInfoData["supplier_locality"] ? transactionInfoData["supplier_locality"] +",": " "}</div>
-                                    <div>{transactionInfoData["supplier_district"] ? transactionInfoData["supplier_district"]+"," : " "}  {transactionInfoData["supplier_state"] ? transactionInfoData["supplier_state"]+"," : " "} </div>
+                                    <div>{transactionInfoData["supplier_locality"] ? transactionInfoData["supplier_locality"] + "," : " "}</div>
+                                    <div>{transactionInfoData["supplier_district"] ? transactionInfoData["supplier_district"] + "," : " "}  {transactionInfoData["supplier_state"] ? transactionInfoData["supplier_state"] + "," : " "} </div>
                                     <div>{transactionInfoData["supplier_mobile"] ? transactionInfoData["supplier_mobile"] : "-"}</div>
                                 </td>
                             </tr>
@@ -113,7 +111,7 @@ let bijakReceipt = {
                         </div>
                         <div className="payment_details_row">
                             <div className="payment_details_row_title">IFSC</div>:
-                    <div className="payment_details_row_value" style={{ textTransform: "uppercase"}}>{transactionInfoData["bank_details"] && transactionInfoData["bank_details"]["bank_ifsc_code"] ? transactionInfoData["bank_details"]["bank_ifsc_code"] : "-"}</div>
+                    <div className="payment_details_row_value" style={{ textTransform: "uppercase" }}>{transactionInfoData["bank_details"] && transactionInfoData["bank_details"]["bank_ifsc_code"] ? transactionInfoData["bank_details"]["bank_ifsc_code"] : "-"}</div>
                         </div>
                         <div className="payment_details_row">
                             <div className="payment_details_row_title">Payment Amount</div>:
@@ -151,21 +149,19 @@ let bijakReceipt = {
 
     downloadAsPdf: function (transactionInfoData) {
         try {
-            const viewWidth = $("#recepit_content").width() ;
-            const viewHeight = $("#recepit_content").height();
-            const input = document.getElementById("recepit_content");
-            html2canvas(input, { width: viewWidth, height: viewHeight })
-                .then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    var pdf = new jsPDF('p', 'mm', [170, 150]);
-                    var width = pdf.internal.pageSize.getWidth();
-                    var height = pdf.internal.pageSize.getHeight();
-                    var position = 0;
-                    pdf.addImage(imgData, 'PNG', 0, position, width, height);
-                    pdf.save(`${transactionInfoData["supplier_fullname"] + "_" + transactionInfoData["createdtime"]}.pdf`);
-                });
 
-            
+            // https://github.com/airarrazaval/html2pdf
+            var element = document.getElementById('recepit_content');
+            var options = {
+                filename: `${transactionInfoData["supplier_fullname"] + "_" + transactionInfoData["createdtime"]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 }
+            }
+            var exporter = new Html2Pdf(element, options);
+            exporter.getPdf(false).then((pdf) => {
+                console.log('doing something before downloading pdf file');
+                pdf.save();
+            });
+
         } catch (err) {
             console.log(err);
             alert(err)

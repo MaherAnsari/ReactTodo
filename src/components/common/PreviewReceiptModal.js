@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import bijakReceipt from './BijakReceipt';
 
 
+
 const styles = theme => ({
 
     dialogPaper: {
@@ -57,6 +58,7 @@ class PreviewReceiptModal extends Component {
     render() {
         const { classes } = this.props;
         const { transactionInfoData } = this.state;
+        const tem = bijakReceipt.getReceipt( transactionInfoData);
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}

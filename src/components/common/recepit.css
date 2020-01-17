@@ -1,15 +1,17 @@
 
 
 .receipt_container {
-    /* width: 595px; */
-    /* height: 841px; */
+    /* width: 595px;
+    height: 841px; */
+    width: 100%;
+    height: 100%;
     background-color: #ffffff;
     border: 1px solid gray;
     font-family: "lato";
 }
 
 .receipt_main{
-    padding: 40px;
+    padding: 60px;
 }
 
 .header{
