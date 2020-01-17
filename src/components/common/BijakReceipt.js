@@ -149,19 +149,27 @@ let bijakReceipt = {
 
     downloadAsPdf: function (transactionInfoData) {
         try {
-
+            let filenameOfPdf = transactionInfoData["supplier_fullname"] + '_' + transactionInfoData["createdtime"]+'.pdf';
             // https://github.com/airarrazaval/html2pdf
             var element = document.getElementById('recepit_content');
+            // var options = {
+            //     filename: filenameOfPdf,
+            //     image: { type: 'jpeg', quality: 0.98 }
+            // }
             var options = {
-                filename: `${transactionInfoData["supplier_fullname"] + "_" + transactionInfoData["createdtime"]}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 }
-            }
+                filename: filenameOfPdf
+              };
             var exporter = new Html2Pdf(element, options);
-            exporter.getPdf(false).then((pdf) => {
-                console.log('doing something before downloading pdf file');
-                pdf.save();
-            });
+            // exporter.getPdf(false).then((pdf) => {
+            //     console.log('downloading pdf file');
+            //     pdf.save();
+            // });
 
+            exporter.getPdf(true).then((pdf) => {
+                console.log('pdf file downloaded');
+              });
+              
+            // Html2Pdf.getPdf(options);
         } catch (err) {
             console.log(err);
             alert(err)
