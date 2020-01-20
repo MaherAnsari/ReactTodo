@@ -14,6 +14,7 @@ import commodityService from '../../app/commodityService/commodityService';
 import CreditLimitDialog from './CreditLimitDialog';
 import commonService from '../../app/commonService/commonService';
 import Loader from './Loader';
+import BankDetail from './bankDetail';
 
 const theme = createMuiTheme({
     overrides: {
@@ -256,6 +257,7 @@ class BusinessInfoDialog extends Component {
                         <Tab label={this.state.paymentLabel} value="payment" /> */}
                                     <Tab label="Edit User" value="editUser" />
                                     <Tab label="Credit Limit" value="creditLimit" />
+                                    <Tab label="Account Info" value="accountDetail" />
                                 </Tabs>
                             </Paper></div>
 
@@ -285,6 +287,18 @@ class BusinessInfoDialog extends Component {
                                     userdata={this.state.userInfoData}
                                     onLimitChange={this.onLimitChange.bind(this)}
                                 /> : ""}
+
+{this.state.currentView === 'accountDetail' ?
+                                <BankDetail 
+                                    openModal={this.state.open}
+                                    onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                    onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                    userdata={this.state.userInfoData}
+
+                                /> : ""}
+
+
+                                
                                 </div>
                                 :
                                 <Loader/>}

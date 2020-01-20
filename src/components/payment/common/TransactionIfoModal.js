@@ -95,6 +95,16 @@ class TransactionIfoModal extends Component {
                                         &nbsp; <strong> {transactionInfoData["linked_order_id"] && transactionInfoData["linked_order_id"] !== "-" ? transactionInfoData["linked_order_id"] : "N.A"}</strong>  </span>
                                 </div>
                                 <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}>App_pay_id </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {transactionInfoData["pay_id"] && transactionInfoData["pay_id"] !== "-" ? transactionInfoData["pay_id"] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
+                                    <span className={classes.actcardtext} style={{ width: "35%" }}> App_Order_Id   </span> :
+                            <span className={classes.actcardtext} style={{ width: "60%" }}>
+                                        &nbsp; <strong> {(transactionInfoData["pay_data"] && transactionInfoData["pay_data"]['related_order_id']) ? transactionInfoData["pay_data"]['related_order_id'] : "N.A"}</strong>  </span>
+                                </div>
+                                <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
                                     <span className={classes.actcardtext} style={{ width: "35%" }}> Utr   </span> :
                             <span className={classes.actcardtext} style={{ width: "60%" }}>
                                         &nbsp; <strong> {transactionInfoData["utr"] && transactionInfoData["utr"] !== "-" ? transactionInfoData["utr"] : "N.A"}</strong>  </span>

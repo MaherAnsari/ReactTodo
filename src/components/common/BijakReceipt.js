@@ -39,7 +39,7 @@ let bijakReceipt = {
                                 <th className="headings">AMOUNT</th>
                             </tr>
                             <tr>
-                                <td className="order_info_cell">{transactionInfoData["linked_order_id"] ? transactionInfoData["linked_order_id"] : "-"}</td>
+                                <td className="order_info_cell">{transactionInfoData["pay_data"]["related_order_id"] ? transactionInfoData["pay_data"]["related_order_id"] : "-"}</td>
                                 <td className="order_info_cell">{transactionInfoData["pay_id"] ? transactionInfoData["pay_id"] : "-"}</td>
                                 <td className="order_info_cell highlighted">₹ {transactionInfoData["amount"] ? Utils.formatNumberWithComma(transactionInfoData["amount"]) : "-"}</td>
                             </tr>
