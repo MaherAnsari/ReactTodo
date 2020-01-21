@@ -13,34 +13,34 @@ import EditUser from './EditUser';
 import UserDetail from './UserDetail';
 import commodityService from '../../app/commodityService/commodityService';
 import orderService from '../../app/orderService/orderService';
-import  PaymentTable from './PaymentTable';
+import PaymentTable from './PaymentTable';
 import paymentService from '../../app/paymentService/paymentService';
 import CreditLimitDialog from './CreditLimitDialog';
-
+import BankDetail from './bankDetail';
 const theme = createMuiTheme({
     overrides: {
-      head: {
-        color: '#2e3247',
-        fontWeight: 600,
-        fontSize: '13px !important',
-        fontFamily: 'lato !important',
-        textTransform: 'uppercase',
-        lineHeight: "1em"
-  
-      },
-      body: {
-        color: 'rgba(0, 0, 0, 0.87)',
-        fontWeight: 500,
-        fontSize: '14px !important',
-        fontFamily: 'lato !important',
-        // lineHeight: '1.5em',
-      }, MuiTablePagination: {
-        toolbar:{
-          paddingRight:'200px'
-        }
-      },
+        head: {
+            color: '#2e3247',
+            fontWeight: 600,
+            fontSize: '13px !important',
+            fontFamily: 'lato !important',
+            textTransform: 'uppercase',
+            lineHeight: "1em"
+
+        },
+        body: {
+            color: 'rgba(0, 0, 0, 0.87)',
+            fontWeight: 500,
+            fontSize: '14px !important',
+            fontFamily: 'lato !important',
+            // lineHeight: '1.5em',
+        }, MuiTablePagination: {
+            toolbar: {
+                paddingRight: '200px'
+            }
+        },
     }
-  });
+});
 
 const styles = theme => ({
     dialogPaper: {
@@ -69,9 +69,9 @@ class UserInfo extends Component {
             isInfo: false,
             currentView: "userInfo",
             orderList: [],
-            paymentList:[],
-            orderLabel:"Orders ("+this.props.data.ordercount+")",
-            paymentLabel:"Payments ("+this.props.data.paymentcount+")"
+            paymentList: [],
+            orderLabel: "Orders (" + this.props.data.ordercount + ")",
+            paymentLabel: "Payments (" + this.props.data.paymentcount + ")"
 
 
 
@@ -79,14 +79,14 @@ class UserInfo extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
-        let param = {"limit":10000};
+        let param = { "limit": 10000 };
         if (this.props.data.role === 'ca') {
             param["buyerid"] = this.props.data.mobile;
         } else if (this.props.data.role === 'broker') {
             param["brokerid"] = this.props.data.id;
         } else if (this.props.data.role === 'la') {
             param["supplierid"] = this.props.data.mobile;
-        }else{
+        } else {
             param["na"] = this.props.data.mobile;
         }
         if (Object.keys(param).length) {
@@ -172,16 +172,16 @@ class UserInfo extends Component {
     }
 
     handleChange = (event, value) => {
-        // console.log(event,value);
+        console.log(event, value);
         this.setState({ currentView: value });
     };
 
-handleClose(event){
-this.props.onEditModalClosed();
-}
+    handleClose(event) {
+        this.props.onEditModalClosed();
+    }
     getTransactionList = async () => {
         try {
-            let param = {"limit":10000,"role":this.props.data.role}
+            let param = { "limit": 10000, "role": this.props.data.role }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.data.mobile, param);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
@@ -200,78 +200,85 @@ this.props.onEditModalClosed();
     }
 
 
-    onLimitChange(event){
+    onLimitChange(event) {
         // console.log(event);
         this.props.onLimitUpdate(event);
     }
     render() {
         const { classes } = this.props;
-        return (     <MuiThemeProvider theme={theme}>
-        <div> <Dialog style={{ zIndex: '1' }}
-            open={this.state.open}
-            classes={{ paper: classes.dialogPaper }}
-            onClose={this.handleDialogCancel.bind(this)}
-            aria-labelledby="form-dialog-title"                >
-            <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px', display: 'flex', marginLeft: '35%', width: '60%' }}>{this.getHeader()}
-                {this.props.isInfo && <p className={classes.profile} style={{ background: this.getProfileColor(this.props.data.profile_segment) }}>{this.props.data.profile_segment}</p>}</div>  </DialogTitle>
-            <DialogContent style={{ width: '100%', padding: '0' }}>
-               <div style={{position: "fixed" ,width: '850px'}}><Paper  square className={classes.root}>
-                    <Tabs
-                        value={this.state.currentView}
-                        onChange={this.handleChange}
-                        variant="fullWidth"
-                        indicatorColor="secondary"
-                        textColor="secondary"
-                        aria-label="icon label tabs example"
-                    >
-                        <Tab label="User Info" value="userInfo" />
-                        <Tab label={this.state.orderLabel} value="orders" />
-                        <Tab label={this.state.paymentLabel} value="payment" />
-                        <Tab label="Edit User" value="editUser" />
-                        <Tab label="Credit Limit" value="creditLimit" />
-                    </Tabs>
-                </Paper></div> 
+        return (<MuiThemeProvider theme={theme}>
+            <div> <Dialog style={{ zIndex: '1' }}
+                open={this.state.open}
+                classes={{ paper: classes.dialogPaper }}
+                onClose={this.handleDialogCancel.bind(this)}
+                aria-labelledby="form-dialog-title"                >
+                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px', display: 'flex', marginLeft: '35%', width: '60%' }}>{this.getHeader()}
+                    {this.props.isInfo && <p className={classes.profile} style={{ background: this.getProfileColor(this.props.data.profile_segment) }}>{this.props.data.profile_segment}</p>}</div>  </DialogTitle>
+                <DialogContent style={{ width: '100%', padding: '0' }}>
+                    <div style={{ position: "fixed", width: '850px' }}><Paper square className={classes.root}>
+                        <Tabs
+                            value={this.state.currentView}
+                            onChange={this.handleChange}
+                            variant="scrollable"
+                            indicatorColor="secondary"
+                            textColor="secondary"
+                            aria-label="icon label tabs example"
+                        >
+                            <Tab label="User Info" value="userInfo" />
+                            <Tab label={this.state.orderLabel} value="orders" />
+                            <Tab label={this.state.paymentLabel} value="payment" />
+                            <Tab label="Edit User" value="editUser" />
+                            <Tab label="Credit Limit" value="creditLimit" />
+                            <Tab label="Account Info" value="accountDetail" />
+                        </Tabs>
+                    </Paper></div>
 
-                {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
-                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    data={this.state.orderList}
-                    userdata={this.props.data}
-                    role={this.props.data.role}
-                /> : ""}
+                    {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
+                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        data={this.state.orderList}
+                        userdata={this.props.data}
+                        role={this.props.data.role}
+                    /> : ""}
 
-                {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
-                    onEditModalClosed={this.handleClose.bind(this)}
-                    data={this.props.data}
-                    commodityList={this.state.commodityList}
-                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                /> : ""}
+                    {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        data={this.props.data}
+                        commodityList={this.state.commodityList}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                    /> : ""}
 
-                {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
-                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    data={this.props.data}
-                /> : ""}
+                    {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
+                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        data={this.props.data}
+                    /> : ""}
 
-                {this.state.currentView === 'payment' ? <PaymentTable openModal={this.state.open}
-                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    data={this.state.paymentList}
-                    userdata={this.props.data}
-                    role={this.props.data.role}
-                /> : ""}
+                    {this.state.currentView === 'payment' ? <PaymentTable openModal={this.state.open}
+                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        data={this.state.paymentList}
+                        userdata={this.props.data}
+                        role={this.props.data.role}
+                    /> : ""}
                     {this.state.currentView === 'creditLimit' ? <CreditLimitDialog openModal={this.state.open}
-                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    userdata={this.props.data}
-                    onLimitChange= {this.onLimitChange.bind(this)}
-                /> : ""}
+                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        userdata={this.props.data}
+                        onLimitChange={this.onLimitChange.bind(this)}
+                    /> : ""}
 
-            </DialogContent>
+                    {this.state.currentView === 'accountDetail' ? <BankDetail openModal={this.state.open}
+                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        userdata={this.props.data}
+                    /> : ""}
 
-        </Dialog>
+                </DialogContent>
 
-        </div>
+            </Dialog>
+
+            </div>
         </MuiThemeProvider>
         );
     }
