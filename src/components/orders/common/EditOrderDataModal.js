@@ -91,6 +91,7 @@ class EditOrderDataModal extends Component {
                 "supporting_images": [],
                 "transport_info": "",
                 "author_name": "",
+                "app_order_id":"",
                 // "author_mobile": "",
                 "creator_role": "",
                 "status": "",
