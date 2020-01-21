@@ -189,6 +189,12 @@ class UserFilterDataView extends React.Component {
         this.props.onRefreshButtonClicked();
       }
 
+      handelEnterKeyPress(event){
+        if (event.keyCode === 13) {
+            event.preventDefault();
+          this.getDataBasedOnFilters( this )
+          }
+      }
     render() {
         const { classes } = this.props;
         return (
@@ -229,6 +235,7 @@ class UserFilterDataView extends React.Component {
                                                     type="text"
                                                     id="searchinput"
                                                     placeholder="Search..."
+                                                    onKeyUp={this.handelEnterKeyPress.bind( this )}
                                                     className={classes.searchInput}
                                                     onChange={this.handelSearchInputChange.bind(this)}
                                                 />

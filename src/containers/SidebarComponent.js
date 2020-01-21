@@ -24,8 +24,8 @@ const _items = [
     name: 'User Data', id: "2", route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       // { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
       // { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
-      { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
-      { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
+      { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
+      { name: 'LA Data (Supplier)', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
     ]
   },
   {
