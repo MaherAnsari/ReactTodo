@@ -127,7 +127,7 @@ class EditTransactionModal extends Component {
 
     componentWillReceiveProps() {
         if (this.props !== this.state) {
-            this.setState({ open: this.props.openModal });
+            this.setState({ open: this.props.open });
         }
     }
 
