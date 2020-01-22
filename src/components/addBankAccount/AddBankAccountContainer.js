@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
 import commonService from '../../app/commonService/commonService';
+import Fab from '@material-ui/core/Fab';
 
 const styles = theme => ({
     root: {
@@ -207,6 +208,44 @@ class AddBankAccountContainer extends React.Component {
         }
     }
 
+    getStatusOfAccount( obj ){
+        if( obj["status"] === "invalid"){
+            return (<Fab
+                variant="extended"
+                size="small"
+                aria-label="Force validate"
+                onClick={( event )=> this.onForceUpdateBankDetail( obj )}
+                style={{ textTransform: "none", background: "#108ad0", color: "#ffffff", padding: "0 8px" }}
+            >
+                Force validate
+    </Fab>)
+        }else{
+            return (<span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>);
+        }
+    }
+
+    onForceUpdateBankDetail = async ( data ) => {
+        try {
+            this.setState({ showLoader : true });
+            let payload ={
+                ifsc :data["ifsc"],
+                accountnumber :data["account"],
+                mobile:data["mobile"],
+                name: data["name"],
+            }
+            let resp = await commonService.forceUpdateBankDetail(payload);
+            this.setState({ showLoader : false });
+                if (resp.data.status === 1) {
+                    alert("Successfully updated");
+                    this.getBankDetails(this.state.currentSelectedUserDetails)
+                }else{
+                    alert("Oops an error occured while validating your account details.");
+                }
+            
+        }catch( err ){
+            console.log( err )
+        }
+    }
 
     render() {
         const { classes } = this.props;
@@ -228,9 +267,9 @@ class AddBankAccountContainer extends React.Component {
                                         <div> No Account added Yet. Click to continue</div>}
                                     <List style={{ padding: "5px 10px" }} >
                                         {acctData && acctData.map((obj, index) => {
-                                            const labelId = `checkbox-list-label-${obj["id"]}`;
+                                            const labelId = `checkbox-list-label-${ index }`;
                                             return (
-                                                <ListItem key={obj["id"]} role={undefined} dense button style={{ background: index % 2 === 0 ? "#f1f1f1" : "#f9f9f9" }}>
+                                                <ListItem key={index } role={undefined} dense  style={{ background: index % 2 === 0 ? "#f1f1f1" : "#f9f9f9" }}>
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={obj["name"]}
@@ -238,7 +277,8 @@ class AddBankAccountContainer extends React.Component {
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>
+                                                    {/* <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span> */}
+                                                    {this.getStatusOfAccount( obj )}
                                                 </ListItem>
                                             );
                                         })}

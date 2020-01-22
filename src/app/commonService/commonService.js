@@ -51,6 +51,19 @@ let commonService = {
             data: payload
         },3);
     },
+
+    forceUpdateBankDetail : async function ( payload ) {
+        // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/forceUpdateBankDetail
+        //ifsc  / accountnumber / mobile
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/bijak/forceUpdateBankDetail',
+            data: payload
+        },3);
+    },
 }
 
 export default commonService;
