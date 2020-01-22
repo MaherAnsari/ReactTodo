@@ -36,11 +36,15 @@ let bijakReceipt = {
                             <tr>
                                 <th className="headings">ORDER ID</th>
                                 <th className="headings">PAYMENT ID</th>
+                                <th className="headings">INVOICE NUMBER</th>
                                 <th className="headings">AMOUNT</th>
                             </tr>
                             <tr>
-                                <td className="order_info_cell">{transactionInfoData["pay_data"]["related_order_id"] ? transactionInfoData["pay_data"]["related_order_id"] : "-"}</td>
+                                <td className="order_info_cell">{transactionInfoData["pay_data"]["related_order_id"] ? transactionInfoData["pay_data"]["related_order_id"] : "-"} 
+                                        {transactionInfoData["internal_reference_number"] ? " (#"+transactionInfoData["internal_reference_number"] +")": ""}
+                                </td>
                                 <td className="order_info_cell">{transactionInfoData["pay_id"] ? transactionInfoData["pay_id"] : "-"}</td>
+                                <td className="order_info_cell">{transactionInfoData["invoive_no"] ? transactionInfoData["invoive_no"] : "-"}</td>
                                 <td className="order_info_cell highlighted">₹ {transactionInfoData["amount"] ? Utils.formatNumberWithComma(transactionInfoData["amount"]) : "-"}</td>
                             </tr>
                         </table>
