@@ -151,9 +151,15 @@ class TransactionIfoModal extends Component {
                                 </div>
                                 <form  noValidate autoComplete="off">
                                         <div style={{display:"flex"}} >
-                                            <TextField style={{width : "49%"}} id="internal_reference_number" label="Internal Reference Number" onChange={this.handelInputChange.bind(this)} />
+                                            <TextField style={{width : "49%"}} 
+                                            id="internal_reference_number" 
+                                            value={ transactionInfoData["internal_reference_number"] }
+                                            label="Internal Reference Number" onChange={this.handelInputChange.bind(this)} />
                                             &nbsp; &nbsp;
-                                            <TextField style={{width : "49%"}} id="invoive_no" label="Invoice Number" onChange={this.handelInputChange.bind(this)} />
+                                            <TextField style={{width : "49%"}} 
+                                            id="invoive_no" label="Invoice Number" 
+                                            value={ transactionInfoData["invoive_no"] }
+                                            onChange={this.handelInputChange.bind(this)} />
                                         </div>
                                     </form>
                             </React.Fragment>: 
