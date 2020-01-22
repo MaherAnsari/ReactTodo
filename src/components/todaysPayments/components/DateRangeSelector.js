@@ -60,6 +60,7 @@ class DateRangeSelector extends React.Component {
                         margin="normal"
                         id="date-picker-dialog"
                         label="Select date"
+                        maxDate={new Date()}
                         format="dd-MMM-yyyy"
                         style={{ marginTop: 0, width: 150,marginRight:'30px' }}
                         value={selectedStartDate}
