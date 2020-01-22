@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
 import commonService from '../../app/commonService/commonService';
 import Fab from '@material-ui/core/Fab';
+import ConfirmDialog from '../../app/common/ConfirmDialog';
+
 
 const styles = theme => ({
     root: {
@@ -49,7 +51,12 @@ class AddBankAccountContainer extends React.Component {
             },
 
             errorFields: {},
-            currentSelectedUserDetails: undefined
+            currentSelectedUserDetails: undefined,
+
+            showConfirmDialog: false,
+            dialogText: "",
+            dialogTitle:"",
+            forceUpdateData: undefined
         }
     }
 
@@ -214,7 +221,8 @@ class AddBankAccountContainer extends React.Component {
                 variant="extended"
                 size="small"
                 aria-label="Force validate"
-                onClick={( event )=> this.onForceUpdateBankDetail( obj )}
+                onClick={( event )=> this.setState({ dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
+                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, forceUpdateData : obj, showConfirmDialog : true })}
                 style={{ textTransform: "none", background: "#108ad0", color: "#ffffff", padding: "0 8px" }}
             >
                 Force validate
@@ -224,9 +232,10 @@ class AddBankAccountContainer extends React.Component {
         }
     }
 
-    onForceUpdateBankDetail = async ( data ) => {
+    onForceUpdateBankDetail = async ( ) => {
         try {
-            this.setState({ showLoader : true });
+            this.setState({ showLoader : true , showConfirmDialog : false });
+            let data = this.state.forceUpdateData;
             let payload ={
                 ifsc :data["ifsc"],
                 accountnumber :data["account"],
@@ -246,6 +255,10 @@ class AddBankAccountContainer extends React.Component {
             console.log( err )
         }
     }
+
+    handelCancelUpdate(event) {
+        this.setState({ showConfirmDialog: false, forceUpdateData : undefined });
+      }
 
     render() {
         const { classes } = this.props;
@@ -377,6 +390,14 @@ class AddBankAccountContainer extends React.Component {
                             <React.Fragment>
                                 <Loader />
                             </React.Fragment>}
+
+                            {this.state.showConfirmDialog ?
+                                <ConfirmDialog
+                                    dialogText={this.state.dialogText}
+                                    dialogTitle={this.state.dialogTitle}
+                                    show={this.state.showConfirmDialog}
+                                    onConfirmed={()=>this.onForceUpdateBankDetail()}
+                                    onCanceled={()=>this.handelCancelUpdate()} /> : ""}
 
                     </div>
                 </Paper>
