@@ -222,7 +222,7 @@ class BusinessInfoDialog extends Component {
         this.props.onLimitUpdate(event);
     }
     render() {
-        const { classes } = this.props;
+        const { classes , currentRoute} = this.props;
         const { showLoader } = this.state;
         return (
             <MuiThemeProvider theme={theme}>

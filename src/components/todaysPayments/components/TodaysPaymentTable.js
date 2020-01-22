@@ -38,6 +38,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
 var moment = require('moment');
 
 const theme = createMuiTheme({
@@ -272,9 +273,10 @@ class TodaysPaymentTable extends Component {
                 return( <Fab
                     variant="extended"
                     size="small"
+                    disabled={!getAccessAccordingToRole("todays-payment", "updatePayout")}
                     aria-label="PAYOUT"
                     onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
-                    style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 15px" }}
+                    style={{ textTransform: "none", background: (!getAccessAccordingToRole("todays-payment", "updatePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
                 >
                    PAYOUT
             </Fab>);
@@ -305,6 +307,7 @@ class TodaysPaymentTable extends Component {
             data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ? "pending_approved" : row["status"] }
             aria-label="more"
             aria-controls={"long-menu"+row["id"] }
+            disabled={!getAccessAccordingToRole("todays-payment", "updatePayout")}
             aria-haspopup="true"
             onClick={this.handelStatusOptionClick.bind( event, row )}
         >
@@ -599,10 +602,10 @@ class TodaysPaymentTable extends Component {
 
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
-                                                        <EditIcon
+                                                    { getAccessAccordingToRole("todays-payment", "editPayment") && <EditIcon
                                                             className="material-Icon"
                                                             onClick={() => this.handelEditModalOpen(row)}
-                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />
+                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />}
                                                     </TableCell>
 
                                                 </TableRow>
@@ -693,7 +696,8 @@ class TodaysPaymentTable extends Component {
                             isInfo={true}
                             userId={ this.state.userInfoData["supplier_mobile"]}
                             onLimitUpdate= {this.changeLimitSucces.bind(this)}
-                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
+                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)}
+                            currentRoute={"todays-payment"} /> : ""}
 
                     {this.state.showTransactionInfoDialog && 
                         <TransactionIfoModal

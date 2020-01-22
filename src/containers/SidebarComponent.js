@@ -4,7 +4,7 @@ import './sidebarCss.css';
 import { withRouter } from 'react-router-dom';
 import { Icon } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
-
+import { getAccessAccordingToRole } from '../config/appConfig';
 
 const styles = theme => ({
   root: {
@@ -104,8 +104,8 @@ class VerticalItem extends React.Component {
       <ul className='class_ul sub-level' >
         {item.children && item.children.map(i => {
           return (
-            <li className="class_li" key={i.route}
-             data-toggle={!isdrawerOpen && "tooltip"} title={!isdrawerOpen && i.name} 
+            (getAccessAccordingToRole(i.route.replace("/",""), "showTab") && <li className="class_li" key={i.route}
+             data-toggle={!isdrawerOpen ? "tooltip":""} title={!isdrawerOpen ? i.name:""} 
               style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
               onClick={() => this.onSelect(i)} >
 
@@ -115,7 +115,7 @@ class VerticalItem extends React.Component {
               <div className='item-name' >{i.name}</div>
               {active === i.route ? <i className={"fa fa-chevron-right"}
                 style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
-            </li>
+            </li>)
           )
         })}
       </ul>
@@ -134,7 +134,7 @@ class VerticalItem extends React.Component {
        
       >
         <div>
-          <div className='item' data-toggle={!isdrawerOpen && "tooltip"} title={!isdrawerOpen && item.name} 
+          <div className='item' data-toggle={!isdrawerOpen ? "tooltip":""} title={!isdrawerOpen ? item.name+"" : ""} 
             style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {

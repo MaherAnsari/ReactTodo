@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
 import commonService from '../../app/commonService/commonService';
+import { getAccessAccordingToRole } from '../../config/appConfig';
 
 const styles = theme => ({
     root: {
@@ -245,18 +246,22 @@ class AddBankAccountContainer extends React.Component {
                                     </List>
                                     <div style={{ paddingTop: "24px" }}>
                                         <Button variant="contained"
-                                            onClick={(event) =>
-                                                this.setState({
-                                                    errorFields: {},
-                                                    currentPayoutView: "addAccount",
-                                                    addAccountData: {
-                                                        account_number: "",
-                                                        ifsc: "",
-                                                        name: "",
-                                                        bank_name: ""
-                                                    }
-                                                })}
-                                            style={{ background: "blue", color: "#fff" }}>Add a new Account</Button>
+                                            onClick={(event) =>{
+                                                    if(getAccessAccordingToRole("add-bank-account","addNewAccount")){
+                                                        this.setState({
+                                                            errorFields: {},
+                                                            currentPayoutView: "addAccount",
+                                                            addAccountData: {
+                                                                account_number: "",
+                                                                ifsc: "",
+                                                                name: "",
+                                                                bank_name: ""
+                                                            }
+                                                        }) } }}
+                                            style={{ 
+                                                background: (getAccessAccordingToRole("add-bank-account","addNewAccount") ? "blue": "gray"), 
+                                                color: "#fff",
+                                                cursor:(getAccessAccordingToRole("add-bank-account","addNewAccount") ? "pointer":"no-drop") }}>Add a new Account</Button>
 
                                     </div>
 
@@ -314,14 +319,15 @@ class AddBankAccountContainer extends React.Component {
                                         <Button variant="contained" onClick={(event) => this.onNewAccountAddClicked(event)}
                                             style={{ background: "blue", color: "#fff" }}> Add </Button>
                                         <Button variant="contained"
-                                            onClick={(event) => this.setState({
-                                                currentPayoutView: "selectAccount",
-                                                addAccountData: {
-                                                    account_number: "",
-                                                    ifsc: "",
-                                                    name: ""
-                                                }
-                                            })}
+                                            onClick={(event) => 
+                                                    this.setState({
+                                                    currentPayoutView: "selectAccount",
+                                                    addAccountData: {
+                                                        account_number: "",
+                                                        ifsc: "",
+                                                        name: ""
+                                                    }
+                                                }) }
                                             style={{ marginLeft: "5px", background: "red", color: "#fff" }}>Cancel </Button>
                                     </div>
                                 </React.Fragment>}
