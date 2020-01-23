@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
 import commonService from '../../app/commonService/commonService';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 
 const styles = theme => ({
     root: {
@@ -245,7 +247,7 @@ class BankDetail extends React.Component {
                                             );
                                         })}
                                     </List>
-                                    <div  className="updateBtnFixedModal" style={{ right:'7px',bottom:'90px'}}>
+                                    {getAccessAccordingToRole("addBankAccount") && <div  className="updateBtnFixedModal" style={{ right:'7px',bottom:'90px'}}>
                                         <Button variant="contained"
                                             onClick={(event) =>
                                                 this.setState({
@@ -260,7 +262,7 @@ class BankDetail extends React.Component {
                                                 })}
                                             style={{ background: "transparent", color: "#fff" }}>Add a new Account</Button>
 
-                                    </div>
+                                    </div>}
 
                                 </React.Fragment>}
 

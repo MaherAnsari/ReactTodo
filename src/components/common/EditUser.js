@@ -13,6 +13,8 @@ import Chip from '@material-ui/core/Chip';
 import commodityService from '../../app/commodityService/commodityService';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Loader from './Loader';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -551,7 +553,7 @@ class EditUser extends Component {
             </div>
 
             <div style={{ textAlign: 'end', marginRight: '4%', marginTop: '2%' }}>
-                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>
+                {getAccessAccordingToRole("editUser") && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                 <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
             </div>
             </div>:

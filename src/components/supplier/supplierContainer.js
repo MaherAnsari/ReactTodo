@@ -11,6 +11,8 @@ import commodityService from './../../app/commodityService/commodityService';
 import sampleFile from '../sampleDownloadFiles/bulk-add-supplier-data-sample.csv';
 import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 
 const styles = theme => ({
     root: {
@@ -121,7 +123,7 @@ class SupplierContainer extends React.Component {
                         downloadAbleFileName="supplier_list_data"
                         onClose={this.getData.bind(this)} />
 
-                    <div className="updateBtndef">
+                    {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex', right: "-5px" }} onClick={this.handleClickOpen.bind(this)}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
@@ -129,7 +131,7 @@ class SupplierContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>ADD SUPPLIER</p></div>
-                    </div>
+                    </div>}
 
                     {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-supplier-data-sample.csv"} href={sampleFile} title="sampleFile">

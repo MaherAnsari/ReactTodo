@@ -6,6 +6,8 @@ import TextField from '@material-ui/core/TextField';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
 import Button from '@material-ui/core/Button';
 import creditLimitService from './../../app/creditLimitService/creditLimitService';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 var moment = require('moment');
 const theme = createMuiTheme({
   overrides: {
@@ -176,6 +178,7 @@ class CreditLimitDialog extends Component {
     return (
       <MuiThemeProvider>
         <div className={classes.root}>
+          {getAccessAccordingToRole("updateCreditLimit") && <div>
           <TextField
             margin="dense"
             id="bijak_credit_limit"
@@ -203,6 +206,7 @@ class CreditLimitDialog extends Component {
             />
             <Button className={classes.button} onClick={this.handleAddClick.bind(this)} color="primary">UPDATE</Button>
           </div>
+          </div>}
           <div className={classes.credit}>Credit History :</div>
           <div className={classes.header}>
             <div style={{ width: "20%", marginLeft: '5px' }}>update By</div>

@@ -1,6 +1,7 @@
-export function getAccessAccordingToRole(appRoute, option) {
+import React from 'react';
+export function getAccessAccordingToRole( option) {
     try {
-        let role = sessionStorage.getItem("userRole") || "dev";
+        let role = ["order-creatio1"];
         let roles = {
             "user-creation": {
                 "addUser": true,
@@ -9,15 +10,15 @@ export function getAccessAccordingToRole(appRoute, option) {
             "add-bank":{
                 "addBankAccount" : true
             },
- 
             "order-creation":{
                 "addOrder": true,
                 "editOrder": true,
             },
-            "payviaCreditption":{
+            "payViaCreditOption":{
                 "payViaCredit": true
             },
  
+            
             "payment-request":{
                 "addBank": true,
                 "payViaCredit": true,
@@ -31,17 +32,31 @@ export function getAccessAccordingToRole(appRoute, option) {
                 "addSupportingImages": true
             },
             "payment-tab-entry-rule":{
-             "addPayment":true,
-             "editPayment":true
+                "addPayment":true,
+                "editPayment":true
              },
              "super-admin":{
                  "allowAll": true
              }
          }
-        if (role === "dev") {
-            return devAccess[appRoute][option];
-        } else {
-            return devAccess[appRoute][option];
+        // if (role === "dev") {
+        //     return devAccess[appRoute][option];
+        // } else {
+        //     return devAccess[appRoute][option];
+        // }
+        let roleList = {};
+        for( let key in roles ){
+            if( role.indexOf( key ) > -1 ){
+                for( let subkeys in roles[ key ] ){
+                roleList[ subkeys ] = roles[ key ][ subkeys ];
+                }
+            }
+        }
+        console.log( roleList )
+        if(roleList.hasOwnProperty( option )){
+            return true;
+        }else{
+            return false;
         }
     } catch (err) {
         console.log(err)

@@ -10,6 +10,8 @@ import InfoDialog from '../common/InfoDialog';
 import sampleFile from '../sampleDownloadFiles/bulk-add-buyer-data-sample.csv';
 import userListService from './../../app/userListService/userListService';
 import FileUploader from '../common/fileUploader';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -119,12 +121,12 @@ class BuyerContainer extends React.Component {
                             handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                             onClose={this.getData.bind(this)}   /> 
 
-                       <div className="updateBtndef">
+                       {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed"  style={{display:'flex', right:"10px"}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p style={{fontSize: "14px",
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD BUYER</p></div>
-                    </div>
+                    </div>}
                     {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-buyer-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}

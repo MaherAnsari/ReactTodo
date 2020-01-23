@@ -44,6 +44,7 @@ import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWall
 import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
 import PayoutModal from '../common/PayoutModal';
 import TransactionIfoModal from '../common/TransactionIfoModal';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
 var moment = require('moment');
 
 const theme = createMuiTheme({
@@ -623,10 +624,10 @@ class ViewTransactionModal extends Component {
 
                                                                     </TableCell>
                                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                                        <EditIcon
+                                                                       {getAccessAccordingToRole("editPayment") &&  <EditIcon
                                                                             className="material-Icon"
                                                                             onClick={() => this.handelEditModalOpen(row)}
-                                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize:"18px" }} />
+                                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize:"18px" }} />}
                                                                     </TableCell>
                                                                 </TableRow>
                                                             );
@@ -728,10 +729,10 @@ class ViewTransactionModal extends Component {
 
                                                     </TableCell>
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
-                                                        <EditIcon
+                                                        { getAccessAccordingToRole("editPayment") &&  <EditIcon
                                                             className="material-Icon"
                                                             onClick={() => this.handelEditModalOpen(row)}
-                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />
+                                                            style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />}
                                                     </TableCell>
 
                                                 </TableRow>

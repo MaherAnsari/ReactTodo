@@ -24,6 +24,8 @@ import orderService from '../../../app/orderService/orderService';
 import Fab from '@material-ui/core/Fab';
 import PayoutOrderModal from '../common/PayoutOrderModal';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
+
 
 var moment = require('moment');
 
@@ -292,8 +294,9 @@ class OrderListTable extends Component {
                 variant="extended"
                 size="small"
                 aria-label="PAYOUT"
+                disabled={ !getAccessAccordingToRole("payViaCredit")}
                 onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
-                style={{ textTransform: "none", background: "#108ad0", color: "#ffffff", padding: "0 8px" }}
+                style={{ cursor:(getAccessAccordingToRole("payViaCredit")?"pointer":"no-drop"),textTransform: "none", background: (getAccessAccordingToRole("payViaCredit") ? "#108ad0" : "gray"), color: "#ffffff", padding: "0 8px" }}
             >
                 Pay via credit
     </Fab>);
@@ -425,10 +428,10 @@ class OrderListTable extends Component {
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
                                                     ₹ {row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
-                                                    <EditIcon
+                                                    {getAccessAccordingToRole("editOrder") && <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
-                                                        style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />
+                                                        style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -492,7 +495,7 @@ class OrderListTable extends Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div> */}
-                    <div className="updateBtndef">
+                    {getAccessAccordingToRole("addOrder") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
@@ -500,7 +503,7 @@ class OrderListTable extends Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Add Order</p></div>
-                    </div>
+                    </div>}
 
                     {/* <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
@@ -514,7 +517,7 @@ class OrderListTable extends Component {
                             onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
                             onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
                         />}
-                    {showEditDataModal &&
+                    {showEditDataModal && 
                         <EditOrderDataModal
                             open={showEditDataModal}
                             commodityList={commodityList}

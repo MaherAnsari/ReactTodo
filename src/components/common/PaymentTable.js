@@ -13,6 +13,7 @@ import Utils from '../../app/common/utils';
 import paymentService from '../../app/paymentService/paymentService';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import { getAccessAccordingToRole } from '../../config/appConfig';
 
 const styles = theme => ({
     heading: {
@@ -236,7 +237,7 @@ class PaymentTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-          {this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca") &&  <div className="updateBtndef">
+          {getAccessAccordingToRole("addPayment") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca") &&  <div className="updateBtndef">
                     <div
                         className="updateBtnFixedModal"
                         style={{ display: 'flex' }}

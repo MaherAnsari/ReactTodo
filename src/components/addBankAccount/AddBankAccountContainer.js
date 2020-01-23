@@ -300,7 +300,7 @@ class AddBankAccountContainer extends React.Component {
                                     <div style={{ paddingTop: "24px" }}>
                                         <Button variant="contained"
                                             onClick={(event) =>{
-                                                    if(getAccessAccordingToRole("add-bank-account","addNewAccount")){
+                                                    if(getAccessAccordingToRole("addBankAccount")){
                                                         this.setState({
                                                             errorFields: {},
                                                             currentPayoutView: "addAccount",
@@ -312,9 +312,9 @@ class AddBankAccountContainer extends React.Component {
                                                             }
                                                         }) } }}
                                             style={{ 
-                                                background: (getAccessAccordingToRole("add-bank-account","addNewAccount") ? "blue": "gray"), 
+                                                background: (getAccessAccordingToRole("addBankAccount") ? "blue": "gray"), 
                                                 color: "#fff",
-                                                cursor:(getAccessAccordingToRole("add-bank-account","addNewAccount") ? "pointer":"no-drop") }}>Add a new Account</Button>
+                                                cursor:(getAccessAccordingToRole("addBankAccount") ? "pointer":"no-drop") }}>Add a new Account</Button>
 
                                     </div>
 

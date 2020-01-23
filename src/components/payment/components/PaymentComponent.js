@@ -25,6 +25,8 @@ import Typography from '@material-ui/core/Typography';
 import Utils from '../../../app/common/utils';
 import FileUploader from '../../common/fileUploader';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -346,7 +348,7 @@ class PaymentComponent extends Component {
                         <div style={{ width: "100%", display: "flex" }}>
                             {/* <div style={{ width: "25%", fontSize: 15 ,padding: "28px"}}> */}
                             <List style={{ display: "contents" }}>
-                                <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
+                                {/* <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
                                     </ListItemAvatar>
@@ -400,7 +402,8 @@ class PaymentComponent extends Component {
                                         </Typography>
                                             </React.Fragment>
                                         } />
-                                </ListItem>
+                                </ListItem> */}
+                                
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
@@ -410,7 +413,7 @@ class PaymentComponent extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             ₹ {this.getPaymentInOutInfo('b_out', 'sum')}
                                         </Typography>
@@ -430,13 +433,14 @@ class PaymentComponent extends Component {
                                 </ListItem>
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
-                                        <Icon style={{ color: "#50a1cf", fontSize: "34px" }}>low_priority</Icon>
+                                        <Icon style={{ color: "rgb(97, 203, 66)", fontSize: "34px" }}>low_priority</Icon>
                                     </ListItemAvatar>
                                     <ListItemText primary={<React.Fragment>
                                         <Typography
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
+                                            // "#e6343a"
                                             style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             {this.getPaymentInOutInfo('b_out', 'count')}
@@ -594,7 +598,7 @@ class PaymentComponent extends Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div> */}
-                    <div className="updateBtndef">
+                    {getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
                         <div
                             className="updateBtnFixed"
                             style={{ display: 'flex' }}
@@ -602,7 +606,7 @@ class PaymentComponent extends Component {
                         >
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p>Add Transaction</p></div>
-                    </div>
+                    </div>}
                     {/* <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
