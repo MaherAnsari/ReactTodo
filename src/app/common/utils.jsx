@@ -140,6 +140,18 @@ function formatDateData ( apiDate ) {
     }
 }
 
+    function getImageName( fileName ){
+        try{
+            let fileExt = fileName.split('.').pop();
+            let filenameWithoutSpace = fileName.split(' ').join('').replace(`.${fileExt}`, "");
+            let epocTime = (new Date()).getTime();
+            return filenameWithoutSpace.toLowerCase() +"_"+epocTime+"."+fileExt;
+
+        }catch( err ){
+            return fileName;
+        }
+    }
+
 const Utils = {
 
     getToken,
@@ -151,7 +163,8 @@ const Utils = {
     getStateData,
     formatDateData,
     downloadDataInCSV,
-    formatNumberWithComma
+    formatNumberWithComma,
+    getImageName
 
 }
 

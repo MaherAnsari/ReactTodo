@@ -119,14 +119,15 @@ let paymentService = {
         },3);
     },
     // Get Todays Payment Table Data 
-    getTodaysPaymentDataApi  : async function ( ){
+    getTodaysPaymentDataApi  : async function ( param ){
         // https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/payment/today
         return Api({
             method: 'get',
             headers: {  
                 "Authorization": Utils.getToken()
             },
-            url: "/payment/today"
+            url: "/payment/today",
+            params: param
         },2);
     }
 }

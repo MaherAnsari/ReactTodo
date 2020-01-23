@@ -30,6 +30,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import Utils from '../../../app/common/utils';
 
 const styles = theme => ({
     heading: {
@@ -410,7 +411,9 @@ class AddTransactionModal extends Component {
         file = event.target.files[0];
         selectedFileName = file ? file.name : null;
         isFileLoading = !file ? false : true;
-        this.setState({ selectedFileName, isFileLoading, file })
+        this.setState({ selectedFileName, isFileLoading, file });
+        let updatedFileName = Utils.getImageName(file.name);
+
         Storage.configure({
             level: 'public',
             AWSS3: {
@@ -418,18 +421,18 @@ class AddTransactionModal extends Component {
                 region: 'ap-south-1'//Specify the region your bucket was created in;
             }
         });
-        Storage.put("payment/" + file.name, file, {
+        Storage.put("payment/" + updatedFileName, file, {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
             let attachmentObj = {
                 bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
-                filename: file.name,
+                filename: updatedFileName,
                 key: result.key
             }
             let { attachmentArray } = this.state;
 
-            Storage.get("payment/" + file.name)
+            Storage.get("payment/" + updatedFileName )
                 .then(result => {
                     attachmentObj["image_url"] = result.split("?")[0];
                     attachmentArray.push(attachmentObj)

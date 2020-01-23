@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from '../../common/Loader';
 import PreviewReceiptModal from '../../common/PreviewReceiptModal';
+import TextField from '@material-ui/core/TextField';
 var moment = require('moment');
 
 
@@ -55,10 +56,6 @@ class TransactionIfoModal extends Component {
         }
     }
 
-    componentWillMount() { }
-
-
-
     handleDialogCancel(event) {
         this.setState({ open: false })
         this.props.onTransactionInfoModalClose();
@@ -67,6 +64,15 @@ class TransactionIfoModal extends Component {
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
         return <div style={{  display: "inline-block" }}> {fdate.split(" ")[0] + ", " + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+    }
+
+    handelInputChange( event ){
+        let transactionInfoDataval = this.state.transactionInfoData;
+        let id = event.target.id;
+        let val = event.target.value;
+        transactionInfoDataval[ id ] = val;
+        this.setState({ transactionInfoData : transactionInfoDataval })
+
     }
 
     render() {
@@ -140,7 +146,22 @@ class TransactionIfoModal extends Component {
                                         <div style={{ padding: "14px" }} className={classes.actcardtext}>
                                             Oops no bank account available.
                                     </div>}
+
+
                                 </div>
+                                <form  noValidate autoComplete="off">
+                                        <div style={{display:"flex"}} >
+                                            <TextField style={{width : "49%"}} 
+                                            id="internal_reference_number" 
+                                            value={ transactionInfoData["internal_reference_number"] }
+                                            label="Internal Reference Number" onChange={this.handelInputChange.bind(this)} />
+                                            &nbsp; &nbsp;
+                                            <TextField style={{width : "49%"}} 
+                                            id="invoive_no" label="Invoice Number" 
+                                            value={ transactionInfoData["invoive_no"] }
+                                            onChange={this.handelInputChange.bind(this)} />
+                                        </div>
+                                    </form>
                             </React.Fragment>: 
                             <PreviewReceiptModal 
                             open ={showReceiptPreview}      

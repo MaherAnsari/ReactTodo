@@ -39,6 +39,8 @@ import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import DateRangeSelector from './DateRangeSelector';
+
 var moment = require('moment');
 
 const theme = createMuiTheme({
@@ -148,17 +150,18 @@ class TodaysPaymentTable extends Component {
             isLimitUpdate: false,
 
             showTransactionInfoDialog: false,
-            transactionInfoData : undefined
+            transactionInfoData : undefined,
+            datePayloads: { "startDate": "" },
         }
     }
 
     componentDidMount() {
-        this.getTodaysTransactionList();
+        // this.getTodaysTransactionList( this.state.datePayloads );
     }
 
-    getTodaysTransactionList = async () => {
+    getTodaysTransactionList = async ( datePayloads ) => {
         try {
-            let resp = await paymentService.getTodaysPaymentDataApi();
+            let resp = await paymentService.getTodaysPaymentDataApi( datePayloads );
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
                 this.setState({
@@ -210,7 +213,7 @@ class TodaysPaymentTable extends Component {
       handelRefreshModal( event ){
           this.setState({             
             allTransactionsData: undefined}, function(){
-                this.getTodaysTransactionList();
+                this.getTodaysTransactionList( this.state.datePayloads );
             });
       }
     
@@ -332,7 +335,7 @@ class TodaysPaymentTable extends Component {
     onUserInfoModalCancel(event) {
         this.setState({ showUserInfo : false,  isInfo: false });
         if(this.state.isLimitUpdate){
-            this.getTodaysTransactionList();
+            this.getTodaysTransactionList( this.state.datePayloads );
         }
     }
 
@@ -380,7 +383,14 @@ class TodaysPaymentTable extends Component {
 
       formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
-        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
+    }
+
+    onDateChaged(data) {
+        this.setState({ datePayloads: data }, function () {
+            this.getTodaysTransactionList( data );
+        });
     }
 
     render() {
@@ -392,6 +402,10 @@ class TodaysPaymentTable extends Component {
             
             <div>
                 <MuiThemeProvider theme={theme}>
+
+                    <div>
+                    <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                    </div>
            
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
