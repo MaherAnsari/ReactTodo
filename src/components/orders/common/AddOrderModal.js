@@ -17,6 +17,7 @@ import { Storage } from 'aws-amplify';
 import commodityService from '../../../app/commodityService/commodityService';
 import orderService from '../../../app/orderService/orderService';
 import Loader from '../../common/Loader';
+import Utils from '../../../app/common/utils';
 
 const styles = theme => ({
     heading: {
@@ -350,6 +351,8 @@ class AddOrderModal extends Component {
         isFileLoading = !file ? false : true;
         this.setState({ selectedFileName, isFileLoading, file })
 
+        let updatedFileName = Utils.getImageName(file.name);
+
         Storage.configure({
             level: 'public',
             AWSS3: {
@@ -358,19 +361,19 @@ class AddOrderModal extends Component {
             }
         });
 
-        Storage.put("order/" + file.name, file, {
+        Storage.put("order/" + updatedFileName, file, {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
             let data = result
             let attachmentObj = {
                 bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
-                filename: file.name,
+                filename: updatedFileName,
                 key: result.key
             }
             let { attachmentArray } = this.state;
 
-            Storage.get("order/" + file.name)
+            Storage.get("order/" + updatedFileName)
                 .then(result => {
                     console.log(result.split("?")[0]);
                     attachmentObj["image_url"] = result.split("?")[0];
