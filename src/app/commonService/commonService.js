@@ -64,6 +64,20 @@ let commonService = {
             data: payload
         },3);
     },
+
+    
+    getUserSpecificRole : async function ( mobile ) {
+        mobile = mobile.replace("+","")
+//    https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/role/getlistofrole?mobile=919205627721
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/role/getlistofrole',
+            params : {"mobile" : mobile }
+        },4);
+    },
 }
 
 export default commonService;

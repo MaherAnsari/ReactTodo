@@ -1,7 +1,7 @@
 import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
-        let role = ["super-admin"];
+        let role = sessionStorage.getItem("userRole") || "restricted";
         let roles = {
             "user-creation": {
                 "addUser": true,
@@ -17,8 +17,6 @@ export function getAccessAccordingToRole(option) {
             "payViaCreditOption": {
                 "payViaCredit": true
             },
-
-
             "payment-request": {
                 "addBank": true,
                 "payViaCredit": true,
@@ -44,7 +42,9 @@ export function getAccessAccordingToRole(option) {
         // } else {
         //     return devAccess[appRoute][option];
         // }
-        if (role.indexOf("super-admin") > -1) {
+        if (role === "restricted") {
+            // alert("not a valid user");
+        }else if (role.indexOf("super-admin") > -1) {
             return true;
         } else {
             let roleList = {};

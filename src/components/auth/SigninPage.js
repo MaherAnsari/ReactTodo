@@ -7,9 +7,8 @@ import { Auth } from "aws-amplify";
 import { Redirect } from "react-router-dom";
 import cookie from 'react-cookies';
 import '../../assets/css/login.css';
-
-
 import $ from 'jquery';
+import commonService from '../../app/commonService/commonService';
 
 const styles = theme => ({
     root: {
@@ -434,8 +433,8 @@ class SignIn extends React.Component {
                 localStorage.setItem('name', data.attributes.name);
 
                 // console.log(cookie);
-
-                this.props.history.push("/home/buyer-list");
+this.getUserRole();
+                // this.props.history.push("/home/buyer-list");
 
 
             }
@@ -482,8 +481,8 @@ class SignIn extends React.Component {
                             var userId = user.username;
                             cookie.save('userId', userId, { path: '/' });
                             // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
-
-                            this.props.history.push("/home/buyer-list");
+                            this.getUserRole();
+                            // this.props.history.push("/home/buyer-list");
 
                         }).catch(e => {
                             console.log(e);
@@ -501,6 +500,21 @@ class SignIn extends React.Component {
         }
     }
 
+    async getUserRole(  ) {
+        try {
+            let resp = await commonService.getUserSpecificRole( this.state.user.username );
+            if (resp.data.status === 1 && resp.data.result) {
+                sessionStorage.setItem("userRole", resp.data.result);
+                this.props.history.push("/home/buyer-list");
+            } else {
+              sessionStorage.setItem("userRole", "restricted" );
+            }
+        } catch (err) {
+            console.error(err)
+            sessionStorage.setItem("userRole", "restricted" );
+        }
+    }
+    
     async handleVerifyOtp(e) {
         e.preventDefault()
         try {
@@ -522,8 +536,8 @@ class SignIn extends React.Component {
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
                 // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
-
-                this.props.history.push("/home/buyer-list");
+this.getUserRole();
+                // this.props.history.push("/home/buyer-list");
 
             } else {
                 alert("failed in login");
@@ -554,9 +568,10 @@ class SignIn extends React.Component {
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
+            
                 // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
-
-                this.props.history.push("/home/buyer-list");
+this.getUserRole();
+                // this.props.history.push("/home/buyer-list");
 
             } else {
                 alert("failed in login");
