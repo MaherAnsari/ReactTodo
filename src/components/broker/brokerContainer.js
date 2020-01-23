@@ -11,6 +11,8 @@ import commodityService from './../../app/commodityService/commodityService';
 import sampleFile from '../sampleDownloadFiles/bulk-add-broker-data-sample.csv';
 import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -135,15 +137,15 @@ class BrokerContainer extends React.Component {
                     commodityList={this.state.commodityList} 
                     onClose={this.getData.bind(this)} />
                     
-                    <div className="updateBtndef">
+                    {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex', right:"2px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>ADD BROKER</p></div>
-                    </div>
-                    <div className="fixedLeftBtnContainer">
+                    </div>}
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-broker-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -155,9 +157,9 @@ class BrokerContainer extends React.Component {
                                 fontWeight: 600
                             }}>Download sample</p></div>
                             </a>
-                    </div>
+                    </div> */}
 
-                     <div className="fixedLeftBtnContainer">
+                     {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
                             >
@@ -167,7 +169,7 @@ class BrokerContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
 
                 </Card> : <Loader />}
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}

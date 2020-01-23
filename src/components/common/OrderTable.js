@@ -14,6 +14,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import AddOrderModal from '../orders/common/AddOrderModal';
 import orderService from '../../app/orderService/orderService';
 import Utils from '../../app/common/utils';
+import { getAccessAccordingToRole } from '../../config/appConfig';
 
 var moment = require('moment');
 
@@ -297,7 +298,7 @@ class OrderTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-            {this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && <div className="updateBtndef">
+            {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && <div className="updateBtndef">
                 <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                     <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                     <p style={{

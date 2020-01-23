@@ -10,6 +10,8 @@ import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
 import FileUploader from '../common/fileUploader';
 import sampleFile from '../sampleDownloadFiles/bulk-add-user-data-sample.csv';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -149,16 +151,16 @@ class UserDataContainer extends React.Component {
                         handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                         commodityList={this.state.commodityList} />
 
-                    <div className="updateBtndef">
+                   {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>ADD USER</p></div>
-                    </div>
+                    </div>}
 
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-user-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -170,9 +172,9 @@ class UserDataContainer extends React.Component {
                                 fontWeight: 600
                             }}>Download sample</p></div>
                             </a>
-                    </div>
+                    </div> */}
 
-                     <div className="fixedLeftBtnContainer">
+                     {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}>
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
@@ -181,7 +183,7 @@ class UserDataContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
 
                 </Card> : <Loader />}
 
