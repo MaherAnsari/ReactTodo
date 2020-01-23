@@ -158,7 +158,7 @@ class UserDataContainer extends React.Component {
                             }}>ADD USER</p></div>
                     </div>
 
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-user-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -181,7 +181,7 @@ class UserDataContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
 
                 </Card> : <Loader />}
 

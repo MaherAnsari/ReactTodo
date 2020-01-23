@@ -22,28 +22,28 @@ const styles = theme => ({
 const _items = [
   {
     name: 'User Data', id: "2", route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
-      // { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
-      // { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
+      { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
+      { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
       { name: 'LA Data (Supplier)', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
     ]
   },
   {
     name: 'Business Data', id: "3", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
-      // { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
+      { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
-      { name: "Today's Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
+      { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
       { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
     ]
-  }
-  // {
-  //   name: 'Supporting Data', id: "1", route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
-  //     { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
-  //     { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
-  //     { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
-  //   ]
-  // },
+  },
+  {
+    name: 'Supporting Data', id: "1", route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
+      { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
+      { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
+      { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
+    ]
+  },
   // { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
  
   // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },

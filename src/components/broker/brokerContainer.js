@@ -143,7 +143,7 @@ class BrokerContainer extends React.Component {
                                 fontWeight: 600
                             }}>ADD BROKER</p></div>
                     </div>
-                    <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-broker-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -167,7 +167,7 @@ class BrokerContainer extends React.Component {
                                 fontFamily: "lato",
                                 fontWeight: 600
                             }}>Upload file</p></div>
-                    </div>
+                    </div> */}
 
                 </Card> : <Loader />}
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
