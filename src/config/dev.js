@@ -137,6 +137,11 @@ if(type === 4){
   .catch(onErrorOfAuthentication);
 }
   
+if(type === 4){
+  return client4(options)
+  .then(errorHandlingForApiResponse)
+  .catch(onErrorOfAuthentication);
+}
 }
 
 
