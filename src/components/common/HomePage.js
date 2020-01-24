@@ -34,7 +34,7 @@ import MandiRateContainer from '../mandiRates/MandiRateContainer';
 import ChangePasswordPage from '../auth/ChangePasswordPage';
 import Icon from '@material-ui/core/Icon';
 import AddBankAccountContainer from '../addBankAccount/AddBankAccountContainer';
-
+import RolePermissionContainer from '../role-permission/RolePermissionContainer';
 const drawerWidth = 250;
 
 const styles = theme => ({
@@ -378,6 +378,7 @@ class Home extends React.Component {
           <Route path='/home/payment' exact component={PaymentContainer} />
           <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
           <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
+          <Route path='/home/role-permission' exact component={RolePermissionContainer} />
          </main>
 
          {showChangePasswordView && 

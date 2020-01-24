@@ -31,7 +31,12 @@ const client3 = axios.create({
   baseURL: baseUrl3
 });
 
-
+const baseUrl4 =(hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?  
+`https://z8ez4q59j2.execute-api.ap-south-1.amazonaws.com/prod/`:
+`https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/` ; 
+const client4 = axios.create({
+  baseURL: baseUrl4
+});
 
 
 
@@ -125,6 +130,11 @@ if(type === 3){
   .catch(onErrorOfAuthentication);
 }
   
+if(type === 4){
+  return client4(options)
+  .then(errorHandlingForApiResponse)
+  .catch(onErrorOfAuthentication);
+}
 }
 
 
