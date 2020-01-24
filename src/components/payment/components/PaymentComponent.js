@@ -432,7 +432,7 @@ class PaymentComponent extends Component {
                                 </ListItem>
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
-                                        <Icon style={{ color: "rgb(97, 203, 66)", fontSize: "34px" }}>low_priority</Icon>
+                                        <Icon style={{ color: "rgb(80, 161, 207)", fontSize: "34px" }}>low_priority</Icon>
                                     </ListItemAvatar>
                                     <ListItemText primary={<React.Fragment>
                                         <Typography

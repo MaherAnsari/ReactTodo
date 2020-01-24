@@ -24,7 +24,9 @@ export default () =>
     <AppliedRoute path="/home/payment" exact component={Home}  />
     <AppliedRoute path="/home/todays-payment" exact component={Home}  />
     <AppliedRoute path="/home/add-bank-account" exact component={Home}  />
-    <AppliedRoute path="/home/role-permission" exact component={Home}  />
+    {sessionStorage.getItem("userRole") &&
+                sessionStorage.getItem("userRole").indexOf("super-admin") > -1 && 
+                <AppliedRoute path="/home/role-permission" exact component={Home}  />}
 
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />

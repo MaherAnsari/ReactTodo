@@ -45,7 +45,7 @@ const _items = [
     ]
   },
   // { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
- 
+
   // { name: 'Broker Data',  route: '/broker-list', iconClassName: 'local_mall', iconColor: "#e6008a", children: [] },
   // { name: 'Buyer Data', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#e6008a", children: [] },
   // { name: 'Supplier Data', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#e6008a", children: [] },
@@ -88,10 +88,10 @@ class VerticalItem extends React.Component {
 
   }
 
-  onSelect(data ) {
+  onSelect(data) {
 
     this.props.onSelect(data.route);
-    this.props.onRouteClicked( data.name );
+    this.props.onRouteClicked(data.name);
     // this.toggleHover(true);
 
 
@@ -104,18 +104,35 @@ class VerticalItem extends React.Component {
       <ul className='class_ul sub-level' >
         {item.children && item.children.map(i => {
           return (
-            <li className="class_li" key={i.route}
-             data-toggle={!isdrawerOpen ? "tooltip":""} title={!isdrawerOpen ? i.name:""} 
-              style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
-              onClick={() => this.onSelect(i)} >
 
-              <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
-                {i.iconClassName}
-              </Icon>
-              <div className='item-name' >{i.name}</div>
-              {active === i.route ? <i className={"fa fa-chevron-right"}
-                style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
-            </li>
+
+            (i.route !== "/role-permission" ?
+              <li className="class_li" key={i.route}
+                data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? i.name : ""}
+                style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
+                onClick={() => this.onSelect(i)} >
+
+                <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
+                  {i.iconClassName}
+                </Icon>
+                <div className='item-name' >{i.name}</div>
+                {active === i.route ? <i className={"fa fa-chevron-right"}
+                  style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
+              </li> : 
+              (sessionStorage.getItem("userRole") &&
+                sessionStorage.getItem("userRole").indexOf("super-admin") > -1 && <li className="class_li" key={i.route}
+                  data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? i.name : ""}
+                  style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
+                  onClick={() => this.onSelect(i)} >
+
+                  <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
+                    {i.iconClassName}
+                  </Icon>
+                  <div className='item-name' >{i.name}</div>
+                  {active === i.route ? <i className={"fa fa-chevron-right"}
+                    style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
+                </li>)
+            )
           )
         })}
       </ul>
@@ -131,10 +148,10 @@ class VerticalItem extends React.Component {
         ref={ref => { this._ref = ref }}
         style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
         className={className + " class_li"}
-       
+
       >
         <div>
-          <div className='item' data-toggle={!isdrawerOpen ? "tooltip":""} title={!isdrawerOpen ? item.name+"" : ""} 
+          <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
             style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
             onClick={() => {
               if (item.children.length === 0) {
@@ -215,7 +232,7 @@ class VerticalNavigation extends React.PureComponent {
               isdrawerOpen={isdrawerOpen}
               activeAccordian={this.state.activeAccordian}
               onAccordClicked={(data) => this.setState({ activeAccordian: data })}
-              onRouteClicked={(rname)=>this.props.onRouteClicked(rname)}
+              onRouteClicked={(rname) => this.props.onRouteClicked(rname)}
               onSelect={this.onRouteChanged.bind(this)}    // this.onRouteChanged(i.route) } //this.props.onChange(i.route)
             />
           ))}
@@ -266,7 +283,7 @@ class ListItems extends React.PureComponent {
             open={this.state.open}
             labname={this.props.labname}
             activeRoute={this.state.activeRoute}
-            onRouteClicked={(rname)=>this.props.onRouteClicked(rname)}
+            onRouteClicked={(rname) => this.props.onRouteClicked(rname)}
             onChange={this.onRouteChanged.bind(this)}
           />
         </div>

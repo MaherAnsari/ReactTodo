@@ -406,7 +406,9 @@ class Home extends React.Component {
           <Route path='/home/payment' exact component={PaymentContainer} />
           <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
           <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
-          <Route path='/home/role-permission' exact component={RolePermissionContainer} />
+          {sessionStorage.getItem("userRole") &&
+                sessionStorage.getItem("userRole").indexOf("super-admin") > -1 && 
+                <Route path='/home/role-permission' exact component={RolePermissionContainer} />}
          </main>
 
         {showChangePasswordView &&
