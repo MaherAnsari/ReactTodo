@@ -1,7 +1,13 @@
 import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
-        let role = sessionStorage.getItem("userRole") || "restricted";
+        let role = "";
+        if( sessionStorage.getItem("userRole") ) {
+            role =  sessionStorage.getItem("userRole").split(",");
+        }else{
+            role = "restricted";
+        }
+
         let roles = {
             "user-creation": {
                 "addUser": true,
@@ -35,6 +41,17 @@ export function getAccessAccordingToRole(option) {
             },
             "super-admin": {
                 "allowAll": true
+            },
+
+            "mandi-data-update":{
+                "addLocation": true,
+                "editMandi": true
+            },
+            "mandi-rates-update":{
+                "addMandiRates" : true
+            },
+            "commodityList-update":{
+                "editCommodity" :true
             }
         }
         // if (role === "dev") {
@@ -43,7 +60,7 @@ export function getAccessAccordingToRole(option) {
         //     return devAccess[appRoute][option];
         // }
         if (role === "restricted") {
-            // alert("not a valid user");
+            return false;
         }else if (role.indexOf("super-admin") > -1) {
             return true;
         } else {
@@ -55,7 +72,7 @@ export function getAccessAccordingToRole(option) {
                     }
                 }
             }
-            console.log(roleList)
+            // console.log(roleList)
             if (roleList.hasOwnProperty(option)) {
                 return true;
             } else {

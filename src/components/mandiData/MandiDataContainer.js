@@ -7,6 +7,8 @@ import MandiListTable from './component/MandiListTable';
 import mandiDataService from './../../app/mandiDataService/mandiDataService';
 import Loader from '../common/Loader';
 import DataUploader from './component/dataUploader';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -82,7 +84,7 @@ class MandiDataContainer extends React.Component {
 
                 {this.state.dataList ? <Card className={classes.card}>
                     <MandiListTable tableData={this.state.dataList} />
-                    <div className="updateBtndef">
+                   {getAccessAccordingToRole("addLocation") && <div className="updateBtndef">
                         <div className="updateBtnFixed" 
                         style={{ display: 'flex', right: "50px" }} 
                         onClick={this.handleClickOpen.bind(this)}>
@@ -90,7 +92,7 @@ class MandiDataContainer extends React.Component {
                         <p style={{fontSize: "14px",
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD LOCATION</p></div>
-                    </div>
+                    </div>}
 
                 </Card> : <Loader />}
 

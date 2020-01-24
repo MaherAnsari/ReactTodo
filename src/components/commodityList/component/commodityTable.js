@@ -16,6 +16,7 @@ import EditCommodityList from './EditCommodityList';
 
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
 
 
 const theme = createMuiTheme({
@@ -242,10 +243,11 @@ class CommodityTable extends Component {
                         /><span className={classes.toggle}>Active</span></TableCell>
                       {/* Edit option Added */}
                       <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >
+                        {getAccessAccordingToRole("editCommodity") && 
                         <EditIcon
                           className="material-Icon"
                           onClick={() => this.handelEditModalOpen(row)}
-                          style={{ color: "#e72e89", cursor: "pointer" , height: "18px", fontSize: "18px"}} />
+                          style={{ color: "#e72e89", cursor: "pointer" , height: "18px", fontSize: "18px"}} />}
                       </TableCell>
                     </TableRow>
 

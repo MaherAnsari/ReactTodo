@@ -4,10 +4,13 @@ import AppliedRoute from "./containers/AppliedRoute";
 import Home from "./components/common/HomePage";
 import Signin from "./components/auth/SigninPage";
 import NotFound from "./components/common/NotFoundPage";
+import AccessDeniedContainer from "./components/auth/AccessDeniedContainer";
+
 export default () =>
   <Switch>
     <Route path="/" exact component={Signin}  />
     <Route path="/login" exact component={Signin}  />
+    <Route path="/access-denied" exact component={AccessDeniedContainer}  />
     <AppliedRoute path="/home" exact component={Home}  />
     <AppliedRoute path="/home/mandi-data" exact component={Home}  />
     <AppliedRoute path="/home/user-list" exact component={Home}  />

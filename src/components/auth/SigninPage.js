@@ -502,16 +502,20 @@ this.getUserRole();
 
     async getUserRole(  ) {
         try {
+            // sessionStorage.setItem("userRole", ["add-bank", "order-creation"]);
+            // this.props.history.push("/home/buyer-list");
             let resp = await commonService.getUserSpecificRole( this.state.user.username );
-            if (resp.data.status === 1 && resp.data.result) {
-                sessionStorage.setItem("userRole", resp.data.result);
+            if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0) {
+                sessionStorage.setItem("userRole", resp.data.result[0].permissions);
                 this.props.history.push("/home/buyer-list");
             } else {
               sessionStorage.setItem("userRole", "restricted" );
+              this.props.history.push("/access-denied");
             }
         } catch (err) {
             console.error(err)
             sessionStorage.setItem("userRole", "restricted" );
+            this.props.history.push("/access-denied");
         }
     }
     
@@ -570,7 +574,7 @@ this.getUserRole();
                 cookie.save('userId', userId, { path: '/' });
             
                 // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
-this.getUserRole();
+                this.getUserRole();
                 // this.props.history.push("/home/buyer-list");
 
             } else {
@@ -585,7 +589,7 @@ this.getUserRole();
         if (cookie.load('token')) {
             // return <Redirect to={"/" + Utils.getDbName() + "/home/buyer-list"} />;
 
-            return <Redirect to={"/home/buyer-list"} />;
+            // return <Redirect to={"/home/buyer-list"} />;
 
         }
 

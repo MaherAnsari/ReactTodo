@@ -10,6 +10,8 @@ import Utils from '../../app/common/utils';
 import commodityService from '../../app/commodityService/commodityService';
 import mandiDataService from '../../app/mandiDataService/mandiDataService';
 import AddRatesDialog from './components/AddRatesDialog';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -154,13 +156,13 @@ class MandiRateContainer extends React.Component {
                     {(this.state.showLoader || !this.state.districtData) ? <Loader /> : <OrderListTable tableData={this.state.mandiListData} />
                     }
 
-                    <div className="updateBtndef">
+                    {getAccessAccordingToRole("addMandiRates") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex', right: "50px" }} onClick={this.handleClickOpen.bind(this)}>
                         <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                         <p style={{fontSize: "14px",
                                     fontFamily: "lato",
                                     fontWeight: 600}}>ADD MANDI RATES</p></div>
-                    </div>
+                    </div>}
 
                 </Paper>
                 {this.state.showAddModal ?

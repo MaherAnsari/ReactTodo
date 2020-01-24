@@ -23,6 +23,8 @@ import LockIcon from '@material-ui/icons/Lock';
 
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
+
 
 const theme = createMuiTheme({
   overrides: {
@@ -376,10 +378,10 @@ class MandiListTable extends Component {
                             {row.businessAddedPlace ?
                               <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ height: "18px", fontSize: "18px", color: 'red', cursor: 'pointer' }} /> : ""
                             }
-                            <EditIcon
+                            {getAccessAccordingToRole("editMandi") && <EditIcon
                               className="material-Icon"
                               onClick={() => this.handelEditModalOpen(row)}
-                              style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />
+                              style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />}
                           </div>
                         </TableCell>
                       </TableRow>

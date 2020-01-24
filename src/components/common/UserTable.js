@@ -326,7 +326,7 @@ class UserListTable extends Component {
             return (
                 <p className={classes.commodityDataClass} style={{ fontSize: isTooltip? "15px":"12px"}}>
                     {commoditCellList.map((commodity, i) =>
-                        (<span style={{ fontSize: isTooltip ? "15px":"12px", fontFamily: "lato" }}>
+                        (<span key={i+"_commodity"} style={{ fontSize: isTooltip ? "15px":"12px", fontFamily: "lato" }}>
                         <strong style={{ fontSize: isTooltip ? "14px":"13px", fontFamily: "lato", color: isTooltip ? "#ff":(colorArray[ i < colorArray.length ? i: i % colorArray.length  ] )  }}>
                         {commodity.charAt(0).toUpperCase()}</strong>{commodity.slice(1) + (i !== commoditCellList.length - 1 ? ", " : "")}
                         </span>)
@@ -373,7 +373,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center", minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '', color: i == 4 ? "goldenrod" : "" }}>{i == 4 ? <StarIcon /> : option}</TableCell>
+                                        <TableCell key={i+"_"} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center", minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '', color: i == 4 ? "goldenrod" : "" }}>{i == 4 ? <StarIcon /> : option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
 

@@ -34,6 +34,7 @@ import MandiRateContainer from '../mandiRates/MandiRateContainer';
 import ChangePasswordPage from '../auth/ChangePasswordPage';
 import Icon from '@material-ui/core/Icon';
 import AddBankAccountContainer from '../addBankAccount/AddBankAccountContainer';
+import commonService from '../../app/commonService/commonService';
 
 const drawerWidth = 250;
 
@@ -172,13 +173,13 @@ class Home extends React.Component {
       },
       drainingTask: 0,
       runningTask: 0,
-      failedTask:0,
+      failedTask: 0,
       healthyLabsCount: 0,
-      dbNameList: { 'runningTask': [], 'drainingTask': [], 'failedTask': [], "healthyLabs":{} },
-      showUnHealthyList : false,
+      dbNameList: { 'runningTask': [], 'drainingTask': [], 'failedTask': [], "healthyLabs": {} },
+      showUnHealthyList: false,
 
-      showChangePasswordView : false,
-      currentTabName:""
+      showChangePasswordView: false,
+      currentTabName: ""
     };
     this.logoutUser = this.logoutUser.bind(this)
     this.changePasswordViewClick = this.changePasswordViewClick.bind(this)
@@ -189,18 +190,44 @@ class Home extends React.Component {
   componentWillMount() {
     window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
   }
- async componentDidMount(){
 
-    // let rows = [];
+  async componentDidMount() {
+    Auth.currentAuthenticatedUser()
+    .then(user => {
+    this.getUserRole( user.attributes.phone_number );
+  })
+  .catch(err => {
+    console.log(err);
+  });
+  }
+
+  async getData() {
     let resp = await mandiDataService.getDistrictList();
-    // console.log(resp.data);
     if (resp.data.status === 1 && resp.data.result) {
-        Utils.setDistrictData(resp.data.result.data )
+      Utils.setDistrictData(resp.data.result.data)
+    }
+  }
 
+  async getUserRole(mobile) {
+    // // alert( mobile );
+    try {
+      // sessionStorage.setItem("userRole", [ ["add-bank", "order-creation"]]);
+      let resp = await commonService.getUserSpecificRole(mobile);
+      if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0) {
+        sessionStorage.setItem("userRole", resp.data.result[0].permissions );
+        this.getData();
+      } else {
+        sessionStorage.setItem("userRole", "restricted");
+        this.props.history.push("/access-denied");
+      }
+    } catch (err) {
+      console.error(err)
+      sessionStorage.setItem("userRole", "restricted");
+      this.props.history.push("/access-denied");
+    }
   }
 
 
-  }
 
   handleDrawerOpen = () => {
     this.setState({ open: true });
@@ -219,7 +246,7 @@ class Home extends React.Component {
   };
 
   callTaskApiEveryOneMinutes() {
-   
+
   }
 
 
@@ -239,15 +266,15 @@ class Home extends React.Component {
 
   changePasswordViewClick = () => {
     try {
-          this.setState({ showChangePasswordView : true, anchorEl: null })
-     
+      this.setState({ showChangePasswordView: true, anchorEl: null })
+
     } catch (err) {
       console.log(err)
     }
   }
 
   async getDbLogo() {
-    
+
   }
 
   handelGlobalDbSwitched = isGlobalOption => {
@@ -262,7 +289,7 @@ class Home extends React.Component {
     });
   }
 
-  
+
 
 
   render() {
@@ -299,13 +326,13 @@ class Home extends React.Component {
                   }
                 </Grid>
                 {/* <Grid style={{marginLeft:'5px',padding: "47px 0px"}} > */}
-                    <div style={{color: "white", margin: "auto",display: "flex",width: "22%",height: "25px"}}>
-                    <Icon style={{ color: "#50a1cf", fontSize: "24px" }}>play_arrow</Icon>
-                    <span style={{lineHeight: "26px"}}> {this.state.currentTabName }</span>
-                     </div>
+                <div style={{ color: "white", margin: "auto", display: "flex", width: "22%", height: "25px" }}>
+                  <Icon style={{ color: "#50a1cf", fontSize: "24px" }}>play_arrow</Icon>
+                  <span style={{ lineHeight: "26px" }}> {this.state.currentTabName}</span>
+                </div>
                 {/* </Grid> */}
-                
-                <Grid style={{marginLeft:'60%'}} item xs={2} sm={1}>
+
+                <Grid style={{ marginLeft: '60%' }} item xs={2} sm={1}>
                   {!cookie.load('token')
 
                     ? <div></div>
@@ -331,12 +358,12 @@ class Home extends React.Component {
                         open={open}
                         onClose={this.handleClose}
                       >
-                        <MenuItem style={{ fontSize:"14px", fontWeight: 500, fontFamily:"lato"}} 
-                              onClick={this.changePasswordViewClick}>Change Password
+                        <MenuItem style={{ fontSize: "14px", fontWeight: 500, fontFamily: "lato" }}
+                          onClick={this.changePasswordViewClick}>Change Password
                         </MenuItem>
-                        <MenuItem style={{ fontSize:"14px", fontWeight: 500, fontFamily:"lato"}} 
-                              onClick={this.logoutUser}>Logout</MenuItem>
-                        
+                        <MenuItem style={{ fontSize: "14px", fontWeight: 500, fontFamily: "lato" }}
+                          onClick={this.logoutUser}>Logout</MenuItem>
+
                       </Menu>
                     </div>
                   }
@@ -350,20 +377,20 @@ class Home extends React.Component {
           classes={{
             paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
           }}
-          
+
           open={this.state.open}
 
         >
-         
+
           {/* <Divider /> */}
-          <List id="binod" style={{padding:'0'}}>
-            <ListItems 
-                      globalModeOption={this.state.isSetGlobal} 
-                      isdrawerOpen={this.state.open} 
-                      dbImageUrl={this.state.dbImgUrl} 
-                      onRouteClicked={ (rname)=> this.setState({ currentTabName : rname})}
-                      labname={this.state.labname} />
-            </List>
+          <List id="binod" style={{ padding: '0' }}>
+            <ListItems
+              globalModeOption={this.state.isSetGlobal}
+              isdrawerOpen={this.state.open}
+              dbImageUrl={this.state.dbImgUrl}
+              onRouteClicked={(rname) => this.setState({ currentTabName: rname })}
+              labname={this.state.labname} />
+          </List>
         </Drawer>
         <main className={classes.content} style={this.state.open ? { marginLeft: '250px' } : { marginLeft: '56px' }}>
           <Route path='/home/mandi-data' exact component={MandiDataContainer} />
@@ -378,12 +405,12 @@ class Home extends React.Component {
           <Route path='/home/payment' exact component={PaymentContainer} />
           <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
           <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
-         </main>
+        </main>
 
-         {showChangePasswordView && 
-            <ChangePasswordPage 
-              openModal={this.state.showChangePasswordView}
-              onModalClose={() => this.setState({ showChangePasswordView : false })} />}
+        {showChangePasswordView &&
+          <ChangePasswordPage
+            openModal={this.state.showChangePasswordView}
+            onModalClose={() => this.setState({ showChangePasswordView: false })} />}
       </div>
     );
   }
