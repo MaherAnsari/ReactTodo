@@ -403,7 +403,6 @@ class PaymentComponent extends Component {
                                             </React.Fragment>
                                         } />
                                 </ListItem> */}
-                                
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
@@ -440,8 +439,7 @@ class PaymentComponent extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            // "#e6343a"
-                                            style={{ color: "#e6343a", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             {this.getPaymentInOutInfo('b_out', 'count')}
                                         </Typography>
