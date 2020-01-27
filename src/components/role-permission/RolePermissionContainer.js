@@ -58,7 +58,7 @@ class RolePermissionContainer extends React.Component {
             userList: null,
             isupdate: false,
             editdata: null,
-            searchedText : ""
+            searchedText: ""
         }
     }
 
@@ -101,9 +101,9 @@ class RolePermissionContainer extends React.Component {
         this.setState({ isupdate: true, editdata: row, showModal: true });
     }
 
-    onSearchInputChanged( event ){
-        let val = event.target.value; 
-        this.setState({ searchedText  :  val });
+    onSearchInputChanged(event) {
+        let val = event.target.value;
+        this.setState({ searchedText: val });
     }
 
     render() {
@@ -112,12 +112,12 @@ class RolePermissionContainer extends React.Component {
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
-                    <div style={{ textAlign: "left", padding: "5px", marginLeft:"40px" }}>
-                        <TextField 
-                        id="standard-basic" 
-                        style={{ width: "30%"}}
-                        label="Search user .."
-                        onChange={(event)=> this.onSearchInputChanged( event )} />
+                    <div style={{ textAlign: "left", padding: "5px", marginLeft: "40px" }}>
+                        <TextField
+                            id="standard-basic"
+                            style={{ width: "30%" }}
+                            label="Search user .."
+                            onChange={(event) => this.onSearchInputChanged(event)} />
                     </div>
                     <div className="orderList" style={{ backgroundColor: '#2e3247', fontSize: '18px' }}>
                         <div style={{ width: "25%" }}>User</div>
@@ -127,27 +127,28 @@ class RolePermissionContainer extends React.Component {
 
                     {this.state.userList ? <div style={{ maxHeight: "70vh", overflowY: "scroll" }} >
                         {this.state.userList
-                        .filter(e => {
-                            if (e.name.toLowerCase().indexOf( searchedText.toLowerCase() ) > -1 ) {
-                                return e;
-                            } 
-                        })
-                        .map((row, i) => {
-                            return (
-                                <div key={i} style={{ height: '40px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
-                                    <div style={{ width: "25%", cursor: 'pointer' }} onClick={this.onUserClick.bind(this, row)} className=" name-span" >{row.name + '(' + row.mobile + ')'}</div>
-                                    <div style={{ width: "75%" }}>{row.permissions}</div>
+                            .filter(e => {
+                                if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1) {
+                                    return e;
+                                }
+                            })
+                            .map((row, i) => {
+                                return (
+                                    <div key={i} style={{ height: '40px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
+                                        <div style={{ width: "25%", cursor: 'pointer' }} onClick={this.onUserClick.bind(this, row)} className=" name-span" >{row.name + '(' + row.mobile + ')'}</div>
+                                        <div style={{ width: "75%" }}>{row.permissions}</div>
 
-                                </div>
-                            )
-                        })}
+                                    </div>
+                                )
+                            })}
                     </div> :
                         <NoDataAvailable />}
-{this.state.userList && this.state.userList
+                        
+                    {this.state.userList && this.state.userList
                         .filter(e => {
-                            if (e.name.toLowerCase().indexOf( searchedText.toLowerCase() ) > -1 ) {
+                            if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1) {
                                 return e;
-                            } 
+                            }
                         }).length === 0 && searchedText.length > 0 && <NoDataAvailable />}
 
                 </Paper>
