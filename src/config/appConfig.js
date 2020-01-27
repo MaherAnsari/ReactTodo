@@ -1,9 +1,9 @@
 import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
-        // if( window.location.href.indexOf("localhost/")){
-        //     sessionStorage.setItem("userRole", "super-admin"); // special check for developer
-        // }
+        if( window.location.href.indexOf("localhost/")){
+            sessionStorage.setItem("userRole", "super-admin"); // special check for developer
+        }
         
         let role = "";
         if( sessionStorage.getItem("userRole") ) {
