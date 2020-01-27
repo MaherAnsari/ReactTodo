@@ -34,7 +34,6 @@ const _items = [
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
       { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
       { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
-      { name: "Role-Permission", route: '/role-permission', iconClassName: 'supervised_user_circle', iconColor: "#bde347" },
     ]
   },
   {
@@ -42,6 +41,11 @@ const _items = [
       { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
       { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
       { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
+    ]
+  },
+  {
+    name: 'Permissions', id: "4", route: '/', iconClassName: 'supervised_user_circle', iconColor: "#ed9649", children: [
+      { name: "Role-Permission", route: '/role-permission', iconClassName: 'supervised_user_circle', iconColor: "#bde347" },
     ]
   },
   // { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646", children: [] },
@@ -104,35 +108,18 @@ class VerticalItem extends React.Component {
       <ul className='class_ul sub-level' >
         {item.children && item.children.map(i => {
           return (
+            <li className="class_li" key={i.route}
+              data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? i.name : ""}
+              style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
+              onClick={() => this.onSelect(i)} >
 
-
-            (i.route !== "/role-permission" ?
-              <li className="class_li" key={i.route}
-                data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? i.name : ""}
-                style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
-                onClick={() => this.onSelect(i)} >
-
-                <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
-                  {i.iconClassName}
-                </Icon>
-                <div className='item-name' >{i.name}</div>
-                {active === i.route ? <i className={"fa fa-chevron-right"}
-                  style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
-              </li> : 
-              (sessionStorage.getItem("userRole") &&
-                sessionStorage.getItem("userRole").indexOf("super-admin") > -1 && <li className="class_li" key={i.route}
-                  data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? i.name : ""}
-                  style={{ background: active === i.route ? "#05073a" : "", borderLeft: active === i.route ? '4px solid #5cb8eb' : '#25283b', color: i.iconColor }}
-                  onClick={() => this.onSelect(i)} >
-
-                  <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
-                    {i.iconClassName}
-                  </Icon>
-                  <div className='item-name' >{i.name}</div>
-                  {active === i.route ? <i className={"fa fa-chevron-right"}
-                    style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
-                </li>)
-            )
+              <Icon className="sideBarIcon" style={{ fontSize: "18px" }}>
+                {i.iconClassName}
+              </Icon>
+              <div className='item-name' >{i.name}</div>
+              {active === i.route ? <i className={"fa fa-chevron-right"}
+                style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i> : ""}
+            </li>
           )
         })}
       </ul>
@@ -144,34 +131,62 @@ class VerticalItem extends React.Component {
     let className = 'vertical-item-component';
     if (activeAccordian === item["id"]) className += ' is-hover'
     return (
-      <li
-        ref={ref => { this._ref = ref }}
-        style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
-        className={className + " class_li"}
-
-      >
-        <div>
-          <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
-            style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
-            onClick={() => {
-              if (item.children.length === 0) {
-                this.onSelect(item)
-              } else {
-                this.toggleHover(activeAccordian !== item.id ? item.id : "")
+      (item["id"] !== "4" ?
+        <li
+          ref={ref => { this._ref = ref }}
+          style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
+          className={className + " class_li"}>
+          <div>
+            <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
+              style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
+              onClick={() => {
+                if (item.children.length === 0) {
+                  this.onSelect(item)
+                } else {
+                  this.toggleHover(activeAccordian !== item.id ? item.id : "")
+                }
               }
-            }
-            }  >
-            <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
-              {item.iconClassName}
-            </Icon>
-            <div className='item-name'>{item.name}</div>
-            {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
-              style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
+              }  >
+              <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
+                {item.iconClassName}
+              </Icon>
+              <div className='item-name'>{item.name}</div>
+              {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
+                style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
+            </div>
+            {this.renderSubLevel(item)}
           </div>
-          {this.renderSubLevel(item)}
-        </div>
-      </li>
+        </li>
+        : (sessionStorage.getItem("userRole") &&
+          sessionStorage.getItem("userRole").indexOf("super-admin") > -1 &&
+          <li
+            ref={ref => { this._ref = ref }}
+            style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
+            className={className + " class_li"}>
+            <div>
+              <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
+                style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
+                onClick={() => {
+                  if (item.children.length === 0) {
+                    this.onSelect(item)
+                  } else {
+                    this.toggleHover(activeAccordian !== item.id ? item.id : "")
+                  }
+                }
+                }  >
+                <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
+                  {item.iconClassName}
+                </Icon>
+                <div className='item-name'>{item.name}</div>
+                {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
+                  style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
+              </div>
+              {this.renderSubLevel(item)}
+            </div>
+          </li>)
+      )
     )
+
   }
 }
 VerticalItem.defaultProps = {

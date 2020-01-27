@@ -406,6 +406,14 @@ class PayoutOrderModal extends Component {
                                                 style={{ fontSize: "14px", fontFamily: "lato" }}
                                                 labelPlacement="end"
                                             />
+                                            <FormControlLabel
+                                                value="RTGS"
+                                                control={<Radio color="primary" />}
+                                                label="RTGS"
+                                                disabled={payoutData["amount"] < 200000}
+                                                style={{ fontSize: "14px", fontFamily: "lato" }}
+                                                labelPlacement="end"
+                                            />
                                         </RadioGroup>
                                         {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
                                     </FormControl>}

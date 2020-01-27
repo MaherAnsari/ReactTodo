@@ -24,22 +24,22 @@ export function getAccessAccordingToRole(option) {
                 "addOrder": true,
                 "editOrder": true,
             },
-            "payViaCreditOption": {
-                "payViaCredit": true
+            "payout-role": { //yyy
+                "makePayout": true
             },
-            "payment-request": {
+            "request-payout": {
                 "addBank": true,
                 "payViaCredit": true,
             },
             "manage-credit": {
                 "updateCreditLimit": true
             },
-            "manange-supporting-data": {
+            "manage-images-data": {
                 "addCommodity": true,
                 "addMandi": true,
                 "addSupportingImages": true
             },
-            "payment-tab-entry-rule": {
+            "payment-update": {
                 "addPayment": true,
                 "editPayment": true
             },

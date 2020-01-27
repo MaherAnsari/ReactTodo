@@ -75,9 +75,22 @@ class RoleDialog extends Component {
             data:{"mobile": "",
             "name": "",
             "permissions": []},
-            roleList: ['user-creation', 'add-bank','order-creation','payviaCreditption','payment-request','manage-credit','manange-supporting-data'
-                        ,'payment-tab-entry-rule','super-admin','mandi-data-update','mandi-rates-update','commodityList-update'],
-
+            // roleList: ['user-creation', 'add-bank','order-creation','payviaCreditption','payment-request','manage-credit','manange-supporting-data'
+            //             ,'payment-tab-entry-rule','super-admin','mandi-data-update','mandi-rates-update','commodityList-update'],
+            roleList : [
+                "user-creation",
+                "add-bank",
+                "order-creation",
+                "payout-role",
+                "request-payout",
+                "manage-credit",
+                "manage-images-data",
+                "payment-update",
+                "super-admin",
+                "mandi-data-update",
+                "mandi-rates-update",
+                "commodityList-update"
+            ],
 
             showLoader: false
 
