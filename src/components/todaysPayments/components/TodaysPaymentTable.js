@@ -276,10 +276,10 @@ class TodaysPaymentTable extends Component {
                 return( <Fab
                     variant="extended"
                     size="small"
-                    disabled={!getAccessAccordingToRole("todays-payment", "updatePayout")}
+                    disabled={!getAccessAccordingToRole("makePayout")}
                     aria-label="PAYOUT"
                     onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
-                    style={{ textTransform: "none", background: (!getAccessAccordingToRole("todays-payment", "updatePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
+                    style={{ textTransform: "none", background: (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
                 >
                    PAYOUT
             </Fab>);
@@ -310,7 +310,7 @@ class TodaysPaymentTable extends Component {
             data-toggle="tooltip" data-placement="center" title={row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ? "pending_approved" : row["status"] }
             aria-label="more"
             aria-controls={"long-menu"+row["id"] }
-            disabled={!getAccessAccordingToRole("todays-payment", "updatePayout")}
+            disabled={!getAccessAccordingToRole("makePayout")}
             aria-haspopup="true"
             onClick={this.handelStatusOptionClick.bind( event, row )}
         >
@@ -616,7 +616,7 @@ class TodaysPaymentTable extends Component {
 
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
-                                                    { getAccessAccordingToRole("todays-payment", "editPayment") && <EditIcon
+                                                    { getAccessAccordingToRole("editPayment") && <EditIcon
                                                             className="material-Icon"
                                                             onClick={() => this.handelEditModalOpen(row)}
                                                             style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px"  }} />}

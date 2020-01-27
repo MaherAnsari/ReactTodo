@@ -23,6 +23,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Utils from './../../../app/common/utils';
+import { getAccessAccordingToRole } from '../../../config/appConfig';
+
 
 const styles = theme => ({
 
@@ -269,7 +271,7 @@ class PayoutModal extends Component {
                                 {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
                                 </FormControl>}
                                     </div>
-                                {acctDetails !== "-" && acctDetails !== "" &&
+                                {acctDetails !== "-" && acctDetails !== "" && getAccessAccordingToRole("payViaCredit") && 
                                     <div style={{ textAlign: "center", paddingTop: "10px" }}>
                                         <Button
                                             variant="contained"

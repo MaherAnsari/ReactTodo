@@ -341,8 +341,8 @@ class ViewTransactionModal extends Component {
                 return( <Fab
                     variant="extended"
                     size="small"
-                    aria-label="PAYOUT"
-                    onClick={( event )=> {if(getAccessAccordingToRole("payViaCredit")){this.setState({ showPayoutModal : true, payoutData : row })}}}
+                    aria-label="PAYOUT" 
+                    onClick={( event )=> {if(getAccessAccordingToRole("makePayout")){this.setState({ showPayoutModal : true, payoutData : row })}}}
                     style={{ textTransform: "none", background: "#0c6523", color: "#ffffff", padding: "0 15px" }}
                 >
                    PAYOUT
