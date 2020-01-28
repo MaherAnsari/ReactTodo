@@ -128,7 +128,7 @@ class RolePermissionContainer extends React.Component {
                     {this.state.userList ? <div style={{ maxHeight: "70vh", overflowY: "scroll" }} >
                         {this.state.userList
                             .filter(e => {
-                                if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1) {
+                                if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1 || e.mobile.indexOf(searchedText) > -1 ) {
                                     return e;
                                 }
                             })
