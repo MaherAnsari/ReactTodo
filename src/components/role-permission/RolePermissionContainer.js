@@ -137,7 +137,7 @@ class RolePermissionContainer extends React.Component {
                                 })
                                 .map((row, i) => {
                                     return (
-                                        <div key={i} style={{ height: '40px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
+                                        <div key={i} style={{ height: '50px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
                                             <div style={{ width: "25%", cursor: 'pointer' }} onClick={this.onUserClick.bind(this, row)} className=" name-span" >{row.name + '(' + row.mobile + ')'}</div>
                                             <div style={{ width: "75%" }}>{row.permissions}</div>
 
