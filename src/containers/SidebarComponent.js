@@ -4,6 +4,7 @@ import './sidebarCss.css';
 import { withRouter } from 'react-router-dom';
 import { Icon } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
+import { getStatusOfRole } from '../config/appConfig';
 
 const styles = theme => ({
   root: {
@@ -20,7 +21,7 @@ const styles = theme => ({
 
 const _items = [
   {
-    name: 'User Data', id: "2", route: '', iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
+    name: 'User Data', id: "2", route: '', roletabName:"user-creation", iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
       { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
@@ -28,7 +29,7 @@ const _items = [
     ]
   },
   {
-    name: 'Business Data', id: "3", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
+    name: 'Business Data', id: "3", roletabName:"bussiness-data", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
       { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
@@ -37,14 +38,14 @@ const _items = [
     ]
   },
   {
-    name: 'Supporting Data', id: "1", route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
+    name: 'Supporting Data', roletabName:"SupportingDataManagement", id: "1", route: '/', iconClassName: 'work_outline', iconColor: "#5cb8eb", children: [
       { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
       { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
       { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
     ]
   },
   {
-    name: 'Permissions', id: "4", route: '/', iconClassName: 'supervised_user_circle', iconColor: "#ed9649", children: [
+    name: 'Permissions', id: "4", route: '/', roletabName:"permissions", iconClassName: 'supervised_user_circle', iconColor: "#ed9649", children: [
       { name: "Role-Permission", route: '/role-permission', iconClassName: 'supervised_user_circle', iconColor: "#bde347" },
     ]
   },
@@ -131,7 +132,7 @@ class VerticalItem extends React.Component {
     let className = 'vertical-item-component';
     if (activeAccordian === item["id"]) className += ' is-hover'
     return (
-      (item["id"] !== "4" ?
+      (getStatusOfRole(item.roletabName) &&
         <li
           ref={ref => { this._ref = ref }}
           style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
@@ -157,33 +158,33 @@ class VerticalItem extends React.Component {
             {this.renderSubLevel(item)}
           </div>
         </li>
-        : (sessionStorage.getItem("userRole") &&
-          sessionStorage.getItem("userRole").indexOf("super-admin") > -1 &&
-          <li
-            ref={ref => { this._ref = ref }}
-            style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
-            className={className + " class_li"}>
-            <div>
-              <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
-                style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
-                onClick={() => {
-                  if (item.children.length === 0) {
-                    this.onSelect(item)
-                  } else {
-                    this.toggleHover(activeAccordian !== item.id ? item.id : "")
-                  }
-                }
-                }  >
-                <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
-                  {item.iconClassName}
-                </Icon>
-                <div className='item-name'>{item.name}</div>
-                {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
-                  style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
-              </div>
-              {this.renderSubLevel(item)}
-            </div>
-          </li>)
+        // : (sessionStorage.getItem("userRole") &&
+          // sessionStorage.getItem("userRole").indexOf("super-admin") > -1 &&
+          // <li
+          //   ref={ref => { this._ref = ref }}
+          //   style={{ background: active === item.route ? '#5cb8eb' : '#25283b' }}
+          //   className={className + " class_li"}>
+          //   <div>
+          //     <div className='item' data-toggle={!isdrawerOpen ? "tooltip" : ""} title={!isdrawerOpen ? item.name + "" : ""}
+          //       style={{ background: active === item.route ? '#25283b' : '#2e3247' }}
+          //       onClick={() => {
+          //         if (item.children.length === 0) {
+          //           this.onSelect(item)
+          //         } else {
+          //           this.toggleHover(activeAccordian !== item.id ? item.id : "")
+          //         }
+          //       }
+          //       }  >
+          //       <Icon className="sideBarIcon" style={{ color: item.iconColor, fontSize: "18px" }}>
+          //         {item.iconClassName}
+          //       </Icon>
+          //       <div className='item-name'>{item.name}</div>
+          //       {isdrawerOpen && <i className={activeAccordian === item["id"] ? "fa fa-chevron-up" : "fa fa-chevron-down"}
+          //         style={{ position: "absolute", right: "0px", color: "#afb1b9" }} aria-hidden="true"></i>}
+          //     </div>
+          //     {this.renderSubLevel(item)}
+          //   </div>
+          // </li>)
       )
     )
 

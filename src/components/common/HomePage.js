@@ -35,8 +35,9 @@ import ChangePasswordPage from '../auth/ChangePasswordPage';
 import Icon from '@material-ui/core/Icon';
 import AddBankAccountContainer from '../addBankAccount/AddBankAccountContainer';
 import commonService from '../../app/commonService/commonService';
-
 import RolePermissionContainer from '../role-permission/RolePermissionContainer';
+import { getStatusOfRole } from '../../config/appConfig';
+
 const drawerWidth = 250;
 
 const styles = theme => ({
@@ -194,12 +195,12 @@ class Home extends React.Component {
 
   async componentDidMount() {
     Auth.currentAuthenticatedUser()
-    .then(user => {
-    this.getUserRole( user.attributes.phone_number );
-  })
-  .catch(err => {
-    console.log(err);
-  });
+      .then(user => {
+        this.getUserRole(user.attributes.phone_number);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   async getData() {
@@ -212,10 +213,11 @@ class Home extends React.Component {
   async getUserRole(mobile) {
     // // alert( mobile );
     try {
-      // sessionStorage.setItem("userRole", [ ["add-bank", "order-creation"]]);
+      // sessionStorage.setItem("userRole","SuperAdmin");
       let resp = await commonService.getUserSpecificRole(mobile);
-      if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0) {
-        sessionStorage.setItem("userRole", resp.data.result[0].permissions );
+      if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 && 
+        resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
+        sessionStorage.setItem("userRole", resp.data.result[0].permissions);
         this.getData();
       } else {
         sessionStorage.setItem("userRole", "restricted");
@@ -289,7 +291,6 @@ class Home extends React.Component {
       this.props.history.push("/" + Utils.getDbName() + '/home/dbChanged');
     });
   }
-
 
 
 
@@ -394,22 +395,24 @@ class Home extends React.Component {
           </List>
         </Drawer>
         <main className={classes.content} style={this.state.open ? { marginLeft: '250px' } : { marginLeft: '56px' }}>
-          <Route path='/home/mandi-data' exact component={MandiDataContainer} />
+         
           <Route path='/home/user-list' exact component={UserDataContainer} />
           <Route path='/home/buyer-list' exact component={BuyerContainer} />
           <Route path='/home/broker-list' exact component={BrokerContainer} />
           <Route path='/home/supplier-list' exact component={SupplierContainer} />
           <Route path='/home/rate-list' exact component={PriceContainer} />
-          <Route path='/home/comodity-list' exact component={CommodityContainer} />
           <Route path='/home/orders-list' exact component={OrdersContainer} />
-          <Route path='/home/mandi-rates' exact component={MandiRateContainer} />
+
+          {getStatusOfRole("SupportingDataManagement") && <Route path='/home/comodity-list' exact component={CommodityContainer} />}
+          {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-data' exact component={MandiDataContainer} />}
+          {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-rates' exact component={MandiRateContainer} />}
+
           <Route path='/home/payment' exact component={PaymentContainer} />
           <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
           <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
-          {sessionStorage.getItem("userRole") &&
-                sessionStorage.getItem("userRole").indexOf("super-admin") > -1 && 
-                <Route path='/home/role-permission' exact component={RolePermissionContainer} />}
-         </main>
+          {getStatusOfRole("SuperAdmin") &&
+            <Route path='/home/role-permission' exact component={RolePermissionContainer} />}
+        </main>
 
         {showChangePasswordView &&
           <ChangePasswordPage

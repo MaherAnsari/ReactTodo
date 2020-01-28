@@ -2,17 +2,50 @@ import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
         // if( window.location.href.indexOf("localhost/")){
-        //     sessionStorage.setItem("userRole", "super-admin"); // special check for developer
+        //     sessionStorage.setItem("userRole", "SuperAdmin"); // special check for developer
         // }
-        
+console.log( sessionStorage.getItem("userRole") )
         let role = "";
-        if( sessionStorage.getItem("userRole") ) {
-            role =  sessionStorage.getItem("userRole").split(",");
-        }else{
+        if (sessionStorage.getItem("userRole")) {
+            role = sessionStorage.getItem("userRole").split(",");
+        } else {
             role = "restricted";
         }
 
         let roles = {
+            "BasicUser": {
+
+            },
+            "UserManagement": {
+                "addUser": true,
+                "editUser": true
+            },
+            "OrderManagement": {
+                "addOrder": true,
+                "editOrder": true,
+            },
+            "PayoutMaker": {
+                "makePayout": true
+            },
+            "PayoutChecker": {
+                "payViaCredit": true,
+            },
+            "PaymentManagment": {
+                "addPayment": true,
+                "editPayment": true
+            },
+            "SupportingDataManagement": {
+                "addLocation": true,
+                "editMandi": true,
+                "addMandiRates": true,
+                "editCommodity": true
+            },
+            "SuperAdmin": {
+                "allowAll": true
+            }
+        }
+
+        let roles2 = {
             "user-creation": {
                 "addUser": true,
                 "editUser": true
@@ -28,7 +61,6 @@ export function getAccessAccordingToRole(option) {
                 "makePayout": true
             },
             "request-payout": {
-                "addBank": true,
                 "payViaCredit": true,
             },
             "manage-credit": {
@@ -46,17 +78,23 @@ export function getAccessAccordingToRole(option) {
             "super-admin": {
                 "allowAll": true
             },
-
-            "mandi-data-update":{
+            "supporting-data-role": {
                 "addLocation": true,
-                "editMandi": true
+                "editMandi": true,
+                "addMandiRates": true,
+                "editCommodity": true
             },
-            "mandi-rates-update":{
-                "addMandiRates" : true
-            },
-            "commodityList-update":{
-                "editCommodity" :true
-            }
+
+            // "mandi-data-update":{
+            //     "addLocation": true,
+            //     "editMandi": true
+            // },
+            // "mandi-rates-update":{
+            //     "addMandiRates" : true
+            // },
+            // "commodityList-update":{
+            //     "editCommodity" :true
+            // }
         }
         // if (role === "dev") {
         //     return devAccess[appRoute][option];
@@ -65,7 +103,7 @@ export function getAccessAccordingToRole(option) {
         // }
         if (role === "restricted") {
             return false;
-        }else if (role.indexOf("super-admin") > -1) {
+        } else if (role.indexOf("super-admin") > -1 || role.indexOf("SuperAdmin") > -1) {
             return true;
         } else {
             let roleList = {};
@@ -85,5 +123,27 @@ export function getAccessAccordingToRole(option) {
         }
     } catch (err) {
         console.log(err)
+    }
+}
+
+
+export function getStatusOfRole(role) {
+    if (sessionStorage.getItem("userRole")) {
+        if (sessionStorage.getItem("userRole").indexOf("super-admin") > -1 || sessionStorage.getItem("userRole").indexOf("SuperAdmin") > -1) {
+            return true;
+        } else {
+            if (role === "SupportingDataManagement") {
+                if (sessionStorage.getItem("userRole").indexOf(role) > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (role === "permissions") { // not avalaiable for any user except superAdmin
+                return false;
+            }
+            return true;
+        }
+    } else {
+        return false;
     }
 }

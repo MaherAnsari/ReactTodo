@@ -6,6 +6,8 @@ import RoleDialog from '../common/roleDialog';
 import roleService from '../../app/roleService/roleService';
 import NoDataAvailable from '../common/NoDataAvailable';
 import TextField from '@material-ui/core/TextField';
+import Loader from '../common/Loader';
+
 
 const styles = theme => ({
     root: {
@@ -108,49 +110,51 @@ class RolePermissionContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { searchedText } = this.state;
+        const { searchedText, showLoader } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
-                    <div style={{ textAlign: "left", padding: "5px", marginLeft: "40px" }}>
-                        <TextField
-                            id="standard-basic"
-                            style={{ width: "30%" }}
-                            label="Search user .."
-                            onChange={(event) => this.onSearchInputChanged(event)} />
-                    </div>
-                    <div className="orderList" style={{ backgroundColor: '#2e3247', fontSize: '18px' }}>
-                        <div style={{ width: "25%" }}>User</div>
-                        <div style={{ width: "75%" }}>Role/Permission</div>
+                    {!showLoader ? <div>
+                        <div style={{ textAlign: "left", padding: "5px", marginLeft: "40px" }}>
+                            <TextField
+                                id="standard-basic"
+                                style={{ width: "30%" }}
+                                label="Search user .."
+                                onChange={(event) => this.onSearchInputChanged(event)} />
+                        </div>
+                        <div className="orderList" style={{ backgroundColor: '#2e3247', fontSize: '18px' }}>
+                            <div style={{ width: "25%" }}>User</div>
+                            <div style={{ width: "75%" }}>Role/Permission</div>
 
-                    </div>
+                        </div>
 
-                    {this.state.userList ? <div style={{ maxHeight: "70vh", overflowY: "scroll" }} >
-                        {this.state.userList
+                        {this.state.userList ? <div style={{ maxHeight: "70vh", overflowY: "scroll" }} >
+                            {this.state.userList
+                                .filter(e => {
+                                    if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1 || e.mobile.indexOf(searchedText) > -1) {
+                                        return e;
+                                    }
+                                })
+                                .map((row, i) => {
+                                    return (
+                                        <div key={i} style={{ height: '40px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
+                                            <div style={{ width: "25%", cursor: 'pointer' }} onClick={this.onUserClick.bind(this, row)} className=" name-span" >{row.name + '(' + row.mobile + ')'}</div>
+                                            <div style={{ width: "75%" }}>{row.permissions}</div>
+
+                                        </div>
+                                    )
+                                })}
+                        </div> :
+                            <NoDataAvailable />}
+
+                        {this.state.userList && this.state.userList
                             .filter(e => {
-                                if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1 || e.mobile.indexOf(searchedText) > -1 ) {
+                                if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1) {
                                     return e;
                                 }
-                            })
-                            .map((row, i) => {
-                                return (
-                                    <div key={i} style={{ height: '40px', display: 'flex', paddingTop: '10px', backgroundColor: i % 2 === 0 ? '' : '#f2f4f5' }}>
-                                        <div style={{ width: "25%", cursor: 'pointer' }} onClick={this.onUserClick.bind(this, row)} className=" name-span" >{row.name + '(' + row.mobile + ')'}</div>
-                                        <div style={{ width: "75%" }}>{row.permissions}</div>
-
-                                    </div>
-                                )
-                            })}
+                            }).length === 0 && searchedText.length > 0 && <NoDataAvailable />}
                     </div> :
-                        <NoDataAvailable />}
-                        
-                    {this.state.userList && this.state.userList
-                        .filter(e => {
-                            if (e.name.toLowerCase().indexOf(searchedText.toLowerCase()) > -1) {
-                                return e;
-                            }
-                        }).length === 0 && searchedText.length > 0 && <NoDataAvailable />}
-
+                        <Loader />}
                 </Paper>
                 {this.state.showModal ? <RoleDialog openModal={this.state.showModal}
                     onEditModalClosed={this.handleDialogClose.bind(this)}

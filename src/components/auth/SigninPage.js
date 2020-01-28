@@ -502,10 +502,11 @@ this.getUserRole();
 
     async getUserRole(  ) {
         try {
-            // sessionStorage.setItem("userRole", ["add-bank", "order-creation"]);
+            // sessionStorage.setItem("userRole", "SuperAdmin");
             // this.props.history.push("/home/buyer-list");
             let resp = await commonService.getUserSpecificRole( this.state.user.username );
-            if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0) {
+            if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 && 
+                    resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
                 sessionStorage.setItem("userRole", resp.data.result[0].permissions);
                 this.props.history.push("/home/buyer-list");
             } else {

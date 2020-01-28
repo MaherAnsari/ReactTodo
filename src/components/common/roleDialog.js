@@ -77,19 +77,27 @@ class RoleDialog extends Component {
             "permissions": []},
             // roleList: ['user-creation', 'add-bank','order-creation','payviaCreditption','payment-request','manage-credit','manange-supporting-data'
             //             ,'payment-tab-entry-rule','super-admin','mandi-data-update','mandi-rates-update','commodityList-update'],
-            roleList : [
-                "user-creation",
-                "add-bank",
-                "order-creation",
-                "payout-role",
-                "request-payout",
-                "manage-credit",
-                "manage-images-data",
-                "payment-update",
-                "super-admin",
-                "mandi-data-update",
-                "mandi-rates-update",
-                "commodityList-update"
+            // roleList : [
+            //     "user-creation",
+            //     "add-bank",
+            //     "order-creation",
+            //     "payout-role",
+            //     "request-payout",
+            //     "manage-credit",
+            //     "manage-images-data",
+            //     "payment-update",
+            //     "super-admin",
+            //     "supporting-data-role"
+            // ],
+            roleList:[
+                "BasicUser",
+                "UserManagement",
+                "OrderManagement",
+                "PayoutMaker",
+                "PayoutChecker",
+                "PaymentManagment",
+                "SupportingDataManagement",
+                "SuperAdmin"
             ],
 
             showLoader: false
@@ -101,7 +109,7 @@ class RoleDialog extends Component {
     componentDidMount() {
 
         if(this.props.isupdate){
-            let arr = this.props.editdata['permissions'].split(',')
+            let arr = typeof(this.props.editdata['permissions']) === "string" ? this.props.editdata['permissions'].split(',') :  this.props.editdata['permissions'];
             let obj = this.props.editdata;
             obj['permissions'] = arr;
             this.setState({data:obj})
