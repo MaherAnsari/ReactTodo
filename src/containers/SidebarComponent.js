@@ -21,7 +21,7 @@ const styles = theme => ({
 
 const _items = [
   {
-    name: 'User Data', id: "2", route: '', roletabName:"user-creation", iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
+    name: 'User Data', id: "2", route: '', roletabName:"BasicUser", iconClassName: 'supervised_user_circle', iconColor: "#477de3", children: [
       { name: 'All', route: '/user-list', iconClassName: 'supervised_user_circle', iconColor: "#4da443" },
       { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
@@ -29,7 +29,7 @@ const _items = [
     ]
   },
   {
-    name: 'Business Data', id: "3", roletabName:"bussiness-data", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
+    name: 'Business Data', id: "3", roletabName:"BasicUser", route: '', iconClassName: 'local_atm', iconColor: "#62cc42", children: [
       { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },

@@ -128,6 +128,7 @@ console.log( sessionStorage.getItem("userRole") )
 
 
 export function getStatusOfRole(role) {
+    // return true;
     if (sessionStorage.getItem("userRole")) {
         if (sessionStorage.getItem("userRole").indexOf("super-admin") > -1 || sessionStorage.getItem("userRole").indexOf("SuperAdmin") > -1) {
             return true;
@@ -139,6 +140,8 @@ export function getStatusOfRole(role) {
                     return false;
                 }
             } else if (role === "permissions") { // not avalaiable for any user except superAdmin
+                return false;
+            }else if( role === "BasicUser" && sessionStorage.getItem("userRole").indexOf(role) === -1){
                 return false;
             }
             return true;

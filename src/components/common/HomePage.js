@@ -396,20 +396,20 @@ class Home extends React.Component {
         </Drawer>
         <main className={classes.content} style={this.state.open ? { marginLeft: '250px' } : { marginLeft: '56px' }}>
          
-          <Route path='/home/user-list' exact component={UserDataContainer} />
-          <Route path='/home/buyer-list' exact component={BuyerContainer} />
-          <Route path='/home/broker-list' exact component={BrokerContainer} />
-          <Route path='/home/supplier-list' exact component={SupplierContainer} />
-          <Route path='/home/rate-list' exact component={PriceContainer} />
-          <Route path='/home/orders-list' exact component={OrdersContainer} />
-
+          {getStatusOfRole("BasicUser") && <Route path='/home/user-list' exact component={UserDataContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/buyer-list' exact component={BuyerContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/broker-list' exact component={BrokerContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/supplier-list' exact component={SupplierContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/rate-list' exact component={PriceContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/orders-list' exact component={OrdersContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/payment' exact component={PaymentContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />}
+         
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/comodity-list' exact component={CommodityContainer} />}
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-data' exact component={MandiDataContainer} />}
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-rates' exact component={MandiRateContainer} />}
 
-          <Route path='/home/payment' exact component={PaymentContainer} />
-          <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />
-          <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />
           {getStatusOfRole("SuperAdmin") &&
             <Route path='/home/role-permission' exact component={RolePermissionContainer} />}
         </main>

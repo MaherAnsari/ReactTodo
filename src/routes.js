@@ -15,20 +15,21 @@ export default () =>
     <Route path="/access-denied" exact component={AccessDeniedContainer}  />
     <AppliedRoute path="/home" exact component={Home}  />
     
-    <AppliedRoute path="/home/user-list" exact component={Home}  />
-    <AppliedRoute path="/home/buyer-list" exact component={Home}  />
-    <AppliedRoute path="/home/broker-list" exact component={Home}  />
-    <AppliedRoute path="/home/supplier-list" exact component={Home}  />
-    <AppliedRoute path="/home/rate-list" exact component={Home}  />
-    <AppliedRoute path="/home/orders-list" exact component={Home}  />
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/user-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/buyer-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/broker-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/supplier-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/rate-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/orders-list" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/payment" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/todays-payment" exact component={Home}  />}
+    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/add-bank-account" exact component={Home}  />}
+
     {/* supporting Data tab routes */}
     {getStatusOfRole("SupportingDataManagement") && <AppliedRoute path="/home/comodity-list" exact component={Home}  />}
     {getStatusOfRole("SupportingDataManagement") && <AppliedRoute path="/home/mandi-data" exact component={Home}  />}
     {getStatusOfRole("SupportingDataManagement") && <AppliedRoute path="/home/mandi-rates" exact component={Home}  />}
 
-    <AppliedRoute path="/home/payment" exact component={Home}  />
-    <AppliedRoute path="/home/todays-payment" exact component={Home}  />
-    <AppliedRoute path="/home/add-bank-account" exact component={Home}  />
     {getStatusOfRole("SuperAdmin") && <AppliedRoute path="/home/role-permission" exact component={Home}  />}
 
     { /* Finally, catch all unmatched routes */ }

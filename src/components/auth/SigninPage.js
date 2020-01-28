@@ -508,7 +508,15 @@ this.getUserRole();
             if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 && 
                     resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
                 sessionStorage.setItem("userRole", resp.data.result[0].permissions);
-                this.props.history.push("/home/buyer-list");
+                if(resp.data.result[0].permissions.indexOf("BasicUser") > -1 ||  resp.data.result[0].permissions.indexOf("SuperAdmin") > -1 ||  resp.data.result[0].permissions.indexOf("super-admin") > -1){
+                    this.props.history.push("/home/buyer-list");
+                }else if(resp.data.result[0].permissions.indexOf("SupportingDataManagement") > -1 ){
+                    this.props.history.push("/home/mandi-data");
+                }else{ 
+                    // default Case 
+                    this.props.history.push("/home/buyer-list");
+                }
+                
             } else {
               sessionStorage.setItem("userRole", "restricted" );
               this.props.history.push("/access-denied");
