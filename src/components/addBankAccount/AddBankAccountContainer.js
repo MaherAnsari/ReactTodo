@@ -220,11 +220,12 @@ class AddBankAccountContainer extends React.Component {
         if( obj["status"] === "invalid"){
             return (<Fab
                 variant="extended"
+                disabled={ !getAccessAccordingToRole("addBankAccount") }
                 size="small"
                 aria-label="Force validate"
                 onClick={( event )=> this.setState({ dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
                 <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, forceUpdateData : obj, showConfirmDialog : true })}
-                style={{ textTransform: "none", background: "#108ad0", color: "#ffffff", padding: "0 8px" }}
+                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0": "gray", color: "#ffffff", padding: "0 8px" }}
             >
                 Force validate
     </Fab>)

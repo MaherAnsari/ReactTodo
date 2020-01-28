@@ -18,27 +18,34 @@ console.log( sessionStorage.getItem("userRole") )
             },
             "UserManagement": {
                 "addUser": true,
-                "editUser": true
+                "editUser": true,
+                "updateCreditLimit": true,
+                "addBankAccount": true
             },
             "OrderManagement": {
                 "addOrder": true,
                 "editOrder": true,
+                "addSupportingImages": true
             },
             "PayoutMaker": {
-                "makePayout": true
+                "payViaCredit": true,
             },
             "PayoutChecker": {
-                "payViaCredit": true,
+                "makePayout": true
             },
             "PaymentManagment": {
                 "addPayment": true,
-                "editPayment": true
+                "editPayment": true,
+                "addSupportingImages": true
             },
             "SupportingDataManagement": {
                 "addLocation": true,
                 "editMandi": true,
                 "addMandiRates": true,
-                "editCommodity": true
+                "editCommodity": true,
+                "addCommodity": true,
+                "addMandi": true,
+                "addSupportingImages": true
             },
             "SuperAdmin": {
                 "allowAll": true
@@ -56,6 +63,7 @@ console.log( sessionStorage.getItem("userRole") )
             "order-creation": {
                 "addOrder": true,
                 "editOrder": true,
+                
             },
             "payout-role": { //yyy
                 "makePayout": true
