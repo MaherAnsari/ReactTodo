@@ -4,7 +4,7 @@ export function getAccessAccordingToRole(option) {
         // if( window.location.href.indexOf("localhost/")){
         //     sessionStorage.setItem("userRole", "SuperAdmin"); // special check for developer
         // }
-console.log( sessionStorage.getItem("userRole") )
+// console.log( sessionStorage.getItem("userRole") )
         let role = "";
         if (sessionStorage.getItem("userRole")) {
             role = sessionStorage.getItem("userRole").split(",");
