@@ -61,13 +61,13 @@ class SignIn extends React.Component {
             action: 'sigin',
             disabledLoginBtn: false,
 
-            forgotPasswordViewStep: 1 ,// 1 for numberInput, 2 for verify
-            forgotPasswordData:{
-                username_forgot:"",
-                otp_forgot:"",
-                newPassword_forgot:""
+            forgotPasswordViewStep: 1,// 1 for numberInput, 2 for verify
+            forgotPasswordData: {
+                username_forgot: "",
+                otp_forgot: "",
+                newPassword_forgot: ""
             },
-            disabledForgotBtn : false
+            disabledForgotBtn: false
         }
 
         this.getViewContent = this.getViewContent.bind(this);
@@ -79,8 +79,8 @@ class SignIn extends React.Component {
         this.handleNewPassword = this.handleNewPassword.bind(this)
 
         // forgot password
-        this.handleForgotPasswordWithCodeRequest = this.handleForgotPasswordWithCodeRequest.bind( this );
-        this.handleForgotPasswordWithtCode = this.handleForgotPasswordWithtCode.bind( this );
+        this.handleForgotPasswordWithCodeRequest = this.handleForgotPasswordWithCodeRequest.bind(this);
+        this.handleForgotPasswordWithtCode = this.handleForgotPasswordWithtCode.bind(this);
 
     }
 
@@ -152,12 +152,15 @@ class SignIn extends React.Component {
                         Login {this.state.disabledLoginBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
                     </button>
                 </div>
-                <div className="flex-sb-m w-full p-t-3 p-b-32" 
-                style={{paddingTop: "12px",
+                <div className="flex-sb-m w-full p-t-3 p-b-32"
+                    style={{
+                        paddingTop: "12px",
                         color: "blue",
                         fontWeight: 500,
                         fontSize: "14px",
-                        cursor: "pointer"}} onClick={()=> this.setState({ action : "Forgot_password",forgotPasswordViewStep : 1,  user: {
+                        cursor: "pointer"
+                    }} onClick={() => this.setState({
+                        action: "Forgot_password", forgotPasswordViewStep: 1, user: {
                             username: '',
                             password: '',
                             loading: false,
@@ -166,8 +169,9 @@ class SignIn extends React.Component {
                             userdata: null,
                             newpassword: '',
                             otp: ''
-                        } })}>
-                        Forgot Password
+                        }
+                    })}>
+                    Forgot Password
                 </div>
             </form>
 
@@ -265,38 +269,38 @@ class SignIn extends React.Component {
                 //     otp:"",
                 //     newPassword:""
                 // }
-                
+
                 this.setState({
                     forgotPasswordViewStep: 2
-                },function(){
+                }, function () {
                     $('#newPassword_forgot').val('');
                     $('#otp_forgot').val('');
                 })
-                
+
             } else if (response.message) {
                 alert(response.message);
             }
             this.setState({ disabledForgotBtn: false })
         } catch (e) {
-            alert('Error. try again...'+ e);
-            this.setState({ disabledForgotBtn : false })
+            alert('Error. try again...' + e);
+            this.setState({ disabledForgotBtn: false })
         }
     }
 
     async handleForgotPasswordWithCodeRequest(e) {
         e.preventDefault();
-        this.setState({ disabledForgotBtn : true })
+        this.setState({ disabledForgotBtn: true })
         try {
             var response = await Auth.forgotPasswordSubmit(this.state.forgotPasswordData.username_forgot, this.state.forgotPasswordData.otp_forgot, this.state.forgotPasswordData.newPassword_forgot);
             if (!response) {
-                this.setState({ action : "sigin",forgotPasswordViewStep : 1 });
+                this.setState({ action: "sigin", forgotPasswordViewStep: 1 });
             } else {
                 alert('Error. try again...');
             }
-            this.setState({ disabledForgotBtn : false })
+            this.setState({ disabledForgotBtn: false })
         } catch (e) {
             alert('Error. try again...');
-            this.setState({ disabledForgotBtn : false })
+            this.setState({ disabledForgotBtn: false })
         }
     }
 
@@ -312,7 +316,7 @@ class SignIn extends React.Component {
                 </span>
                     <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                         <input className="input100" value={this.state.forgotPasswordData.username}
-                            onChange={this.handleValueChangeOfForgotPassword} 
+                            onChange={this.handleValueChangeOfForgotPassword}
                             type="text"
                             autoComplete="new-password"
                             id="username_forgot" name="username_forgot" />
@@ -323,14 +327,14 @@ class SignIn extends React.Component {
                     <div className="flex-sb-m w-full p-t-3 p-b-32">
                     </div>
                     <div className="container-login100-form-btn">
-                        <button className="login100-form-btn" 
-                        disabled={this.state.disabledForgotBtn}
-                        onClick={this.handleForgotPasswordWithtCode}>
+                        <button className="login100-form-btn"
+                            disabled={this.state.disabledForgotBtn}
+                            onClick={this.handleForgotPasswordWithtCode}>
                             Continue {this.state.disabledForgotBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
-					</button>
+                        </button>
                     </div>
                 </form> :
-                <form  id="forgotpasswordUserOtpNewPassword" className="login100-form validate-form" autoComplete="off">
+                <form id="forgotpasswordUserOtpNewPassword" className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />
                     <span className="login100-form-title p-b-43" style={{ fontSize: '16px' }}>
                         Forgot Password
@@ -344,8 +348,8 @@ class SignIn extends React.Component {
                             // autoComplete="off"
                             autoComplete="new-password"
                             onChange={this.handleValueChangeOfForgotPassword}
-                            value={this.state.forgotPasswordData.otp} 
-                            />
+                            value={this.state.forgotPasswordData.otp}
+                        />
                         <span className="focus-input100"></span>
                         <span className="label-input100">Otp</span>
                     </div>
@@ -358,8 +362,8 @@ class SignIn extends React.Component {
                             // autoComplete="off"
                             autoComplete="new-password"
                             onChange={this.handleValueChangeOfForgotPassword}
-                            value={this.state.forgotPasswordData.newPassword} 
-                            />
+                            value={this.state.forgotPasswordData.newPassword}
+                        />
                         <span className="focus-input100"></span>
                         <span className="label-input100">New password</span>
                     </div>
@@ -368,10 +372,10 @@ class SignIn extends React.Component {
                     </div>
                     <div className="container-login100-form-btn">
                         <button className="login100-form-btn"
-                        disabled={this.state.disabledForgotBtn}
-                         onClick={this.handleForgotPasswordWithCodeRequest}>
+                            disabled={this.state.disabledForgotBtn}
+                            onClick={this.handleForgotPasswordWithCodeRequest}>
                             Verify {this.state.disabledForgotBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
-                </button>
+                        </button>
                     </div>
                 </form>
             )
@@ -433,7 +437,7 @@ class SignIn extends React.Component {
                 localStorage.setItem('name', data.attributes.name);
 
                 // console.log(cookie);
-this.getUserRole();
+                this.getUserRole();
                 // this.props.history.push("/home/buyer-list");
 
 
@@ -466,7 +470,7 @@ this.getUserRole();
                             this.setState({
                                 userdata: user
                             })
-                            
+
                             // Auth.currentAuthenticatedUser({
                             // }).then(user => {
                             //     console.log(user);
@@ -500,34 +504,36 @@ this.getUserRole();
         }
     }
 
-    async getUserRole(  ) {
+    async getUserRole() {
         try {
             // sessionStorage.setItem("userRole", "SuperAdmin");
             // this.props.history.push("/home/buyer-list");
-            let resp = await commonService.getUserSpecificRole( this.state.user.username );
-            if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 && 
-                    resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
+            let resp = await commonService.getUserSpecificRole(this.state.user.username);
+            if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 &&
+                resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
                 sessionStorage.setItem("userRole", resp.data.result[0].permissions);
-                if(resp.data.result[0].permissions.indexOf("BasicUser") > -1 ||  resp.data.result[0].permissions.indexOf("SuperAdmin") > -1 ||  resp.data.result[0].permissions.indexOf("super-admin") > -1){
+                sessionStorage.setItem("userName", resp.data.result[0].name);
+                sessionStorage.setItem("userMobile", resp.data.result[0].mobile);
+                if (resp.data.result[0].permissions.indexOf("BasicUser") > -1 || resp.data.result[0].permissions.indexOf("SuperAdmin") > -1 || resp.data.result[0].permissions.indexOf("super-admin") > -1) {
                     this.props.history.push("/home/buyer-list");
-                }else if(resp.data.result[0].permissions.indexOf("SupportingDataManagement") > -1 ){
+                } else if (resp.data.result[0].permissions.indexOf("SupportingDataManagement") > -1) {
                     this.props.history.push("/home/mandi-data");
-                }else{ 
+                } else {
                     // default Case 
                     this.props.history.push("/home/buyer-list");
                 }
-                
+
             } else {
-              sessionStorage.setItem("userRole", "restricted" );
-              this.props.history.push("/access-denied");
+                sessionStorage.setItem("userRole", "restricted");
+                this.props.history.push("/access-denied");
             }
         } catch (err) {
             console.error(err)
-            sessionStorage.setItem("userRole", "restricted" );
+            sessionStorage.setItem("userRole", "restricted");
             this.props.history.push("/access-denied");
         }
     }
-    
+
     async handleVerifyOtp(e) {
         e.preventDefault()
         try {
@@ -549,7 +555,7 @@ this.getUserRole();
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
                 // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
-this.getUserRole();
+                this.getUserRole();
                 // this.props.history.push("/home/buyer-list");
 
             } else {
@@ -581,7 +587,7 @@ this.getUserRole();
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
-            
+
                 // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
                 this.getUserRole();
                 // this.props.history.push("/home/buyer-list");

@@ -215,9 +215,11 @@ class Home extends React.Component {
     try {
       // sessionStorage.setItem("userRole","SuperAdmin");
       let resp = await commonService.getUserSpecificRole(mobile);
-      if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 && 
+      if (resp.data.status === 1 && resp.data.result && resp.data.result.length > 0 &&
         resp.data.result[0].permissions && resp.data.result[0].permissions !== "") {
         sessionStorage.setItem("userRole", resp.data.result[0].permissions);
+        sessionStorage.setItem("userName", resp.data.result[0].name);
+        sessionStorage.setItem("userMobile", resp.data.result[0].mobile);
         this.getData();
       } else {
         sessionStorage.setItem("userRole", "restricted");
@@ -334,11 +336,15 @@ class Home extends React.Component {
                 </div>
                 {/* </Grid> */}
 
-                <Grid style={{ marginLeft: '60%' }} item xs={2} sm={1}>
+                <Grid style={{ marginLeft: '34%' }} item xs={3} sm={4}>
                   {!cookie.load('token')
 
                     ? <div></div>
-                    : <div>
+                    : <div style={{ textAlign: "right", display: "flex", float: "right" }}>
+                      <div style={{ display: "grid" }}>
+                        <span  style={{ fontSize: "17px", fontWeight: 500, fontFamily: "lato" }} > {sessionStorage.getItem("userName") ? sessionStorage.getItem("userName") : ""}</span>
+                        <span  style={{ fontSize: "13px", fontWeight: 500, fontFamily: "lato" }}>  {sessionStorage.getItem("userMobile") ? sessionStorage.getItem("userMobile") : ""}</span>
+                      </div>
                       <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"
@@ -395,7 +401,7 @@ class Home extends React.Component {
           </List>
         </Drawer>
         <main className={classes.content} style={this.state.open ? { marginLeft: '250px' } : { marginLeft: '56px' }}>
-         
+
           {getStatusOfRole("BasicUser") && <Route path='/home/user-list' exact component={UserDataContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/buyer-list' exact component={BuyerContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/broker-list' exact component={BrokerContainer} />}
@@ -405,7 +411,7 @@ class Home extends React.Component {
           {getStatusOfRole("BasicUser") && <Route path='/home/payment' exact component={PaymentContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />}
-         
+
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/comodity-list' exact component={CommodityContainer} />}
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-data' exact component={MandiDataContainer} />}
           {getStatusOfRole("SupportingDataManagement") && <Route path='/home/mandi-rates' exact component={MandiRateContainer} />}
