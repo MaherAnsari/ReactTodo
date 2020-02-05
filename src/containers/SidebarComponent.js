@@ -26,6 +26,7 @@ const _items = [
       { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
       { name: 'LA Data (Supplier)', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
+      { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
     ]
   },
   {
@@ -34,7 +35,7 @@ const _items = [
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
       { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
-      { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
+      
     ]
   },
   {
