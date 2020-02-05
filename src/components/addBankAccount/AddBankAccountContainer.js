@@ -95,7 +95,7 @@ class AddBankAccountContainer extends React.Component {
             var addAccountDataVal = this.state.addAccountData;
             if (intejarIds.indexOf(id) > -1) {
                 if (val === "" || !isNaN(val)) {
-                    addAccountDataVal[id] = Number(val);
+                    addAccountDataVal[id] = val;
                 }
             } else {
                 if( id === "bank_name"){

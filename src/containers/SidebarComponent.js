@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Icon } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import { getStatusOfRole } from '../config/appConfig';
+import bijakLogo from "../assets/images/bijak_logo_new.png";
 
 const styles = theme => ({
   root: {
@@ -222,7 +223,10 @@ class VerticalNavigation extends React.PureComponent {
               height: '60px',
               maxWidth: '200px',
               padding: '10px 10px 10px 10px'
-            }} src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
+            }} 
+            src={bijakLogo}
+            // src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'}
+             alt={dbImageUrl} />
           </div>
           {/* <Tooltip title={labname || ""} placement="right" >
             <div style={{

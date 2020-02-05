@@ -154,8 +154,8 @@ function getImageName(fileName) {
 
 function maskMobileNumber(mobNum) {
     if (mobNum) {
-        var lastFive = mobNum.substr(mobNum.length - 5);
-        var lastChar = mobNum.slice(0, mobNum.length - 5);
+        var lastFive = mobNum.substr(mobNum.length - 4);
+        var lastChar = mobNum.slice(0, mobNum.length - 4);
         var fstr = lastChar.replace(/\d/g, "X");
         console.log("----->" + fstr + lastFive);
         return fstr + lastFive;
