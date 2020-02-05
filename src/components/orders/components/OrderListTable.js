@@ -428,7 +428,7 @@ class OrderListTable extends Component {
                                                     {this.getActionButton(row)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                    ₹ {row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
+                                                <span style={{ fontWeight: ( row.invalidimg ? 600 : 400)}}> ₹ </span>{row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
                                                     {getAccessAccordingToRole("editOrder") && <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
