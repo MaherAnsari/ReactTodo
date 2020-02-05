@@ -1,6 +1,6 @@
 import cookie from 'react-cookies';
 // to vget the current date
-let districtData= {};
+let districtData = {};
 let stateList = [
     "Andaman and Nicobar Islands",
     "Andhra Pradesh",
@@ -40,7 +40,7 @@ let stateList = [
     "Uttarakhand",
     "West Bengal"
 ];
-const months = ["JAN", "FEB", "MAR","APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 function getCurrentDate(data) {
     // DD-MM-YYY
@@ -80,52 +80,52 @@ function getToken() {
     return "Bearer " + token;
 }
 
-function getDistrictData(){
+function getDistrictData() {
     return districtData;
 }
 
-function setDistrictData(data){
-    districtData =data;
+function setDistrictData(data) {
+    districtData = data;
 }
 
 
-function getStateData(){
+function getStateData() {
     return stateList;
 }
 
-function formatDateData ( apiDate ) {
-    try{
-      var formatedDate = new Date( apiDate );
-      formatedDate = formatedDate.getDate() + "-" + months[formatedDate.getMonth()] + "-" + formatedDate.getFullYear();
-      return formatedDate;
-    }catch( err ){
-      console.log( err );
-      return apiDate;
+function formatDateData(apiDate) {
+    try {
+        var formatedDate = new Date(apiDate);
+        formatedDate = formatedDate.getDate() + "-" + months[formatedDate.getMonth()] + "-" + formatedDate.getFullYear();
+        return formatedDate;
+    } catch (err) {
+        console.log(err);
+        return apiDate;
     }
-  }
+}
 
-  function downloadDataInCSV( json , filename ){
-    try{
-            var csv = "";
-            var keys = (json[0] && Object.keys(json[0])) || [];
-            csv += keys.join(',') + '\n';
-            for (var line of json) {
-              csv += keys.map(key => line[key]).join(',') + '\n';
-            }
-            console.log(csv);
-            var hiddenElement = document.createElement('a');
-            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(  csv );
-            hiddenElement.target = '_blank';
-            hiddenElement.download = (filename+".csv");
-            hiddenElement.click();
+function downloadDataInCSV(json, filename) {
+    try {
+        var csv = "";
+        var keys = (json[0] && Object.keys(json[0])) || [];
+        csv += keys.join(',') + '\n';
+        for (var line of json) {
+            csv += keys.map(key => line[key]).join(',') + '\n';
+        }
+        console.log(csv);
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = (filename + ".csv");
+        hiddenElement.click();
         //   }
-          
-    }catch( err ){
-        console.log( err );
-    }
-  }
 
-  function formatNumberWithComma(x) {
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+function formatNumberWithComma(x) {
     try {
         x = x.toString();
         var lastThree = x.substring(x.length - 3);
@@ -140,17 +140,29 @@ function formatDateData ( apiDate ) {
     }
 }
 
-    function getImageName( fileName ){
-        try{
-            let fileExt = fileName.split('.').pop();
-            let filenameWithoutSpace = fileName.split(' ').join('').replace(`.${fileExt}`, "");
-            let epocTime = (new Date()).getTime();
-            return filenameWithoutSpace.toLowerCase() +"_"+epocTime+"."+fileExt;
+function getImageName(fileName) {
+    try {
+        let fileExt = fileName.split('.').pop();
+        let filenameWithoutSpace = fileName.split(' ').join('').replace(`.${fileExt}`, "");
+        let epocTime = (new Date()).getTime();
+        return filenameWithoutSpace.toLowerCase() + "_" + epocTime + "." + fileExt;
 
-        }catch( err ){
-            return fileName;
-        }
+    } catch (err) {
+        return fileName;
     }
+}
+
+function maskMobileNumber(mobNum) {
+    if (mobNum) {
+        var lastFive = mobNum.substr(mobNum.length - 5);
+        var lastChar = mobNum.slice(0, mobNum.length - 5);
+        var fstr = lastChar.replace(/\d/g, "X");
+        console.log("----->" + fstr + lastFive);
+        return fstr + lastFive;
+    } else {
+        return mobNum;
+    }
+}
 
 const Utils = {
 
@@ -164,7 +176,8 @@ const Utils = {
     formatDateData,
     downloadDataInCSV,
     formatNumberWithComma,
-    getImageName
+    getImageName,
+    maskMobileNumber
 
 }
 

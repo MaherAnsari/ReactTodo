@@ -79,7 +79,7 @@ class PayoutModal extends Component {
             acctDetails: undefined,
             transferType:"NEFT"
         }
-        // console.log(this.props.payoutData)
+        console.log(this.props.payoutData)
     }
 
     componentWillMount() {
@@ -168,6 +168,7 @@ class PayoutModal extends Component {
             payload["name"] = this.props.payoutData["supplier_fullname"]; 
             payload["contact"] = this.props.payoutData["supplier_mobile"];
             payload["type"] = "Loader";
+            payload["buyer_name"] = this.props.payoutData["buyer_business_name"] || this.props.payoutData["buyer_fullname"] ;
             payload["amount"] = this.props.payoutData["amount"];
             payload["reference_id"] = this.props.payoutData["supplier_fullname"];
             payload["notes"] = {} ;

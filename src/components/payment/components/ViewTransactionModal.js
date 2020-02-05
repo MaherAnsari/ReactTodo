@@ -196,7 +196,7 @@ class ViewTransactionModal extends Component {
         try {
             if (data) {
                 for (var key in data) {
-                    names[key] = data[key][0]["supplier_fullname"] ? data[key][0]["supplier_fullname"] + " ( " + key + " ) " : key;
+                    names[key] = data[key][0]["supplier_fullname"] ? data[key][0]["supplier_fullname"] + " ( " + Utils.maskMobileNumber(key)+ " ) " : key;
                 }
             }
             return names;
@@ -441,7 +441,7 @@ class ViewTransactionModal extends Component {
                                 {(buyerInfo["buyer_fullname"] ? buyerInfo["buyer_fullname"] +
                                     (buyerInfo["buyer_business_name"] ? " ( " +
                                         buyerInfo["buyer_business_name"] + " )" : "") +
-                                    " - " : "") + (buyerInfo["buyer_mobile"] ? buyerInfo["buyer_mobile"] : "")}
+                                    " - " : "") + (buyerInfo["buyer_mobile"] ? Utils.maskMobileNumber(buyerInfo["buyer_mobile"]) : "")}
                             </Typography>
                             <div style={{ display: "flex" }}>
                                 <MuiThemeProvider theme={theme}>
@@ -545,7 +545,7 @@ class ViewTransactionModal extends Component {
                                             expandIcon={<ExpandMoreIcon />}
                                             aria-controls="panel1a-content"
                                             id="panel1a-header">
-                                            <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ? supplierNameMapping[suplierNumber] : suplierNumber}</Typography>
+                                            <Typography style={{ fontSize: '18px', fontFamily: 'Lato' }} className={classes.heading}>{supplierNameMapping[suplierNumber] ?  supplierNameMapping[suplierNumber] :  suplierNumber}</Typography>
                                         </ExpansionPanelSummary>
                                         <ExpansionPanelDetails>
 

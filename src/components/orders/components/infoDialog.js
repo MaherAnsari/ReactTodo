@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Utils from '../../../app/common/utils';
 
 
 const styles = theme => ({
@@ -110,7 +111,7 @@ class InfoDialog extends Component {
                         maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.supplier_mobile}
+                        value={Utils.maskMobileNumber(this.state.dataObj.supplier_mobile)}
                         fullWidth
                     />
                     <TextField
@@ -121,7 +122,7 @@ class InfoDialog extends Component {
                         maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.buyer_mobile}
+                        value={Utils.maskMobileNumber(this.state.dataObj.buyer_mobile)}
                         fullWidth
                     />
 
@@ -264,7 +265,7 @@ class InfoDialog extends Component {
                         maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.mobile}
+                        value={Utils.maskMobileNumber(this.state.dataObj.mobile)}
                         fullWidth
                     />
 
@@ -326,7 +327,7 @@ class InfoDialog extends Component {
                         maxLength="10"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.author_mobile}
+                        value={Utils.maskMobileNumber(this.state.dataObj.author_mobile)}
                         fullWidth
                     />
                     <TextField
