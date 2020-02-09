@@ -145,7 +145,7 @@ function getImageName(fileName) {
         let fileExt = fileName.split('.').pop();
         let filenameWithoutSpace = fileName.split(' ').join('').replace(`.${fileExt}`, "");
         let epocTime = (new Date()).getTime();
-        return filenameWithoutSpace.toLowerCase() + "_" + epocTime + "." + fileExt;
+        return filenameWithoutSpace.toLowerCase() + "_" + epocTime + "." + fileExt.toLowerCase();
 
     } catch (err) {
         return fileName;
@@ -157,7 +157,7 @@ function maskMobileNumber(mobNum) {
         var lastFive = mobNum.substr(mobNum.length - 4);
         var lastChar = mobNum.slice(0, mobNum.length - 4);
         var fstr = lastChar.replace(/\d/g, "X");
-        console.log("----->" + fstr + lastFive);
+        // console.log("----->" + fstr + lastFive);
         return fstr + lastFive;
     } else {
         return mobNum;
