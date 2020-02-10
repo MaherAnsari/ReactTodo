@@ -1,4 +1,5 @@
 import cookie from 'react-cookies';
+import * as zlib from "react-zlib-js";
 // to vget the current date
 let districtData = {};
 let stateList = [
@@ -164,6 +165,11 @@ function maskMobileNumber(mobNum) {
     }
 }
 
+function decryptResponse(input) {
+    var inflated = zlib.inflateSync(new Buffer(input, 'base64')).toString();
+    return JSON.parse(inflated);
+}
+
 const Utils = {
 
     getToken,
@@ -177,7 +183,8 @@ const Utils = {
     downloadDataInCSV,
     formatNumberWithComma,
     getImageName,
-    maskMobileNumber
+    maskMobileNumber,
+    decryptResponse
 
 }
 
