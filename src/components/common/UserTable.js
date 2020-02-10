@@ -411,7 +411,7 @@ class UserListTable extends Component {
 
                                                     </TableCell>
 
-                                                    <TableCell className={this.getTableCellClass(classes, 3)}>{row.mobile}</TableCell>
+                                                    <TableCell className={this.getTableCellClass(classes, 3)}>{ Utils.maskMobileNumber(row.mobile )}</TableCell>
 
                                                     <TableCell className={this.getTableCellClass(classes, 4)}>
                                                         <Tooltip title={row.ordercount + "/" + row.paymentcount} placement="top" classes={{ tooltip: classes.lightTooltip }}>

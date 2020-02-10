@@ -295,7 +295,7 @@ class EditTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason"]
+        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason","buyer_business_name","supplier_locality"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;

@@ -337,6 +337,7 @@ class OrderListTable extends Component {
         const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
         const leftAlignedIndexs = [1, 2, 3];
         const rightAlignedIndexs = [8];
+        // const highlight = true;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -383,7 +384,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " + row.supplier_mobile + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.supplier_mobile) + " )"}</span>
                                                     </div>
                                                 </TableCell>
 
@@ -391,7 +392,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " +  Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
                                                     </div>
                                                 </TableCell>
                                                 {/* <TableCell className={this.getTableCellClass(classes, 2)}>
@@ -427,7 +428,7 @@ class OrderListTable extends Component {
                                                     {this.getActionButton(row)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                    ₹ {row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
+                                                <span style={{ fontWeight: ( row.invalidimg ? 600 : 400)}}> ₹ </span>{row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
                                                     {getAccessAccordingToRole("editOrder") && <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}

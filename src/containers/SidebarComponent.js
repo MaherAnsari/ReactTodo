@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Icon } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import { getStatusOfRole } from '../config/appConfig';
+import bijakLogo from "../assets/images/bijak_logo_new.png";
 
 const styles = theme => ({
   root: {
@@ -26,6 +27,7 @@ const _items = [
       { name: 'Broker', route: '/broker-list', iconClassName: 'local_mall', iconColor: "#f9e646" },
       { name: 'CA Data (Buyer)', route: '/buyer-list', iconClassName: 'shopping_cart', iconColor: "#4980ea" },
       { name: 'LA Data (Supplier)', route: '/supplier-list', iconClassName: 'local_shipping', iconColor: "#ed9649" },
+      { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
     ]
   },
   {
@@ -34,7 +36,7 @@ const _items = [
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
       { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
-      { name: "Add Bank Account", route: '/add-bank-account', iconClassName: 'account_balance', iconColor: "#bde347" },
+      
     ]
   },
   {
@@ -221,7 +223,10 @@ class VerticalNavigation extends React.PureComponent {
               height: '60px',
               maxWidth: '200px',
               padding: '10px 10px 10px 10px'
-            }} src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'} alt={dbImageUrl} />
+            }} 
+            src={bijakLogo}
+            // src={'https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp'}
+             alt={dbImageUrl} />
           </div>
           {/* <Tooltip title={labname || ""} placement="right" >
             <div style={{

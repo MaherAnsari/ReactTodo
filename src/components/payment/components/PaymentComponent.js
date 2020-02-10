@@ -494,7 +494,7 @@ class PaymentComponent extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}} 
                                                         onClick={this.onInfoClick.bind(this, row)}>
                                                         <span>{row.buyer_fullname}</span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " + row.buyer_mobile + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " +Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left", textTransform: "capitalize" }}>
