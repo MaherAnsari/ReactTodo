@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
-import paymentService from '../../../app/paymentService/paymentService';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,8 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import Loader from '../../common/Loader';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
-import 'date-fns';
-import Utils from './../../../app/common/utils';
+import Utils from '../../../app/common/utils';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import tickIcon from "../../../assets/images/icons/check.svg";
@@ -39,7 +36,6 @@ import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
-import DateRangeSelector from './DateRangeSelector';
 
 var moment = require('moment');
 
@@ -116,19 +112,14 @@ const styles = theme => ({
      },
 });
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
 
-const statusOption = ["approved", "failed"];
-
-
-class TodaysPaymentTable extends Component {
+class PaymentDetailsTable extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            allTransactionsData: undefined,
+            allTransactionsData: this.props.allTransactionsData,
+            paymentMetaInfo : this.props.paymentMetaInfo,
             tableHeadData: ["status","id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
             invoiceModalData: [],
             showImageInvoiceModal: false,
@@ -155,29 +146,6 @@ class TodaysPaymentTable extends Component {
         }
     }
 
-    componentDidMount() {
-        // this.getTodaysTransactionList( this.state.datePayloads );
-    }
-
-    getTodaysTransactionList = async ( datePayloads ) => {
-        try {
-            let resp = await paymentService.getTodaysPaymentDataApi( datePayloads );
-            if (resp.data.status === 1 && resp.data.result) {
-                var respData = resp.data.result;
-                this.setState({
-                    allTransactionsData: respData["allTransactions"],
-                    paymentMetaInfo : respData["metainfo"],
-                    page: 0
-                });
-            } else {
-                this.setState({
-                    allTransactionsData: [],
-                });
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
 
     handelTransactionInvoiceModal(row, event) {
         this.setState({ invoiceModalData: row["images"] }, function () {
@@ -210,11 +178,8 @@ class TodaysPaymentTable extends Component {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
       };
 
-      handelRefreshModal( event ){
-          this.setState({             
-            allTransactionsData: undefined}, function(){
-                this.getTodaysTransactionList( this.state.datePayloads );
-            });
+      handelRefreshModal( event ){  
+        this.props.OnPaymentUpdated();
       }
     
 
@@ -335,7 +300,7 @@ class TodaysPaymentTable extends Component {
     onUserInfoModalCancel(event) {
         this.setState({ showUserInfo : false,  isInfo: false });
         if(this.state.isLimitUpdate){
-            this.getTodaysTransactionList( this.state.datePayloads );
+            this.props.OnPaymentUpdated();
         }
     }
 
@@ -351,10 +316,6 @@ class TodaysPaymentTable extends Component {
 
     onUserInfoClicked = (info, event) => {
         this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
-    }
-
-    handelRefreshData(){
-        this.handelRefreshModal();
     }
 
     checkIfAccountInfoAvaialble( data ){
@@ -383,15 +344,9 @@ class TodaysPaymentTable extends Component {
 
       formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
-        // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
-    onDateChaged(data) {
-        this.setState({ datePayloads: data }, function () {
-            this.getTodaysTransactionList( data );
-        });
-    }
 
     render() {
         const { classes } = this.props;
@@ -402,77 +357,11 @@ class TodaysPaymentTable extends Component {
             
             <div>
                 <MuiThemeProvider theme={theme}>
-
-                    <div>
-                    <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
-                    </div>
-           
-           {paymentMetaInfo && <div className={classes.detailHeadmain}>
+                    {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
-                        <i 
-                            onClick={(event) => this.handelRefreshData(event)} 
-                            style={{ padding: "12px",lineHeight: "50px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} 
-                            data-toggle="tooltip" 
-                            data-html="true" 
-                            title="Refresh" 
-                            className="fa fa-refresh" 
-                            aria-hidden="true"></i>
+                       
                             <List style={{ display: "contents" }}>
-                                {/* <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
-                                    <ListItemAvatar>
-                                        <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
-                                    </ListItemAvatar>
-                                    <ListItemText primary={<React.Fragment>
-                                        <Typography
-                                            component="div"
-                                            variant="body2"
-                                            className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
-                                        >
-                                            ₹ {this.getPaymentInOutInfo('b_in', 'sum')}
-                                        </Typography>
-                                    </React.Fragment>
-                                    } secondary={
-                                        <React.Fragment>
-                                            <Typography
-                                                component="span"
-                                                variant="body2"
-                                                className={classes.inline}
-                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
-                                            >
-                                                Total in amount
-                                            </Typography>
-                                        </React.Fragment>
-                                    } />
-                                </ListItem>
-                                <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
-                                    <ListItemAvatar>
-                                        <Icon style={{ color: "#f9e646", fontSize: "34px" }}>playlist_add_check</Icon>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={<React.Fragment>
-                                            <Typography
-                                                component="div"
-                                                variant="body2"
-                                                className={classes.inline}
-                                                style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
-                                            >
-                                                {this.getPaymentInOutInfo('b_in', 'count')}
-                                            </Typography>
-                                        </React.Fragment>
-                                        } secondary={
-                                            <React.Fragment>
-                                                <Typography
-                                                    component="span"
-                                                    variant="body2"
-                                                    className={classes.inline}
-                                                    style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
-                                                >
-                                                    Total no. of in payment
-                                        </Typography>
-                                            </React.Fragment>
-                                        } />
-                                </ListItem> */}
+                                
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
@@ -482,8 +371,7 @@ class TodaysPaymentTable extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
-                                        >
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}>
                                             ₹ {this.getPaymentInOutInfo('b_out', 'sum')}
                                         </Typography>
                                     </React.Fragment>
@@ -493,8 +381,7 @@ class TodaysPaymentTable extends Component {
                                                 component="span"
                                                 variant="body2"
                                                 className={classes.inline}
-                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
-                                            >
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}>
                                                 Total out amount
                                         </Typography>
                                         </React.Fragment>
@@ -509,8 +396,7 @@ class TodaysPaymentTable extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
-                                        >
+                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}>
                                             {this.getPaymentInOutInfo('b_out', 'count')}
                                         </Typography>
                                     </React.Fragment>
@@ -520,8 +406,7 @@ class TodaysPaymentTable extends Component {
                                                 component="span"
                                                 variant="body2"
                                                 className={classes.inline}
-                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}
-                                            >
+                                                style={{ color: "#afb1b9", fontFamily: "lato", fontWeight: 500, fontSize: "14px" }}>
                                                 Total no. of out payment
                                         </Typography>
                                         </React.Fragment>
@@ -626,13 +511,7 @@ class TodaysPaymentTable extends Component {
                                             );
                                         })}
                                     </TableBody>
-                 
                                 </Table>}
-
-                               
-                           
-
-
                             {allTransactionsData && allTransactionsData.length > 0 ? "" :
                                 <div className={classes.defaultTemplate}
                                     style={{
@@ -641,29 +520,30 @@ class TodaysPaymentTable extends Component {
                                         fontSize: "24px"
                                     }}>
                                     {<span style={{ display:"grid"}}>
-                                        <i className={ " fa fa-frown-o"}  style={{fontSize: "44px"}} aria-hidden="true"></i>{"No data available"}</span>}
+                                        <i className={" fa fa-frown-o"} style={{fontSize: "44px"}} aria-hidden="true"></i>
+                                        {"No data available"}
+                                        </span>}
                                 </div>}
-                            {/* {!allTransactionsData && <Loader />} */}
                         </div> : <Loader />}
                         {allTransactionsData && allTransactionsData.length > 0 &&
                                 <Table>  
                                     <TableFooter style={{ borderTop: "2px solid #858792" }}>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[25, 50, 100]}
-                    colSpan={1}
-                    count={allTransactionsData.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                    onChangePage={this.handleChangePage.bind(this)}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                  />
-                </TableRow>
-              </TableFooter>
+                                        <TableRow>
+                                        <TablePagination
+                                            rowsPerPageOptions={[25, 50, 100]}
+                                            colSpan={1}
+                                            count={allTransactionsData.length}
+                                            rowsPerPage={rowsPerPage}
+                                            page={page}
+                                            SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                            }}
+                                            onChangePage={this.handleChangePage.bind(this)}
+                                            onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                        />
+                                        </TableRow>
+                                    </TableFooter>
                                 </Table>}
                     
 
@@ -678,7 +558,7 @@ class TodaysPaymentTable extends Component {
                         open={showEditTransactionModal}
                         editableTransactionData={this.state.editableData}
                         onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
-                            this.getTodaysTransactionList();
+                            this.props.OnPaymentUpdated();
                         })}
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
@@ -693,16 +573,16 @@ class TodaysPaymentTable extends Component {
                         onStatusUpdateObjClose={() => { this.setState({ showStatusChangeModal: false, statusUpdateObj: {} }) }}
                          />}
 
-             {this.state.showPayoutModal && this.state.payoutData && 
-                    <PayoutModal
-                        openPayoutModal={this.state.showPayoutModal}
-                        onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
-                        onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
-                            this.getTodaysTransactionList();
-                        })}
-                        payoutData={this.state.payoutData} />}
+                    {this.state.showPayoutModal && this.state.payoutData && 
+                        <PayoutModal
+                            openPayoutModal={this.state.showPayoutModal}
+                            onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
+                            onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
+                                this.props.OnPaymentUpdated();
+                            })}
+                            payoutData={this.state.payoutData} />}
 
-                                {this.state.showUserInfo ? 
+                    {this.state.showUserInfo ? 
                         <BusinessInfoDialog 
                             openModal={this.state.showUserInfo}
                             onEditModalClosed={this.handleUserInfoClose.bind(this)}
@@ -725,8 +605,8 @@ class TodaysPaymentTable extends Component {
     }
 }
 
-TodaysPaymentTable.propTypes = {
+PaymentDetailsTable.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TodaysPaymentTable);
+export default withStyles(styles)(PaymentDetailsTable);

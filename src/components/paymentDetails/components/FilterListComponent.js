@@ -141,7 +141,7 @@ class FilterAreaComponent extends React.Component {
         
         var uData = { ...data, ...this.state.filterOptionData }
 
-        this.props.getSearchedOrderListData(uData);
+        this.props.getPaymentDetailsData(uData);
     }
 
 
@@ -247,11 +247,11 @@ class FilterAreaComponent extends React.Component {
                                         }
                                     </React.Fragment>
                                 ))}
-                                <div><Badge className={classes.margin} style={{ height: '50px' }} badgeContent={Object.keys(this.state.filterOptionData).length} color="primary">
+                                {/* <div><Badge className={classes.margin} style={{ height: '50px' }} badgeContent={Object.keys(this.state.filterOptionData).length} color="primary">
                                     <Button component="span" style={{ padding: '5px 10px', fontSize: 12, color: '#b1b1b1', margin: '0px 5px' }} onClick={this.onFilterClick.bind(this)}>
                                         Filter
                                 </Button>
-                                </Badge></div>
+                                </Badge></div> */}
 
                                 {/* {this.state.isFilterDialogOpen && <UserFilterOption
                                     openModal={this.state.open}

@@ -11,6 +11,9 @@ import supplierService from './../../app/supplierService/supplierService';
 import orderService from './../../app/orderService/orderService';
 // import OrderListTable from "./components/OrderListTable";
 import DateRangeSelector from "./components/DateRangeSelector";
+import paymentDetailsService from '../../app/paymentDetailsService/paymentDetailsService';
+import PaymentDetailsTable from './components/PaymentDetailsTable';
+
 
 const styles = theme => ({
     root: {
@@ -54,7 +57,7 @@ class PaymentDetailsContainer extends React.Component {
 
     componentDidMount() {
         this.getBuyersList();
-        this.getBrokersList();
+        // this.getBrokersList();
         this.getSuppliersList();
     }
 
@@ -108,7 +111,7 @@ class PaymentDetailsContainer extends React.Component {
         return optionsData;
     }
 
-    async getSearchedOrderListData(params) {
+    async getPaymentDetailsData(params) {
         this.setState({ params: params });
         // { "startDate": "", "endDate": "" }
         if (this.state.datePayloads["startDate"] !== "") {
@@ -120,13 +123,19 @@ class PaymentDetailsContainer extends React.Component {
         // params["supplierid"] = "9953368723";
         this.setState({ showLoader: true });
         try {
-            let resp = await orderService.getOrderListData(params);
-            if (this.ismounted) {
-                if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ orderedListData: resp.data.result.data, showLoader: false });
-                } else {
-                    this.setState({ orderedListData: [], showLoader: false });
-                }
+            let resp = await paymentDetailsService.getPaymentDetails(params);
+            if (resp.data.status === 1 && resp.data.result) {
+                var respData = resp.data.result;
+                this.setState({
+                    allTransactionsData: respData["allTransactions"],
+                    paymentMetaInfo: respData["metainfo"],
+                    showLoader: false
+                });
+            } else {
+                this.setState({
+                    allTransactionsData: [],
+                    showLoader: false
+                });
             }
 
         } catch (err) {
@@ -141,18 +150,19 @@ class PaymentDetailsContainer extends React.Component {
 
     onDateChaged(data) {
         this.setState({ datePayloads: data }, function () {
-            this.getSearchedOrderListData(this.state.params);
+            this.getPaymentDetailsData(this.state.params);
         });
     }
 
     handelRefreshData() {
-        this.getSearchedOrderListData(this.state.params);
+        this.getPaymentDetailsData(this.state.params);
     }
 
 
 
     render() {
         const { classes } = this.props;
+        const { allTransactionsData , paymentMetaInfo} = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -164,13 +174,14 @@ class PaymentDetailsContainer extends React.Component {
                         buyersList={this.state.buyersList}
                         brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
+                        getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
 
-                    {/* {this.state.showLoader ?
+                    {this.state.showLoader ?
                         <Loader /> :
-                        <OrderListTable
-                            tableData={this.state.orderedListData}
-                            onOrderAdded={() => this.getSearchedOrderListData({})} />} */}
+                        <PaymentDetailsTable
+                            allTransactionsData={allTransactionsData}
+                            paymentMetaInfo={paymentMetaInfo}
+                            OnPaymentUpdated={() => this.getPaymentDetailsData({})} />}
 
 
                 </Paper>
