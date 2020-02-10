@@ -37,6 +37,7 @@ import AddBankAccountContainer from '../addBankAccount/AddBankAccountContainer';
 import commonService from '../../app/commonService/commonService';
 import RolePermissionContainer from '../role-permission/RolePermissionContainer';
 import { getStatusOfRole } from '../../config/appConfig';
+import PaymentDetailsContainer from '../paymentDetails/PaymentDetailsContainer';
 
 const drawerWidth = 250;
 
@@ -409,6 +410,7 @@ class Home extends React.Component {
           {getStatusOfRole("BasicUser") && <Route path='/home/rate-list' exact component={PriceContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/orders-list' exact component={OrdersContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/payment' exact component={PaymentContainer} />}
+          {getStatusOfRole("BasicUser") && <Route path='/home/payment-details' exact component={PaymentDetailsContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />}
 

@@ -51,7 +51,7 @@ class FilterAreaComponent extends React.Component {
             labelWidth: 0,
             configData: [
                 { name: "Buyer", id: "buyerid", options: this.props.buyersList },
-                { name: "Broker", id: "brokerid", options: this.props.brokersList },
+                // { name: "Broker", id: "brokerid", options: this.props.brokersList },
                 { name: "Supplier", id: "supplierid", options: this.props.suppliersList }
             ],
             inputValue: "",
@@ -75,8 +75,8 @@ class FilterAreaComponent extends React.Component {
         var data = this.state.configData;
         if (nextprops.buyersList !== data[0]["options"] || nextprops.brokersList !== data[0]["options"] || nextprops.suppliersList !== data[0]["options"]) {
             data[0]["options"] = nextprops.buyersList;
-            data[1]["options"] = nextprops.brokersList;
-            data[2]["options"] = nextprops.suppliersList;
+            // data[1]["options"] = nextprops.brokersList;
+            data[1]["options"] = nextprops.suppliersList;
             this.setState({ configData: data });
         }
     }
