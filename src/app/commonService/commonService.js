@@ -4,18 +4,18 @@ import Utils from '../common/utils';
 
 let commonService = {
 
-    getUserInfo : async function ( id ) {
+    getUserInfo: async function (id) {
         return Api({
             method: 'get',
             headers: {
                 "Authorization": Utils.getToken()
             },
-            url: '/user/detail/'+id 
-        },1);
+            url: '/user/detail/' + id
+        }, 1);
     },
 
 
-    getbankDetail : async function ( param ) {
+    getbankDetail: async function (param) {
         // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/getbankDetail?mobile=9958220331
         return Api({
             method: 'get',
@@ -24,11 +24,11 @@ let commonService = {
             },
             url: '/bijak/getbankDetail',
             params: param
-        },3);
+        }, 3);
     },
 
-    
-    addbankDetail : async function ( payload ) {
+
+    addbankDetail: async function (payload) {
         // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/addBankAccount
         // payload:{
         //     "id":232,
@@ -49,10 +49,10 @@ let commonService = {
             },
             url: '/bijak/addBankAccount',
             data: payload
-        },3);
+        }, 3);
     },
 
-    forceUpdateBankDetail : async function ( payload ) {
+    forceUpdateBankDetail: async function (payload) {
         // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/forceUpdateBankDetail
         //ifsc  / accountnumber / mobile
         return Api({
@@ -62,21 +62,33 @@ let commonService = {
             },
             url: '/bijak/forceUpdateBankDetail',
             data: payload
-        },3);
+        }, 3);
     },
 
-    
-    getUserSpecificRole : async function ( mobile ) {
-        mobile = mobile.replace("+","")
-//    https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/role/getlistofrole?mobile=919205627721
+
+    getUserSpecificRole: async function (mobile) {
+        mobile = mobile.replace("+", "")
+        //    https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/role/getlistofrole?mobile=919205627721
         return Api({
             method: 'get',
             headers: {
                 "Authorization": Utils.getToken()
             },
             url: '/role/getlistofrole',
-            params : {"mobile" : mobile }
-        },4);
+            params: { "mobile": mobile }
+        }, 4);
+    },
+
+    // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/sendinvoicefromwhatsapp
+    sendinvoicefromwhatsapp: async function (payload) {
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/bijak/sendinvoicefromwhatsapp',
+            data: payload
+        }, 3);
     },
 }
 

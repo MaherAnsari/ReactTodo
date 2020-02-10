@@ -12,6 +12,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import TextField from '@material-ui/core/TextField';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
 
@@ -74,13 +75,6 @@ class WhatsAppNumberSelectionModal extends Component {
 
     async sendReceiptToWhatsapp(event) {
         try {
-
-            // let resp = await paymentService.uplaodPayment(event);
-            // if (resp.data.status === 1 && resp.data.result) {
-            //     alert("Data Successfuly Uploaded ");
-            //     this.getPaymentSearchedUser(" ");
-            //     this.setState({ open: false, showUploader: false });
-            // }
             let whatsappNumber = "";
             if (this.state.selectedUser === "supplier") {
                 whatsappNumber = this.state.transactionInfoData["supplier_mobile"];
@@ -96,15 +90,21 @@ class WhatsAppNumberSelectionModal extends Component {
                 }
                 whatsappNumber = this.state.otherNumber;
             }
-
-            console.log(whatsappNumber);
-            alert("Receipt sent to watsapp number " + whatsappNumber);
+            let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
+            let resp = await commonService.sendinvoicefromwhatsapp(payload);
+            console.log(resp);
+            if (resp.data.status === 1) {
+                alert("Receipt sent to whatsapp number " + whatsappNumber);
+            } else {
+                alert("Oops there was an error sending the watsapp receipt");
+            }
             this.handleDialogCancel();
 
         } catch (err) {
             console.error(err)
-            this.setState({ open: false, showUploader: false });
-            this.getPaymentSearchedUser(" ");
+            this.setState({ open: false }, () =>
+                alert("Oops there was an error sending the receipt")
+            );
         }
     }
 
@@ -112,7 +112,7 @@ class WhatsAppNumberSelectionModal extends Component {
     render() {
         const { classes } = this.props;
         const { transactionInfoData, selectedUser, otherNumber } = this.state;
-        console.log(transactionInfoData)
+
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
