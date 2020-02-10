@@ -72,7 +72,7 @@ class TransactionInvoiceModal extends Component {
                             <div key={index + "imgs"} className="supportingimgCard" >
                                 <img src={url} alt={url} style={{
                                     width: "100%",
-                                    height: "500px"
+                                    // height: "500px"
                                 }} />
                             </div>
                         )
