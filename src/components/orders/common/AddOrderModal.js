@@ -902,6 +902,24 @@ class AddOrderModal extends Component {
                                 fullWidth />
                         </div> */}
 
+{this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                Uploaded Images
+                        </div>}
+                        <div style={{ display: "flex" }}>
+                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                //     <img src={key} alt={key} height="150px" />
+                                // </div>
+                                <div key={"imhs_" + i} className="transaction-supporting-image">
+                                    <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                        <i className="fa fa-trash fa-lg"></i>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
                         <div >
 
                             <Grid container direction="row" alignItems="stretch">
@@ -921,7 +939,7 @@ class AddOrderModal extends Component {
                             </Button>
                                     </label>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12}>
+                                {/* <Grid item xs={12} sm={12} md={12}>
                                     {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
                                         <React.Fragment>
                                             {this.state.attachmentArray.map((indUpload, index) => (
@@ -942,7 +960,7 @@ class AddOrderModal extends Component {
                                             ))}
                                         </React.Fragment>
                                     }
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </div>
 

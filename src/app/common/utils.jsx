@@ -162,7 +162,7 @@ function getImageName(fileName) {
 }
 
 function maskMobileNumber(mobNum) {
-    console.log(getAccessAccordingToRole("ViewMobileNumber"))
+    
     if (getAccessAccordingToRole("ViewMobileNumber")) { // if true then show mobile number
         return mobNum;
     } else {
