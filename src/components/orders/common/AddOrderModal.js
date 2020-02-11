@@ -919,7 +919,7 @@ class AddOrderModal extends Component {
                                                             <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
                                                         </Grid>
                                                         <Grid item xs={12} sm={12} md={10} >
-                                                            <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
+                                                            <span  data-toggle="tooltip" data-placement="center" title="Click to preview" style={{cursor: "pointer" }} onClick={()=> window.open(indUpload["image_url"], "_blank")}><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
 
                                                         </Grid>
                                                         <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
