@@ -88,7 +88,7 @@ class AddOrderModal extends Component {
                 "type": "bilti",
                 "bijak_amt": "",
                 "supporting_images": [],
-                "actual_dispatch_date" : new Date(),
+                "actual_dispatch_date": new Date(),
                 "transport_info": "",
                 "author_name": "",
                 // "author_mobile": "",
@@ -179,13 +179,13 @@ class AddOrderModal extends Component {
         var addOrderPayloadVal = this.state.addOrderPayload;
         if (floatIds.indexOf(id) > -1) {
             // if (val === "" || !isNaN(val)) {
-                if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
+            if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
                 addOrderPayloadVal[id] = val;
             }
         } else {
             addOrderPayloadVal[id] = val;
         }
-        console.log( id+"-----"+ addOrderPayloadVal[id] );
+        console.log(id + "-----" + addOrderPayloadVal[id]);
         if (errors.hasOwnProperty(id)) {
             delete errors[id];
         }
@@ -283,7 +283,7 @@ class AddOrderModal extends Component {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
-                
+
                 var resp = await orderService.addNewOrder(payloadData);
                 console.log(resp);
                 this.setState({ showLoader: false });
@@ -309,8 +309,8 @@ class AddOrderModal extends Component {
                 formateddata[key] = data[key];
             }
 
-            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
-                formateddata[key] = parseFloat( data[key] );
+            if (formateddata[key] && floatIds.indexOf(key) > -1) {
+                formateddata[key] = parseFloat(data[key]);
             }
 
             if (key === "cashback_value" && data[key] === "") {
@@ -321,7 +321,7 @@ class AddOrderModal extends Component {
                 formateddata[key] = null;
             }
 
-          
+
 
         }
         console.log(formateddata);
@@ -423,11 +423,11 @@ class AddOrderModal extends Component {
         );
     }
 
-    
+
     handelDateChange(dateval) {
         var addOrderPayloadVal = this.state.addOrderPayload;
         addOrderPayloadVal["actual_dispatch_date"] = dateval;
-        this.setState({ addOrderPayload : addOrderPayloadVal })
+        this.setState({ addOrderPayload: addOrderPayloadVal })
     }
 
     render() {
@@ -451,7 +451,7 @@ class AddOrderModal extends Component {
 
                         <div style={{ display: "flex" }}>
                             <Grid container style={{ width: "49%" }} >
-                                <div style={{width: "100%", textAlign: "center",lineHeight: "54px"}}>
+                                <div style={{ width: "100%", textAlign: "center", lineHeight: "54px" }}>
                                     Order Date
                         </div>
                             </Grid>
@@ -463,7 +463,7 @@ class AddOrderModal extends Component {
                                         format="dd-MMM-yyyy"
                                         style={{ width: '100%' }}
                                         value={addOrderPayload["actual_dispatch_date"]}
-                                        maxDate={ new Date() }
+                                        maxDate={new Date()}
                                         onChange={(dateval) => {
                                             this.handelDateChange(dateval);
                                         }}
@@ -817,7 +817,19 @@ class AddOrderModal extends Component {
                             ))}
                         </TextField>
                     </div> */}
+                        <div style={{ display: "flex" }} >
 
+                            <TextField
+                                margin="dense"
+                                id="remark"
+                                error={errorFields["remark"] ? true : false}
+                                label="Remarks"
+                                type="text"
+                                style={{ width: '98%' }}
+                                value={addOrderPayload.remark}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
                         {/* <div style={{ display: "flex" }} >
 
                             <TextField
@@ -919,7 +931,7 @@ class AddOrderModal extends Component {
                                                             <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
                                                         </Grid>
                                                         <Grid item xs={12} sm={12} md={10} >
-                                                            <span  data-toggle="tooltip" data-placement="center" title="Click to preview" style={{cursor: "pointer" }} onClick={()=> window.open(indUpload["image_url"], "_blank")}><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
+                                                            <span data-toggle="tooltip" data-placement="center" title="Click to preview" style={{ cursor: "pointer" }} onClick={() => window.open(indUpload["image_url"], "_blank")}><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
 
                                                         </Grid>
                                                         <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>

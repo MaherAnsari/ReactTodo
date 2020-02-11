@@ -304,8 +304,8 @@ class EditOrderDataModal extends Component {
                 formateddata[key] = data[key];
             }
 
-            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
-                formateddata[key] = parseFloat( data[key] );
+            if (formateddata[key] && floatIds.indexOf(key) > -1) {
+                formateddata[key] = parseFloat(data[key]);
             }
 
             if (key === "cashback_value" && data[key] === "") {
@@ -316,7 +316,7 @@ class EditOrderDataModal extends Component {
                 formateddata[key] = null;
             }
 
-          
+
 
         }
         return formateddata;
@@ -767,6 +767,19 @@ class EditOrderDataModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
 
+                        </div>
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="remark"
+                                error={errorFields["remark"] ? true : false}
+                                label="Remarks"
+                                type="text"
+                                style={{ width: '98%' }}
+                                value={orderPayload.remark}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
                         </div>
                         {/* 
                         <div style={{ display: "flex" }} >
