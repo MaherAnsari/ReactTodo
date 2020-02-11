@@ -131,14 +131,20 @@ function downloadDataInCSV(json, filename) {
 function formatNumberWithComma(x) {
     try {
         x = x.toString();
+        let cNum = x;
+        let y = "";
+        if (x.indexOf(".") > -1) {
+            x = cNum.split(".")[0];
+            y = "." + cNum.split(".")[1];
+        }
         var lastThree = x.substring(x.length - 3);
         var otherNumbers = x.substring(0, x.length - 3);
         if (otherNumbers != '')
             lastThree = ',' + lastThree;
-        var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + y;
         return res;
     } catch (err) {
-        // console.log(err);
+        console.log(err);
         return x;
     }
 }
@@ -156,7 +162,7 @@ function getImageName(fileName) {
 }
 
 function maskMobileNumber(mobNum) {
-    console.log( getAccessAccordingToRole("ViewMobileNumber") )
+    console.log(getAccessAccordingToRole("ViewMobileNumber"))
     if (getAccessAccordingToRole("ViewMobileNumber")) { // if true then show mobile number
         return mobNum;
     } else {
