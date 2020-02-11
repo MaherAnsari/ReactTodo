@@ -912,7 +912,7 @@ class AddOrderModal extends Component {
                                 //     <img src={key} alt={key} height="150px" />
                                 // </div>
                                 <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
                                     <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                         <i className="fa fa-trash fa-lg"></i>
                                     </div>

@@ -769,6 +769,25 @@ class AddTransactionModal extends Component {
                                         ))}
                                     </TextField>
                                 </div>
+
+                                {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                Uploaded Images
+                        </div>}
+                        <div style={{ display: "flex" }}>
+                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                //     <img src={key} alt={key} height="150px" />
+                                // </div>
+                                <div key={"imhs_" + i} className="transaction-supporting-image">
+                                    <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                        <i className="fa fa-trash fa-lg"></i>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
                                 <div >
                                     <Grid container direction="row" alignItems="stretch">
                                         <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
@@ -787,7 +806,7 @@ class AddTransactionModal extends Component {
                             </Button>
                                             </label>
                                         </Grid>
-                                        <Grid item xs={12} sm={12} md={12}>
+                                        {/* <Grid item xs={12} sm={12} md={12}>
                                             {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
                                                 <React.Fragment>
                                                     {this.state.attachmentArray.map((indUpload, index) => (
@@ -808,7 +827,7 @@ class AddTransactionModal extends Component {
                                                     ))}
                                                 </React.Fragment>
                                             }
-                                        </Grid>
+                                        </Grid> */}
                                     </Grid>
                                 </div>
 
