@@ -393,6 +393,10 @@ class TodaysPaymentTable extends Component {
         });
     }
 
+    handelDownloadClicked = () => {
+        Utils.downloadDataInCSV(this.state.allTransactionsData,"Day-wise")
+    }
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
@@ -719,6 +723,12 @@ class TodaysPaymentTable extends Component {
                             onTransactionInfoModalClose = {()=> this.setState({ showTransactionInfoDialog : false , transactionInfoData : undefined  })}
                             transactionInfoData={this.state.transactionInfoData}
                         />}
+                           {allTransactionsData && allTransactionsData.length > 0 &&
+                           <div className="updateBtndef" style={{ right: "30px" }} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+                    </div>}
                         </MuiThemeProvider>
             </div>);
 

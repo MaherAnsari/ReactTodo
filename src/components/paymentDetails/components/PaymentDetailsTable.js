@@ -347,6 +347,9 @@ class PaymentDetailsTable extends Component {
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
+    handelDownloadClicked = () => {
+        Utils.downloadDataInCSV(this.state.allTransactionsData,"payments-detail")
+    }
 
     render() {
         const { classes } = this.props;
@@ -653,6 +656,14 @@ class PaymentDetailsTable extends Component {
                             onTransactionInfoModalClose = {()=> this.setState({ showTransactionInfoDialog : false , transactionInfoData : undefined  })}
                             transactionInfoData={this.state.transactionInfoData}
                         />}
+
+{allTransactionsData && allTransactionsData.length > 0 && 
+<div className="updateBtndef" style={{ right: "30px" }} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+                    </div>}
+
                         </MuiThemeProvider>
             </div>);
 

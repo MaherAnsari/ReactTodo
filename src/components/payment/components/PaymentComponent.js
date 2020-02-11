@@ -605,11 +605,11 @@ class PaymentComponent extends Component {
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p>Add Transaction</p></div>
                     </div>}
-                    {/* <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
+                    <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
-                    </div> */}
+                    </div>
                     {showAddTransactionModal &&
                         <AddTransactionModal
                             open={showAddTransactionModal}
