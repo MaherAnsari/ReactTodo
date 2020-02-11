@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
-import AsyncSelect from 'react-select/lib/Async';
+// import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
@@ -18,7 +18,11 @@ import orderService from '../../../app/orderService/orderService';
 import Switch from '@material-ui/core/Switch';
 import Loader from '../../common/Loader';
 import Utils from '../../../app/common/utils';
-
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const styles = theme => ({
     heading: {
@@ -81,6 +85,7 @@ class EditOrderDataModal extends Component {
             orderPayloadToUpdate: {
                 "active": "",
                 // "buyerid": "",
+                "actual_dispatch_date": "",
                 // "supplierid": "",
                 "brokerid": "",
                 "commodity": "",
@@ -92,7 +97,7 @@ class EditOrderDataModal extends Component {
                 "supporting_images": [],
                 "transport_info": "",
                 "author_name": "",
-                "app_order_id":"",
+                "app_order_id": "",
                 // "author_mobile": "",
                 "creator_role": "",
                 "status": "",
@@ -220,7 +225,7 @@ class EditOrderDataModal extends Component {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
                     this.setTempArray(resp.data.result.data, "mobile");
                 }
-               
+
                 callback(respData);
             } else {
                 callback([]);
@@ -244,10 +249,20 @@ class EditOrderDataModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey] +" ("+ data[i][valuekey] +")", value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + ")", value: data[i][valuekey] });
             }
         }
         return optionsData;
+    }
+    
+    formateDateForApi(data) {
+        if (data && data !== "") {
+            var dateVal = new Date(data);
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" + (dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            return dateVal;
+        } else {
+            return "";
+        }
     }
 
     async updateOrder(event) {
@@ -258,6 +273,7 @@ class EditOrderDataModal extends Component {
                 this.setState({ showLoader: true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
+                payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(id, payload);
                 this.setState({ showLoader: false });
@@ -408,6 +424,13 @@ class EditOrderDataModal extends Component {
         this.setState({ orderPayload: data });
     };
 
+
+    handelDateChange(dateval) {
+        var orderPayloadVal = this.state.orderPayload;
+        orderPayloadVal["actual_dispatch_date"] = dateval;
+        this.setState({ orderPayload: orderPayloadVal })
+    }
+
     render() {
         const { classes } = this.props;
         const { showLoader, orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
@@ -438,6 +461,30 @@ class EditOrderDataModal extends Component {
                                 inputProps={{ 'aria-label': 'secondary checkbox' }}
                             />
 
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+
+                            <div style={{ width: "49%", lineHeight: "40px", fontFamily: "lato", fontSize: "17px" }}>
+                                Order Date
+                        </div>
+
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
+                                <div style={{ width: "49%" }} >
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="actual_dispatch_date"
+                                        format="dd-MMM-yyyy"
+                                        style={{ width: '100%' }}
+                                        value={orderPayload["actual_dispatch_date"]}
+                                        maxDate={new Date()}
+                                        onChange={(dateval) => {
+                                            this.handelDateChange(dateval);
+                                        }}
+
+                                    />
+                                </div>
+                            </MuiPickersUtilsProvider>
                         </div>
 
                         <div style={{ display: "flex" }}>
@@ -622,7 +669,7 @@ class EditOrderDataModal extends Component {
                         <div style={{ display: "flex" }} >
 
 
-                        <TextField
+                            <TextField
                                 margin="dense"
                                 id="bijak_amt"
                                 label="Bijak Amount"
@@ -632,7 +679,7 @@ class EditOrderDataModal extends Component {
                                 value={orderPayload.bijak_amt}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                           
+
                             &nbsp;
                           &nbsp;
 
@@ -643,7 +690,7 @@ class EditOrderDataModal extends Component {
                                 label="Type"
                                 error={errorFields["type"] ? true : false}
                                 type="text"
-                                style={{ width: '49%' ,marginTop:'5px'}}
+                                style={{ width: '49%', marginTop: '5px' }}
                                 value={orderPayload.type}
                                 onChange={this.handleInputChange.bind(this)}>
                                 {["bilti", "commission"].map((key, i) => (
@@ -652,22 +699,22 @@ class EditOrderDataModal extends Component {
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        
+
                         </div>
 
                         <div style={{ display: "flex", marginTop: 4 }} >
 
-                        <TextField
+                            <TextField
                                 select
                                 id="unit"
                                 error={errorFields["unit"] ? true : false}
                                 name="unit"
                                 label="Unit"
                                 type="text"
-                                style={{ width: '49%',marginTop:'5px' }}
+                                style={{ width: '49%', marginTop: '5px' }}
                                 value={orderPayload.unit}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {["quintal", "ton"].map((key, i) => (
+                                {["kg", "quintal", "ton", "packet", "crate", "box", "pc"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
@@ -675,7 +722,7 @@ class EditOrderDataModal extends Component {
                             </TextField>
                             &nbsp;
                         &nbsp;
-                      
+
                         <TextField
                                 margin="dense"
                                 id="qnt"
@@ -689,7 +736,7 @@ class EditOrderDataModal extends Component {
                         </div>
 
                         <div style={{ display: "flex" }} >
-                        <TextField
+                            <TextField
                                 margin="dense"
                                 id="rate"
                                 label="Rate"
@@ -711,9 +758,9 @@ class EditOrderDataModal extends Component {
                                 value={orderPayload.transport_info}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                      
+
                         </div>
-{/* 
+                        {/* 
                         <div style={{ display: "flex" }} >
                           
                              <TextField

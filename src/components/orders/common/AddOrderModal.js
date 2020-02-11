@@ -18,6 +18,11 @@ import commodityService from '../../../app/commodityService/commodityService';
 import orderService from '../../../app/orderService/orderService';
 import Loader from '../../common/Loader';
 import Utils from '../../../app/common/utils';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const styles = theme => ({
     heading: {
@@ -83,6 +88,7 @@ class AddOrderModal extends Component {
                 "type": "bilti",
                 "bijak_amt": "",
                 "supporting_images": [],
+                "actual_dispatch_date" : new Date(),
                 "transport_info": "",
                 "author_name": "",
                 // "author_mobile": "",
@@ -221,12 +227,12 @@ class AddOrderModal extends Component {
                 var respData = [];
                 if (type === "brokerid") {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "id");
-                    this.setTempArray(resp.data.result.data,"id");
+                    this.setTempArray(resp.data.result.data, "id");
                 } else {
                     respData = this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile");
-                    this.setTempArray(resp.data.result.data,"mobile");
+                    this.setTempArray(resp.data.result.data, "mobile");
                 }
-                
+
                 callback(respData);
             } else {
                 callback([]);
@@ -237,7 +243,7 @@ class AddOrderModal extends Component {
         }
     }
 
-    setTempArray(data , type ) {
+    setTempArray(data, type) {
         var tempVarVal = this.state.tempVar;
         for (var i = 0; i < data.length; i++) {
             tempVarVal[data[i][type]] = data[i];
@@ -250,10 +256,20 @@ class AddOrderModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey]+" ("+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
+    }
+
+    formateDateForApi(data) {
+        if (data && data !== "") {
+            var dateVal = new Date(data);
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" + (dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            return dateVal;
+        } else {
+            return "";
+        }
     }
 
     async addOrder(event) {
@@ -264,7 +280,9 @@ class AddOrderModal extends Component {
             if (this.checkForInvalidFields(payload)) {
                 this.setState({ showLoader: true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
+                payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
+                
                 var resp = await orderService.addNewOrder(payloadData);
                 console.log(resp);
                 this.setState({ showLoader: false });
@@ -314,7 +332,7 @@ class AddOrderModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate","qnt","unit"]
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -396,6 +414,12 @@ class AddOrderModal extends Component {
         );
     }
 
+    
+    handelDateChange(dateval) {
+        var addOrderPayloadVal = this.state.addOrderPayload;
+        addOrderPayloadVal["actual_dispatch_date"] = dateval;
+        this.setState({ addOrderPayload : addOrderPayloadVal })
+    }
 
     render() {
         const { classes } = this.props;
@@ -415,6 +439,30 @@ class AddOrderModal extends Component {
                             Add Order</p>
                     </DialogTitle>
                     <DialogContent>
+
+                        <div style={{ display: "flex" }}>
+                            <Grid container style={{ width: "49%" }} >
+                                <div style={{width: "100%", textAlign: "center",lineHeight: "54px"}}>
+                                    Order Date
+                        </div>
+                            </Grid>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
+                                <Grid container style={{ width: "49%" }} >
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="actual_dispatch_date"
+                                        format="dd-MMM-yyyy"
+                                        style={{ width: '100%' }}
+                                        value={addOrderPayload["actual_dispatch_date"]}
+                                        maxDate={ new Date() }
+                                        onChange={(dateval) => {
+                                            this.handelDateChange(dateval);
+                                        }}
+
+                                    />
+                                </Grid>
+                            </MuiPickersUtilsProvider>
+                        </div>
 
                         <div style={{ display: "flex" }}>
                             {this.props.userdata && this.props.userdata.role === "ca" ?
@@ -446,7 +494,7 @@ class AddOrderModal extends Component {
                                                 if (item && item !== null) {
                                                     data["buyerid"] = tempVar[item["value"]]["id"];
                                                     data["buyer_mobile"] = tempVar[item["value"]]["mobile"];
-                                                    data["target_location"]= tempVar[item["value"]]["locality"]
+                                                    data["target_location"] = tempVar[item["value"]]["locality"]
                                                 } else {
                                                     data["buyerid"] = "";
                                                     data["buyer_mobile"] = "";
@@ -489,7 +537,7 @@ class AddOrderModal extends Component {
                                                 if (item && item !== null) {
                                                     data["supplierid"] = tempVar[item["value"]]["id"];
                                                     data["supplier_mobile"] = tempVar[item["value"]]["mobile"];
-                                                    data["source_location"]= tempVar[item["value"]]["locality"]
+                                                    data["source_location"] = tempVar[item["value"]]["locality"]
                                                 } else {
                                                     data["supplierid"] = "";
                                                     data["supplier_mobile"] = "";
@@ -555,7 +603,7 @@ class AddOrderModal extends Component {
                                 label="Creater Role"
                                 error={errorFields["creator_role"] ? true : false}
                                 type="text"
-                                style={{ width: '49%' ,marginTop:'5px'}}
+                                style={{ width: '49%', marginTop: '5px' }}
                                 value={addOrderPayload.creator_role}
                                 onChange={this.handleInputChange.bind(this)}>
                                 {["la", "ca"].map((key, i) => (
@@ -631,7 +679,7 @@ class AddOrderModal extends Component {
                                 label="Type"
                                 error={errorFields["type"] ? true : false}
                                 type="text"
-                                style={{ width: '49%', marginTop:'5px'}}
+                                style={{ width: '49%', marginTop: '5px' }}
                                 value={addOrderPayload.type}
                                 onChange={this.handleInputChange.bind(this)}>
                                 {["bilti", "commission"].map((key, i) => (
@@ -677,10 +725,10 @@ class AddOrderModal extends Component {
                                 name="unit"
                                 label="Unit"
                                 type="text"
-                                style={{ width: '49%',marginTop:'5px' }}
+                                style={{ width: '49%', marginTop: '5px' }}
                                 value={addOrderPayload.unit}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {["quintal", "ton"].map((key, i) => (
+                                {["kg", "quintal", "ton", "packet", "crate", "box", "pc"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
@@ -699,7 +747,7 @@ class AddOrderModal extends Component {
                                 value={addOrderPayload.transport_info}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                        {/* <TextField
+                            {/* <TextField
                                 margin="dense"
                                 id="author_name"
                                 label="Author name"

@@ -4,7 +4,7 @@ import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CommodityTable from './component/commodityTable';
-import  commodityService  from '../../app/commodityService/commodityService';
+import commodityService from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
 // import { IoTThingsGraph } from 'aws-sdk';
 
@@ -15,7 +15,7 @@ const styles = theme => ({
         // height: '88vh',
         overflow: 'auto',
         fontFamily: 'Lato !important',
-        maxWidth:'1200px'
+        maxWidth: '1200px'
     },
     card: {
         maxWidth: '100%',
@@ -28,76 +28,81 @@ const styles = theme => ({
         alignTtems: 'center',
         display: '-webkit-inline-box'
     },
-  
+
 
 });
 
 
 
 class CommodityContainer extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            showAddModal:false,
-            dataList:null,
-            showLoader:true
-          
+            showAddModal: false,
+            dataList: null,
+            showLoader: true
+
         };
     }
 
-    
+
 
     async componentDidMount() {
-       this.getData();
-    
+        this.getData();
+
     }
-    async getData(){
+    async getData() {
         // let rows = [];
-    
+
         let resp = await commodityService.getCommodityTable();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data });
-    
-    
-        }
-     
-      }
 
- 
-    
-   
+
+        }
+
+    }
+
+
+
+
     handleClose(event) {
-        this.setState({dataList:null},function(){
+        this.setState({ dataList: null }, function () {
             this.getData();
         });
-       
+
     }
-    onModalCancel(event){
-        this.setState({open :false,showAddModal:false});
+    onModalCancel(event) {
+        this.setState({ open: false, showAddModal: false });
     }
 
-   
+
     handleClickOpen(event) {
-        this.setState({ showAddModal:true,open: true });
+        this.setState({ showAddModal: true, open: true });
     }
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
-                       <CommodityTable  onClose={this.handleClose.bind(this)} tableData={this.state.dataList}   /> 
-                       {/* <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex'}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i><p>ADD LOCATION</p></div>
+                    <CommodityTable onClose={this.handleClose.bind(this)} tableData={this.state.dataList} />
+                    {/* <div className="updateBtndef">
+                        <div className="updateBtnFixed"
+                            style={{ display: 'flex' }}
+                            onClick={this.handleClickOpen.bind(this)}>
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p>ADD LOCATION</p>
+                        </div>
                     </div> */}
 
-                </Card>    :<Loader />}        
-       </div>
+                </Card> : <Loader />}
+            </div>
         )
     }
-    
+
 }
 
 CommodityContainer.propTypes = {

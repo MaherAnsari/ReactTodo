@@ -80,7 +80,7 @@ class PriceDialog extends Component {
                 "buyer_mobile": null
             },
             commodityList: [],
-            unitArr: ["quintal", "ton"],
+            unitArr: ["kg","quintal", "ton","packet","crate","box","pc"],
             showLoader: false
         }
 

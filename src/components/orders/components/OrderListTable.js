@@ -415,7 +415,7 @@ class OrderListTable extends Component {
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} >
-                                                    {row.source_location ? row.source_location : "-"}
+                                                    {row.target_location ? row.target_location : "-"}/{row.source_location ? row.source_location : "-"}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{
