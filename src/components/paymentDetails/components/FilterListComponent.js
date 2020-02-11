@@ -73,7 +73,8 @@ class FilterAreaComponent extends React.Component {
 
     componentWillReceiveProps(nextprops) {
         var data = this.state.configData;
-        if (nextprops.buyersList !== data[0]["options"] || nextprops.brokersList !== data[0]["options"] || nextprops.suppliersList !== data[0]["options"]) {
+        // nextprops.brokersList !== data[0]["options"] ||
+        if (nextprops.buyersList !== data[0]["options"] ||  nextprops.suppliersList !== data[0]["options"]) {
             data[0]["options"] = nextprops.buyersList;
             // data[1]["options"] = nextprops.brokersList;
             data[1]["options"] = nextprops.suppliersList;

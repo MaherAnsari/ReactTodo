@@ -74,18 +74,18 @@ class PaymentDetailsContainer extends React.Component {
         }
     }
 
-    async getBrokersList() {
-        try {
-            let resp = await brokerService.getBrokerList();
-            if (this.ismounted) {
-                if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
-                }
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
+    // async getBrokersList() {
+    //     try {
+    //         let resp = await brokerService.getBrokerList();
+    //         if (this.ismounted) {
+    //             if (resp.data.status === 1 && resp.data.result) {
+    //                 this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+    //             }
+    //         }
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // }
 
     async getSuppliersList() {
         try {
@@ -172,7 +172,7 @@ class PaymentDetailsContainer extends React.Component {
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
-                        brokersList={this.state.brokersList}
+                        // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
 
