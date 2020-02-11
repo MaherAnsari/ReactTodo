@@ -103,7 +103,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "location", "commodity", "", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "source/target", "commodity", "", "Amount  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
