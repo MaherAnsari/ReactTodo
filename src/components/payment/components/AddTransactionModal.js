@@ -148,7 +148,7 @@ class AddTransactionModal extends Component {
     }
 
     handleInputChange(event) {
-        var intejarIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be intejar
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -156,9 +156,10 @@ class AddTransactionModal extends Component {
         }
         var val = event.target.value;
         var addTransactionPayloadVal = this.state.addTransactionPayload;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                addTransactionPayloadVal[id] = Number(val);
+        if (floatIds.indexOf(id) > -1) {
+            // if (val === "" || !isNaN(val)) {
+            if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
+                addTransactionPayloadVal[id] = val;
             }
         } else {
             addTransactionPayloadVal[id] = val;
@@ -347,11 +348,17 @@ class AddTransactionModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; 
         var formateddata = {};
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
+
+            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
+                formateddata[key] = parseFloat( data[key] );
+            }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }

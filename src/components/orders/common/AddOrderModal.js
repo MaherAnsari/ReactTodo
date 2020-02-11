@@ -169,7 +169,7 @@ class AddOrderModal extends Component {
     }
 
     handleInputChange(event) {
-        var intejarIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be intejar
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -177,14 +177,15 @@ class AddOrderModal extends Component {
         }
         var val = event.target.value;
         var addOrderPayloadVal = this.state.addOrderPayload;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                addOrderPayloadVal[id] = Number(val);
+        if (floatIds.indexOf(id) > -1) {
+            // if (val === "" || !isNaN(val)) {
+                if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
+                addOrderPayloadVal[id] = val;
             }
         } else {
             addOrderPayloadVal[id] = val;
         }
-
+        console.log( id+"-----"+ addOrderPayloadVal[id] );
         if (errors.hasOwnProperty(id)) {
             delete errors[id];
         }
@@ -302,10 +303,16 @@ class AddOrderModal extends Component {
 
     removeBlankNonMandatoryFields(data) {
         var formateddata = {};
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"];
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
+
+            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
+                formateddata[key] = parseFloat( data[key] );
+            }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
@@ -313,6 +320,8 @@ class AddOrderModal extends Component {
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
+
+          
 
         }
         console.log(formateddata);

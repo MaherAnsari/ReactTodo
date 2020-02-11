@@ -162,7 +162,7 @@ class EditOrderDataModal extends Component {
 
 
     handleInputChange(event) {
-        var intejarIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be intejar
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -170,9 +170,10 @@ class EditOrderDataModal extends Component {
         }
         var val = event.target.value;
         var orderPayloadVal = this.state.orderPayload;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                orderPayloadVal[id] = Number(val);
+        if (floatIds.indexOf(id) > -1) {
+            // if (val === "" || !isNaN(val)) {
+            if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
+                orderPayloadVal[id] = val;
             }
         } else {
             orderPayloadVal[id] = val;
@@ -254,7 +255,7 @@ class EditOrderDataModal extends Component {
         }
         return optionsData;
     }
-    
+
     formateDateForApi(data) {
         if (data && data !== "") {
             var dateVal = new Date(data);
@@ -292,6 +293,7 @@ class EditOrderDataModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]
         var formateddata = {};
         for (var key in this.state.orderPayloadToUpdate) {
             if (data[key] && data[key] !== "") {
@@ -302,6 +304,10 @@ class EditOrderDataModal extends Component {
                 formateddata[key] = data[key];
             }
 
+            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
+                formateddata[key] = parseFloat( data[key] );
+            }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
@@ -309,6 +315,8 @@ class EditOrderDataModal extends Component {
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
+
+          
 
         }
         return formateddata;

@@ -134,7 +134,7 @@ class EditTransactionModal extends Component {
 
     handleInputChange(event) {
         event.preventDefault()
-        var intejarIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be intejar
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -142,9 +142,9 @@ class EditTransactionModal extends Component {
         }
         var val = event.target.value;
         var addTransactionPayloadVal = this.state.editTransactionPayload;
-        if (intejarIds.indexOf(id) > -1) {
-            if (val === "" || !isNaN(val)) {
-                addTransactionPayloadVal[id] = Number(val);
+        if (floatIds.indexOf(id) > -1) {
+            if (val === "" || val.match(/^(\d+\.?\d{0,9}|\.\d{1,9})$/)) {
+                addTransactionPayloadVal[id] = val;
             }
         } else {
             addTransactionPayloadVal[id] = val;
@@ -254,6 +254,7 @@ class EditTransactionModal extends Component {
 
     removeBlankNonMandatoryFields(data) {
         var formateddata = {};
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; 
         var keysWithValidUpdateData = {};
         var mandotaryFields = ["active", "amount", "amount_bank_entry", "bank_id", "bank_trxn_id", "cashback_allotted_to",
             "cashback_value", "creator_role", "images", "payment_mode", "reason", "remarks", "supplier_mobile",
@@ -262,6 +263,11 @@ class EditTransactionModal extends Component {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
+            
+            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
+                formateddata[key] = parseFloat( data[key] );
+            }
+
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
