@@ -98,7 +98,7 @@ class RoleDialog extends Component {
                 "PaymentManagment",
                 "SupportingDataManagement",
                 "SuperAdmin",
-                "ViewMobileNumber"
+                "ViewUserMobileNumber"
             ],
 
             showLoader: false
