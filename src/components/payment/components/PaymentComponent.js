@@ -348,7 +348,7 @@ class PaymentComponent extends Component {
                         <div style={{ width: "100%", display: "flex" }}>
                             {/* <div style={{ width: "25%", fontSize: 15 ,padding: "28px"}}> */}
                             <List style={{ display: "contents" }}>
-                                {/* <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
                                     </ListItemAvatar>
@@ -402,7 +402,7 @@ class PaymentComponent extends Component {
                                         </Typography>
                                             </React.Fragment>
                                         } />
-                                </ListItem> */}
+                                </ListItem>
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
@@ -412,7 +412,7 @@ class PaymentComponent extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(249, 16, 16)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             ₹ {this.getPaymentInOutInfo('b_out', 'sum')}
                                         </Typography>
@@ -439,7 +439,7 @@ class PaymentComponent extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(249, 16, 16)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             {this.getPaymentInOutInfo('b_out', 'count')}
                                         </Typography>

@@ -993,8 +993,12 @@ th, td {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 10px;
   
+}
+
+::-webkit-scrollbar:hover {
+  width: 15px;
 }
 
 /* Track */
@@ -1012,6 +1016,7 @@ th, td {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #e73e9c !important; 
+  width: 20px;
 }
 
 /* for the date picker */

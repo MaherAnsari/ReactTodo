@@ -1,5 +1,7 @@
 import cookie from 'react-cookies';
 import * as zlib from "react-zlib-js";
+import { getAccessAccordingToRole } from '../../config/appConfig';
+
 // to vget the current date
 let districtData = {};
 let stateList = [
@@ -154,14 +156,19 @@ function getImageName(fileName) {
 }
 
 function maskMobileNumber(mobNum) {
-    if (mobNum) {
-        var lastFive = mobNum.substr(mobNum.length - 4);
-        var lastChar = mobNum.slice(0, mobNum.length - 4);
-        var fstr = lastChar.replace(/\d/g, "X");
-        // console.log("----->" + fstr + lastFive);
-        return fstr + lastFive;
-    } else {
+    console.log( getAccessAccordingToRole("ViewMobileNumber") )
+    if (getAccessAccordingToRole("ViewMobileNumber")) { // if true then show mobile number
         return mobNum;
+    } else {
+        if (mobNum) {
+            var lastFive = mobNum.substr(mobNum.length - 4);
+            var lastChar = mobNum.slice(0, mobNum.length - 4);
+            var fstr = lastChar.replace(/\d/g, "X");
+            // console.log("----->" + fstr + lastFive);
+            return fstr + lastFive;
+        } else {
+            return mobNum;
+        }
     }
 }
 

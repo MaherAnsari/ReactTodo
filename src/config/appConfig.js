@@ -1,9 +1,9 @@
 import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
-        // if( window.location.href.indexOf("localhost/")){
-        //     sessionStorage.setItem("userRole", "SuperAdmin"); // special check for developer
-        // }
+//         if( window.location.href.indexOf("localhost/")){
+//             sessionStorage.setItem("userRole", "SuperAdmin,ViewMobileNumber"); // special check for developer
+//         }
 // console.log( sessionStorage.getItem("userRole") )
         let role = "";
         if (sessionStorage.getItem("userRole")) {
@@ -49,6 +49,9 @@ export function getAccessAccordingToRole(option) {
             },
             "SuperAdmin": {
                 "allowAll": true
+            },
+            "ViewUserMobileNumber":{
+                "ViewMobileNumber" : true
             }
         }
 

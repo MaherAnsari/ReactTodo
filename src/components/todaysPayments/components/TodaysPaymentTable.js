@@ -418,7 +418,7 @@ class TodaysPaymentTable extends Component {
                             className="fa fa-refresh" 
                             aria-hidden="true"></i>
                             <List style={{ display: "contents" }}>
-                                {/* <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
+                                <ListItem style={{ background: "rgb(46, 50, 71)", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#5ab8cf", fontSize: "34px" }} >youtube_searched_for</Icon>
                                     </ListItemAvatar>
@@ -472,7 +472,7 @@ class TodaysPaymentTable extends Component {
                                         </Typography>
                                             </React.Fragment>
                                         } />
-                                </ListItem> */}
+                                </ListItem>
                                 <ListItem style={{ background: "rgb(46, 50, 71)", marginLeft: "10px", borderRadius: "5px" }} >
                                     <ListItemAvatar>
                                         <Icon style={{ color: "#61cb3e", fontSize: "34px" }}>redo</Icon>
@@ -482,7 +482,7 @@ class TodaysPaymentTable extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(249, 16, 16)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             ₹ {this.getPaymentInOutInfo('b_out', 'sum')}
                                         </Typography>
@@ -509,7 +509,7 @@ class TodaysPaymentTable extends Component {
                                             component="div"
                                             variant="body2"
                                             className={classes.inline}
-                                            style={{ color: "rgb(97, 203, 66)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
+                                            style={{ color: "rgb(249, 16, 16)", fontFamily: "lato", fontWeight: 600, fontSize: "18px" }}
                                         >
                                             {this.getPaymentInOutInfo('b_out', 'count')}
                                         </Typography>
