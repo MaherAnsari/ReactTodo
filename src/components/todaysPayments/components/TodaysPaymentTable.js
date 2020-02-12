@@ -40,6 +40,9 @@ import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
 import DateRangeSelector from './DateRangeSelector';
+import PaymentFilterOptionModal from '../../common/PaymentFilterOptionModal';
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
 
 var moment = require('moment');
 
@@ -152,6 +155,9 @@ class TodaysPaymentTable extends Component {
             showTransactionInfoDialog: false,
             transactionInfoData : undefined,
             datePayloads: { "startDate": "" },
+
+            showPaymentFilterOption: false,
+            filterDataArray : []
         }
     }
 
@@ -397,9 +403,25 @@ class TodaysPaymentTable extends Component {
         Utils.downloadDataInCSV(this.state.allTransactionsData,"Day-wise")
     }
 
+    filterData( data ){
+        if( this.state.filterDataArray.length === 0){
+            return true;
+        }
+        if( data && data["status"] ){
+            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
     render() {
         const { classes } = this.props;
-        const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
+        const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
+            showPaymentFilterOption , filterDataArray} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -407,8 +429,17 @@ class TodaysPaymentTable extends Component {
             <div>
                 <MuiThemeProvider theme={theme}>
 
-                    <div>
+                    <div style={{  display : "flex" }}>
                     <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                    <div style={{ padding : "15px 15px 15px 0px"}}>
+                        <Badge className={classes.margin} style={{height:'25px'}} 
+                        badgeContent={ filterDataArray.length } color="primary">
+                             <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }}
+                              onClick={() => this.setState( { showPaymentFilterOption : true })}>
+                                Filter
+                                </Button>
+                        </Badge>
+                    </div>
                     </div>
            
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
@@ -556,7 +587,9 @@ class TodaysPaymentTable extends Component {
                                           (rowsPerPage > 0
                                             ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                             : allTransactionsData
-                                          ).map((row, i) => {
+                                          ).filter(e => {
+                                            return this.filterData( e );
+                                        }).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -637,7 +670,9 @@ class TodaysPaymentTable extends Component {
                            
 
 
-                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
+                            {allTransactionsData && allTransactionsData.length > 0 && allTransactionsData.filter(e => {
+                            return this.filterData( e );
+                        }).length > 0 ? "" :
                                 <div className={classes.defaultTemplate}
                                     style={{
                                         marginTop: "10%",
@@ -650,13 +685,18 @@ class TodaysPaymentTable extends Component {
                             {/* {!allTransactionsData && <Loader />} */}
                         </div> : <Loader />}
                         {allTransactionsData && allTransactionsData.length > 0 &&
+                        allTransactionsData.filter(e => {
+                            return this.filterData( e );
+                        }).length > 0 && 
                                 <Table>  
                                     <TableFooter style={{ borderTop: "2px solid #858792" }}>
                 <TableRow>
                   <TablePagination
                     rowsPerPageOptions={[25, 50, 100]}
                     colSpan={1}
-                    count={allTransactionsData.length}
+                    count={allTransactionsData.filter(e => {
+                        return this.filterData( e );
+                    }).length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     SelectProps={{
@@ -729,6 +769,15 @@ class TodaysPaymentTable extends Component {
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div>}
+
+                    {showPaymentFilterOption && 
+                     <PaymentFilterOptionModal
+                             openModal={showPaymentFilterOption}
+                             filterDataArr = { filterDataArray }
+                             onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
+                            onFilterAdded={( data )=> this.setState({ filterDataArray : data, showPaymentFilterOption : false }) }/>}
+
+
                         </MuiThemeProvider>
             </div>);
 

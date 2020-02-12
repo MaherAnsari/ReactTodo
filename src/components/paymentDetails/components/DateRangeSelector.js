@@ -96,7 +96,7 @@ class DateRangeSelector extends React.Component {
                         id="date-picker-dialog"
                         label="End date"
                         format="dd-MMM-yyyy"
-                        style={{ marginTop: 0, width: 150 ,marginRight:'100px' }}
+                        style={{ marginTop: 0, width: 150 ,marginRight:'12px' }}
                         value={selectedEndDate}
                         onChange={this.handleEndDateChange}
                         KeyboardButtonProps={{

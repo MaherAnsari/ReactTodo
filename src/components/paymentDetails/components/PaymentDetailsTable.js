@@ -143,9 +143,16 @@ class PaymentDetailsTable extends Component {
             showTransactionInfoDialog: false,
             transactionInfoData : undefined,
             datePayloads: { "startDate": "" },
+
+            filterDataArray: this.props.filterDataArray
         }
     }
 
+    componentWillReceiveProps( nextProps ){
+        if( nextProps.filterDataArray !== this.state.filterDataArray ){
+            this.setState({ filterDataArray : nextProps.filterDataArray  });
+        }
+    }
 
     handelTransactionInvoiceModal(row, event) {
         this.setState({ invoiceModalData: row["images"] }, function () {
@@ -350,6 +357,21 @@ class PaymentDetailsTable extends Component {
     handelDownloadClicked = () => {
         Utils.downloadDataInCSV(this.state.allTransactionsData,"payments-detail")
     }
+    
+    filterData( data ){
+        if( this.state.filterDataArray.length === 0){
+            return true;
+        }
+        if( data && data["status"] ){
+            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
 
     render() {
         const { classes } = this.props;
@@ -494,7 +516,9 @@ class PaymentDetailsTable extends Component {
                                           (rowsPerPage > 0
                                             ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                             : allTransactionsData
-                                          ).map((row, i) => {
+                                          ).filter(e => {
+                                            return this.filterData( e );
+                                        }).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -569,7 +593,9 @@ class PaymentDetailsTable extends Component {
                                         })}
                                     </TableBody>
                                 </Table>}
-                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
+                            {allTransactionsData && allTransactionsData.length > 0  && allTransactionsData.filter(e => {
+                            return this.filterData( e );
+                        }).length > 0 ? "" :
                                 <div className={classes.defaultTemplate}
                                     style={{
                                         marginTop: "10%",
@@ -583,13 +609,18 @@ class PaymentDetailsTable extends Component {
                                 </div>}
                         </div> : <Loader />}
                         {allTransactionsData && allTransactionsData.length > 0 &&
+                        allTransactionsData.filter(e => {
+                            return this.filterData( e );
+                        }).length > 0 && 
                                 <Table>  
                                     <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                         <TableRow>
                                         <TablePagination
                                             rowsPerPageOptions={[25, 50, 100]}
                                             colSpan={1}
-                                            count={allTransactionsData.length}
+                                            count={allTransactionsData.filter(e => {
+                                                return this.filterData( e );
+                                            }).length}
                                             rowsPerPage={rowsPerPage}
                                             page={page}
                                             SelectProps={{

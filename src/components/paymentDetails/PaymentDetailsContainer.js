@@ -13,6 +13,10 @@ import orderService from './../../app/orderService/orderService';
 import DateRangeSelector from "./components/DateRangeSelector";
 import paymentDetailsService from '../../app/paymentDetailsService/paymentDetailsService';
 import PaymentDetailsTable from './components/PaymentDetailsTable';
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
+import PaymentFilterOptionModal from '../common/PaymentFilterOptionModal';
+
 
 
 const styles = theme => ({
@@ -49,7 +53,10 @@ class PaymentDetailsContainer extends React.Component {
             orderedListData: undefined,
             showLoader: false,
             datePayloads: { "startDate": "", "endDate": "" },
-            params: {}
+            params: {},
+
+            showPaymentFilterOption: false,
+            filterDataArray : []
 
         }
         this.ismounted = true;
@@ -158,30 +165,46 @@ class PaymentDetailsContainer extends React.Component {
         this.getPaymentDetailsData(this.state.params);
     }
 
-
-
     render() {
         const { classes } = this.props;
-        const { allTransactionsData , paymentMetaInfo} = this.state;
+        const { allTransactionsData , paymentMetaInfo,  showPaymentFilterOption , filterDataArray  } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
                     <div style={{ display: "flex" }}>
                         <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                        <div style={{ padding : "15px 15px 15px 0px"}}>
+                        <Badge className={classes.margin} style={{height:'25px'}} 
+                        badgeContent={ filterDataArray.length } color="primary">
+                             <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }}
+                              onClick={() => this.setState( { showPaymentFilterOption : true })}>
+                                Filter
+                                </Button>
+                        </Badge>
+                    </div>
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
+                        
 
                     {this.state.showLoader ?
                         <Loader /> :
                         <PaymentDetailsTable
                             allTransactionsData={allTransactionsData}
                             paymentMetaInfo={paymentMetaInfo}
+                            filterDataArray={ filterDataArray }
                             OnPaymentUpdated={() => this.getPaymentDetailsData({})} />}
+
+                    {showPaymentFilterOption && 
+                     <PaymentFilterOptionModal
+                             openModal={showPaymentFilterOption}
+                             filterDataArr = { filterDataArray }
+                             onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
+                            onFilterAdded={( data )=> this.setState({ filterDataArray : data, showPaymentFilterOption : false }) }/>}
 
 
                 </Paper>
