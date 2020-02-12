@@ -217,7 +217,7 @@ class AddBankAccountContainer extends React.Component {
     }
 
     getStatusOfAccount( obj ){
-        if( obj["status"] === "invalid"){
+        if( obj["status"] !== "active"){
             return (<Fab
                 variant="extended"
                 disabled={ !getAccessAccordingToRole("addBankAccount") }
