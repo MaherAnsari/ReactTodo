@@ -73,7 +73,7 @@ const styles = theme => ({
 
 });
 
-const statusOption = ["pending", "settled", "partial_settled"];
+// const statusOption = ["pending", "settled", "partial_settled"];
 
 class EditOrderDataModal extends Component {
 

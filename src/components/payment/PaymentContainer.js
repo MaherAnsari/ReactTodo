@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import PaymentComponent from './components/PaymentComponent';
-import sampleFile from '../sampleDownloadFiles/bulk-add-payment-data-sample.csv';
+// import sampleFile from '../sampleDownloadFiles/bulk-add-payment-data-sample.csv';
 
 const styles = theme => ({
     root: {

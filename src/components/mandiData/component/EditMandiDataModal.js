@@ -202,11 +202,11 @@ class EditMandiDataModal extends Component {
         for (let i = 0; i < offdata.length; i++) {
             let str = "";
             if (offdata[i]['offType'] === "every") {
-                str = "every"+"|"+ offdata[i]['dayType'] + "|" + offdata[i]['day'];
+                str = "every|"+ offdata[i]['dayType'] + "|" + offdata[i]['day'];
             }else if (offdata[i]['offType'] === "all") {
-                str = "all" + "|" + offdata[i]['day'];
+                str = "all|" + offdata[i]['day'];
             } else {
-                str = "dates" + "|" + offdata[i]['dates'];
+                str = "dates|" + offdata[i]['dates'];
             }
             // console.log(str);
             offDayArr.push(str);

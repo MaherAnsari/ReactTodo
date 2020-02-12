@@ -229,7 +229,7 @@ class MandiListTable extends Component {
 
   handelEditModalClose() {
     this.setState({ editableData: undefined, showEditDataModal: false });
-    let params = { "query": "haryana" };
+    // let params = { "query": "haryana" };
     this.getData("");
   }
   handelEditModalCancel() {
@@ -360,7 +360,7 @@ class MandiListTable extends Component {
                           </div>
                         </TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)} > {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi : "-" + ")" : "-"}</TableCell>
+                        <TableCell className={this.getTableCellClass(classes, 2)} > {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi : "-)" : "-"}</TableCell>
                         {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell> */}
                         <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
                         <TableCell className={this.getTableCellClass(classes, 2)}>

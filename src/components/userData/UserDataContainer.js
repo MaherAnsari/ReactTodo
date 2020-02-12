@@ -9,7 +9,7 @@ import UserListTable from '../common/UserTable';
 import InfoDialog from './../common/InfoDialog';
 import commodityService from '../../app/commodityService/commodityService';
 import FileUploader from '../common/fileUploader';
-import sampleFile from '../sampleDownloadFiles/bulk-add-user-data-sample.csv';
+// import sampleFile from '../sampleDownloadFiles/bulk-add-user-data-sample.csv';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 
 const styles = theme => ({

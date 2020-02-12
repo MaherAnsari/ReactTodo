@@ -11,9 +11,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 const theme = createMuiTheme({
     overrides: {
-      
-        MuiInputBase:{
-            input:{
+
+        MuiInputBase: {
+            input: {
                 color: "#000"
             }
         }
@@ -56,7 +56,7 @@ class UserFilterOption extends Component {
             commodityList: [],
             open: this.props.openModal,
             dataObj: {},
-            supportingImagesOption: {"All":"All","Yes":"yes","No":"no"},
+            supportingImagesOption: { "All": "All", "Yes": "yes", "No": "no" },
             filterDataArr: []
 
 
@@ -64,12 +64,11 @@ class UserFilterOption extends Component {
         }
     }
     componentDidMount() {
-        this.setState({ dataObj: this.props.filterData});
+        this.setState({ dataObj: this.props.filterData });
     }
 
     handleStateChange = (id, event) => {
         let data = this.state.dataObj;
-        let val = event.target.value;
         data[id] = event.target.value;
         this.setState({ dataObj: data });
     }
@@ -80,53 +79,48 @@ class UserFilterOption extends Component {
     }
 
     handleAddClick(event) {
-
-        let arr = this.state.filterDataArr;
-        console.log(this.state.dataObj);
-        
-            this.props.onFilterAdded(this.state.dataObj);
-    
+        this.props.onFilterAdded(this.state.dataObj);
     }
 
     render() {
         const { classes } = this.props;
         return (
             <MuiThemeProvider theme={theme}><div > <Dialog style={{ zIndex: '1' }}
-            open={this.state.open}
-            classes={{ paper: classes.dialogPaper }}
-            onClose={this.handleDialogCancel.bind(this)}
-            aria-labelledby="form-dialog-title"                >
-            <DialogTitle style={{ height: '60px' }} id="form-dialog-title"><div style={{ color: '#000', fontFamily: 'Lato', fontSize: '20px', display: 'flex' }}>Filter Option</div>  </DialogTitle>
-            <DialogContent>
+                open={this.state.open}
+                classes={{ paper: classes.dialogPaper }}
+                onClose={this.handleDialogCancel.bind(this)}
+                aria-labelledby="form-dialog-title"                >
+                <DialogTitle style={{ height: '60px' }} id="form-dialog-title"><div style={{ color: '#000', fontFamily: 'Lato', fontSize: '20px', display: 'flex' }}>Filter Option</div>  </DialogTitle>
+                <DialogContent>
 
-                <div style={{ display: 'flex' }}>
-                    <div style={{ width: '98%' }}>
-                        <TextField
-                            select
-                            id="supporting_images"
-                            label="Supporting Images"
-                            type="text"
-                            style={{ marginRight: '2%', width: '98%', color: '#000',marginTop: '5px' }}
-                            value={this.state.dataObj.supporting_images }
-                            onChange={this.handleStateChange.bind(this, 'supporting_images')}
-                        >
-                            {Object.keys(this.state.supportingImagesOption).map((keys, i) => (
-                                <MenuItem key={i}  value={this.state.supportingImagesOption[keys]} selected={true}>
-                                    {keys}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                    <div style={{ display: 'flex' }}>
+                        <div style={{ width: '98%' }}>
+                            <TextField
+                                select
+                                id="supporting_images"
+                                label="Supporting Images"
+                                type="text"
+                                style={{ marginRight: '2%', width: '98%', color: '#000', marginTop: '5px' }}
+                                value={this.state.dataObj.supporting_images}
+                                onChange={this.handleStateChange.bind(this, 'supporting_images')}
+                            >
+                                {Object.keys(this.state.supportingImagesOption).map((keys, i) => (
+                                    <MenuItem key={i} value={this.state.supportingImagesOption[keys]} selected={true}>
+                                        {keys}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
                     </div>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Ok</Button>
-                <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-            </DialogActions>
-        </Dialog>
+                </DialogContent>
+                <DialogActions>
+                    <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Ok</Button>
+                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                </DialogActions>
+            </Dialog>
 
-        </div >
-        </MuiThemeProvider>
+            </div >
+            </MuiThemeProvider>
         );
     }
 }

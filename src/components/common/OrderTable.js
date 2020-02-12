@@ -226,7 +226,7 @@ class OrderTable extends Component {
                                         </div>
                                     </TableCell>}
 
-                                    {(this.props.role == "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {(this.props.role === "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                         <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                             <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                             <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber( row.buyer_mobile) + " )"}</span>

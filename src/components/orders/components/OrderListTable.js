@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import Tooltip from '@material-ui/core/Tooltip';
+// import Tooltip from '@material-ui/core/Tooltip';
 import InfoDialog from './infoDialog';
 
 import TableFooter from '@material-ui/core/TableFooter';
@@ -113,7 +113,7 @@ class OrderListTable extends Component {
             anchorEl: null,
             showUserModal: false,
             userData: {},
-            userId: null,
+            // userId: null,
             payload: null,
             showAddModal: false,
             infoData: null,
@@ -130,7 +130,6 @@ class OrderListTable extends Component {
             showEditDataModal: false,
             commodityList: [],
             showUploader: false,
-            open: false,
 
             showPayoutModal:false,
             payoutData : undefined,

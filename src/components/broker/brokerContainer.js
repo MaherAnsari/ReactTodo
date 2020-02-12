@@ -8,7 +8,7 @@ import UserListTable from '../common/UserTable';
 import brokerService from '../../app/brokerService/brokerService';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
-import sampleFile from '../sampleDownloadFiles/bulk-add-broker-data-sample.csv';
+// import sampleFile from '../sampleDownloadFiles/bulk-add-broker-data-sample.csv';
 import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
 import { getAccessAccordingToRole } from '../../config/appConfig';

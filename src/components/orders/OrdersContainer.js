@@ -11,7 +11,7 @@ import supplierService from './../../app/supplierService/supplierService';
 import orderService from './../../app/orderService/orderService';
 import OrderListTable from "./components/OrderListTable";
 import DateRangeSelector from "./components/DateRangeSelector";
-import sampleFile from '../sampleDownloadFiles/bulk-add-order-data-sample.csv';
+// import sampleFile from '../sampleDownloadFiles/bulk-add-order-data-sample.csv';
 
 const styles = theme => ({
     root: {

@@ -216,7 +216,7 @@ class CreditLimitDialog extends Component {
           </div>
           {(this.state.tableBodyData && this.state.tableBodyData.length>0) ? <div style={{ maxHeight: "40vh", overflowY: "scroll" }} >
             {this.state.tableBodyData.map((option, i) => {
-              return (<div className={classes.row} style={{ background: i % 2 == 0 ? '#fff' : '#e8e8e8' }} key={option} >
+              return (<div className={classes.row} style={{ background: i % 2 === 0 ? '#fff' : '#e8e8e8' }} key={option} >
                 <div style={{ width: "20%", marginLeft: '5px' }}>{option.updateBy}</div>
                 <div style={{ width: "20%" }}>{option.bijak_credit_limit}</div>
                 <div style={{ width: "20%" }}>{this.formatDateAndTime(option.createddate)}</div>

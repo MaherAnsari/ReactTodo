@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
         // if( window.location.href.indexOf("localhost/")){
@@ -55,58 +55,58 @@ export function getAccessAccordingToRole(option) {
             }
         }
 
-        let roles2 = {
-            "user-creation": {
-                "addUser": true,
-                "editUser": true
-            },
-            "add-bank": {
-                "addBankAccount": true
-            },
-            "order-creation": {
-                "addOrder": true,
-                "editOrder": true,
+        // let roles2 = {
+        //     "user-creation": {
+        //         "addUser": true,
+        //         "editUser": true
+        //     },
+        //     "add-bank": {
+        //         "addBankAccount": true
+        //     },
+        //     "order-creation": {
+        //         "addOrder": true,
+        //         "editOrder": true,
                 
-            },
-            "payout-role": { //yyy
-                "makePayout": true
-            },
-            "request-payout": {
-                "payViaCredit": true,
-            },
-            "manage-credit": {
-                "updateCreditLimit": true
-            },
-            "manage-images-data": {
-                "addCommodity": true,
-                "addMandi": true,
-                "addSupportingImages": true
-            },
-            "payment-update": {
-                "addPayment": true,
-                "editPayment": true
-            },
-            "super-admin": {
-                "allowAll": true
-            },
-            "supporting-data-role": {
-                "addLocation": true,
-                "editMandi": true,
-                "addMandiRates": true,
-                "editCommodity": true
-            },
+        //     },
+        //     "payout-role": { //yyy
+        //         "makePayout": true
+        //     },
+        //     "request-payout": {
+        //         "payViaCredit": true,
+        //     },
+        //     "manage-credit": {
+        //         "updateCreditLimit": true
+        //     },
+        //     "manage-images-data": {
+        //         "addCommodity": true,
+        //         "addMandi": true,
+        //         "addSupportingImages": true
+        //     },
+        //     "payment-update": {
+        //         "addPayment": true,
+        //         "editPayment": true
+        //     },
+        //     "super-admin": {
+        //         "allowAll": true
+        //     },
+        //     "supporting-data-role": {
+        //         "addLocation": true,
+        //         "editMandi": true,
+        //         "addMandiRates": true,
+        //         "editCommodity": true
+        //     },
 
-            // "mandi-data-update":{
-            //     "addLocation": true,
-            //     "editMandi": true
-            // },
-            // "mandi-rates-update":{
-            //     "addMandiRates" : true
-            // },
-            // "commodityList-update":{
-            //     "editCommodity" :true
-            // }
-        }
+        //     // "mandi-data-update":{
+        //     //     "addLocation": true,
+        //     //     "editMandi": true
+        //     // },
+        //     // "mandi-rates-update":{
+        //     //     "addMandiRates" : true
+        //     // },
+        //     // "commodityList-update":{
+        //     //     "editCommodity" :true
+        //     // }
+        // }
         // if (role === "dev") {
         //     return devAccess[appRoute][option];
         // } else {

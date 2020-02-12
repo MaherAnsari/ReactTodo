@@ -214,7 +214,6 @@ class EditCommodityList extends Component {
             this.setState({
                 isFileUpload: false
             })
-            let data = err
             console.log(err)
         }
         );
@@ -354,7 +353,7 @@ class EditCommodityList extends Component {
                                                     <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
                                                         <React.Fragment>
                                                             <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
-                                                                <img src="https://img.icons8.com/plasticine/2x/file.png" height="24" width="24"></img>
+                                                                <img src="https://img.icons8.com/plasticine/2x/file.png" alt="file" height="24" width="24"></img>
                                                             </Grid>
                                                             <Grid item xs={12} sm={12} md={10} >
                                                                 <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>

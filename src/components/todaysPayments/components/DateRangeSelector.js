@@ -42,7 +42,7 @@ class DateRangeSelector extends React.Component {
     }
 
     render() {
-        const { selectedStartDate, selectedEndDate } = this.state;
+        const { selectedStartDate } = this.state;
         return (
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container justify="flex-end">

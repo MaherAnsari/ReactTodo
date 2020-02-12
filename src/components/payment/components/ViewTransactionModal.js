@@ -116,7 +116,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const statusOption = ["approved", "failed"];
+// const statusOption = ["approved", "failed"];
 
 
 class ViewTransactionModal extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { fontWeight } from '@material-ui/system';
+// import { fontWeight } from '@material-ui/system';
 
 const styles = theme => ({
     root: {

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
 import paymentService from '../../../app/paymentService/paymentService';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -119,11 +118,11 @@ const styles = theme => ({
      },
 });
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
+// const Transition = React.forwardRef(function Transition(props, ref) {
+//     return <Slide direction="up" ref={ref} {...props} />;
+// });
 
-const statusOption = ["approved", "failed"];
+// const statusOption = ["approved", "failed"];
 
 
 class TodaysPaymentTable extends Component {
@@ -330,7 +329,7 @@ class TodaysPaymentTable extends Component {
         let arr = this.state.paymentMetaInfo
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
-            if (type == obj['transaction_type']) {
+            if (type === obj['transaction_type']) {
                 return Utils.formatNumberWithComma(obj[key]);
             }
         }

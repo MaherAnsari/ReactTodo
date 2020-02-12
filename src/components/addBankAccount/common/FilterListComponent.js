@@ -70,11 +70,11 @@ class FilterAreaComponent extends React.Component {
 
 
     getDataBasedOnFilters = () => {
-        let data = {
-            // buyerid: this.state.buyerid["value"] || "",
-            // brokerid: this.state.brokerid["value"] || "",
-            supplierid: this.state.supplierid["value"] || "",
-        }
+        // let data = {
+        //     // buyerid: this.state.buyerid["value"] || "",
+        //     // brokerid: this.state.brokerid["value"] || "",
+        //     supplierid: this.state.supplierid["value"] || "",
+        // }
         // if (data["buyerid"] === "") {
         //     delete data["buyerid"];
         // }

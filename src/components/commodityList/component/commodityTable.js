@@ -204,7 +204,7 @@ class CommodityTable extends Component {
               <TableHead>
                 <TableRow  style={{borderBottom: "2px solid #858792"}} >
                   {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i < 2 ? "left" : "center",minWidth: i==0 ? '50px':'120px',padding: i < 2 ? 0:  "14px" }}>{option}</TableCell>
+                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i < 2 ? "left" : "center",minWidth: i === 0 ? '50px':'120px',padding: i < 2 ? 0:  "14px" }}>{option}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -217,7 +217,7 @@ class CommodityTable extends Component {
                   return (
                     <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                        <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                       <img style={{width:'35px',height:'35px'}} src={row.image_url}></img> 
+                       <img style={{width:'35px',height:'35px'}} alt={ row.image_url } src={row.image_url}></img> 
                       </TableCell>
 
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>

@@ -112,7 +112,7 @@ function downloadDataInCSV(json, filename) {
         var csv = "";
         var keys = (json[0] && Object.keys(json[0])) || [];
         csv += keys.join(',') + '\n';
-        for (var line of json) {
+        for (let line of json) {
             csv += keys.map(key => line[key]).join(',') + '\n';
         }
         console.log(csv);

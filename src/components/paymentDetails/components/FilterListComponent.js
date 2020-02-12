@@ -9,7 +9,7 @@ import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
 import brokerService from '../../../app/brokerService/brokerService';
-import Badge from '@material-ui/core/Badge';
+
 // import UserFilterOption from "../common/UserFilterOption";
 
 const styles = theme => ({

@@ -198,7 +198,7 @@ class UserListTable extends Component {
     }
 
     getInfoSTring(obj) {
-        return obj.locality ? obj.locality : "-" + "/" + obj.district ? obj.district : "-";
+        return obj.locality ? obj.locality : "-/" + obj.district ? obj.district : "-";
     }
     onModalClick(event) {
         this.setState({ show: true });
@@ -373,7 +373,7 @@ class UserListTable extends Component {
                             <TableHead>
                                 <TableRow style={{ borderBottom: "2px solid #858792" }} >
                                     {this.state.tableHeadData.map((option, i) => (
-                                        <TableCell key={i+"_"} className={this.getTableCellClass(classes, i)} style={{ textAlign: i == 1 ? "left" : "center", minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '', color: i == 4 ? "goldenrod" : "" }}>{i == 4 ? <StarIcon /> : option}</TableCell>
+                                        <TableCell key={i+"_"} className={this.getTableCellClass(classes, i)} style={{ textAlign: i === 1 ? "left" : "center", minWidth: i === 4 ? '50px' : '100px', paddingLeft: i === 0 ? '22px' : '', color: i === 4 ? "goldenrod" : "" }}>{i === 4 ? <StarIcon /> : option}</TableCell>
                                         // <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod" }}>  </TableCell>
                                     ))}
 

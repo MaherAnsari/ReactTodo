@@ -519,7 +519,7 @@ class InfoDialog extends Component {
                         disabled={this.state.isInfo}
                         type="number"
                         maxLength="10"
-                        disabled={this.state.isUpdate}
+                        // disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.sec_mobile}
                         onChange={this.handleChange.bind(this)}
@@ -532,7 +532,7 @@ class InfoDialog extends Component {
                         disabled={this.state.isInfo}
                         type="number"
                         maxLength="10"
-                        disabled={this.state.isUpdate}
+                        // disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.third_mobile}
                         onChange={this.handleChange.bind(this)}

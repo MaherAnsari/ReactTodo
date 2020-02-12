@@ -3,7 +3,7 @@ import "./recepit.css";
 import Html2Pdf from 'js-html2pdf';
 import Utils from '../../app/common/utils';
 import logo from '../../assets/images/bijak_logo.png';
-const $ = window["jQuery"];
+// const $ = window["jQuery"];
 var moment = require('moment');
 
 const formatDateAndTime = (dateval) => {

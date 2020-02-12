@@ -7,7 +7,7 @@ import  buyerService  from './../../app/buyerService/buyerService';
 import Loader from '../common/Loader';
 import UserListTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
-import sampleFile from '../sampleDownloadFiles/bulk-add-buyer-data-sample.csv';
+// import sampleFile from '../sampleDownloadFiles/bulk-add-buyer-data-sample.csv';
 import userListService from './../../app/userListService/userListService';
 import FileUploader from '../common/fileUploader';
 import { getAccessAccordingToRole } from '../../config/appConfig';

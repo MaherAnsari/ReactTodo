@@ -123,18 +123,18 @@ class PriceTable extends Component {
     }
    
   }
-  onEditClicked(particularTaskData, event) {
-    this.setState({ editableData: JSON.parse(JSON.stringify(particularTaskData)), showServerDialog: true });
-  }
+  // onEditClicked(particularTaskData, event) {
+  //   this.setState({ editableData: JSON.parse(JSON.stringify(particularTaskData)), showServerDialog: true });
+  // }
 
-  onModalClosed(event) {
+  // onModalClosed(event) {
 
-    this.setState({ editableData: {}, showServerDialog: false });
-    this.props.onEditModalClosed(event);
-  }
-  onModalCancel(event) {
-    this.setState({ editableData: {}, showServerDialog: false });
-  }
+  //   this.setState({ editableData: {}, showServerDialog: false });
+  //   this.props.onEditModalClosed(event);
+  // }
+  // onModalCancel(event) {
+  //   this.setState({ editableData: {}, showServerDialog: false });
+  // }
 
   getTableCellClass(classes, index) {
     return classes.tableCell;

@@ -296,7 +296,7 @@ class PaymentDetailsTable extends Component {
         let arr = this.state.paymentMetaInfo
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
-            if (type == obj['transaction_type']) {
+            if (type === obj['transaction_type']) {
                 return Utils.formatNumberWithComma(obj[key]);
             }
         }
