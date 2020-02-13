@@ -132,7 +132,7 @@ class TodaysPaymentTable extends Component {
         super(props);
         this.state = {
             allTransactionsData: undefined,
-            tableHeadData: ["status","id", "Supplier Name", "Supplier Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
+            tableHeadData: ["status","id", "Supplier Name/ Bussiness Name", "Buyer Name/ Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
             invoiceModalData: [],
             showImageInvoiceModal: false,
             editableData: undefined,
@@ -157,7 +157,9 @@ class TodaysPaymentTable extends Component {
             datePayloads: { "startDate": "" },
 
             showPaymentFilterOption: false,
-            filterDataArray : []
+            filterDataArray : [],
+
+            userId: undefined
         }
     }
 
@@ -355,8 +357,17 @@ class TodaysPaymentTable extends Component {
         this.setState({ showUserInfo: false, isInfo: false });
     }
 
-    onUserInfoClicked = (info, event) => {
-        this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+    // onUserInfoClicked = (info, event) => {
+    //     this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+    // }
+    onUserInfoClicked = ( info, type , event) => {
+        let id = "";
+        if( type === "supplier_name"){
+            id = info["supplier_mobile"];
+        }else{
+            id = info["buyer_mobile"];
+        }
+        this.setState({ userId :id, showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
     }
 
     handelRefreshData(){
@@ -612,15 +623,26 @@ class TodaysPaymentTable extends Component {
                                                         {row.id ? row.id : "-"}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}
-                                                    onClick={this.onUserInfoClicked.bind(this, row)}>
-                                                        <div className=" name-span">
+                                                    // onClick={this.onUserInfoClicked.bind(this, row)}
+                                                    >
+                                                        {/* <div className=" name-span">
                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}
-                                                        </div>
+                                                        </div> */}
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                            onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
+                                                        <span>{row.supplier_fullname ? row.supplier_fullname : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{row.supplier_business_name ? row.supplier_business_name : ""} </span>
+                                                    </div>
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
-                                                        <div className="text-ellpses">
+                                                        {/* <div className="text-ellpses">
                                                             {row.supplier_business_name ? row.supplier_business_name : "-"}
-                                                        </div>
+                                                        </div> */}
+                                                        <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                            onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
+                                                        <span>{row.buyer_fullname ? row.buyer_fullname : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{row.buyer_business_name ? row.buyer_business_name : ""} </span>
+                                                    </div>
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
                                                         <div className="text-ellpses">
@@ -752,7 +774,8 @@ class TodaysPaymentTable extends Component {
                             onEditModalClosed={this.handleUserInfoClose.bind(this)}
                             data={this.state.userInfoData}
                             isInfo={true}
-                            userId={ this.state.userInfoData["supplier_mobile"]}
+                            // userId={ this.state.userInfoData["supplier_mobile"]}
+                            userId={ this.state.userId}
                             onLimitUpdate= {this.changeLimitSucces.bind(this)}
                             onEditModalCancel={this.onUserInfoModalCancel.bind(this)}
                             currentRoute={"todays-payment"} /> : ""}

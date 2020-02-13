@@ -77,9 +77,17 @@ class PayoutModal extends Component {
             //     acctName:"Sanchit Jain"
             // }
             acctDetails: undefined,
-            transferType:"NEFT"
+            transferType: "NEFT",
+
+            skipRazorPayTrans: false,
+            skipRazorPayTransObj: {
+                "bank_id": "",
+                "utr": "",
+                "remarks": ""
+            },
+            errorFieldsOfSkipTrans: {}
         }
-        console.log(this.props.payoutData)
+        // console.log(this.props.payoutData)
     }
 
     componentWillMount() {
@@ -112,7 +120,7 @@ class PayoutModal extends Component {
     }
 
     handleInputChange(event) {
-        event.preventDefault()
+        event.preventDefault();
         var intejarIds = ["actno"]; // this values need to be intejar
         var errors = this.state.errorFields;
         var id = event.target.id;
@@ -139,6 +147,37 @@ class PayoutModal extends Component {
         // console.log(addAccountDataVal)
     }
 
+    handleSkipRazorInputChange(event) {
+        event.preventDefault();
+        var val = event.target.value;
+        var id = event.target.id;
+        var errors = this.state.errorFieldsOfSkipTrans;
+        var skipRazorPayTransObjVal = this.state.skipRazorPayTransObj;
+        skipRazorPayTransObjVal[id] = val;
+        if (errors.hasOwnProperty(id)) {
+            delete errors[id];
+        }
+        this.setState({
+            skipRazorPayTransObj: skipRazorPayTransObjVal,
+            errorFieldsOfSkipTrans: errors
+        })
+    }
+
+    checkForValidFormOnSkipTransaction() {
+        var isvalid = true;
+        let skipRazorPayTransObjVal = this.state.skipRazorPayTransObj;
+        let errors = this.state.errorFieldsOfSkipTrans;
+        for (let key in skipRazorPayTransObjVal) {
+            if ( skipRazorPayTransObjVal[key] === "") {
+                isvalid = false;
+                errors[key] = true;
+            }
+        }
+        this.setState({ errorFieldsOfSkipTrans: errors });
+        return isvalid;
+    }
+
+
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
@@ -160,37 +199,48 @@ class PayoutModal extends Component {
         }
     }
 
-    onConfirmPayout = async (  ) => {
+    onConfirmPayout = async () => {
         try {
-            this.setState({currentPayoutView :"loading"});
+            
             let payload = {};
             payload["id"] = this.props.payoutData["id"];
-            payload["name"] = this.props.payoutData["supplier_fullname"]; 
+            payload["name"] = this.props.payoutData["supplier_fullname"];
             payload["contact"] = this.props.payoutData["supplier_mobile"];
             payload["type"] = "Loader";
-            payload["buyer_name"] = this.props.payoutData["buyer_business_name"] || this.props.payoutData["buyer_fullname"] ;
+            payload["buyer_name"] = this.props.payoutData["buyer_business_name"] || this.props.payoutData["buyer_fullname"];
             payload["amount"] = this.props.payoutData["amount"];
             payload["reference_id"] = this.props.payoutData["supplier_fullname"];
-            payload["notes"] = {} ;
-            payload["mode"] = this.state.transferType ;
-
-            let resp = await paymentService.confirmPayout( payload );
+            payload["notes"] = {};
+            payload["mode"] = this.state.transferType;
+            if (this.state.skipRazorPayTrans) {
+                if (this.checkForValidFormOnSkipTransaction()) {
+                    payload["skipRazorpayX"] = true;
+                    payload["bank_id"] = this.state.skipRazorPayTransObj["bank_id"];
+                    payload["utr"] = this.state.skipRazorPayTransObj["utr"];
+                    payload["remarks"] = this.state.skipRazorPayTransObj["remarks"];
+                }else{
+                    alert("Please enter the reqd. fields.")
+                    return;
+                }
+            }
+            this.setState({ currentPayoutView: "loading" });
+            let resp = await paymentService.confirmPayout(payload);
             if (resp.data.status === 1) {
                 // console.log(payload)
-                alert( "Successfully completed");
+                alert("Successfully completed");
                 this.props.onPayoutSuccessfull();
             } else {
-                alert(  resp && resp.data && resp.data.message  ? resp.data.message: "An error occured while payout");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
             }
-            this.setState({currentPayoutView :"defaultPayout"});
+            this.setState({ currentPayoutView: "defaultPayout" });
         } catch (err) {
             console.error(err);
-            this.setState({currentPayoutView :"defaultPayout"});
-            alert( "Oops an error occured while payout");
+            this.setState({ currentPayoutView: "defaultPayout" });
+            alert("Oops an error occured while payout");
         }
     }
 
-    handelPaymentThroughChanged( event ){
+    handelPaymentThroughChanged(event) {
         this.setState({
             transferType: event.target.value
         });
@@ -199,7 +249,9 @@ class PayoutModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { transferType, acctDetails, payoutData, acctData, selectedAcctInfo, currentPayoutView, addAccountData, errorFields } = this.state;
+        const { transferType, acctDetails, payoutData, acctData, selectedAcctInfo,
+            currentPayoutView, addAccountData, errorFields,
+            skipRazorPayTrans, skipRazorPayTransObj, errorFieldsOfSkipTrans } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -223,7 +275,7 @@ class PayoutModal extends Component {
                             <React.Fragment>
                                 <div style={{ display: "flex", paddingBottom: "5px", paddingTop: '5px' }}>
                                     <span className={classes.actcardtext} style={{ width: "60%" }}> Supplier Name  : &nbsp; <strong> {payoutData["supplier_fullname"]}</strong>  </span>
-                                    <span className={classes.actcardtext} > Amount  : &nbsp;<strong style={{ color: "red" }}> ₹ { Utils.formatNumberWithComma(payoutData["amount"])}  </strong></span> </div>
+                                    <span className={classes.actcardtext} > Amount  : &nbsp;<strong style={{ color: "red" }}> ₹ {Utils.formatNumberWithComma(payoutData["amount"])}  </strong></span> </div>
 
                                 <div className={classes.actCardc} >
                                     <div className={classes.actcardtext} style={{
@@ -234,7 +286,7 @@ class PayoutModal extends Component {
                                     {acctDetails !== "-" && acctDetails !== "" ?
                                         <span>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_number"]} </strong> </div>
-                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{textTransform: "uppercase"}} > {acctDetails["bank_ifsc_code"]} </strong> </div>
+                                            <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{ textTransform: "uppercase" }} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                         </span> :
                                         <div style={{ padding: "14px" }} className={classes.actcardtext} >
@@ -242,37 +294,83 @@ class PayoutModal extends Component {
                                     </div>}
                                 </div>
                                 <div>
-                                {acctDetails !== "-" && acctDetails !== "" && <FormControl component="fieldset" style={{padding: "5px"}}>
-                                <FormLabel component="legend" style={{ fontSize: "15px",fontFamily: "lato"}}>Select transfer type</FormLabel>
-                                <RadioGroup aria-label="position" name="position" value={transferType} onChange={this.handelPaymentThroughChanged.bind(this)}  row>
+                                    {acctDetails !== "-" && acctDetails !== "" && <FormControl component="fieldset" style={{ padding: "5px" }}>
+                                        <FormLabel component="legend" style={{ fontSize: "15px", fontFamily: "lato" }}>Select transfer type</FormLabel>
+                                        <RadioGroup aria-label="position" name="position" value={transferType} onChange={this.handelPaymentThroughChanged.bind(this)} row>
+                                            <FormControlLabel
+                                                value="NEFT"
+                                                control={<Radio color="primary" />}
+                                                label="NEFT"
+                                                style={{ fontSize: "14px", fontFamily: "lato" }}
+                                                labelPlacement="end"
+                                            />
+                                            <FormControlLabel
+                                                value="IMPS"
+                                                control={<Radio color="primary" />}
+                                                label="IMPS"
+                                                disabled={payoutData["amount"] > 200000}
+                                                style={{ fontSize: "14px", fontFamily: "lato" }}
+                                                labelPlacement="end"
+                                            />
+                                            <FormControlLabel
+                                                value="RTGS"
+                                                control={<Radio color="primary" />}
+                                                label="RTGS"
+                                                disabled={payoutData["amount"] < 200000}
+                                                style={{ fontSize: "14px", fontFamily: "lato" }}
+                                                labelPlacement="end"
+                                            />
+                                        </RadioGroup>
+                                        {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
+                                    </FormControl>}
+                                </div>
+                                <div>
                                     <FormControlLabel
-                                    value="NEFT"
-                                    control={<Radio color="primary" />}
-                                    label="NEFT"
-                                    style={{ fontSize: "14px",fontFamily: "lato"}}
-                                    labelPlacement="end"
-                                    />  
-                                    <FormControlLabel
-                                    value="IMPS"
-                                    control={<Radio color="primary" />}
-                                    label="IMPS"
-                                    disabled={payoutData["amount"] > 200000}
-                                    style={{ fontSize: "14px",fontFamily: "lato"}}
-                                    labelPlacement="end"
-                                    />
-                                     <FormControlLabel
-                                    value="RTGS"
-                                    control={<Radio color="primary" />}
-                                    label="RTGS"
-                                    disabled={payoutData["amount"] < 200000}
-                                    style={{ fontSize: "14px",fontFamily: "lato"}}
-                                    labelPlacement="end"
-                                    />
-                                </RadioGroup>
-                                {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
-                                </FormControl>}
-                                    </div>
-                                {acctDetails !== "-" && acctDetails !== "" && getAccessAccordingToRole("payViaCredit") && 
+                                        control={<Checkbox
+                                            checked={skipRazorPayTrans}
+                                            value="skipTransaction"
+                                            onChange={(event) => this.setState({ skipRazorPayTrans: event.target.checked })} />
+                                        }
+                                        label="Skip Razorpay transaction" />
+
+                                </div>
+                                {skipRazorPayTrans && <div >
+
+                                    <TextField
+                                        margin="dense"
+                                        id="bank_id"
+                                        error={errorFieldsOfSkipTrans["bank_id"] ? true : false}
+                                        label="Bank id"
+                                        type="text"
+                                        style={{ width: '100%' }}
+                                        value={skipRazorPayTransObj.bank_id}
+                                        onChange={this.handleSkipRazorInputChange.bind(this)}
+                                        fullWidth />
+
+                                    <TextField
+                                        margin="dense"
+                                        id="utr"
+                                        label="UTR"
+                                        error={errorFieldsOfSkipTrans["utr"] ? true : false}
+                                        type="text"
+                                        style={{ width: '100%', textTransform: "uppercase" }}
+                                        value={addAccountData.utr}
+                                        onChange={this.handleSkipRazorInputChange.bind(this)}
+                                        fullWidth />
+
+                                    <TextField
+                                        margin="dense"
+                                        id="remarks"
+                                        label="Remark"
+                                        error={errorFieldsOfSkipTrans["remarks"] ? true : false}
+                                        type="text"
+                                        style={{ width: '100%' }}
+                                        value={addAccountData.remarks}
+                                        onChange={this.handleSkipRazorInputChange.bind(this)}
+                                        fullWidth />
+                                </div>}
+
+                                {acctDetails !== "-" && acctDetails !== "" && getAccessAccordingToRole("payViaCredit") &&
                                     <div style={{ textAlign: "center", paddingTop: "10px" }}>
                                         <Button
                                             variant="contained"
@@ -367,9 +465,9 @@ class PayoutModal extends Component {
                             <div> Available bijak credit : Rs. 50,000 </div>
                             <div> Amount for payout      : Rs. {payoutData["amount"]} </div>
                         </React.Fragment>}
-                        {currentPayoutView === "loading" &&
+                    {currentPayoutView === "loading" &&
                         <React.Fragment>
-                            <Loader primaryText={"Please wait.."}/>
+                            <Loader primaryText={"Please wait.."} />
                         </React.Fragment>}
                 </DialogContent>
             </Dialog>
