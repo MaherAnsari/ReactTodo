@@ -42,6 +42,8 @@ import DateRangeSelector from './DateRangeSelector';
 import PaymentFilterOptionModal from '../../common/PaymentFilterOptionModal';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
+import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
+
 
 var moment = require('moment');
 
@@ -158,7 +160,10 @@ class TodaysPaymentTable extends Component {
             showPaymentFilterOption: false,
             filterDataArray : [],
 
-            userId: undefined
+            userId: undefined,
+
+            showTransactionIDInfoDialog: false,
+            transactionIDInfoData: undefined
         }
     }
 
@@ -431,7 +436,7 @@ class TodaysPaymentTable extends Component {
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
-            showPaymentFilterOption , filterDataArray} = this.state;
+            showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -617,9 +622,15 @@ class TodaysPaymentTable extends Component {
                                                                    <i className="fa fa-circle"
                                                                       data-toggle="tooltip" title={row.active ? "Enabled" : "Disabled"} 
                                                                       style={{ color: "#776969", fontSize:"17px" , cursor:"pointer", marginLeft: "-12%"}} 
-                                                                      aria-hidden="true"></i>} &nbsp;
+                                                                      aria-hidden="true"></i>
+                                                    }
+                                                                       &nbsp;
                                                                     
-                                                        {row.id ? row.id : "-"}
+                                                      <span 
+                                                      onClick={( event )=> this.setState({ showTransactionIDInfoDialog : true, transactionIDInfoData : row })}
+                                                      className=" name-span" style={{ cursor: "pointer"}} > 
+                                                       {row.id ? row.id : "-"}
+                                                        </span>
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}
                                                     // onClick={this.onUserInfoClicked.bind(this, row)}
@@ -799,6 +810,12 @@ class TodaysPaymentTable extends Component {
                              onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
                             onFilterAdded={( data )=> this.setState({ filterDataArray : data, showPaymentFilterOption : false }) }/>}
 
+                    {showTransactionIDInfoDialog && 
+                        <TransactionIdInfoModal
+                            open={showTransactionIDInfoDialog }
+                            onTransactionIDInfoModalClose = {()=> this.setState({ showTransactionIDInfoDialog : false , transactionIDInfoData : undefined  })}
+                            transactionInfoData={transactionIDInfoData}
+                        />}
 
                         </MuiThemeProvider>
             </div>);

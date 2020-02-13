@@ -36,6 +36,7 @@ import Typography from '@material-ui/core/Typography';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
 
 var moment = require('moment');
 
@@ -146,7 +147,10 @@ class PaymentDetailsTable extends Component {
 
             filterDataArray: this.props.filterDataArray,
 
-            userId: undefined
+            userId: undefined,
+
+            showTransactionIDInfoDialog: false,
+            transactionIDInfoData: undefined
         }
     }
 
@@ -383,7 +387,8 @@ class PaymentDetailsTable extends Component {
 
     render() {
         const { classes } = this.props;
-        const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page  } = this.state;
+        const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page,
+            showTransactionIDInfoDialog,transactionIDInfoData  } = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -546,7 +551,12 @@ class PaymentDetailsTable extends Component {
                                                                       style={{ color: "#776969", fontSize:"17px" , cursor:"pointer", marginLeft: "-12%"}} 
                                                                       aria-hidden="true"></i>} &nbsp;
                                                                     
-                                                        {row.id ? row.id : "-"}
+                                                        {/* {row.id ? row.id : "-"} */}
+                                                        <span 
+                                                      onClick={( event )=> this.setState({ showTransactionIDInfoDialog : true, transactionIDInfoData : row })}
+                                                      className=" name-span" style={{ cursor: "pointer"}} > 
+                                                       {row.id ? row.id : "-"}
+                                                        </span>
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}>
                                                     {/* onClick={this.onUserInfoClicked.bind(this, row)}> */}
@@ -713,6 +723,13 @@ class PaymentDetailsTable extends Component {
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div>}
+
+                    {showTransactionIDInfoDialog && 
+                        <TransactionIdInfoModal
+                            open={showTransactionIDInfoDialog }
+                            onTransactionIDInfoModalClose = {()=> this.setState({ showTransactionIDInfoDialog : false , transactionIDInfoData : undefined  })}
+                            transactionInfoData={transactionIDInfoData}
+                        />}
 
                         </MuiThemeProvider>
             </div>);
