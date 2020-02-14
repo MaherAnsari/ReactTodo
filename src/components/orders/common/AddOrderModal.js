@@ -23,6 +23,8 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
 
 const styles = theme => ({
     heading: {
@@ -115,6 +117,7 @@ class AddOrderModal extends Component {
 
         }
         this.getCommodityNames();
+        this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
 
 
@@ -140,6 +143,7 @@ class AddOrderModal extends Component {
     async getCommodityNames() {
         try {
             let resp = await commodityService.getCommodityTable();
+            console.error(resp)
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
             } else {
@@ -194,6 +198,28 @@ class AddOrderModal extends Component {
             errorFields: errors
         })
         console.log(addOrderPayloadVal)
+    }
+
+    handelAutoCompleteChange = (event, values) => {
+
+        var errors = this.state.errorFields;
+        var id = "commodity";
+
+        var addOrderPayloadVal = this.state.addOrderPayload;
+        if (values && values !== null) {
+            addOrderPayloadVal[id] = values.toString();
+        } else {
+            addOrderPayloadVal[id] = "";
+        }
+        console.log(id + "-----" + addOrderPayloadVal[id]);
+
+        if (errors.hasOwnProperty(id)) {
+            delete errors[id];
+        }
+        this.setState({
+            addOrderPayload: addOrderPayloadVal,
+            errorFields: errors
+        })
     }
 
     handleDialogCancel(event) {
@@ -430,9 +456,13 @@ class AddOrderModal extends Component {
         this.setState({ addOrderPayload: addOrderPayloadVal })
     }
 
+
+
+
     render() {
         const { classes } = this.props;
         const { showLoader, addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
+        console.log(commodityList)
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -623,7 +653,32 @@ class AddOrderModal extends Component {
                             </TextField>
                             &nbsp;
                             &nbsp;
-                        <TextField
+                            <Autocomplete
+                                // multiple
+                                id="commodity"
+                                error={errorFields["commodity"] ? true : undefined}
+                                name="commodity"
+                                label="Commodity"
+                                options={commodityList}
+                                getOptionLabel={e => e}
+                                value={addOrderPayload.commodity}
+                                onChange={this.handelAutoCompleteChange}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: '49%', marginTop: '1%' ,borderBottom: (errorFields["commodity"] ?"1px solid red": "unset") }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Commodity"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                            {/* <TextField
                                 select
                                 id="commodity"
                                 error={errorFields["commodity"] ? true : false}
@@ -638,7 +693,7 @@ class AddOrderModal extends Component {
                                         {key}
                                     </MenuItem>
                                 ))}
-                            </TextField>
+                            </TextField> */}
                         </div>
                         <div style={{ display: "flex" }} >
 
@@ -902,7 +957,7 @@ class AddOrderModal extends Component {
                                 fullWidth />
                         </div> */}
 
-{this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                        {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                             <div style={{ fontFamily: "lato", padding: "10px" }}>
                                 Uploaded Images
                         </div>}
@@ -912,7 +967,7 @@ class AddOrderModal extends Component {
                                 //     <img src={key} alt={key} height="150px" />
                                 // </div>
                                 <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
                                     <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                         <i className="fa fa-trash fa-lg"></i>
                                     </div>

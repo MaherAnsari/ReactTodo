@@ -420,7 +420,8 @@ class OrderListTable extends Component {
                                                     <span style={{
                                                         color: "white",
                                                         background: row.commodity ? "rgb(58, 126, 63)" : "",
-                                                        padding: "4px 12px",
+                                                        padding: "4px 8px",
+                                                        display:"inline-block",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} >
