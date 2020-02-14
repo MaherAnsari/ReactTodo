@@ -390,7 +390,7 @@ class PayoutOrderModal extends Component {
                                 </div>
                                 <div>
                                     {acctDetails !== "-" && acctDetails !== "" && <FormControl component="fieldset" style={{ padding: "5px" }}>
-                                        <FormLabel component="legend" style={{ fontSize: "15px", fontFamily: "lato" }}>Select transfer type</FormLabel>
+                                        {/* <FormLabel component="legend" style={{ fontSize: "15px", fontFamily: "lato" }}>Select transfer type</FormLabel> */}
                                         <RadioGroup aria-label="position" name="position" value={transferType} onChange={this.handelPaymentThroughChanged.bind(this)} row>
                                             <FormControlLabel
                                                 value="NEFT"

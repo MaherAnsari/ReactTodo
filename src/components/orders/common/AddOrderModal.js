@@ -103,7 +103,8 @@ class AddOrderModal extends Component {
                 "commission_rate": "",
                 "commission_unit": "",
                 "target_location": "",
-                "source_location": ""
+                "source_location": "",
+                "rate_unit":""
             },
 
             buyerid: "",
@@ -767,6 +768,29 @@ class AddOrderModal extends Component {
                                 fullWidth />
                             &nbsp;
                           &nbsp;
+
+                          <TextField
+                                select
+                                id="rate_unit"
+                                name="rate_unit"
+                                label="Rate Unit"
+                                error={errorFields["rate_unit"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop: '5px' }}
+                                value={addOrderPayload.rate_unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["Rs/kg", "Rs/quintal","Rs/ton"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        
+                        </div>
+
+
+
+                        <div style={{ display: "flex" }} >
                         <TextField
                                 margin="dense"
                                 id="qnt"
@@ -777,11 +801,9 @@ class AddOrderModal extends Component {
                                 value={addOrderPayload.qnt}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                        </div>
 
-
-
-                        <div style={{ display: "flex" }} >
+                        &nbsp;
+                          &nbsp;
                             <TextField
                                 select
                                 id="unit"
@@ -799,18 +821,8 @@ class AddOrderModal extends Component {
                                 ))}
                             </TextField>
 
-                            &nbsp;
-                          &nbsp;
-                          <TextField
-                                margin="dense"
-                                id="transport_info"
-                                label="Transport info"
-                                error={errorFields["transport_info"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={addOrderPayload.transport_info}
-                                onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
+                           
+                         
                             {/* <TextField
                                 margin="dense"
                                 id="author_name"
@@ -873,6 +885,18 @@ class AddOrderModal extends Component {
                         </TextField>
                     </div> */}
                         <div style={{ display: "flex" }} >
+                        <TextField
+                                margin="dense"
+                                id="transport_info"
+                                label="Transport info"
+                                error={errorFields["transport_info"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.transport_info}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                                  &nbsp;
+                        &nbsp;
 
                             <TextField
                                 margin="dense"
@@ -880,7 +904,7 @@ class AddOrderModal extends Component {
                                 error={errorFields["remark"] ? true : false}
                                 label="Remarks"
                                 type="text"
-                                style={{ width: '98%' }}
+                                style={{ width: '49%' }}
                                 value={addOrderPayload.remark}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />

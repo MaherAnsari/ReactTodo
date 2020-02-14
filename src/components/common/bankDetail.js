@@ -44,7 +44,7 @@ class BankDetail extends React.Component {
                 account_number: "",
                 ifsc: "",
                 name: "",
-                bank_name: ""
+                bank_name: "-"
 
             },
 
@@ -53,7 +53,7 @@ class BankDetail extends React.Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.getBankDetails(this.props.userdata);
     }
     getBankDetails = async (userData) => {
@@ -93,9 +93,9 @@ class BankDetail extends React.Component {
                     addAccountDataVal[id] = Number(val);
                 }
             } else {
-                if( id === "bank_name"){
+                if (id === "bank_name") {
                     addAccountDataVal[id] = val;
-                }else{
+                } else {
                     addAccountDataVal[id] = val ? val.toUpperCase() : val;
                 }
             }
@@ -121,7 +121,7 @@ class BankDetail extends React.Component {
                 account_number: "",
                 ifsc: "",
                 name: "",
-                bank_name: ""
+                bank_name: "-"
             },
             errorFields: {},
             currentSelectedUserDetails: undefined
@@ -185,7 +185,7 @@ class BankDetail extends React.Component {
                         account_number: this.state.addAccountData["account_number"] + "",
                         ifsc: this.state.addAccountData["ifsc"],
                         name: this.state.addAccountData["name"],
-                        bank_name: this.state.addAccountData["bank_name"]
+                        bank_name: "-"
                     }
                 }
                 let resp = await commonService.addbankDetail(payload);
@@ -247,7 +247,7 @@ class BankDetail extends React.Component {
                                             );
                                         })}
                                     </List>
-                                    {getAccessAccordingToRole("addBankAccount") && <div  className="updateBtnFixedModal" style={{ right:'7px',bottom:'90px'}}>
+                                    {getAccessAccordingToRole("addBankAccount") && <div className="updateBtnFixedModal" style={{ right: '7px', bottom: '90px' }}>
                                         <Button variant="contained"
                                             onClick={(event) =>
                                                 this.setState({
@@ -257,7 +257,7 @@ class BankDetail extends React.Component {
                                                         account_number: "",
                                                         ifsc: "",
                                                         name: "",
-                                                        bank_name: ""
+                                                        bank_name: "-"
                                                     }
                                                 })}
                                             style={{ background: "transparent", color: "#fff" }}>Add a new Account</Button>
@@ -270,6 +270,29 @@ class BankDetail extends React.Component {
                                 <React.Fragment>
                                     <div> Enter the following details </div>
                                     <div style={{ padding: "15px 20%" }}>
+
+
+                                        {/* <TextField
+                                            margin="dense"
+                                            id="bank_name"
+                                            error={errorFields["bank_name"] ? true : false}
+                                            label="Bank name "
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={addAccountData.bank_name}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            fullWidth /> */}
+                                        <TextField
+                                            margin="dense"
+                                            id="name"
+                                            label="Name of Account holder"
+                                            error={errorFields["name"] ? true : false}
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={addAccountData.name}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            fullWidth />
+
                                         <TextField
                                             margin="dense"
                                             id="account_number"
@@ -280,18 +303,6 @@ class BankDetail extends React.Component {
                                             value={addAccountData.account_number}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
-
-                                        <TextField
-                                            margin="dense"
-                                            id="bank_name"
-                                            error={errorFields["bank_name"] ? true : false}
-                                            label="Bank name "
-                                            type="text"
-                                            style={{ width: '100%' }}
-                                            value={addAccountData.bank_name}
-                                            onChange={this.handleInputChange.bind(this)}
-                                            fullWidth />
-
                                         <TextField
                                             margin="dense"
                                             id="ifsc"
@@ -303,18 +314,9 @@ class BankDetail extends React.Component {
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
-                                        <TextField
-                                            margin="dense"
-                                            id="name"
-                                            label="Name of Account holder"
-                                            error={errorFields["name"] ? true : false}
-                                            type="text"
-                                            style={{ width: '100%' }}
-                                            value={addAccountData.name}
-                                            onChange={this.handleInputChange.bind(this)}
-                                            fullWidth />
+
                                     </div>
-                                    <div style={{ paddingTop: "24px" ,textAlign:'center'}}>
+                                    <div style={{ paddingTop: "24px", textAlign: 'center' }}>
                                         <Button variant="contained" onClick={(event) => this.onNewAccountAddClicked(event)}
                                             style={{ background: "blue", color: "#fff" }}> Add </Button>
                                         <Button variant="contained"
