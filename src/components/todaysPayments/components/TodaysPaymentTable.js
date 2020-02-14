@@ -159,6 +159,7 @@ class TodaysPaymentTable extends Component {
 
             showPaymentFilterOption: false,
             filterDataArray : [],
+            transactionTypeArray : [],
 
             userId: undefined,
 
@@ -430,9 +431,26 @@ class TodaysPaymentTable extends Component {
     }
 
     filterData( data ){
-        if( this.state.filterDataArray.length === 0){
+        if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
             return true;
         }
+
+        if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
+
+            if(this.state.filterDataArray.length === 0 ){
+                return true;
+            }
+
+        if( data && data["status"] ){
+            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }else{
         if( data && data["status"] ){
             if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
                 return true;
@@ -444,10 +462,12 @@ class TodaysPaymentTable extends Component {
         }
     }
 
+    }
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
-            showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData} = this.state;
+            showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData, transactionTypeArray} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -459,7 +479,7 @@ class TodaysPaymentTable extends Component {
                     <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                     <div style={{ padding : "15px 15px 15px 0px"}}>
                         <Badge className={classes.margin} style={{height:'25px'}} 
-                        badgeContent={ filterDataArray.length } color="primary">
+                        badgeContent={ filterDataArray.length + transactionTypeArray.length } color="primary">
                              <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }}
                               onClick={() => this.setState( { showPaymentFilterOption : true })}>
                                 Filter
@@ -818,8 +838,12 @@ class TodaysPaymentTable extends Component {
                      <PaymentFilterOptionModal
                              openModal={showPaymentFilterOption}
                              filterDataArr = { filterDataArray }
+                             transactionTypeArray={ transactionTypeArray }
                              onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
-                            onFilterAdded={( data )=> this.setState({ filterDataArray : data, showPaymentFilterOption : false }) }/>}
+                            onFilterAdded={( data )=> this.setState({ 
+                                filterDataArray : data["paymentType"], 
+                                transactionTypeArray : data["transactionType"], 
+                                showPaymentFilterOption : false }) }/>}
 
                     {showTransactionIDInfoDialog && 
                         <TransactionIdInfoModal

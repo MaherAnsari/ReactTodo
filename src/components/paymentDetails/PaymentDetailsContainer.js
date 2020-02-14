@@ -54,7 +54,8 @@ class PaymentDetailsContainer extends React.Component {
             params: {},
 
             showPaymentFilterOption: false,
-            filterDataArray : []
+            filterDataArray : [],
+            transactionTypeArray : []
 
         }
         this.ismounted = true;
@@ -165,7 +166,7 @@ class PaymentDetailsContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { allTransactionsData , paymentMetaInfo,  showPaymentFilterOption , filterDataArray  } = this.state;
+        const { allTransactionsData , paymentMetaInfo,  showPaymentFilterOption , filterDataArray, transactionTypeArray  } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -174,7 +175,7 @@ class PaymentDetailsContainer extends React.Component {
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                         <div style={{ padding : "15px 15px 15px 0px"}}>
                         <Badge className={classes.margin} style={{height:'25px'}} 
-                        badgeContent={ filterDataArray.length } color="primary">
+                        badgeContent={ filterDataArray.length + transactionTypeArray.length } color="primary">
                              <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }}
                               onClick={() => this.setState( { showPaymentFilterOption : true })}>
                                 Filter
@@ -195,14 +196,19 @@ class PaymentDetailsContainer extends React.Component {
                             allTransactionsData={allTransactionsData}
                             paymentMetaInfo={paymentMetaInfo}
                             filterDataArray={ filterDataArray }
+                            transactionTypeArray ={ transactionTypeArray }
                             OnPaymentUpdated={() => this.getPaymentDetailsData({})} />}
 
                     {showPaymentFilterOption && 
                      <PaymentFilterOptionModal
                              openModal={showPaymentFilterOption}
                              filterDataArr = { filterDataArray }
+                             transactionTypeArray = { transactionTypeArray }
                              onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
-                            onFilterAdded={( data )=> this.setState({ filterDataArray : data, showPaymentFilterOption : false }) }/>}
+                            onFilterAdded={( data )=> this.setState({ 
+                                filterDataArray : data["paymentType"], 
+                                transactionTypeArray : data["transactionType"], 
+                                showPaymentFilterOption : false }) }/>}
 
 
                 </Paper>

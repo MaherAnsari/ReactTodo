@@ -49,6 +49,23 @@ const styles = theme => ({
     }
 });
 
+const transactionType = [
+     "bijak-in",
+     "bijak-out",
+     "historical"
+]
+
+const transactionTypeMapping = {
+    "bijak-in":"b_in",
+    "bijak-out":"b_out",
+    "historical": "b_hist"
+}
+const transactionTypeReverseMapping = {
+    "b_in":"bijak-in",
+    "b_out": "bijak-out",
+    "b_hist":"historical"
+}
+
 class PaymentFilterOptionModal extends Component {
 
     constructor(props) {
@@ -61,21 +78,44 @@ class PaymentFilterOptionModal extends Component {
             // "payout_processed", "transaction_initiated", "payout_initiated",
             //                     "payout_queued", "payout_pending", "payout_processing", ""],
             open: this.props.openModal,
-            filterDataArr: this.props.filterDataArr || []
+            filterDataArr: this.props.filterDataArr || [],
+            transactionTypeArray : this.formatTransactionType(this.props.transactionTypeArray) || []
         }
         console.log( this.props.filterDataArr )
+        console.log( this.props.transactionTypeArray )
+        console.log( this.formatTransactionType(this.props.transactionTypeArray) )
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
+        this.handelAutoCompleteChangeTransactionTypeArray = this.handelAutoCompleteChangeTransactionTypeArray.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.filterDataArr !== this.state.filterDataArr) {
             this.setState({ filterDataArr: nextProps.filterDataArr })
         }
+        if (nextProps.transactionTypeArray !== this.state.transactionTypeArray) {
+            this.setState({ transactionTypeArray: this.formatTransactionType(nextProps.transactionTypeArray) })
+        }
+    }
+    
+    formatTransactionType( data ){
+        let fData = [];
+        if(data && data.length  > 0){
+            for( let i = 0; i < data.length ; i++ ){
+                fData.push(transactionTypeReverseMapping[data[i]]);
+            }
+        }
+        return fData;
     }
 
     handelAutoCompleteChange = (event, values) => {
         this.setState({ filterDataArr: values })
     }
+
+    handelAutoCompleteChangeTransactionTypeArray = (event, values) => {
+        console.log( values );
+        this.setState({ transactionTypeArray : values });
+    }
+    
 
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -86,13 +126,25 @@ class PaymentFilterOptionModal extends Component {
     }
 
     handleAddClick(event) {
-        this.props.onFilterAdded(this.state.filterDataArr);
+        console.log( this.state.transactionTypeArray )
+        let tVal = [];
+        let values = this.state.transactionTypeArray;
+        if( values && values.length > 0 ){
+            for( let i = 0; i < values.length ; i++){
+                tVal.push( transactionTypeMapping[ values[i] ]  );
+            }
+
+        }
+        console.log( tVal )
+        this.props.onFilterAdded({
+            "paymentType":this.state.filterDataArr,
+            "transactionType": tVal });
     }
 
 
     render() {
         const { classes } = this.props;
-        const { paymentFilterList, filterDataArr } = this.state;
+        const { paymentFilterList, filterDataArr, transactionTypeArray } = this.state;
         return (
             <MuiThemeProvider theme={theme}><div > <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -102,11 +154,11 @@ class PaymentFilterOptionModal extends Component {
                 <DialogTitle style={{ height: '60px' }}
                     id="form-dialog-title">
                     <div style={{ color: '#000', fontFamily: 'Lato', fontSize: '20px', display: 'flex' }}>
-                        Filter by status
+                        Filter 
                                 </div>
                 </DialogTitle>
                 <DialogContent>
-                    <div style={{ display: 'flex' }}>
+                    <div x>
                         <div style={{ width: '100%' }}>
                             <Autocomplete
                                 multiple
@@ -125,6 +177,31 @@ class PaymentFilterOptionModal extends Component {
                                     <TextField
                                         {...params}
                                         label="Select payment status"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        <div style={{ width: '100%' , marginTop:"2%"}}>
+                            <Autocomplete
+                                multiple
+                                id="fixed-demo-transaction type"
+                                options={transactionType}
+                                value={ transactionTypeArray  }
+                                getOptionLabel={e => e} 
+                                onChange={this.handelAutoCompleteChangeTransactionTypeArray}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={ option } {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: "98%" }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Transaction type"
                                         placeholder="Search"
                                         fullWidth
                                     />
