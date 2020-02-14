@@ -779,7 +779,7 @@ class AddOrderModal extends Component {
                                 style={{ width: '49%', marginTop: '5px' }}
                                 value={addOrderPayload.rate_unit}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {["Rs/kg", "Rs/quintal","Rs/ton"].map((key, i) => (
+                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton","Rs/Packet","Rs/Crate","Rs/Box","Rs/Pc"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
