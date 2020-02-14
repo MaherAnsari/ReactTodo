@@ -146,6 +146,7 @@ class PaymentDetailsTable extends Component {
             datePayloads: { "startDate": "" },
 
             filterDataArray: this.props.filterDataArray,
+            transactionTypeArray : this.props.transactionTypeArray,
 
             userId: undefined,
 
@@ -157,6 +158,9 @@ class PaymentDetailsTable extends Component {
     componentWillReceiveProps( nextProps ){
         if( nextProps.filterDataArray !== this.state.filterDataArray ){
             this.setState({ filterDataArray : nextProps.filterDataArray  });
+        }
+        if( nextProps.transactionTypeArray !== this.state.transactionTypeArray ){
+            this.setState({ transactionTypeArray : nextProps.transactionTypeArray  });
         }
     }
 
@@ -381,9 +385,17 @@ class PaymentDetailsTable extends Component {
     }
     
     filterData( data ){
-        if( this.state.filterDataArray.length === 0){
+        if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
             return true;
         }
+
+        if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
+
+            if(this.state.filterDataArray.length === 0 ){
+                return true;
+            }
+
+            
         if( data && data["status"] ){
             if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
                 return true;
@@ -393,6 +405,18 @@ class PaymentDetailsTable extends Component {
         }else{
             return false;
         }
+    }else{
+        if( data && data["status"] ){
+            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
     }
 
     render() {
