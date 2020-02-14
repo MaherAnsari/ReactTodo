@@ -236,6 +236,7 @@ class TodaysPaymentTable extends Component {
 
 
       getStatusOption( event , row ){
+
           if( (row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak") ||  (row["transaction_type"] === "b_in" && row["payment_mode"] === "bank") ){
             
             if(  row["status"] === "transaction_failed" ){
@@ -257,14 +258,24 @@ class TodaysPaymentTable extends Component {
            }else if(  row["status"] === "payout_reversed" ||
                 row["status"] === "payout_cancelled" || 
                 row["status"] === "payout_rejected" ){
-                return(<span 
-                    style={{ paddingLeft: "15%"}}  
-                    data-toggle="tooltip" 
-                    data-placement="center" 
-                    title={row["status"] }>
-                    <img src={ cancelledIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
-                </span> );
-            } else if(row["status"] === "payout_processed"){
+                    return( <span>
+                        <span 
+                        style={{paddingLeft: "6px"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        title={row["status"] }>
+                        <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
+                       
+                    </span> 
+                    <span 
+                        style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        onClick={( event )=> { if( getAccessAccordingToRole("makePayout") ){this.setState({ showPayoutModal : true, payoutData : row })}}}
+                        title={row["status"] }>
+                         <i className="fa fa-refresh" aria-hidden="true" style={{color : (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  )}} ></i>
+                    </span> </span>);
+                    } else if(row["status"] === "payout_processed"){
                 return(<span 
                     style={{ paddingLeft: "15%"}}  
                     data-toggle="tooltip" 
@@ -613,7 +624,7 @@ class TodaysPaymentTable extends Component {
                                                    <div>
                                                         {this.checkIfAccountInfoAvaialble( row ) ? <i className="fa fa-info-circle" aria-hidden="true" 
                                                              onClick={(event )=> this.setState({ showTransactionInfoDialog : true , transactionInfoData : row  })}
-                                                                            style={{ color: "#e72e89",marginRight:"10px", cursor: "pointer", height: "18px", fontSize:"22px" }} /> : ""}
+                                                                            style={{ color: "#e72e89",marginLeft:"2px", marginRight:"8px", cursor: "pointer", height: "18px", fontSize:"22px" }} /> : ""}
                                                     {this.getStatusOption(this, row)}
                                                     </div>
                                                     </TableCell>
