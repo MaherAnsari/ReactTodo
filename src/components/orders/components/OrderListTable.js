@@ -383,7 +383,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " +  (row.supplier_businessname ? row.supplier_businessname :" ") + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{ row.supplier_businessname ? row.supplier_businessname :" "}</span>
                                                     </div>
                                                 </TableCell>
 
@@ -391,7 +391,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " +  (row.buyer_businessname ? row.buyer_businessname :" ")+ " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{row.buyer_businessname ? row.buyer_businessname :" "}</span>
                                                     </div>
                                                 </TableCell>
                                                 {/* <TableCell className={this.getTableCellClass(classes, 2)}>
