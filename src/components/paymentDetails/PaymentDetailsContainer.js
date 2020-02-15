@@ -14,6 +14,8 @@ import PaymentDetailsTable from './components/PaymentDetailsTable';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import PaymentFilterOptionModal from '../common/PaymentFilterOptionModal';
+import { getAccessAccordingToRole } from '../../config/appConfig';
+import AddTransactionModal from '../payment/components/AddTransactionModal';
 
 
 
@@ -54,8 +56,11 @@ class PaymentDetailsContainer extends React.Component {
             params: {},
 
             showPaymentFilterOption: false,
-            filterDataArray : [],
-            transactionTypeArray : []
+            filterDataArray: [],
+            transactionTypeArray: [],
+
+            
+            showAddTransactionModal: false,
 
         }
         this.ismounted = true;
@@ -111,7 +116,8 @@ class PaymentDetailsContainer extends React.Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + " )", value: data[i][valuekey] });
+                // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + " )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -164,52 +170,76 @@ class PaymentDetailsContainer extends React.Component {
         this.getPaymentDetailsData(this.state.params);
     }
 
+    onTransactionDataAdded(event) {
+        this.setState({ showAddTransactionModal: false }, function () {
+            this.getPaymentDetailsData(this.state.params);
+        })
+    }
+
     render() {
         const { classes } = this.props;
-        const { allTransactionsData , paymentMetaInfo,  showPaymentFilterOption , filterDataArray, transactionTypeArray  } = this.state;
+        const { allTransactionsData, paymentMetaInfo, showPaymentFilterOption, filterDataArray,
+             transactionTypeArray, showAddTransactionModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
                     <div style={{ display: "flex" }}>
                         <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
-                        <div style={{ padding : "15px 15px 15px 0px"}}>
-                        <Badge className={classes.margin} style={{height:'25px'}} 
-                        badgeContent={ filterDataArray.length + transactionTypeArray.length } color="primary">
-                             <Button component="span" style={{ padding: '5px 10px', fontSize: 12,color: '#b1b1b1', margin: '0px 5px' }}
-                              onClick={() => this.setState( { showPaymentFilterOption : true })}>
-                                Filter
+                        <div style={{ padding: "15px 15px 15px 0px" }}>
+                            <Badge className={classes.margin} style={{ height: '25px' }}
+                                badgeContent={filterDataArray.length + transactionTypeArray.length} color="primary">
+                                <Button component="span" style={{ padding: '5px 10px', fontSize: 12, color: '#b1b1b1', margin: '0px 5px' }}
+                                    onClick={() => this.setState({ showPaymentFilterOption: true })}>
+                                    Filter
                                 </Button>
-                        </Badge>
-                    </div>
+                            </Badge>
+                        </div>
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
-                        
+
 
                     {this.state.showLoader ?
                         <Loader /> :
                         <PaymentDetailsTable
                             allTransactionsData={allTransactionsData}
                             paymentMetaInfo={paymentMetaInfo}
-                            filterDataArray={ filterDataArray }
-                            transactionTypeArray ={ transactionTypeArray }
+                            filterDataArray={filterDataArray}
+                            transactionTypeArray={transactionTypeArray}
                             OnPaymentUpdated={() => this.getPaymentDetailsData({})} />}
 
-                    {showPaymentFilterOption && 
-                     <PaymentFilterOptionModal
-                             openModal={showPaymentFilterOption}
-                             filterDataArr = { filterDataArray }
-                             transactionTypeArray = { transactionTypeArray }
-                             onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
-                            onFilterAdded={( data )=> this.setState({ 
-                                filterDataArray : data["paymentType"], 
-                                transactionTypeArray : data["transactionType"], 
-                                showPaymentFilterOption : false }) }/>}
+                    {showPaymentFilterOption &&
+                        <PaymentFilterOptionModal
+                            openModal={showPaymentFilterOption}
+                            filterDataArr={filterDataArray}
+                            transactionTypeArray={transactionTypeArray}
+                            onEditModalCancel={(event) => this.setState({ showPaymentFilterOption: false })}
+                            onFilterAdded={(data) => this.setState({
+                                filterDataArray: data["paymentType"],
+                                transactionTypeArray: data["transactionType"],
+                                showPaymentFilterOption: false
+                            })} />}
 
+                    {getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
+                        <div
+                            className="updateBtnFixed"
+                            style={{ display: 'flex' }}
+                            onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                        >
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p>Add Transaction</p></div>
+                    </div>}
+
+                    {showAddTransactionModal &&
+                        <AddTransactionModal
+                            open={showAddTransactionModal}
+                            onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                            onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
+                        />}
 
                 </Paper>
             </div>

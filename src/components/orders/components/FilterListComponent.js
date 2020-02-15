@@ -198,7 +198,8 @@ class FilterAreaComponent extends React.Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+" )", value: data[i][valuekey] });
+                // optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
             }
         }
         return optionsData;

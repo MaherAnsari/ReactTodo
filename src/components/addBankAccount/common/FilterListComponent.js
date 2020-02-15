@@ -151,7 +151,8 @@ class FilterAreaComponent extends React.Component {
         var tempDataMappings = {};
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+")", value: data[i][valuekey] });
+                // optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+")", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
                 tempDataMappings[ data[i][valuekey] ] = data[i];
             }
             this.setState({tempData : tempDataMappings });

@@ -419,6 +419,7 @@ class PaymentDetailsTable extends Component {
 
     }
 
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page,

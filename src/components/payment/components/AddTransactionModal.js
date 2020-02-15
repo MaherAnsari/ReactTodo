@@ -168,6 +168,13 @@ class AddTransactionModal extends Component {
         if (errors.hasOwnProperty(id)) {
             delete errors[id];
         }
+
+        if( id === "transaction_type" && val === "b_in"){
+            this.setState({supplierid : {value :"10926", label:"BIJAK (LA), BIJAK (LA) ( sector 15 gurgaon haryana, 1111111111 )"} });
+            addTransactionPayloadVal["supplierid"] = "10926";
+            addTransactionPayloadVal["supplier_mobile"] = "1111111111";
+        }
+
         this.setState({
             addTransactionPayload: addTransactionPayloadVal,
             errorFields: errors
@@ -255,7 +262,8 @@ class AddTransactionModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + ")", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + ")", value: data[i][valuekey] });
             }
         }
         return optionsData;

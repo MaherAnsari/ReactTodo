@@ -43,6 +43,7 @@ import PaymentFilterOptionModal from '../../common/PaymentFilterOptionModal';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
+import AddTransactionModal from '../../payment/components/AddTransactionModal';
 
 
 var moment = require('moment');
@@ -164,7 +165,9 @@ class TodaysPaymentTable extends Component {
             userId: undefined,
 
             showTransactionIDInfoDialog: false,
-            transactionIDInfoData: undefined
+            transactionIDInfoData: undefined,
+
+            showAddTransactionModal: false,
         }
     }
 
@@ -464,10 +467,19 @@ class TodaysPaymentTable extends Component {
 
     }
 
+    onTransactionDataAdded(event) {
+        this.setState({ showAddTransactionModal: false }, function () {
+            // this.getPaymentInfoDetails(this.state.datePayloads);
+            this.getTodaysTransactionList( this.state.datePayloads );
+        })
+    }
+
+
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
-            showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData, transactionTypeArray} = this.state;
+            showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData,
+             transactionTypeArray, showAddTransactionModal } = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -850,6 +862,23 @@ class TodaysPaymentTable extends Component {
                             open={showTransactionIDInfoDialog }
                             onTransactionIDInfoModalClose = {()=> this.setState({ showTransactionIDInfoDialog : false , transactionIDInfoData : undefined  })}
                             transactionInfoData={transactionIDInfoData}
+                        />}
+
+{getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
+                        <div
+                            className="updateBtnFixed"
+                            style={{ display: 'flex' }}
+                            onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                        >
+                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                            <p>Add Transaction</p></div>
+                    </div>}
+
+                    {showAddTransactionModal &&
+                        <AddTransactionModal
+                            open={showAddTransactionModal}
+                            onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                            onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
                         />}
 
                         </MuiThemeProvider>
