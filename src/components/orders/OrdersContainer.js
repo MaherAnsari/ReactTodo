@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Loader from '../common/Loader';
 import Paper from '@material-ui/core/Paper';
 import FilterListComponent from "./components/FilterListComponent";
-import brokerService from './../../app/brokerService/brokerService';
+// import brokerService from './../../app/brokerService/brokerService';
 import buyerService from './../../app/buyerService/buyerService';
 import supplierService from './../../app/supplierService/supplierService';
 import orderService from './../../app/orderService/orderService';
@@ -55,7 +55,7 @@ class OrdersContainer extends React.Component {
 
     componentDidMount() {
         this.getBuyersList();
-        this.getBrokersList();
+        // this.getBrokersList();
         this.getSuppliersList();
     }
 
@@ -72,18 +72,18 @@ class OrdersContainer extends React.Component {
         }
     }
 
-    async getBrokersList() {
-        try {
-            let resp = await brokerService.getBrokerList();
-            if (this.ismounted) {
-                if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
-                }
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
+    // async getBrokersList() {
+    //     try {
+    //         let resp = await brokerService.getBrokerList();
+    //         if (this.ismounted) {
+    //             if (resp.data.status === 1 && resp.data.result) {
+    //                 this.setState({ brokersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "id") });
+    //             }
+    //         }
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // }
 
     async getSuppliersList() {
         try {
@@ -164,7 +164,7 @@ class OrdersContainer extends React.Component {
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
-                        brokersList={this.state.brokersList}
+                        // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
                     

@@ -103,7 +103,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier info", "buyer info", "broker_name", "Date", "source/target", "commodity", "", "Amount  "],
+            tableHeadData: ["order Id", "supplier info", "buyer info", "Unsettled Amt", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -334,8 +334,8 @@ class OrderListTable extends Component {
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
-        const leftAlignedIndexs = [1, 2, 3];
-        const rightAlignedIndexs = [8];
+        const leftAlignedIndexs = [1, 2];
+        const rightAlignedIndexs = [3, 8];
         // const highlight = true;
         return (
             <MuiThemeProvider theme={theme}>
@@ -383,7 +383,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.supplier_mobile) + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " +  (row.supplier_businessname ? row.supplier_businessname :" ") + " )"}</span>
                                                     </div>
                                                 </TableCell>
 
@@ -391,7 +391,7 @@ class OrderListTable extends Component {
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " +  Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " +  (row.buyer_businessname ? row.buyer_businessname :" ")+ " )"}</span>
                                                     </div>
                                                 </TableCell>
                                                 {/* <TableCell className={this.getTableCellClass(classes, 2)}>
@@ -406,8 +406,8 @@ class OrderListTable extends Component {
                                                     </Tooltip>
                                                 </TableCell> */}
 
-                                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
-                                                    {row.broker_name}
+                                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "right" }}>
+                                                ₹ {row.unsettled_amount ? Utils.formatNumberWithComma(row.unsettled_amount) : 0}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 
