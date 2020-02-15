@@ -72,7 +72,8 @@ class PaymentTable extends Component {
         super(props);
         this.state = {
             tableHeadData: ["Supplier Name", "Supplier Bussiness Name", "Created Time", "Payment mode", "Amount"],
-            open: this.props.openModal, tableBodyData: this.props.data,
+            open: this.props.openModal, 
+            // data: this.props.data,
             showAddTransactionModal: false,
             rowsPerPage: 50,
             page: 0
@@ -83,8 +84,10 @@ class PaymentTable extends Component {
         if (this.props.userdata.role === "la") {
             let tableHeadData = ["Buyer Name", "Buyer Bussiness Name", "Created Time", "Payment mode","Amount"];
             this.setState({ tableHeadData: tableHeadData });
+        this.getTransactionList();
         }
     }
+    
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
@@ -108,15 +111,17 @@ class PaymentTable extends Component {
         try {
             let param = { "limit": 10, "role": this.props.role }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userdata.mobile, param);
+            console.log( resp.data )
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
+               
                 this.setState({
 
-                    tableBodyData: respData["allTransactions"]
+                    data: respData["allTransactions"]
                 });
             } else {
                 this.setState({
-                    tableBodyData: []
+                    data: []
                 });
             }
         } catch (err) {
@@ -257,7 +262,7 @@ class PaymentTable extends Component {
         const { rowsPerPage, page } = this.state;
         const leftAlignedIndexs = [0, 1];
         const rightAlignedIndexs = [4];
-        console.log(this.state.tableBodyData);
+        // console.log(this.props.data);
         return (<div style={{ width: '100%', marginTop: '50px', height: "550px", overflowY: "scroll" }}>
             {/* <AddTransactionModal open={true} /> */}
             <Table stickyHeader aria-label="sticky table" className='table-body'>
@@ -273,7 +278,7 @@ class PaymentTable extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {this.state.tableBodyData.length > 0 && this.state.tableBodyData.map((row, i) => {
+                    {this.props.data && this.props.data.length > 0 && this.props.data.map((row, i) => {
                         return (
 
                             <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
@@ -322,12 +327,12 @@ class PaymentTable extends Component {
                         );
                     })}
                 </TableBody>
-                {this.state.tableBodyData.length > 0 && <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                {this.props.data && this.props.data.length > 0 && <TableFooter style={{ borderTop: "2px solid #858792" }}>
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[25, 50, 100]}
                             colSpan={6}
-                            count={this.state.tableBodyData.length}
+                            count={this.props.data.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{
@@ -340,7 +345,7 @@ class PaymentTable extends Component {
                     </TableRow>
                 </TableFooter>}
             </Table>
-            {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
+            {!this.props.data.length && < NoDataAvailable style={{ height: '25vh' }} />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}

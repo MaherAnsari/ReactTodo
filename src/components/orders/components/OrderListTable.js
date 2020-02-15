@@ -367,6 +367,7 @@ class OrderListTable extends Component {
 
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
+                                                {/* {row.is_added_by_platform ? <span><i className="fa fa-mobile" aria-hidden="true"></i> </span>: " "} */}
                                                     <span
                                                         data-toggle="tooltip" data-placement="center" title="info"
                                                         onClick={this.onInfoClick.bind(this, row)}
@@ -378,6 +379,7 @@ class OrderListTable extends Component {
                                                         onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
                                                         className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
+                                                    
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
