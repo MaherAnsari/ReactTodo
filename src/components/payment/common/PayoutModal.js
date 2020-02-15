@@ -79,7 +79,7 @@ class PayoutModal extends Component {
             acctDetails: undefined,
             transferType: "NEFT",
 
-            skipRazorPayTrans: false,
+            skipRazorPayTrans: true,
             skipRazorPayTransObj: {
                 "bank_id": "",
                 "utr": "",
