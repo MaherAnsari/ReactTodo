@@ -236,6 +236,7 @@ class PaymentComponent extends Component {
         })
     }
 
+    
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             this.getPaymentInfoDetails(this.state.datePayloads);
@@ -603,7 +604,7 @@ class PaymentComponent extends Component {
                             onClick={(event) => this.setState({ showAddTransactionModal: true })}
                         >
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>Add Transaction</p></div>
+                            <p>Add Payment</p></div>
                     </div>}
                     <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>

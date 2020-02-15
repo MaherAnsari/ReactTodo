@@ -47,7 +47,7 @@ class AddBankAccountContainer extends React.Component {
                 account_number: "",
                 ifsc: "",
                 name: "",
-                bank_name: ""
+                bank_name: "-"
 
             },
 
@@ -126,7 +126,7 @@ class AddBankAccountContainer extends React.Component {
                 account_number: "",
                 ifsc: "",
                 name: "",
-                bank_name: ""
+                bank_name: "-"
             },
             errorFields: {},
             currentSelectedUserDetails: undefined
@@ -190,7 +190,7 @@ class AddBankAccountContainer extends React.Component {
                         account_number: this.state.addAccountData["account_number"] + "",
                         ifsc: this.state.addAccountData["ifsc"],
                         name: this.state.addAccountData["name"],
-                        bank_name: this.state.addAccountData["bank_name"]
+                        bank_name: "-"
                     }
                 }
                 let resp = await commonService.addbankDetail(payload);
@@ -309,7 +309,7 @@ class AddBankAccountContainer extends React.Component {
                                                                 account_number: "",
                                                                 ifsc: "",
                                                                 name: "",
-                                                                bank_name: ""
+                                                                bank_name: "-"
                                                             }
                                                         }) } }}
                                             style={{ 
@@ -325,17 +325,8 @@ class AddBankAccountContainer extends React.Component {
                                 <React.Fragment>
                                     <div> Enter the following details </div>
                                     <div style={{ padding: "0px 20%" }}>
-                                        <TextField
-                                            margin="dense"
-                                            id="account_number"
-                                            error={errorFields["account_number"] ? true : false}
-                                            label="Account number"
-                                            type="text"
-                                            style={{ width: '100%' }}
-                                            value={addAccountData.account_number}
-                                            onChange={this.handleInputChange.bind(this)}
-                                            fullWidth />
-
+                                  
+{/* 
                                         <TextField
                                             margin="dense"
                                             id="bank_name"
@@ -344,6 +335,29 @@ class AddBankAccountContainer extends React.Component {
                                             type="text"
                                             style={{ width: '100%' }}
                                             value={addAccountData.bank_name}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            fullWidth /> */}
+                                              <TextField
+                                            margin="dense"
+                                            id="name"
+                                            label="Name of Account holder"
+                                            error={errorFields["name"] ? true : false}
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={addAccountData.name}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            fullWidth />
+
+
+
+<TextField
+                                            margin="dense"
+                                            id="account_number"
+                                            error={errorFields["account_number"] ? true : false}
+                                            label="Account number"
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={addAccountData.account_number}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
@@ -358,16 +372,7 @@ class AddBankAccountContainer extends React.Component {
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
-                                        <TextField
-                                            margin="dense"
-                                            id="name"
-                                            label="Name of Account holder"
-                                            error={errorFields["name"] ? true : false}
-                                            type="text"
-                                            style={{ width: '100%' }}
-                                            value={addAccountData.name}
-                                            onChange={this.handleInputChange.bind(this)}
-                                            fullWidth />
+                                      
                                     </div>
                                     <div style={{ paddingTop: "24px" }}>
                                         <Button variant="contained" onClick={(event) => this.onNewAccountAddClicked(event)}

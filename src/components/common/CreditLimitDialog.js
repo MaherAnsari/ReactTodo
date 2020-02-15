@@ -45,7 +45,7 @@ const styles = theme => ({
   button: {
     height: '35px',
     marginTop: '10px',
-    background: '#060a3b',
+    background: '#060a3b !important',
     color: '#fff'
   },
   header: {

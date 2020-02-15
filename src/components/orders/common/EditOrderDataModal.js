@@ -108,7 +108,8 @@ class EditOrderDataModal extends Component {
                 "commission_rate": "",
                 "commission_unit": "",
                 "target_location": "",
-                "source_location": ""
+                "source_location": "",
+                "rate_unit": ""
             },
 
             buyerid: "",
@@ -162,6 +163,7 @@ class EditOrderDataModal extends Component {
 
 
     handleInputChange(event) {
+        // console.log(event)
         var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
@@ -714,6 +716,19 @@ class EditOrderDataModal extends Component {
                         <div style={{ display: "flex", marginTop: 4 }} >
 
                             <TextField
+                                margin="dense"
+                                id="qnt"
+                                label="Quantity"
+                                error={errorFields["qnt"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.qnt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+
+                            &nbsp;
+                                                    &nbsp;
+                            <TextField
                                 select
                                 id="unit"
                                 error={errorFields["unit"] ? true : false}
@@ -729,19 +744,8 @@ class EditOrderDataModal extends Component {
                                     </MenuItem>
                                 ))}
                             </TextField>
-                            &nbsp;
-                        &nbsp;
 
-                        <TextField
-                                margin="dense"
-                                id="qnt"
-                                label="Quantity"
-                                error={errorFields["qnt"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={orderPayload.qnt}
-                                onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
+
                         </div>
 
                         <div style={{ display: "flex" }} >
@@ -758,6 +762,25 @@ class EditOrderDataModal extends Component {
                             &nbsp;
                           &nbsp;
                           <TextField
+                                select
+                                id="rate_unit"
+                                name="rate_unit"
+                                label="Rate Unit"
+                                error={errorFields["rate_unit"] ? true : false}
+                                type="text"
+                                style={{ width: '49%', marginTop: '5px' }}
+                                value={orderPayload.rate_unit}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton","Rs/Packet","Rs/Crate","Rs/Box","Rs/Pc"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+
+                        </div>
+                        <div style={{ display: "flex" }} >
+                            <TextField
                                 margin="dense"
                                 id="transport_info"
                                 label="Transport info"
@@ -767,17 +790,15 @@ class EditOrderDataModal extends Component {
                                 value={orderPayload.transport_info}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-
-                        </div>
-                        <div style={{ display: "flex" }} >
-
+                            &nbsp;
+                    &nbsp;
                             <TextField
                                 margin="dense"
                                 id="remark"
                                 error={errorFields["remark"] ? true : false}
                                 label="Remarks"
                                 type="text"
-                                style={{ width: '98%' }}
+                                style={{ width: '49%' }}
                                 value={orderPayload.remark}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
@@ -899,7 +920,7 @@ class EditOrderDataModal extends Component {
                                 //     <img src={key} alt={key} height="150px" />
                                 // </div>
                                 <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
                                     <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                         <i className="fa fa-trash fa-lg"></i>
                                     </div>

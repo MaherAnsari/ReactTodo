@@ -586,19 +586,7 @@ class EditTransactionModal extends Component {
                     </div>
 
                     <div style={{ display: "flex" }} >
-                        <TextField
-                            margin="dense"
-                            id="amount_bank_entry"
-                            label="Amount Bank Entry"
-                            type="text"
-                            error={errorFields["amount_bank_entry"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.amount_bank_entry}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                        &nbsp;
-                        <TextField
+                    <TextField
                             margin="dense"
                             id="bank_trxn_id"
                             label="Bank transaction id"
@@ -608,21 +596,11 @@ class EditTransactionModal extends Component {
                             value={editTransactionPayload.bank_trxn_id}
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
-                    </div>
+                        
+                      
 
-                    <div style={{ display: "flex" }} >
 
-                        <TextField
-                            margin="dense"
-                            id="reason"
-                            error={errorFields["reason"] ? true : false}
-                            label="Reason"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.reason}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
+&nbsp;
                     &nbsp;
                         <TextField
                             margin="dense"
@@ -636,8 +614,35 @@ class EditTransactionModal extends Component {
                             fullWidth />
                     </div>
 
+                    {/* <div style={{ display: "flex" }} >
 
-                    <div style={{ display: "flex" }} >
+                        <TextField
+                            margin="dense"
+                            id="reason"
+                            error={errorFields["reason"] ? true : false}
+                            label="Reason"
+                            type="text"
+                            style={{ width: '49%' }}
+                            value={editTransactionPayload.reason}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                              &nbsp;
+                        &nbsp;
+                       <TextField
+                            margin="dense"
+                            id="amount_bank_entry"
+                            label="Amount Bank Entry"
+                            type="text"
+                            error={errorFields["amount_bank_entry"] ? true : false}
+                            style={{ width: '49%' }}
+                            value={editTransactionPayload.amount_bank_entry}
+                            onChange={this.handleInputChange.bind(this)}
+                            fullWidth />
+                      
+                    </div> */}
+
+
+                    {/* <div style={{ display: "flex" }} >
                         <TextField
                             margin="dense"
                             id="cashback_value"
@@ -667,7 +672,7 @@ class EditTransactionModal extends Component {
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </div>
+                    </div> */}
                     {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                         <div style={{ fontFamily: "lato", padding: "10px" }}>
                             Uploaded Images
