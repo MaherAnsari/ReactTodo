@@ -338,7 +338,7 @@ class EditOrderDataModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit"];
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit","rate_unit"];
         var extraMandatoryFields = ["creator_role"];
         for (var key in data) {
             // console.log( key +"---"+data[key])

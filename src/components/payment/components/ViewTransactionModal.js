@@ -595,6 +595,7 @@ class ViewTransactionModal extends Component {
                                                                       aria-hidden="true"></i>} &nbsp;
                                                                     
                                                                     {row.id ? row.id : "-"}
+                                                                    { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
                                                                     </TableCell>
                                                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{textAlign:"left"}}>
                                                                         {row.supplier_fullname ? row.supplier_fullname : "-"}

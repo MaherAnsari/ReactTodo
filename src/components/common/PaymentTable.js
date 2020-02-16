@@ -357,7 +357,7 @@ class PaymentTable extends Component {
                     onClick={(event) => this.setState({ showAddTransactionModal: true })}
                 >
                     <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                    <p>Add Transaction</p></div>
+                    <p>Add Payment</p></div>
             </div>}
 
             {this.state.showAddTransactionModal &&

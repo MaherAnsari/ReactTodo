@@ -103,7 +103,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "supplier Name/ Business Name", "buyer Name/ Business Name", "Unsettled Amt", "Date", "source/target", "commodity", "", "Order Amt  "],
+            tableHeadData: ["order Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -368,6 +368,7 @@ class OrderListTable extends Component {
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
                                                 {/* {row.is_added_by_platform ? <span><i className="fa fa-mobile" aria-hidden="true"></i> </span>: " "} */}
+                                                { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginRight:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
                                                     <span
                                                         data-toggle="tooltip" data-placement="center" title="info"
                                                         onClick={this.onInfoClick.bind(this, row)}
@@ -381,19 +382,20 @@ class OrderListTable extends Component {
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                                     
                                                 </TableCell>
-                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
-                                                    onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
-                                                        <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{ row.supplier_businessname ? row.supplier_businessname :" "}</span>
-                                                    </div>
-                                                </TableCell>
+                                                
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
                                                     onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{row.buyer_businessname ? row.buyer_businessname :" "}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                    onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
+                                                        <span>{row.supplier_name ? row.supplier_name : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{ row.supplier_businessname ? row.supplier_businessname :" "}</span>
                                                     </div>
                                                 </TableCell>
                                                 {/* <TableCell className={this.getTableCellClass(classes, 2)}>

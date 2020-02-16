@@ -134,7 +134,7 @@ class TodaysPaymentTable extends Component {
         super(props);
         this.state = {
             allTransactionsData: undefined,
-            tableHeadData: ["status","id", "Supplier Name/ Bussiness Name", "Buyer Name/ Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
+            tableHeadData: ["status","id", "Buyer Name/ Bussiness Name", "Supplier Name/ Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
             invoiceModalData: [],
             showImageInvoiceModal: false,
             editableData: undefined,
@@ -673,7 +673,19 @@ class TodaysPaymentTable extends Component {
                                                       onClick={( event )=> this.setState({ showTransactionIDInfoDialog : true, transactionIDInfoData : row })}
                                                       className=" name-span" style={{ cursor: "pointer"}} > 
                                                        {row.id ? row.id : "-"}
+                                                       { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
                                                         </span>
+                                                    </TableCell>
+                                                  
+                                                    <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
+                                                        {/* <div className="text-ellpses">
+                                                            {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                                        </div> */}
+                                                        <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
+                                                            onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
+                                                        <span>{row.buyer_fullname ? row.buyer_fullname : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{row.buyer_business_name ? row.buyer_business_name : ""} </span>
+                                                    </div>
                                                     </TableCell>
                                                     <TableCell component="th" scope="row" className={classes.tableCell} style={{textAlign: "left", cursor: "pointer"}}
                                                     // onClick={this.onUserInfoClicked.bind(this, row)}
@@ -685,16 +697,6 @@ class TodaysPaymentTable extends Component {
                                                             onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_fullname ? row.supplier_fullname : ""} </span>
                                                         <span style={{ fontSize: "12px" }}>{row.supplier_business_name ? row.supplier_business_name : ""} </span>
-                                                    </div>
-                                                    </TableCell>
-                                                    <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
-                                                        {/* <div className="text-ellpses">
-                                                            {row.supplier_business_name ? row.supplier_business_name : "-"}
-                                                        </div> */}
-                                                        <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
-                                                            onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
-                                                        <span>{row.buyer_fullname ? row.buyer_fullname : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{row.buyer_business_name ? row.buyer_business_name : ""} </span>
                                                     </div>
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
@@ -871,7 +873,7 @@ class TodaysPaymentTable extends Component {
                             onClick={(event) => this.setState({ showAddTransactionModal: true })}
                         >
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>Add Transaction</p></div>
+                            <p>Add Payment</p></div>
                     </div>}
 
                     {showAddTransactionModal &&

@@ -500,7 +500,7 @@ class AddTransactionModal extends Component {
                         style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                         id="form-dialog-title">
                         <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                            Add Transaction</p>
+                            Add Payment</p>
                     </DialogTitle>
                     <DialogContent>
                         {currentAddTransactionView === "addPayment" &&

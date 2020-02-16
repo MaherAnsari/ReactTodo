@@ -421,7 +421,7 @@ class EditTransactionModal extends Component {
                     style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
                     id="form-dialog-title">
                     <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Edit Transaction</p>
+                        Edit Payment</p>
                 </DialogTitle>
                 <DialogContent>
 

@@ -369,7 +369,7 @@ class AddOrderModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit"]
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit","rate_unit"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
