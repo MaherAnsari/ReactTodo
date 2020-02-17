@@ -866,15 +866,21 @@ class TodaysPaymentTable extends Component {
                             transactionInfoData={transactionIDInfoData}
                         />}
 
-{getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
-                        <div
+                     <div className="updateBtndef">
+                    <div className="updateBtnFixed"
+                            style={{ right:"192px", display: 'flex', background: "#e72e89", borderRadius: "6px" }}
+                            onClick={() => this.setState({ showDownloadModal: true })}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+
+                        {getAccessAccordingToRole("addPayment") && <div
                             className="updateBtnFixed"
                             style={{ display: 'flex' }}
                             onClick={(event) => this.setState({ showAddTransactionModal: true })}
                         >
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>Add Payment</p></div>
-                    </div>}
+                            <p>Add Payment</p></div>}
+                    </div>
 
                     {showAddTransactionModal &&
                         <AddTransactionModal

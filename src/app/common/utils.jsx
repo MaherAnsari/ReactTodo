@@ -128,20 +128,39 @@ function downloadDataInCSV(json, filename) {
     }
 }
 
-function downloadFormattedDataInCSV(json, filename, keysInFile ) {
+function downloadFormattedDataInCSV(json, filename, keysInFile) {
     try {
         var csv = "";
         var keys = (keysInFile && Object.keys(keysInFile)) || [];
         var values = (keysInFile && Object.values(keysInFile)) || [];
         csv += values.join(',') + '\n';
         for (let line of json) {
-            csv += keys.map(key => line[key]).join(',') + '\n';
+            csv += keys.map(key => {
+                // console.log( key )
+                // console.log( line[key]  )
+                // console.log( typeof(line[key] )  )
+                // console.log(typeof(line[key] ) === "string" &&  line[key].indexOf(",") > -1  )
+                if (line[key]  && typeof(line[key] ) === "object" && line[key].length > 0) {
+                    let fstr = line[key].toString() ;
+                     fstr = fstr.replace(/,/g, "|");
+                     return fstr;
+                 }
+
+                if (line[key]  && typeof(line[key] ) === "string" && line[key].indexOf(",") > -1) {
+                    let fArry = [];
+                    fArry.push(line[key].replace(/,/g, "|"));
+                    return fArry;
+                }
+              
+                return line[key]
+            }).join(',') + '\n';
         }
-        console.log(csv);
+        // console.log(csv);
         var hiddenElement = document.createElement('a');
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
         hiddenElement.target = '_blank';
         hiddenElement.download = (filename + ".csv");
+        // console.log(csv);
         hiddenElement.click();
     } catch (err) {
         console.log(err);
@@ -182,7 +201,7 @@ function getImageName(fileName) {
 }
 
 function maskMobileNumber(mobNum) {
-    
+
     if (getAccessAccordingToRole("ViewMobileNumber")) { // if true then show mobile number
         return mobNum;
     } else {

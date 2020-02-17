@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import PaymentFilterOptionModal from '../common/PaymentFilterOptionModal';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import AddTransactionModal from '../payment/components/AddTransactionModal';
+import DownloadModalPayment from '../common/DownloadModalPayment';
 
 
 
@@ -59,8 +60,9 @@ class PaymentDetailsContainer extends React.Component {
             filterDataArray: [],
             transactionTypeArray: [],
 
-            
+
             showAddTransactionModal: false,
+            showDownloadModal: false
 
         }
         this.ismounted = true;
@@ -179,7 +181,7 @@ class PaymentDetailsContainer extends React.Component {
     render() {
         const { classes } = this.props;
         const { allTransactionsData, paymentMetaInfo, showPaymentFilterOption, filterDataArray,
-             transactionTypeArray, showAddTransactionModal } = this.state;
+            transactionTypeArray, showAddTransactionModal, showDownloadModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -196,11 +198,14 @@ class PaymentDetailsContainer extends React.Component {
                             </Badge>
                         </div>
                     </div>
+
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
                         getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
+
+
 
 
                     {this.state.showLoader ?
@@ -224,15 +229,29 @@ class PaymentDetailsContainer extends React.Component {
                                 showPaymentFilterOption: false
                             })} />}
 
-                    {getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
-                        <div
-                            className="updateBtnFixed"
-                            style={{ display: 'flex' }}
-                            onClick={(event) => this.setState({ showAddTransactionModal: true })}
-                        >
-                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>Add Payment</p></div>
-                    </div>}
+                    {/* DownloadModalPayment */}
+                    {showDownloadModal &&
+                        <DownloadModalPayment
+                            open={showDownloadModal}
+                            onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
+                            allTransactionsData={allTransactionsData} />}
+
+
+                    <div className="updateBtndef">
+                        <div className="updateBtnFixed"
+                            style={{ right:"192px", display: 'flex', background: "#e72e89", borderRadius: "6px" }}
+                            onClick={() => this.setState({ showDownloadModal: true })}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+                        {getAccessAccordingToRole("addPayment") &&
+                            <div
+                                className="updateBtnFixed"
+                                style={{ display: 'flex' }}
+                                onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                            >
+                                <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                                <p>Add Payment</p></div>}
+                    </div>
 
                     {showAddTransactionModal &&
                         <AddTransactionModal

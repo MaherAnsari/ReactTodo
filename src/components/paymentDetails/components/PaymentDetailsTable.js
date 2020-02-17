@@ -592,7 +592,7 @@ class PaymentDetailsTable extends Component {
                                                       className=" name-span" style={{ cursor: "pointer"}} > 
                                                        {row.id ? row.id : "-"}
                                                         </span>
-                                                       { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
+                                                       { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} className="fa fa-mobile" aria-hidden="true"></i>}
                                                     </TableCell>
                                                    
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
