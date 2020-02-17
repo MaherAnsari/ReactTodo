@@ -128,6 +128,26 @@ function downloadDataInCSV(json, filename) {
     }
 }
 
+function downloadFormattedDataInCSV(json, filename, keysInFile ) {
+    try {
+        var csv = "";
+        var keys = (keysInFile && Object.keys(keysInFile)) || [];
+        var values = (keysInFile && Object.values(keysInFile)) || [];
+        csv += values.join(',') + '\n';
+        for (let line of json) {
+            csv += keys.map(key => line[key]).join(',') + '\n';
+        }
+        console.log(csv);
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = (filename + ".csv");
+        hiddenElement.click();
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 function formatNumberWithComma(x) {
     try {
         x = x.toString();
@@ -194,6 +214,7 @@ const Utils = {
     getStateData,
     formatDateData,
     downloadDataInCSV,
+    downloadFormattedDataInCSV,
     formatNumberWithComma,
     getImageName,
     maskMobileNumber,

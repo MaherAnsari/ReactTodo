@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import '../../assets/css/app.css';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import  buyerService  from './../../app/buyerService/buyerService';
+import buyerService from './../../app/buyerService/buyerService';
 import Loader from '../common/Loader';
 import UserListTable from '../common/UserTable';
 import InfoDialog from '../common/InfoDialog';
@@ -11,6 +11,7 @@ import InfoDialog from '../common/InfoDialog';
 import userListService from './../../app/userListService/userListService';
 import FileUploader from '../common/fileUploader';
 import { getAccessAccordingToRole } from '../../config/appConfig';
+import Utils from '../../app/common/utils';
 
 const styles = theme => ({
     root: {
@@ -19,7 +20,7 @@ const styles = theme => ({
         // height: '88vh',
         overflow: 'auto',
         fontFamily: 'Lato !important',
-        maxWidth:'1200px'
+        maxWidth: '1200px'
     },
     card: {
         maxWidth: '100%',
@@ -32,57 +33,57 @@ const styles = theme => ({
         alignTtems: 'center',
         display: '-webkit-inline-box'
     },
-  
+
 
 });
 
 
 
 class BuyerContainer extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            showAddModal:false,
-            dataList:null,
-            showLoader:true,
-            showUploader:false
-          
+            showAddModal: false,
+            dataList: null,
+            showLoader: true,
+            showUploader: false
+
         };
     }
 
-    
+
 
     async componentDidMount() {
-       this.getData();
-    
+        this.getData();
+
     }
 
-   async getData(){
-       this.setState({dataList:null, showAddModal: false, showUploader: false });
-    let resp = await buyerService.getBuyerList();
-    // console.log(resp.data);
-    if ( resp.data.status === 1 && resp.data.result ) {
+    async getData() {
+        this.setState({ dataList: null, showAddModal: false, showUploader: false });
+        let resp = await buyerService.getBuyerList();
+        // console.log(resp.data);
+        if (resp.data.status === 1 && resp.data.result) {
 
-        this.setState({ dataList: resp.data.result.data });
-       
+            this.setState({ dataList: resp.data.result.data });
+
+        }
     }
-   }
     handleClose(event) {
-        this.setState({open :false,showAddModal:false});
+        this.setState({ open: false, showAddModal: false });
         this.getData();
     }
-    onModalCancel(event){
-        this.setState({open :false,showAddModal:false,showUploader:false});
+    onModalCancel(event) {
+        this.setState({ open: false, showAddModal: false, showUploader: false });
     }
 
-   
+
     handleClickOpen(event) {
-        this.setState({ showAddModal:true,open: true });
+        this.setState({ showAddModal: true, open: true });
     }
 
-       
+
     async handleFileUploader(event) {
         // console.log(event);
         try {
@@ -99,35 +100,53 @@ class BuyerContainer extends React.Component {
         }
     }
 
-    
+
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    handelRefreshData( event ){
+    handelRefreshData(event) {
         this.getData();
+    }
+
+    handelDownloadClicked = () => {
+        let fHeader = {
+            "id": "CA ID",
+            "fullname": "CA Name",
+            "business_name": "Firm Name",
+            "default_commodity": "Commodity",
+            "mobile": "Phone",
+            "bijak_verified": "KYC",
+            "createdtime": "Date",
+            "locality": "Locality",
+            "state": "State",
+            "district": "District"
+        }
+        Utils.downloadFormattedDataInCSV(this.state.dataList, "CA Data (Buyer)", fHeader)
     }
 
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ? 
+                {this.state.dataList ?
                     <Card className={classes.card}>
-                       <UserListTable  
-                            tableData={this.state.dataList} 
-                            role= "ca" 
+                        <UserListTable
+                            tableData={this.state.dataList}
+                            role="ca"
                             downloadAbleFileName="buyer_list_data"
-                            handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
-                            onClose={this.getData.bind(this)}   /> 
+                            handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
+                            onClose={this.getData.bind(this)} />
 
-                       {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
-                        <div className="updateBtnFixed"  style={{display:'flex', right:"10px"}}onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                        <p style={{fontSize: "14px",
+                        {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
+                            <div className="updateBtnFixed" style={{ display: 'flex', right: "10px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                                <p style={{
+                                    fontSize: "14px",
                                     fontFamily: "lato",
-                                    fontWeight: 600}}>ADD BUYER</p></div>
-                    </div>}
-                    {/* <div className="fixedLeftBtnContainer">
+                                    fontWeight: 600
+                                }}>ADD BUYER</p></div>
+                        </div>}
+                        {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-buyer-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
                             // onClick={() => { window.open(sampleFile, 'Download'); }}
@@ -152,24 +171,32 @@ class BuyerContainer extends React.Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div> */}
-                </Card>    :
-                <Loader />}    
 
-                {this.state.showAddModal ? 
-                <InfoDialog 
-                    openModal={this.state.open}
-                    role="ca"
-                    onEditModalClosed={this.handleClose.bind(this)}
-                    onEditModalCancel={this.onModalCancel.bind(this)}/> :
-                ""}
 
-                
-{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-onEditModalClosed={this.handleFileUploader.bind(this)}
-//  commodityList={ this.state.commodityList}
-onEditModalCancel={this.onModalCancel.bind(this)}
-/>
-: ""}
+                        <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
+                            <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                                <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                            </div>
+                        </div>
+
+                    </Card> :
+                    <Loader />}
+
+                {this.state.showAddModal ?
+                    <InfoDialog
+                        openModal={this.state.open}
+                        role="ca"
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> :
+                    ""}
+
+
+                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                    onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                    onEditModalCancel={this.onModalCancel.bind(this)}
+                />
+                    : ""}
 
             </div>
         );

@@ -11,6 +11,7 @@ import InfoDialog from '../common/InfoDialog';
 import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
+import Utils from '../../app/common/utils';
 
 
 const styles = theme => ({
@@ -48,7 +49,7 @@ class SupplierContainer extends React.Component {
             showAddModal: false,
             dataList: null,
             showLoader: true,
-            showUploader:false
+            showUploader: false
 
         };
     }
@@ -61,7 +62,7 @@ class SupplierContainer extends React.Component {
     }
 
     async getData() {
-        this.setState({ dataList: null ,showAddModal: false, showUploader: false  });
+        this.setState({ dataList: null, showAddModal: false, showUploader: false });
         let resp = await supplierService.getSupplierList();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
@@ -75,7 +76,7 @@ class SupplierContainer extends React.Component {
         this.getData();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showAddModal: false,showUploader:false });
+        this.setState({ open: false, showAddModal: false, showUploader: false });
     }
 
 
@@ -84,7 +85,7 @@ class SupplierContainer extends React.Component {
     }
 
 
-    
+
     async handleFileUploader(event) {
         // console.log(event);
         try {
@@ -101,15 +102,31 @@ class SupplierContainer extends React.Component {
         }
     }
 
-    
+
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    handelRefreshData( event ){
+    handelRefreshData(event) {
         this.getData();
     }
-    
+
+    handelDownloadClicked = () => {
+        let fHeader = { 
+            "id": "LA ID",
+            "fullname": "LA Name",
+            "business_name": "Firm Name",
+            "default_commodity": "Commodity",
+            "mobile": "Phone",
+            "locality": "Locality",
+            "bijak_verified": "KYC",
+            "createdtime": "Date",
+            "state": "State",
+            "district": "District"
+        }
+        Utils.downloadFormattedDataInCSV(this.state.dataList, "LA Data (supplier)", fHeader)
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -118,7 +135,7 @@ class SupplierContainer extends React.Component {
                     <UserTable
                         tableData={this.state.dataList}
                         role="la"
-                        handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
+                        handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
                         downloadAbleFileName="supplier_list_data"
                         onClose={this.getData.bind(this)} />
 
@@ -157,6 +174,14 @@ class SupplierContainer extends React.Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div> */}
+
+
+                    <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
+                        </div>
+                    </div>
+
                 </Card> : <Loader />}
 
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
@@ -164,7 +189,7 @@ class SupplierContainer extends React.Component {
                     role="la"
                     onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
-{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
                     onEditModalClosed={this.handleFileUploader.bind(this)}
                     //  commodityList={ this.state.commodityList}
                     onEditModalCancel={this.onModalCancel.bind(this)}

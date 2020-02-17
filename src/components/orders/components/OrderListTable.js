@@ -254,7 +254,29 @@ class OrderListTable extends Component {
     }
 
     handelDownloadClicked = () => {
-        Utils.downloadDataInCSV(this.state.tableBodyData, "order_data")
+        // Utils.downloadDataInCSV(this.state.tableBodyData, "order_data")
+        let fHeader = {
+            "id": "Txn",
+            "createdtime": "Date",
+            "commodity": "Commodity",
+            "type": "Type",
+            // "": "Pkt",
+            "qnt": "Qty",
+            "unit": "Unit",
+            "rate": "Rate",
+            "rate_unit": "Unit",
+            "bijak_amt": "Bijak Amount",
+            "transport_info": "Truck No.",
+            // "": "Total Amount",
+            // "": "Bank Transfer",
+            "source_location": "Source",
+            "uyer_state": "Destination",
+            // "": "Cashback (LA)",
+            // "": "Cashback (CA)",
+            "supplierid": "LA ID",
+            "buyerid":"CA ID"
+        }
+        Utils.downloadFormattedDataInCSV(this.state.tableBodyData, "Order ", fHeader)
     }
 
     //edit option
