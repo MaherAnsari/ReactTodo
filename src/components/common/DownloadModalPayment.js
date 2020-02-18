@@ -49,7 +49,7 @@ class DownloadModalPayment extends Component {
         this.state = {
             open: this.props.open,
             allTransactionsData: this.props.allTransactionsData,
-            downloadType : "Amt in"
+            downloadType: "Amt in"
         }
     }
 
@@ -58,43 +58,100 @@ class DownloadModalPayment extends Component {
         this.props.onDownLoadModalCancelled();
     }
 
-    
+
     handelDownloadClicked = () => {
         let fHeader = {};
-        if( this.state.downloadType === "Amt in"){
+        if (this.state.downloadType === "Amt in") {
             fHeader = {
-                "transaction_date":"Date",
-                "pay_id":"Txn",
-                "reason":"Reason",
-                "bank_id":"Bank ID/Razorpay",
-                "amount":"Amount",
+                "transaction_date": "Date",
+                "pay_id": "Txn",
+                "reason": "Reason",
+                "bank_id": "Bank ID/Razorpay",
+                "amount": "Amount",
                 // "":"Comments",
-                "bank_trxn_id":"Reference No",
-                "supplierid":"LA ID",
-                "buyerid":"CA ID",
+                "bank_trxn_id": "Reference No",
+                "supplierid": "LA ID",
+                "buyerid": "CA ID",
             }
-        }else{
+        } else {
             fHeader = {
-                "transaction_date":"Date",
-                "buyer_fullname":"Buyer Details",
-                "supplier_fullname":"Supp. Details",
-                "bank_id":"Bank ID/ Razorpay",
-                "amount":"Amount",
-                "amount_bank_entry":"Bank Entry",
-                "id":"Txn",
-                "bank_trxn_id":"Reference No"
+                "transaction_date": "Date",
+                "buyer_fullname": "Buyer Details",
+                "supplier_fullname": "Supp. Details",
+                "bank_id": "Bank ID/ Razorpay",
+                "amount": "Amount",
+                "amount_bank_entry": "Bank Entry",
+                "id": "Txn",
+                "bank_trxn_id": "Reference No"
                 // "":"Comments"
-               
-            } 
+
+            }
         }
 
-        Utils.downloadFormattedDataInCSV(this.props.allTransactionsData, "Payment_details_"+this.state.downloadType, fHeader)
+        this.downloadFormattedDataInCSV_forPayment(this.props.allTransactionsData, "Payment_details_" + this.state.downloadType, fHeader)
         this.handleDialogCancel();
+    }
+
+    checkIfOmittedStatusKeys(row) {
+        let isValid = true;
+        let statusKeysToOmit = ["failed", "rejected", "reversed", "cancelled", "transaction_initiated"]
+        if (row && row["status"]) {
+            for (let i in statusKeysToOmit) {
+                if (row["status"].indexOf(statusKeysToOmit[i]) > -1) {
+                    isValid =  false;
+                    break;
+                }
+            }
+             
+        } 
+        return isValid;
+    }
+
+    downloadFormattedDataInCSV_forPayment(json, filename, keysInFile) {
+        try {
+
+            var csv = "";
+            var keys = (keysInFile && Object.keys(keysInFile)) || [];
+            var values = (keysInFile && Object.values(keysInFile)) || [];
+            csv += values.join(',') + '\n';
+            for (let line of json) {
+                if( !this.checkIfOmittedStatusKeys( line )){
+                   // ignore this lines for omit keys
+                }else{
+                csv += keys.map(key => {
+
+                   
+                    if (line[key] && typeof (line[key]) === "object" && line[key].length > 0) {
+                        let fstr = line[key].toString();
+                        fstr = fstr.replace(/,/g, "|");
+                        return fstr;
+                    }
+
+                    if (line[key] && typeof (line[key]) === "string" && line[key].indexOf(",") > -1) {
+                        let fArry = [];
+                        fArry.push(line[key].replace(/,/g, "|"));
+                        return fArry;
+                    }
+
+                    return line[key]
+                }).join(',') + '\n';
+            }
+            }
+            // console.log(csv);
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = (filename + ".csv");
+            // console.log(csv);
+            hiddenElement.click();
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     render() {
         const { classes } = this.props;
-        const {  downloadType } = this.state;
+        const { downloadType } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
@@ -118,8 +175,8 @@ class DownloadModalPayment extends Component {
                             type="text"
                             style={{ width: '98%' }}
                             value={downloadType}
-                            onChange={( event )=> this.setState({ downloadType : event.target.value })}>
-                            {["Amt in","Amt out"].map((key, i) => (
+                            onChange={(event) => this.setState({ downloadType: event.target.value })}>
+                            {["Amt in", "Amt out"].map((key, i) => (
                                 <MenuItem key={i} value={key} selected={true}>
                                     {key}
                                 </MenuItem>
@@ -128,7 +185,7 @@ class DownloadModalPayment extends Component {
                     </React.Fragment>
                 </DialogContent>
                 <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={(event) => this.handelDownloadClicked( event )} color="primary">Download</Button>
+                    <Button className={classes.formCancelBtn} onClick={(event) => this.handelDownloadClicked(event)} color="primary">Download</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
                 </DialogActions>
             </Dialog>
