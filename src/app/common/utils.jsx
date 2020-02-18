@@ -167,6 +167,46 @@ function downloadFormattedDataInCSV(json, filename, keysInFile) {
     }
 }
 
+
+function formatDownloadDataInCSVThroughApi(json, filename) {
+    try {
+        var csv = "";
+        var keys = (json[0] && Object.keys(json[0])) || [];
+        csv += keys.join(',') + '\n';
+        for (let line of json) {
+            csv += keys.map(key => {
+                // console.log( key )
+                // console.log( line[key]  )
+                // console.log( typeof(line[key] )  )
+                // console.log(typeof(line[key] ) === "string" &&  line[key].indexOf(",") > -1  )
+                if (line[key]  && typeof(line[key] ) === "object" && line[key].length > 0) {
+                    let fstr = line[key].toString() ;
+                     fstr = fstr.replace(/,/g, "|");
+                     return fstr;
+                 }
+
+                if (line[key]  && typeof(line[key] ) === "string" && line[key].indexOf(",") > -1) {
+                    let fArry = [];
+                    fArry.push(line[key].replace(/,/g, "|"));
+                    return fArry;
+                }
+              
+                return line[key]
+            }).join(',') + '\n';
+        }
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = (filename + ".csv");
+        hiddenElement.click();
+        //   }
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 function formatNumberWithComma(x) {
     try {
         x = x.toString();
@@ -237,7 +277,8 @@ const Utils = {
     formatNumberWithComma,
     getImageName,
     maskMobileNumber,
-    decryptResponse
+    decryptResponse,
+    formatDownloadDataInCSVThroughApi
 
 }
 

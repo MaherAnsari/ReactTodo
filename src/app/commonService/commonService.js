@@ -78,6 +78,19 @@ let commonService = {
             params : {"mobile" : mobile }
         },4);
     },
+
+        
+    getNetDataForDownload : async function ( param ) {
+        // https://mh53vat5i6.execute-api.ap-south-1.amazonaws.com/prod/payment/lacanet
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/payment/lacanet',
+            params :param
+        },2);
+    },
 }
 
 export default commonService;
