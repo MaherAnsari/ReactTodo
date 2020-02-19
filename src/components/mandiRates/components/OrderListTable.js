@@ -134,7 +134,8 @@ class OrderListTable extends Component {
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY')
         // return <div style={{ width: "95px" }}> {fdate.split(" ")[0] }</div>
-        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" +   fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        // + " \n" +   fdate.split(" ")[1] + " " + fdate.split(" ")[2]
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] }</div>
     }
 
     getBackgroundColor(obj) {
