@@ -94,11 +94,11 @@ class OrderTable extends Component {
             tableHeadData = ["order id", "supplier info", "broker name", "Date", "location", "commodity", "Amount  "];
         } else if (this.props.userdata.role === "broker") {
             tableHeadData = ["order id", "supplier info", "buyer info", "Date", "location", "commodity", "Amount  "];
-        } 
-        
-       
-            this.setState({ tableHeadData: tableHeadData });
-       
+        }
+
+
+        this.setState({ tableHeadData: tableHeadData });
+
 
     }
 
@@ -170,7 +170,7 @@ class OrderTable extends Component {
     }
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
-        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" +   fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
         // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
@@ -207,10 +207,11 @@ class OrderTable extends Component {
 
                                 <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                     <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
+                                        {!row.is_added_by_platform && <i style={{ fontSize: "24px", marginRight: "4px", color: "#50aa35" }} class="fa fa-mobile" aria-hidden="true"></i>}
                                         <span
                                             data-toggle="tooltip" data-placement="center" title="info"
                                             // onClick={this.onInfoClick.bind(this, row)}
-                                            style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px"}}>
+                                            style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px" }}>
                                             {row.id}
                                         </span>
                                         <i style={{ paddingTop: "11px" }}
@@ -219,17 +220,17 @@ class OrderTable extends Component {
                                             className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
                                         <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
                                     </TableCell>
-                                    {this.props.role !== "la"  && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                    {this.props.role !== "la" && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                         <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                             <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                            <span style={{ fontSize: "12px" }}>{"( " +  Utils.maskMobileNumber(row.supplier_mobile )+ " )"}</span>
+                                            <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.supplier_mobile) + " )"}</span>
                                         </div>
                                     </TableCell>}
 
                                     {(this.props.role === "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                         <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
                                             <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                            <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber( row.buyer_mobile) + " )"}</span>
+                                            <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
                                         </div>
                                     </TableCell>}
                                     {/* <TableCell className={this.getTableCellClass(classes, 2)}>
@@ -244,7 +245,7 @@ class OrderTable extends Component {
                                     </Tooltip>
                                 </TableCell> */}
 
-                                   {this.props.role !== "broker" && <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
+                                    {this.props.role !== "broker" && <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
                                         {row.broker_name}
                                     </TableCell>}
                                     <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
@@ -259,7 +260,7 @@ class OrderTable extends Component {
                                             color: "white",
                                             background: "rgb(58, 126, 63)",
                                             padding: "4px 8px",
-                                            display:"inline-block",
+                                            display: "inline-block",
                                             borderRadius: "13px"
                                         }}>{row.commodity}</span> </TableCell>
                                     <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right", paddingRight: '10px' }}>
@@ -270,9 +271,9 @@ class OrderTable extends Component {
                             );
                         })}
                 </TableBody>
-         
+
             </Table>
-           
+
 
         </div>
             {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>

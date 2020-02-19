@@ -136,7 +136,8 @@ class InfoDialog extends Component {
             ],
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
-            showLoader: false
+            showLoader: false,
+            isMobileRequired:true
 
 
         }
@@ -260,8 +261,10 @@ class InfoDialog extends Component {
             id = null;
             reqObj['data'] = [];
             reqObj['data'][0] = obj;
+            reqObj['data'][0]['isMobileRequired'] = this.state.isMobileRequired;
         }
         // let resp = {};
+        // console.log(reqObj);
         this.setState({ showLoader : true, showConfirmDialog: false  });
         let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
         this.setState({ showLoader : false });
@@ -286,6 +289,9 @@ class InfoDialog extends Component {
     handleAddClick(event) {
         let data = this.state.dataObj;
         let reqArr = this.state.requiredKey;
+        if(!this.state.isMobileRequired){
+            reqArr=['fullname','role']
+        }
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
                 alert("Please check all required field");
@@ -335,6 +341,11 @@ class InfoDialog extends Component {
             return "green";
         }
     }
+
+    handleMobile(event) {
+        let status = this.state.isMobileRequired;
+        this.setState({ isMobileRequired: !status });
+    }
     render() {
         const { classes } = this.props;
         const { showLoader } = this.state;
@@ -355,7 +366,7 @@ class InfoDialog extends Component {
                         label="Mobile"
                         type="number"
                         maxLength="10"
-                        required
+                        required={this.state.isMobileRequired}
                         disabled={this.state.isUpdate}
                         style={{ marginRight: '2%', width: this.props.role ? '98%' : "48%" }}
                         value={this.state.dataObj.mobile}
@@ -636,7 +647,15 @@ class InfoDialog extends Component {
                             disableRipple
                         />Is User Enabled</div>
                 </div>
-
+                <div style={{ fontWeight:'bold',marginTop:'15px', width: '50%' }}>
+                        <Checkbox
+                            style={{ height: 24, width: 34 }}
+                            checked={this.state.isMobileRequired}
+                            onClick={this.handleMobile.bind(this)}
+                            tabIndex={-1}
+                            // disabled={this.state.isMobileRequired}
+                            disableRipple
+                        />Is Mobile Required</div>
 
             </DialogContent>
             <DialogActions>
