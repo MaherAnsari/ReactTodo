@@ -371,6 +371,74 @@ class ViewTransactionModal extends Component {
                                 style={{ height: "22px",width: "22px"}}/>
                     </span>)
             }
+        }else if( row["transaction_type"] === "b_out" && row["payment_mode"] !== "bijak") {
+            if(  row["status"] === "transaction_failed" ){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ payment_failureIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+               }else if(  row["status"] === "transaction_initiated" ){
+            return(<span 
+                style={{ paddingLeft: "15%"}}  
+                data-toggle="tooltip" 
+                data-placement="center" 
+                title={row["status"] }>
+                <img src={ payment_InitatedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+            </span> );
+           }else if(  row["status"] === "payout_reversed" ||
+                row["status"] === "payout_cancelled" || 
+                row["status"] === "payout_rejected" ){
+                    return( <span>
+                        <span 
+                        style={{paddingLeft: "6px"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        title={row["status"] }>
+                        <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
+                       
+                    </span> 
+                    {/* <span 
+                        style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        onClick={( event )=> { if( getAccessAccordingToRole("makePayout") ){this.setState({ showPayoutModal : true, payoutData : row })}}}
+                        title={row["status"] }>
+                         <i className="fa fa-refresh" aria-hidden="true" style={{color : (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  )}} ></i>
+                    </span>  */}
+                    </span>);
+                    } else if(row["status"] === "payout_processed"){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+            } else if(
+                row["status"] === "payout_initiated" || 
+                row["status"] === "payout_queued" || 
+                row["status"] === "payout_pending" || 
+                row["status"] === "payout_processing"){
+                return(<span 
+                    style={{ paddingLeft: "15%"}}  
+                    data-toggle="tooltip" 
+                    data-placement="center" 
+                    title={row["status"] }>
+                    <img src={ hourglassIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                </span> );
+            } else  if(row["status"] === "failed" ){
+                return(<span 
+                        style={{ paddingLeft: "15%"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        title={row["status"].toUpperCase() +(row["reason"] ? "\nReason : "+ row["reason"]: "")  }>
+                            <img src={row["status"] === "failed" ?  failedIcon : "" } alt="failedIcon" 
+                                style={{ height: "22px",width: "22px"}}/>
+                    </span>)
+            }
         }else{
             return ( <AccountBalanceWalletSharpIcon style={{color:"gray", marginLeft:"15%"}}/>);
         }

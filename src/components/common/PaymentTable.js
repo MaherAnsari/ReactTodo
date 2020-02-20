@@ -246,11 +246,97 @@ class PaymentTable extends Component {
                     <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
                 </span>)
             }
+        } else  if( row["transaction_type"] === "b_out" && row["payment_mode"] !== "bijak") {
+
+            if (row["status"] === "transaction_failed") {
+                return (<span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                </span>);
+            } else if (row["status"] === "transaction_initiated") {
+                return (<span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                </span>);
+            } else if (row["status"] === "payout_reversed" ||
+                row["status"] === "payout_cancelled" ||
+                row["status"] === "payout_rejected") {
+                return (<span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                </span>);
+            } else if (row["status"] === "payout_processed") {
+                return (<span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                </span>);
+            } else if (
+                row["status"] === "payout_initiated" ||
+                row["status"] === "payout_queued" ||
+                row["status"] === "payout_pending" ||
+                row["status"] === "payout_processing") {
+                return (<span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "yellow"}} aria-hidden="true"></i>
+                </span>);
+            } else if (row["status"] === "approved") {
+                return (
+                    <span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                </span>
+                );
+            } else if (row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null) {
+                return (
+                    <span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                </span>
+                );
+            } else if (row["status"] === "failed") {
+                return ( <span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                </span>)
+            }else{
+                return ( <span
+                    style={{ paddingRight: "4%" }}
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title={row["status"]}>
+                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                </span>)
+            }
+
+
         } else {
-            return (<span
-                style={{ paddingRight: "4%" }}
-                >
-            <AccountBalanceWalletSharpIcon style={{ color: "gray", height: "16px" }} />
+            return (
+            <span style={{ paddingRight: "4%" }}>
+                <AccountBalanceWalletSharpIcon style={{ color: "gray", height: "16px" }} />
             </span>);
         }
 
