@@ -163,7 +163,9 @@ class OrderListTable extends Component {
                             <div style={{maxHeight:"70vh",overflowY:"scroll"}} >
                             {Object.keys(this.state.tableBodyData).map((option) => {
                                 return (<div  key={ option } >
-                                    <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{ marginLeft: '5%' }} alt="Smiley face" width="42" height="42" />
+                                    <div className="commodityName"><img src={this.state.tableBodyData[option][0]['image_url']} style={{ marginLeft: '5%' }} 
+                                    onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                    alt="Smiley face" width="42" height="42" />
                                         <p className="name">{option} </p></div>
                                     <Card className="detailCard">
                                         <div className="commodityDetail">Market Name</div>

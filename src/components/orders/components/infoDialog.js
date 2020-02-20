@@ -545,7 +545,9 @@ class InfoDialog extends Component {
 
                         this.state.dataObj["supporting_images"].map((imgKey, i) => (
                             <div key={"imhs_" + i} className="transaction-supporting-image">
-                                <img src={imgKey} alt={imgKey} height="150px" width="150px"/>
+                                <img src={imgKey} alt={imgKey} height="150px" width="150px"
+                                  onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                  />
                             </div>
                         ))}
                 </div>

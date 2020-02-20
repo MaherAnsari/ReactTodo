@@ -5,6 +5,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import NoDataAvailable from "../../common/NoDataAvailable";
+
 const styles = theme => ({
 
     dialogPaper: {
@@ -74,7 +75,9 @@ class ViewSupportingInvoiceModal extends Component {
                                 <img src={url} alt={url} style={{
                                     width: "100%",
                                     height: "500px"
-                                }} />
+                                }} 
+                                onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                />
                             </div>
                         )
                         :
