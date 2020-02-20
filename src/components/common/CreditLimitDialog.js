@@ -91,7 +91,7 @@ class CreditLimitDialog extends Component {
     }
   }
   componentDidMount() {
-     console.log(moment.utc().utcOffset("+05:30").format('HH'));
+    //  console.log(moment.utc().utcOffset("+05:30").format('HH'));
 
 
     this.getCreditHiistory();
