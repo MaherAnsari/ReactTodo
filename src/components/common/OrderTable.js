@@ -83,7 +83,7 @@ class OrderTable extends Component {
             open: this.props.openModal, tableBodyData: this.props.data,
             rowsPerPage: 50,
             page: 0,
-            showAddOrderModal: false
+            showAddOrderModal: this.props.showAddOrderModal || false
         }
 
     }
@@ -95,11 +95,13 @@ class OrderTable extends Component {
         } else if (this.props.userdata.role === "broker") {
             tableHeadData = ["order id", "supplier info", "buyer info", "Date", "location", "commodity", "Amount  "];
         }
-
-
         this.setState({ tableHeadData: tableHeadData });
+    }
 
-
+    componentWillReceiveProps( nextProps ){
+        if(nextProps.showAddOrderModal !== this.state.showAddOrderModal ){
+            this.setState({ showAddOrderModal : nextProps.showAddOrderModal });
+        }
     }
 
 
@@ -300,7 +302,8 @@ class OrderTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-            {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && <div className="updateBtndef">
+            {/* {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && 
+            <div className="updateBtndef">
                 <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                     <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                     <p style={{
@@ -308,13 +311,15 @@ class OrderTable extends Component {
                         fontFamily: "lato",
                         fontWeight: 600
                     }}>Add Order</p></div>
-            </div>}
+            </div>} */}
             {this.state.showAddOrderModal &&
                 <AddOrderModal
                     open={this.state.showAddOrderModal}
                     userdata={this.props.userdata}
                     onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
-                    onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
+                    onAddModalCancel={(event) =>{ 
+                        this.setState({ showAddOrderModal: false });
+                        this.props.onAddOrderModalClosed() }}
                 />}
             {this.state.showConfirmDialog ?
                 <ConfirmDialog

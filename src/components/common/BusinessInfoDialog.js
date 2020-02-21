@@ -15,6 +15,7 @@ import CreditLimitDialog from './CreditLimitDialog';
 import commonService from '../../app/commonService/commonService';
 import Loader from './Loader';
 import BankDetail from './bankDetail';
+import UserDetailsFooter from './UserDetailsFooter';
 
 const theme = createMuiTheme({
     overrides: {
@@ -92,8 +93,8 @@ class BusinessInfoDialog extends Component {
         // if (Object.keys(param).length) {
         //     this.getListData(param);
         // }
-        
-        this.getUserInfo(this.props.userId );
+
+        this.getUserInfo(this.props.userId);
     }
 
     async getUserInfo(id) {
@@ -221,6 +222,21 @@ class BusinessInfoDialog extends Component {
         // console.log(event);
         this.props.onLimitUpdate(event);
     }
+
+    onFooterButtonClickedAction( data ){
+        // console.log( data );
+        if( data.type === "redirect" ){
+            this.setState({ currentView  : data.btnName  })
+        }else{
+            this.setState({ 
+                currentView  : data.btnName, 
+                showAddTransactionModal : (data.btnName === "payment" ? true : false ),
+                showAddOrderModal : (data.btnName === "orders"  ? true : false )
+                });
+        }
+
+    }
+
     render() {
         const { classes } = this.props;
         const { showLoader } = this.state;
@@ -233,15 +249,15 @@ class BusinessInfoDialog extends Component {
                         onClose={this.handleDialogCancel.bind(this)}
                         aria-labelledby="form-dialog-title"                >
                         <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title">
-                        <div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px'}}>
-                        {this.getHeader()}
-                            {/* {this.props.isInfo && 
+                            <div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px' }}>
+                                {this.getHeader()}
+                                {/* {this.props.isInfo && 
                             <p 
                             className={classes.profile} 
                             style={{ background: this.getProfileColor(this.state.userInfoData.profile_segment) }}>
                             {this.state.userInfoData.profile_segment}</p>} */}
-                            </div>  
-                            </DialogTitle>
+                            </div>
+                        </DialogTitle>
                         <DialogContent style={{ width: '100%', padding: '0' }}>
                             <div style={{ position: "fixed", width: '850px' }}><Paper square className={classes.root}>
                                 <Tabs
@@ -262,46 +278,50 @@ class BusinessInfoDialog extends Component {
                             </Paper></div>
 
 
-{ !showLoader ? <div>
-                            {this.state.currentView === 'userInfo' ?
-                                <UserDetail
-                                    openModal={this.state.open}
-                                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                                    data={this.state.userInfoData}
-                                /> : ""}
+                            {!showLoader ? <div>
+                                {this.state.currentView === 'userInfo' ?
+                                    <UserDetail
+                                        openModal={this.state.open}
+                                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        data={this.state.userInfoData}
+                                    /> : ""}
 
-                            {this.state.currentView === 'editUser' ?
-                                <EditUser
-                                    openModal={this.state.open}
-                                    onEditModalClosed={this.handleClose.bind(this)}
-                                    data={this.state.userInfoData}
-                                    commodityList={this.state.commodityList}
-                                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                                /> : ""}
-                            {this.state.currentView === 'creditLimit' ?
-                                <CreditLimitDialog 
-                                    openModal={this.state.open}
-                                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                                    userdata={this.state.userInfoData}
-                                    onLimitChange={this.onLimitChange.bind(this)}
-                                /> : ""}
+                                {this.state.currentView === 'editUser' ?
+                                    <EditUser
+                                        openModal={this.state.open}
+                                        onEditModalClosed={this.handleClose.bind(this)}
+                                        data={this.state.userInfoData}
+                                        commodityList={this.state.commodityList}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                    /> : ""}
+                                {this.state.currentView === 'creditLimit' ?
+                                    <CreditLimitDialog
+                                        openModal={this.state.open}
+                                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        userdata={this.state.userInfoData}
+                                        onLimitChange={this.onLimitChange.bind(this)}
+                                    /> : ""}
 
-{this.state.currentView === 'accountDetail' ?
-                                <BankDetail 
-                                    openModal={this.state.open}
-                                    onEditModalClosed={this.handleDialogCancel.bind(this)}
-                                    onEditModalCancel={this.handleDialogCancel.bind(this)}
-                                    userdata={this.state.userInfoData}
+                                {this.state.currentView === 'accountDetail' ?
+                                    <BankDetail
+                                        openModal={this.state.open}
+                                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        userdata={this.state.userInfoData}
 
-                                /> : ""}
+                                    /> : ""}
 
 
-                                
-                                </div>
+
+                            </div>
                                 :
-                                <Loader/>}
+                                <Loader />}
+
+                            <UserDetailsFooter
+                                isPaymentInfoModal={ true }
+                                onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />
 
 
                         </DialogContent>

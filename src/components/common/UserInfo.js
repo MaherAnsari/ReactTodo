@@ -17,6 +17,7 @@ import PaymentTable from './PaymentTable';
 import paymentService from '../../app/paymentService/paymentService';
 import CreditLimitDialog from './CreditLimitDialog';
 import BankDetail from './bankDetail';
+import UserDetailsFooter from './UserDetailsFooter';
 const theme = createMuiTheme({
     overrides: {
         head: {
@@ -71,7 +72,10 @@ class UserInfo extends Component {
             orderList: [],
             paymentList: [],
             orderLabel: "Orders (" + this.props.data.ordercount + ")",
-            paymentLabel: "Payments (" + this.props.data.paymentcount + ")"
+            paymentLabel: "Payments (" + this.props.data.paymentcount + ")",
+
+            showAddTransactionModal : false,
+            showAddOrderModal : false
 
 
 
@@ -204,6 +208,21 @@ class UserInfo extends Component {
         // console.log(event);
         this.props.onLimitUpdate(event);
     }
+
+    onFooterButtonClickedAction( data ){
+        // console.log( data );
+        if( data.type === "redirect" ){
+            this.setState({ currentView  : data.btnName  })
+        }else{
+            this.setState({ 
+                currentView  : data.btnName, 
+                showAddTransactionModal : (data.btnName === "payment" ? true : false ),
+                showAddOrderModal : (data.btnName === "orders"  ? true : false )
+                });
+        }
+
+    }
+
     render() {
         const { classes } = this.props;
         return (<MuiThemeProvider theme={theme}>
@@ -233,9 +252,12 @@ class UserInfo extends Component {
                         </Tabs>
                     </Paper></div>
 
-                    {this.state.currentView === 'orders' ? <OrderTable openModal={this.state.open}
+                    {this.state.currentView === 'orders' ? 
+                    <OrderTable openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
                         onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        showAddOrderModal={ this.state.showAddOrderModal }
+                        onAddOrderModalClosed={()=> this.setState({showAddOrderModal : false })}
                         data={this.state.orderList}
                         userdata={this.props.data}
                         role={this.props.data.role}
@@ -254,9 +276,12 @@ class UserInfo extends Component {
                         data={this.props.data}
                     /> : ""}
 
-                    {this.state.currentView === 'payment' ? <PaymentTable openModal={this.state.open}
+                    {this.state.currentView === 'payment' ? 
+                    <PaymentTable openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
                         onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        showAddTransactionModal = {this.state.showAddTransactionModal}
+                        onTransactionModalClosed={()=> this.setState({showAddTransactionModal : false })}
                         data={this.state.paymentList}
                         userdata={this.props.data}
                         role={this.props.data.role}
@@ -273,6 +298,9 @@ class UserInfo extends Component {
                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                         userdata={this.props.data}
                     /> : ""}
+
+                    <UserDetailsFooter
+                    onFooterButtonClicked ={( data )=> this.onFooterButtonClickedAction( data ) }/>
 
                 </DialogContent>
 

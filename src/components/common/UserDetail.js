@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-// import { fontWeight } from '@material-ui/system';
+import Utils from '../../app/common/utils';
+var moment = require('moment');
 
 const styles = theme => ({
     root: {
@@ -16,8 +17,8 @@ const styles = theme => ({
         fontWeight: 'bold',
         color: '#848383',
         width: "45%",
-        
-    padding: "5PX 0PX"
+
+        padding: "5PX 0PX"
     },
     value: {
         fontSize: '15px',
@@ -56,10 +57,7 @@ class UserDetail extends Component {
         }
         console.log(this.props.data.role)
     }
-    componentDidMount() {
 
-
-    }
 
     getRole(role) {
         if (role === "ca") {
@@ -73,6 +71,12 @@ class UserDetail extends Component {
         }
     }
 
+    formatDateAndTime = (dateval) => {
+        var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " " + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
+        // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -82,12 +86,12 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Full Name  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.fullname}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Business Name  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.business_name}</p>
                         </div>
 
                         <div className={classes.row}>
@@ -96,37 +100,37 @@ class UserDetail extends Component {
                         </div>
                         <div className={classes.row}>
                             <p className={classes.head}>State </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.state ? this.props.data.state : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>District </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.district ? this.props.data.district : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Locality </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.locality ? this.props.data.locality : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Commodity </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.default_commodity ? this.props.data.default_commodity.join(", ") : "-"} </p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Second Mobile no. </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.sec_mobile ? this.props.data.sec_mobile : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Third Mobile no. </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.third_mobile ? this.props.data.third_mobile : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Partner name </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.partner_names ? this.props.data.partner_names : ""}</p>
                         </div>
 
                     </div>
@@ -136,57 +140,73 @@ class UserDetail extends Component {
                     <div style={{ width: "49%" }}>
                         <div className={classes.row}>
                             <p className={classes.head}> Bijak credit limit  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.bijak_credit_limit ? this.props.data.bijak_credit_limit : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Available Credit Limit  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Cutoff Limit </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.exposure_cutoff_limit ? this.props.data.exposure_cutoff_limit : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Rating </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.rating ? this.props.data.rating : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Is Bijak Verified </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
-                        </div>
-
-                        <div className={classes.row}>
-                            <p className={classes.head}>Is Bijak Verified </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp;
+                            <span style={{
+                                    background: (this.props.data.bijak_verified  ? "#5bbc9b":"#e63232"),
+                                    padding: "4px",
+                                    borderRadius: "3px",
+                                    color: "#fff"
+                                }}>
+                                    {this.props.data.bijak_verified ? "Yes" : "No"}</span></p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Is Bijak Assured </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; 
+                            <span style={{
+                                    background: (this.props.data.bijak_assured  ? "#5bbc9b":"#e63232"),
+                                    padding: "4px",
+                                    borderRadius: "3px",
+                                    color: "#fff"
+                                }}>
+                            {this.props.data.bijak_assured ? "Yes": "No"}</span></p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Is User Enabled </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; 
+                            <span style={{
+                                    background: (!this.props.data.bijak_assured  ? "#5bbc9b":"#e63232"),
+                                    padding: "4px",
+                                    borderRadius: "3px",
+                                    color: "#fff"
+                                }}>
+                                    {this.props.data.active ? "Yes" : "No"}</span></p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Total Orders </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.ordercount ? this.props.data.ordercount : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Total Payments </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.paymentcount ? this.props.data.paymentcount : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Bank Account Connected </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {""}</p>
                         </div>
                     </div>
 
@@ -198,12 +218,13 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Created date  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.createdtime ? Utils.formatDateData(this.props.data.createdtime) : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Last updated  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            {/* <p className={classes.value}>: &nbsp; {this.props.data.updatedtime ?this.formatDateAndTime(this.props.data.updatedtime) : ""}</p> */}
+                            <p className={classes.value}>: &nbsp; {this.props.data.updatedtime ? Utils.formatDateData(this.props.data.updatedtime) : ""}</p>
                         </div>
 
                     </div>
@@ -213,26 +234,26 @@ class UserDetail extends Component {
                     <div style={{ width: "49%" }}>
                         <div className={classes.row}>
                             <p className={classes.head}> Last Login  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Available Credit Limit  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.mobile}</p>
+                            <p className={classes.value}>: &nbsp; {""}</p>
                         </div>
                     </div>
-                    </div>
-
-
-
                 </div>
-                )
-            }
-        }
-        
+
+
+
+            </div>
+        )
+    }
+}
+
 UserDetail.propTypes = {
-                    classes: PropTypes.object.isRequired,
-            };
-            
-            export default withStyles(styles)(UserDetail);
-            
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(UserDetail);
+
