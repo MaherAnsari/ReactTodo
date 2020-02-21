@@ -85,15 +85,40 @@ class CreditLimitDialog extends Component {
         "id": this.props.userdata.id
       },
       showConfirmDialog: false,
-      tableBodyData: []
+      tableBodyData: [],
+      creditLimit:"-"
 
     }
   }
   componentDidMount() {
-    //  console.log(this.props.userdata);
+     console.log(moment.utc().utcOffset("+05:30").format('HH'));
 
 
     this.getCreditHiistory();
+    this.getCreditLimit();
+  }
+
+
+  async getCreditLimit() {
+    let param = {};
+
+    if (this.props.userdata.mobile ) {
+      param['mobile'] = this.props.userdata.mobile;
+      // param['id'] = this.props.userdata.id;
+
+
+      try {
+        let resp = await creditLimitService.getCreditLimit(this.props.userdata.mobile);
+        if (resp.data.status === 1 && resp.data.result) {
+          this.setState({ creditLimit: resp.data.result });
+        } else {
+          // this.setState({ tableBodyData: [] });
+        }
+      } catch (err) {
+        console.error(err)
+        // this.setState({ tableBodyData: [] });
+      }
+    }
   }
 
 
@@ -179,6 +204,10 @@ class CreditLimitDialog extends Component {
       <MuiThemeProvider>
         <div className={classes.root}>
           {getAccessAccordingToRole("updateCreditLimit") && <div>
+
+            <div style={{fontSize:'20px',textAlign:'center'}}>
+                Available Credit Limit : {this.state.creditLimit}
+            </div>
           <TextField
             margin="dense"
             id="bijak_credit_limit"

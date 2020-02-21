@@ -24,6 +24,16 @@ let creditLimitService = {
             data: param
         },2);
     },
+    getCreditLimit: async function (param) {
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: 'payment/availablecreditForApp/'+param,
+            // params: param
+        },2);
+    },
 
 
 

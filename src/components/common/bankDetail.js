@@ -11,7 +11,8 @@ import TextField from '@material-ui/core/TextField';
 import Loader from '../common/Loader';
 import commonService from '../../app/commonService/commonService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
-
+import Fab from '@material-ui/core/Fab';
+import ConfirmDialog from '../../app/common/ConfirmDialog';
 
 const styles = theme => ({
     root: {
@@ -49,7 +50,11 @@ class BankDetail extends React.Component {
             },
 
             errorFields: {},
-            currentSelectedUserDetails: this.props.userData
+            currentSelectedUserDetails: this.props.userData,
+            showConfirmDialog: false,
+            dialogText: "",
+            dialogTitle:"",
+            forceUpdateData: undefined
         }
     }
 
@@ -211,6 +216,51 @@ class BankDetail extends React.Component {
         }
     }
 
+    getStatusOfAccount( obj ){
+        if( obj["status"] !== "active"){
+            return (<Fab
+                variant="extended"
+                disabled={ !getAccessAccordingToRole("addBankAccount") }
+                size="small"
+                aria-label="Force validate"
+                onClick={( event )=> this.setState({ dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
+                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, forceUpdateData : obj, showConfirmDialog : true })}
+                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0": "gray", color: "#ffffff", padding: "0 8px" }}
+            >
+                Force validate
+    </Fab>)
+        }else{
+            return (<span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>);
+        }
+    }
+
+    onForceUpdateBankDetail = async ( ) => {
+        try {
+            this.setState({ showLoader : true , showConfirmDialog : false });
+            let data = this.state.forceUpdateData;
+            let payload ={
+                ifsc :data["ifsc"],
+                accountnumber :data["account"],
+                mobile:data["mobile"],
+                name: data["name"],
+            }
+            let resp = await commonService.forceUpdateBankDetail(payload);
+            this.setState({ showLoader : false });
+                if (resp.data.status === 1) {
+                    alert("Successfully updated");
+                    this.getBankDetails(this.state.currentSelectedUserDetails)
+                }else{
+                    alert("Oops an error occured while validating your account details.");
+                }
+            
+        }catch( err ){
+            console.log( err )
+        }
+    }
+
+    handelCancelUpdate(event) {
+        this.setState({ showConfirmDialog: false, forceUpdateData : undefined });
+      }
 
     render() {
         const { classes } = this.props;
@@ -242,7 +292,8 @@ class BankDetail extends React.Component {
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>
+                                                    {this.getStatusOfAccount( obj )}
+                                                    {/* <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span> */}
                                                 </ListItem>
                                             );
                                         })}
@@ -343,6 +394,13 @@ class BankDetail extends React.Component {
                             <React.Fragment>
                                 <Loader />
                             </React.Fragment>}
+                            {this.state.showConfirmDialog ?
+                                <ConfirmDialog
+                                    dialogText={this.state.dialogText}
+                                    dialogTitle={this.state.dialogTitle}
+                                    show={this.state.showConfirmDialog}
+                                    onConfirmed={()=>this.onForceUpdateBankDetail()}
+                                    onCanceled={()=>this.handelCancelUpdate()} /> : ""}
 
                     </div>
                 </Paper>
