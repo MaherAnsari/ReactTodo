@@ -104,7 +104,15 @@ class AddOrderModal extends Component {
                 "commission_unit": "",
                 "target_location": "",
                 "source_location": "",
-                "rate_unit":""
+                "rate_unit": "",
+
+                "broker_mobile": "",
+                "bijak_total_amount": "",
+                "invoice_no": "",
+                "old_system_order_id": "",
+                "pkt": "",
+                "brokerage": ""
+
             },
 
             buyerid: "",
@@ -174,7 +182,7 @@ class AddOrderModal extends Component {
     }
 
     handleInputChange(event) {
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be float
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -285,7 +293,7 @@ class AddOrderModal extends Component {
         if (data) {
             for (var i = 0; i < data.length; i++) {
                 // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + " )", value: data[i][valuekey] });
-                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -369,7 +377,9 @@ class AddOrderModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit","rate_unit"]
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt",
+             "unit", "rate_unit","broker_mobile","bijak_total_amount",
+             "invoice_no","old_system_order_id","pkt","brokerage"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -670,7 +680,7 @@ class AddOrderModal extends Component {
                                         <Chip label={option} {...getTagProps({ index })} />
                                     ))
                                 }
-                                style={{ width: '49%', marginTop: '1%' ,borderBottom: (errorFields["commodity"] ?"1px solid red": "unset") }}
+                                style={{ width: '49%', marginTop: '1%', borderBottom: (errorFields["commodity"] ? "1px solid red" : "unset") }}
                                 renderInput={params => (
                                     <TextField
                                         {...params}
@@ -780,19 +790,19 @@ class AddOrderModal extends Component {
                                 style={{ width: '49%', marginTop: '5px' }}
                                 value={addOrderPayload.rate_unit}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton","Rs/Packet","Rs/Crate","Rs/Box","Rs/Pc"].map((key, i) => (
+                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton", "Rs/Packet", "Rs/Crate", "Rs/Box", "Rs/Pc"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        
+
                         </div>
 
 
 
                         <div style={{ display: "flex" }} >
-                        <TextField
+                            <TextField
                                 margin="dense"
                                 id="qnt"
                                 label="Quantity"
@@ -803,8 +813,8 @@ class AddOrderModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
 
-                        &nbsp;
-                          &nbsp;
+                            &nbsp;
+                              &nbsp;
                             <TextField
                                 select
                                 id="unit"
@@ -822,8 +832,8 @@ class AddOrderModal extends Component {
                                 ))}
                             </TextField>
 
-                           
-                         
+
+
                             {/* <TextField
                                 margin="dense"
                                 id="author_name"
@@ -886,7 +896,7 @@ class AddOrderModal extends Component {
                         </TextField>
                     </div> */}
                         <div style={{ display: "flex" }} >
-                        <TextField
+                            <TextField
                                 margin="dense"
                                 id="transport_info"
                                 label="Transport info"
@@ -896,8 +906,8 @@ class AddOrderModal extends Component {
                                 value={addOrderPayload.transport_info}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                                  &nbsp;
-                        &nbsp;
+                            &nbsp;
+                  &nbsp;
 
                             <TextField
                                 margin="dense"
@@ -910,32 +920,88 @@ class AddOrderModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                         </div>
-                        {/* <div style={{ display: "flex" }} >
+
+                        {/*--------------- newly Added---------------- */}
+                        <div style={{ display: "flex" }} >
 
                             <TextField
                                 margin="dense"
-                                id="remark"
-                                error={errorFields["remark"] ? true : false}
-                                label="Remarks"
+                                id="broker_mobile"
+                                error={errorFields["broker_mobile"] ? true : false}
+                                label="Broker Mobile"
                                 type="text"
                                 style={{ width: '49%' }}
-                                value={addOrderPayload.remark}
+                                value={addOrderPayload.broker_mobile}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                             &nbsp;
                         &nbsp;
                         <TextField
                                 margin="dense"
-                                id="other_info"
-                                label="Other Info"
-                                error={errorFields["other_info"] ? true : false}
+                                id="bijak_total_amount"
+                                label="Bijak total Amount"
+                                error={errorFields["bijak_total_amount"] ? true : false}
                                 type="text"
                                 style={{ width: '49%' }}
-                                value={addOrderPayload.other_info}
+                                value={addOrderPayload.bijak_total_amount}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
-                        </div> */}
+                        </div>
 
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="invoice_no"
+                                error={errorFields["invoice_no"] ? true : false}
+                                label="Invoice No."
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.invoice_no}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                        &nbsp;
+                        <TextField
+                                margin="dense"
+                                id="old_system_order_id"
+                                label="Old System Order id"
+                                error={errorFields["old_system_order_id"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.old_system_order_id}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="pkt"
+                                error={errorFields["pkt"] ? true : false}
+                                label="Pkt"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.pkt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                            &nbsp;
+                            <TextField
+                                margin="dense"
+                                id="brokerage"
+                                label="brokerage"
+                                error={errorFields["brokerage"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={addOrderPayload.brokerage}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+
+                        {/*--------------- newly Added ends---------------- */}
 
                         {/* <div style={{ display: "flex" }} >
                             <TextField
@@ -1019,28 +1085,6 @@ class AddOrderModal extends Component {
                             </Button>
                                     </label>
                                 </Grid>
-                                {/* <Grid item xs={12} sm={12} md={12}>
-                                    {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
-                                        <React.Fragment>
-                                            {this.state.attachmentArray.map((indUpload, index) => (
-                                                <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
-                                                    <React.Fragment>
-                                                        <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
-                                                            <img src="https://img.icons8.com/plasticine/2x/file.png" height="30" width="30"></img>
-                                                        </Grid>
-                                                        <Grid item xs={12} sm={12} md={10} >
-                                                            <span data-toggle="tooltip" data-placement="center" title="Click to preview" style={{ cursor: "pointer" }} onClick={() => window.open(indUpload["image_url"], "_blank")}><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
-
-                                                        </Grid>
-                                                        <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
-                                                            <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
-                                                        </Grid>
-                                                    </React.Fragment>
-                                                </Grid>
-                                            ))}
-                                        </React.Fragment>
-                                    }
-                                </Grid> */}
                             </Grid>
                         </div>
 

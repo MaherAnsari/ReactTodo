@@ -109,7 +109,14 @@ class EditOrderDataModal extends Component {
                 "commission_unit": "",
                 "target_location": "",
                 "source_location": "",
-                "rate_unit": ""
+                "rate_unit": "",
+                
+                "broker_mobile": "",
+                "bijak_total_amount": "",
+                "invoice_no": "",
+                "old_system_order_id": "",
+                "pkt": "",
+                "brokerage": ""
             },
 
             buyerid: "",
@@ -164,7 +171,7 @@ class EditOrderDataModal extends Component {
 
     handleInputChange(event) {
         // console.log(event)
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]; // this values need to be float
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -338,7 +345,10 @@ class EditOrderDataModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", "unit","rate_unit"];
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", 
+            "unit","rate_unit","broker_mobile","bijak_total_amount",
+            "invoice_no","old_system_order_id","pkt","brokerage"
+        ];
         var extraMandatoryFields = ["creator_role"];
         for (var key in data) {
             // console.log( key +"---"+data[key])
@@ -803,6 +813,90 @@ class EditOrderDataModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                         </div>
+
+                        {/*--------------- newly Added---------------- */}
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="broker_mobile"
+                                error={errorFields["broker_mobile"] ? true : false}
+                                label="Broker Mobile"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.broker_mobile}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                        &nbsp;
+                        <TextField
+                                margin="dense"
+                                id="bijak_total_amount"
+                                label="Bijak total Amount"
+                                error={errorFields["bijak_total_amount"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.bijak_total_amount}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="invoice_no"
+                                error={errorFields["invoice_no"] ? true : false}
+                                label="Invoice No."
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.invoice_no}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                        &nbsp;
+                        <TextField
+                                margin="dense"
+                                id="old_system_order_id"
+                                label="Old System Order id"
+                                error={errorFields["old_system_order_id"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.old_system_order_id}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="pkt"
+                                error={errorFields["pkt"] ? true : false}
+                                label="Pkt"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.pkt}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                            &nbsp;
+                            <TextField
+                                margin="dense"
+                                id="brokerage"
+                                label="brokerage"
+                                error={errorFields["brokerage"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={orderPayload.brokerage}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+
+                        {/*--------------- newly Added ends---------------- */}
+
+
                         {/* 
                         <div style={{ display: "flex" }} >
                           

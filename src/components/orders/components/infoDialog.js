@@ -510,7 +510,7 @@ class InfoDialog extends Component {
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
-                <TextField
+                    <TextField
                         margin="dense"
                         id="unsettled_amount"
                         label="Unsettled Amount"
@@ -521,7 +521,7 @@ class InfoDialog extends Component {
                         fullWidth
                     />
 
-                <TextField
+                    <TextField
                         margin="dense"
                         id="creator_role"
                         label="Creater Role"
@@ -531,21 +531,96 @@ class InfoDialog extends Component {
                         value={this.state.dataObj.creator_role}
                         fullWidth
                     />
-                    </div>
-                <div style={{padding: "12px 0px", color: "#9e9e9e"}}>
-                {(this.state.dataObj["supporting_images"] && 
-                        this.state.dataObj["supporting_images"] !== null && 
-                        this.state.dataObj["supporting_images"].length > 0) ? 
+                </div>
+                {/*--------------- newly Added---------------- */}
+                <div style={{ display: "flex" }} >
+
+                    <TextField
+                        margin="dense"
+                        id="broker_mobile"
+                        label="Broker Mobile"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.broker_mobile}
+                        fullWidth />
+                    &nbsp;
+                    &nbsp;
+<TextField
+                        margin="dense"
+                        id="bijak_total_amount"
+                        label="Bijak total Amount"
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.bijak_total_amount}
+                        disabled={true}
+                        fullWidth />
+                </div>
+
+                <div style={{ display: "flex" }} >
+
+                    <TextField
+                        margin="dense"
+                        id="invoice_no"
+                        label="Invoice No."
+                        disabled={true}
+                        type="text"
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.invoice_no}
+                        fullWidth />
+                    &nbsp;
+                    &nbsp;
+                <TextField
+                        margin="dense"
+                        id="old_system_order_id"
+                        label="Old System Order id"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.old_system_order_id}
+                        fullWidth />
+                </div>
+
+                <div style={{ display: "flex" }} >
+
+                    <TextField
+                        margin="dense"
+                        id="pkt"
+                        label="Pkt"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.pkt}
+                        fullWidth />
+                    &nbsp;
+                    &nbsp;
+                <TextField
+                        margin="dense"
+                        id="brokerage"
+                        label="brokerage"
+                        type="text"
+                        disabled={true}
+                        style={{ marginRight: '2%', width: '48%' }}
+                        value={this.state.dataObj.brokerage}
+                        fullWidth />
+                </div>
+
+
+                {/*--------------- newly Added ends---------------- */}
+                <div style={{ padding: "12px 0px", color: "#9e9e9e" }}>
+                    {(this.state.dataObj["supporting_images"] &&
+                        this.state.dataObj["supporting_images"] !== null &&
+                        this.state.dataObj["supporting_images"].length > 0) ?
                         <div> Supporting Images </div> : <div> No supporting Images added </div>}
-                        </div>
+                </div>
                 <div style={{ display: 'flex' }}>
-                    {this.state.dataObj["supporting_images"] && 
-                        this.state.dataObj["supporting_images"] !== null && 
+                    {this.state.dataObj["supporting_images"] &&
+                        this.state.dataObj["supporting_images"] !== null &&
                         this.state.dataObj["supporting_images"].length > 0 &&
 
                         this.state.dataObj["supporting_images"].map((imgKey, i) => (
                             <div key={"imhs_" + i} className="transaction-supporting-image">
-                                <img src={imgKey} alt={imgKey} height="150px" width="150px"/>
+                                <img src={imgKey} alt={imgKey} height="150px" width="150px" />
                             </div>
                         ))}
                 </div>
