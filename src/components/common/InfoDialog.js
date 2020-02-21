@@ -269,6 +269,7 @@ class InfoDialog extends Component {
         let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
         this.setState({ showLoader : false });
         if (resp.data.status === 1) {
+            alert("Successfully Added");
 
             this.props.onEditModalClosed();
 

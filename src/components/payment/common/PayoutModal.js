@@ -321,6 +321,9 @@ class PayoutModal extends Component {
                                                 labelPlacement="end"
                                             />
                                         </RadioGroup>
+                                        {this.state.transferType === "NEFT" && <FormHelperText>*After 6 PM (IST) This request will be processed on Next Working Day</FormHelperText>}
+                                        {this.state.transferType === "RTGS" && <FormHelperText>*After 5 PM (IST) This request will be processed on Next Working Day</FormHelperText>}
+
                                         {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
                                     </FormControl>}
                                 </div>

@@ -799,7 +799,9 @@ class AddTransactionModal extends Component {
                                 //     <img src={key} alt={key} height="150px" />
                                 // </div>
                                 <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <img src={keyObj["image_url"]} 
+                                    onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                    style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
                                     <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                         <i className="fa fa-trash fa-lg"></i>
                                     </div>

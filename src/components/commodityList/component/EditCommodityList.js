@@ -325,7 +325,8 @@ class EditCommodityList extends Component {
                             {/* image Option */}
                             <div style={{ height: "160px", display: "grid", textAlign: "center" }}>
                                 <span> Existing Image </span>
-                                <img src={editableDataObj.image_url} height="150px" style={{ margin: "auto" }} alt="commodiity_url" />
+                                <img src={editableDataObj.image_url} height="150px" style={{ margin: "auto" }} alt="commodiity_url" 
+                                  onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}/>
                             </div>
                             <div style={{ width: "423px" }}>
 
