@@ -181,7 +181,7 @@ class OrderTable extends Component {
         const { rowsPerPage, page } = this.state;
         const leftAlignedIndexs = [1, 2];
         const rightAlignedIndexs = [6];
-        return (<div style={{ marginTop: '50px' }}> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
+        return (<div style={{ marginTop: '50px' }}> <div style={{ maxHeight: "58vh", overflowY: "scroll" }}>
             <Table className='table-body' stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow style={{ borderBottom: "2px solid #858792" }} >

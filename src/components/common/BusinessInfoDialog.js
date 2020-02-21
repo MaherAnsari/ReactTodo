@@ -319,9 +319,10 @@ class BusinessInfoDialog extends Component {
                                 :
                                 <Loader />}
 
-                            <UserDetailsFooter
+ {this.state.currentView === 'userInfo' && 
+<UserDetailsFooter
                                 isPaymentInfoModal={ true }
-                                onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />
+                                onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
 
 
                         </DialogContent>

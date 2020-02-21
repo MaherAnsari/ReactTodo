@@ -39,7 +39,8 @@ const styles = theme => ({
     width: '100%',
     fontFamily: 'lato !important',
     marginTop: '50px',
-    padding: '8px 24px'
+    padding: '8px 24px',
+    height:'60vh'
 
   },
   button: {

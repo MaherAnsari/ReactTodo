@@ -299,8 +299,9 @@ class UserInfo extends Component {
                         userdata={this.props.data}
                     /> : ""}
 
-                    <UserDetailsFooter
-                    onFooterButtonClicked ={( data )=> this.onFooterButtonClickedAction( data ) }/>
+                {this.state.currentView === 'userInfo' && 
+                 <UserDetailsFooter
+                    onFooterButtonClicked ={( data )=> this.onFooterButtonClickedAction( data ) }/>}
 
                 </DialogContent>
 

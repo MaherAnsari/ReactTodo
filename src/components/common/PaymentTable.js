@@ -355,7 +355,7 @@ class PaymentTable extends Component {
         const leftAlignedIndexs = [0, 1];
         const rightAlignedIndexs = [4];
         // console.log(this.props.data);
-        return (<div style={{ width: '100%', marginTop: '50px', height: "550px", overflowY: "scroll" }}>
+        return (<div style={{ marginTop: '50px' }}><div style={{ width: '100%', marginTop: '50px', maxHeight: "58vh", overflowY: "scroll" }}>
             {/* <AddTransactionModal open={true} /> */}
             <Table stickyHeader aria-label="sticky table" className='table-body'>
                 <TableHead>
@@ -419,7 +419,9 @@ class PaymentTable extends Component {
                         );
                     })}
                 </TableBody>
-                {this.props.data && this.props.data.length > 0 && <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                </Table>
+                </div>
+                {this.props.data && this.props.data.length > 0 && <Table><TableFooter style={{ borderTop: "2px solid #858792" }}>
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[25, 50, 100]}
@@ -435,9 +437,9 @@ class PaymentTable extends Component {
                             onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
                         />
                     </TableRow>
-                </TableFooter>}
-            </Table>
-            {!this.props.data.length && < NoDataAvailable style={{ height: '25vh' }} />}
+                </TableFooter></Table>}
+            
+            {this.props.data && this.props.data.length == 0 && < NoDataAvailable style={{ height: '25vh' }} />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
