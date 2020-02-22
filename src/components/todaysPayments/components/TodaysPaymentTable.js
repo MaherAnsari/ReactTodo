@@ -545,6 +545,57 @@ class TodaysPaymentTable extends Component {
         })
     }
 
+    checkIfOmittedStatusKeys(row) {
+        let isValid = true;
+        let statusKeysToOmit = ["failed", "rejected", "reversed", "cancelled", "transaction_initiated"]
+        if (row && row["status"]) {
+            for (let i in statusKeysToOmit) {
+                if (row["status"].indexOf(statusKeysToOmit[i]) > -1) {
+                    isValid =  false;
+                    break;
+                }
+            }
+        } 
+        return isValid;
+    }
+
+    getTransactionCountSumOnFilterChanged(  ){
+        let b_in_count = 0;
+        let b_out_count = 0;
+        let b_in_sum = 0;
+        let b_out_sum = 0;
+        let allTransactionsData = this.state.allTransactionsData;
+        if(allTransactionsData){
+            let trans = allTransactionsData.filter(e => this.filterData( e ) );
+            
+            for (let line of trans) {
+                if( !this.checkIfOmittedStatusKeys( line )){
+                   // ignore this lines for omit keys
+                }else{ 
+                    if(  line["transaction_type"] === "b_in"  ){
+                        b_in_count++ ;
+                        b_in_sum = b_in_sum + line["amount"] ;
+                    }
+
+                    if(  line["transaction_type"] === "b_out"  ){
+                         b_out_count++ ;
+                        b_out_sum = b_out_sum + line["amount"] ;
+                    }
+                }
+            }
+            return (
+                [ {"count": b_in_count  ,"sum": b_in_sum ,"transaction_type":"b_in"},
+                  {"count": b_out_count ,"sum": b_out_sum ,"transaction_type":"b_out"}
+                ]);
+
+        }else{
+            return (
+                [   {"count": 0 ,"sum":0,"transaction_type":"b_in"},
+                    {"count": 0 ,"sum":0,"transaction_type":"b_out"}
+                ]);
+        }
+    }
+
 
     render() {
         const { classes } = this.props;
@@ -574,7 +625,8 @@ class TodaysPaymentTable extends Component {
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
                         <i 
-                            onClick={(event) => this.handelRefreshData(event)} 
+                            onClick={(event) =>{ this.setState({  filterDataArray :[], 
+                            transactionTypeArray : [] },()=>this.handelRefreshData(event) )}} 
                             style={{ padding: "12px",lineHeight: "50px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} 
                             data-toggle="tooltip" 
                             data-html="true" 
@@ -930,7 +982,9 @@ class TodaysPaymentTable extends Component {
                             onFilterAdded={( data )=> this.setState({ 
                                 filterDataArray : data["paymentType"], 
                                 transactionTypeArray : data["transactionType"], 
-                                showPaymentFilterOption : false }) }/>}
+                                showPaymentFilterOption : false },
+                                 ()=>
+            this.setState({ paymentMetaInfo : this.getTransactionCountSumOnFilterChanged()  })) } />}
 
                     {showTransactionIDInfoDialog && 
                         <TransactionIdInfoModal

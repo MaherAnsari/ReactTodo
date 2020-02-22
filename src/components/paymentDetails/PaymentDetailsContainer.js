@@ -183,7 +183,8 @@ class PaymentDetailsContainer extends React.Component {
             <div className={classes.root}>
                 <Paper className={classes.card} >
                     <div style={{ display: "flex" }}>
-                        <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
+                        <i onClick={(event) => { this.setState({  filterDataArray :[], 
+                            transactionTypeArray : [] },()=>this.handelRefreshData(event) )}} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                         <div style={{ padding: "15px 15px 15px 0px" }}>
                             <Badge className={classes.margin} style={{ height: '25px' }}

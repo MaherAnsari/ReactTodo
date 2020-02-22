@@ -160,10 +160,12 @@ class PaymentDetailsTable extends Component {
 
     componentWillReceiveProps( nextProps ){
         if( nextProps.filterDataArray !== this.state.filterDataArray ){
-            this.setState({ filterDataArray : nextProps.filterDataArray  });
+            this.setState({ filterDataArray : nextProps.filterDataArray  }, ()=>
+            this.setState({ paymentMetaInfo : this.getTransactionCountSumOnFilterChanged()  }));
         }
         if( nextProps.transactionTypeArray !== this.state.transactionTypeArray ){
-            this.setState({ transactionTypeArray : nextProps.transactionTypeArray  });
+            this.setState({ transactionTypeArray : nextProps.transactionTypeArray  }, ()=>
+            this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() }));
         }
     }
 
@@ -385,6 +387,7 @@ class PaymentDetailsTable extends Component {
       }
 
     getPaymentInOutInfo(type, key) {
+  
         let arr = this.state.paymentMetaInfo
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
@@ -393,6 +396,57 @@ class PaymentDetailsTable extends Component {
             }
         }
         return "0";
+    }
+
+    checkIfOmittedStatusKeys(row) {
+        let isValid = true;
+        let statusKeysToOmit = ["failed", "rejected", "reversed", "cancelled", "transaction_initiated"]
+        if (row && row["status"]) {
+            for (let i in statusKeysToOmit) {
+                if (row["status"].indexOf(statusKeysToOmit[i]) > -1) {
+                    isValid =  false;
+                    break;
+                }
+            }
+        } 
+        return isValid;
+    }
+
+    getTransactionCountSumOnFilterChanged(  ){
+        let b_in_count = 0;
+        let b_out_count = 0;
+        let b_in_sum = 0;
+        let b_out_sum = 0;
+        let allTransactionsData = this.state.allTransactionsData;
+        if(allTransactionsData){
+            let trans = allTransactionsData.filter(e => this.filterData( e ) );
+            
+            for (let line of trans) {
+                if( !this.checkIfOmittedStatusKeys( line )){
+                   // ignore this lines for omit keys
+                }else{ 
+                    if(  line["transaction_type"] === "b_in"  ){
+                        b_in_count++ ;
+                        b_in_sum = b_in_sum + line["amount"] ;
+                    }
+
+                    if(  line["transaction_type"] === "b_out"  ){
+                         b_out_count++ ;
+                        b_out_sum = b_out_sum + line["amount"] ;
+                    }
+                }
+            }
+            return (
+                [ {"count": b_in_count  ,"sum": b_in_sum ,"transaction_type":"b_in"},
+                  {"count": b_out_count ,"sum": b_out_sum ,"transaction_type":"b_out"}
+                ]);
+
+        }else{
+            return (
+                [   {"count": 0 ,"sum":0,"transaction_type":"b_in"},
+                    {"count": 0 ,"sum":0,"transaction_type":"b_out"}
+                ]);
+        }
     }
 
     

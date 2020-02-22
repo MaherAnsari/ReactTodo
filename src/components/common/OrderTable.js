@@ -167,9 +167,9 @@ class OrderTable extends Component {
     }
 
     handleClickOpen() {
-
         this.setState({ showAddOrderModal: true });
     }
+    
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
