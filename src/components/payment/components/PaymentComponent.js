@@ -251,19 +251,19 @@ class PaymentComponent extends Component {
         this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
     };
 
-    async handelDownloadClicked() {
-        try {
-            var respData = [];
-            let resp = await paymentService.getDownlaodAbleData(this.state.datePayloads);
-            if (resp.data.status === 1 && resp.data.result) {
-                respData = resp.data.result;
-            }
-            Utils.downloadDataInCSV(respData, "payment_data")
-        } catch (err) {
-            console.log(err);
-            alert("An error occured while downloading the payment data ");
-        }
-    }
+    // async handelDownloadClicked() {
+    //     try {
+    //         var respData = [];
+    //         let resp = await paymentService.getDownlaodAbleData(this.state.datePayloads);
+    //         if (resp.data.status === 1 && resp.data.result) {
+    //             respData = resp.data.result;
+    //         }
+    //         Utils.downloadDataInCSV(respData, "payment_data")
+    //     } catch (err) {
+    //         console.log(err);
+    //         alert("An error occured while downloading the payment data ");
+    //     }
+    // }
 
     async handleFileUploader(event) {
         try {
@@ -606,11 +606,11 @@ class PaymentComponent extends Component {
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p>Add Payment</p></div>
                     </div>}
-                    <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
+                    {/* <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
-                    </div>
+                    </div> */}
                     {showAddTransactionModal &&
                         <AddTransactionModal
                             open={showAddTransactionModal}
