@@ -50,7 +50,7 @@ class UserDetailsFooter extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <div style={{ marginTop: "10px",marginBottom:'10px'}}>
+            <div style={{ marginTop: "10px",marginBottom:'10px', bottom: "25px" ,position: "absolute"}}>
                 { !this.state.isPaymentInfoModal &&  getAccessAccordingToRole("addOrder") && 
                 <span className={classes.span_main}
                 onClick={( event )=> this.onButtonClicked( "orders" )}
