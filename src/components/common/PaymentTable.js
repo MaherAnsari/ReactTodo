@@ -117,7 +117,7 @@ class PaymentTable extends Component {
         try {
             let param = { "limit": 10, "role": this.props.role }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userdata.mobile, param);
-            console.log( resp.data )
+            // console.log( resp.data )
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
                
@@ -444,7 +444,7 @@ class PaymentTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-            {/* {getAccessAccordingToRole("addPayment") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca") && <div className="updateBtndef">
+            {getAccessAccordingToRole("addPayment") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca") && <div className="updateBtndef">
                 <div
                     className="updateBtnFixedModal"
                     style={{ display: 'flex' }}
@@ -452,7 +452,7 @@ class PaymentTable extends Component {
                 >
                     <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                     <p>Add Payment</p></div>
-            </div>} */}
+            </div>}
 
             {this.state.showAddTransactionModal &&
                 <AddTransactionModal

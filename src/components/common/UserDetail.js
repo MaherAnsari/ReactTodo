@@ -55,7 +55,7 @@ class UserDetail extends Component {
         this.state = {
 
         }
-        console.log(this.props.data.role)
+        // console.log(this.props.data.role)
     }
 
 
@@ -186,7 +186,7 @@ class UserDetail extends Component {
                             <p className={classes.head}> Is User Enabled </p>
                             <p className={classes.value}>: &nbsp; 
                             <span style={{
-                                    background: (!this.props.data.bijak_assured  ? "#5bbc9b":"#e63232"),
+                                    background: (this.props.data.active  ? "#5bbc9b":"#e63232"),
                                     padding: "4px",
                                     borderRadius: "3px",
                                     color: "#fff"

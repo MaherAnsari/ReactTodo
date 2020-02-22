@@ -88,7 +88,7 @@ class OrderTable extends Component {
 
     }
     componentDidMount() {
-        console.log(this.props.data);
+        // console.log(this.props.data);
         let tableHeadData = ["order id", "buyer info", "broker name", "Date", "location", "commodity", "Amount  "];
         if (this.props.userdata.role === "ca") {
             tableHeadData = ["order id", "supplier info", "broker name", "Date", "location", "commodity", "Amount  "];
@@ -302,7 +302,7 @@ class OrderTable extends Component {
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-            {/* {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && 
+            {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && 
             <div className="updateBtndef">
                 <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
                     <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
@@ -311,7 +311,7 @@ class OrderTable extends Component {
                         fontFamily: "lato",
                         fontWeight: 600
                     }}>Add Order</p></div>
-            </div>} */}
+            </div>}
             {this.state.showAddOrderModal &&
                 <AddOrderModal
                     open={this.state.showAddOrderModal}
