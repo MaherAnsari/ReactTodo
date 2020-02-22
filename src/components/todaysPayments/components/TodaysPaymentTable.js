@@ -44,6 +44,7 @@ import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
 import AddTransactionModal from '../../payment/components/AddTransactionModal';
+import DownloadModalPayment from '../../common/DownloadModalPayment';
 
 
 var moment = require('moment');
@@ -168,6 +169,8 @@ class TodaysPaymentTable extends Component {
             transactionIDInfoData: undefined,
 
             showAddTransactionModal: false,
+
+            showDownloadModal : false
         }
     }
 
@@ -503,33 +506,33 @@ class TodaysPaymentTable extends Component {
 
     filterData( data ){
         if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
-            return true;
+            return data;
         }
 
         if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
 
             if(this.state.filterDataArray.length === 0 ){
-                return true;
+                return data;
             }
 
         if( data && data["status"] ){
             if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return true;
+                return data;
             }else{
-                return false;
+                return "";
             }
         }else{
-            return false;
+            return "";
         }
     }else{
         if( data && data["status"] ){
             if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return true;
+                return data;
             }else{
-                return false;
+                return "";
             }
         }else{
-            return false;
+            return "";
         }
     }
 
@@ -547,7 +550,7 @@ class TodaysPaymentTable extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
             showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData,
-             transactionTypeArray, showAddTransactionModal } = this.state;
+             transactionTypeArray, showAddTransactionModal , showDownloadModal} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -711,11 +714,13 @@ class TodaysPaymentTable extends Component {
                                     <TableBody>
                                         {
                                           (rowsPerPage > 0
-                                            ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            : allTransactionsData
-                                          ).filter(e => {
-                                            return this.filterData( e );
-                                        }).map((row, i) => {
+                                            ? allTransactionsData.filter(e => 
+                                                this.filterData( e )
+                                           ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            : allTransactionsData.filter(e => 
+                                                this.filterData( e )
+                                           )
+                                          ).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -909,12 +914,12 @@ class TodaysPaymentTable extends Component {
                             onTransactionInfoModalClose = {()=> this.setState({ showTransactionInfoDialog : false , transactionInfoData : undefined  })}
                             transactionInfoData={this.state.transactionInfoData}
                         />}
-                           {allTransactionsData && allTransactionsData.length > 0 &&
+                           {/* {allTransactionsData && allTransactionsData.length > 0 &&
                            <div className="updateBtndef" style={{ right: "30px" }} data-toggle="tooltip" data-html="true" title="Download">
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
-                    </div>}
+                    </div>} */}
 
                     {showPaymentFilterOption && 
                      <PaymentFilterOptionModal
@@ -935,11 +940,11 @@ class TodaysPaymentTable extends Component {
                         />}
 
                      <div className="updateBtndef">
-                    <div className="updateBtnFixed"
+                     {allTransactionsData && allTransactionsData.length > 0 && <div className="updateBtnFixed"
                             style={{ right:"192px", display: 'flex', background: "#e72e89", borderRadius: "6px" }}
                             onClick={() => this.setState({ showDownloadModal: true })}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
-                        </div>
+                        </div>}
 
                         {getAccessAccordingToRole("addPayment") && <div
                             className="updateBtnFixed"
@@ -949,6 +954,14 @@ class TodaysPaymentTable extends Component {
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p>Add Payment</p></div>}
                     </div>
+                    {showDownloadModal &&
+                        <DownloadModalPayment
+                            open={showDownloadModal}
+                            downloadFilename={"Day_wise_payment"}
+                            onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
+                            allTransactionsData={allTransactionsData.filter(e => {
+                                return this.filterData( e );
+                            })} />}
 
                     {showAddTransactionModal &&
                         <AddTransactionModal

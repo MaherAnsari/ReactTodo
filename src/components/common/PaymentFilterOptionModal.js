@@ -81,9 +81,6 @@ class PaymentFilterOptionModal extends Component {
             filterDataArr: this.props.filterDataArr || [],
             transactionTypeArray : this.formatTransactionType(this.props.transactionTypeArray) || []
         }
-        console.log( this.props.filterDataArr )
-        console.log( this.props.transactionTypeArray )
-        console.log( this.formatTransactionType(this.props.transactionTypeArray) )
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
         this.handelAutoCompleteChangeTransactionTypeArray = this.handelAutoCompleteChangeTransactionTypeArray.bind(this);
     }
@@ -112,7 +109,6 @@ class PaymentFilterOptionModal extends Component {
     }
 
     handelAutoCompleteChangeTransactionTypeArray = (event, values) => {
-        console.log( values );
         this.setState({ transactionTypeArray : values });
     }
     
@@ -126,7 +122,6 @@ class PaymentFilterOptionModal extends Component {
     }
 
     handleAddClick(event) {
-        console.log( this.state.transactionTypeArray )
         let tVal = [];
         let values = this.state.transactionTypeArray;
         if( values && values.length > 0 ){
@@ -135,7 +130,6 @@ class PaymentFilterOptionModal extends Component {
             }
 
         }
-        console.log( tVal )
         this.props.onFilterAdded({
             "paymentType":this.state.filterDataArr,
             "transactionType": tVal });
@@ -158,7 +152,7 @@ class PaymentFilterOptionModal extends Component {
                                 </div>
                 </DialogTitle>
                 <DialogContent>
-                    <div x>
+                    <div >
                         <div style={{ width: '100%' }}>
                             <Autocomplete
                                 multiple

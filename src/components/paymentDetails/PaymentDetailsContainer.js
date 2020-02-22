@@ -16,8 +16,6 @@ import Button from '@material-ui/core/Button';
 import PaymentFilterOptionModal from '../common/PaymentFilterOptionModal';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import AddTransactionModal from '../payment/components/AddTransactionModal';
-import DownloadModalPayment from '../common/DownloadModalPayment';
-
 
 
 const styles = theme => ({
@@ -61,8 +59,7 @@ class PaymentDetailsContainer extends React.Component {
             transactionTypeArray: [],
 
 
-            showAddTransactionModal: false,
-            showDownloadModal: false
+            showAddTransactionModal: false
 
         }
         this.ismounted = true;
@@ -181,7 +178,7 @@ class PaymentDetailsContainer extends React.Component {
     render() {
         const { classes } = this.props;
         const { allTransactionsData, paymentMetaInfo, showPaymentFilterOption, filterDataArray,
-            transactionTypeArray, showAddTransactionModal, showDownloadModal } = this.state;
+            transactionTypeArray, showAddTransactionModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -229,20 +226,7 @@ class PaymentDetailsContainer extends React.Component {
                                 showPaymentFilterOption: false
                             })} />}
 
-                    {/* DownloadModalPayment */}
-                    {showDownloadModal &&
-                        <DownloadModalPayment
-                            open={showDownloadModal}
-                            onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
-                            allTransactionsData={allTransactionsData} />}
-
-
                     <div className="updateBtndef">
-                        <div className="updateBtnFixed"
-                            style={{ right:"192px", display: 'flex', background: "#e72e89", borderRadius: "6px" }}
-                            onClick={() => this.setState({ showDownloadModal: true })}>
-                            <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
-                        </div>
                         {getAccessAccordingToRole("addPayment") &&
                             <div
                                 className="updateBtnFixed"

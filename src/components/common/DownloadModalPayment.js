@@ -61,7 +61,13 @@ class DownloadModalPayment extends Component {
 
     handelDownloadClicked = () => {
         let fHeader = {};
+        let filteredData = [];
         if (this.state.downloadType === "Amt in") {
+            
+            filteredData = this.props.allTransactionsData.filter(e => {
+                return ( e["transaction_type"] === "b_in" )
+            });
+
             fHeader = {
                 "transaction_date": "Date",
                 "pay_id": "Txn",
@@ -74,6 +80,9 @@ class DownloadModalPayment extends Component {
                 "buyerid": "CA ID",
             }
         } else {
+            filteredData = this.props.allTransactionsData.filter(e => {
+                return ( e["transaction_type"] === "b_out" )
+            });
             fHeader = {
                 "transaction_date": "Date",
                 "buyer_fullname": "Buyer Details",
@@ -88,7 +97,9 @@ class DownloadModalPayment extends Component {
             }
         }
 
-        this.downloadFormattedDataInCSV_forPayment(this.props.allTransactionsData, "Payment_details_" + this.state.downloadType, fHeader)
+       
+
+        this.downloadFormattedDataInCSV_forPayment(filteredData , this.props.downloadFilename +"_"+ this.state.downloadType, fHeader)
         this.handleDialogCancel();
     }
 

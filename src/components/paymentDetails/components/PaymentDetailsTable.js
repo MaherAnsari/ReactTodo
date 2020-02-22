@@ -37,6 +37,7 @@ import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
 import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
+import DownloadModalPayment from '../../common/DownloadModalPayment';
 
 var moment = require('moment');
 
@@ -151,7 +152,9 @@ class PaymentDetailsTable extends Component {
             userId: undefined,
 
             showTransactionIDInfoDialog: false,
-            transactionIDInfoData: undefined
+            transactionIDInfoData: undefined,
+            
+            showDownloadModal: false
         }
     }
 
@@ -449,9 +452,9 @@ class PaymentDetailsTable extends Component {
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
-    handelDownloadClicked = () => {
-        Utils.downloadDataInCSV(this.state.allTransactionsData,"payments-detail")
-    }
+    // handelDownloadClicked = () => {
+    //     Utils.downloadDataInCSV(this.state.allTransactionsData,"payments-detail")
+    // }
     
     filterData( data ){
         if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
@@ -459,12 +462,9 @@ class PaymentDetailsTable extends Component {
         }
 
         if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
-
             if(this.state.filterDataArray.length === 0 ){
                 return true;
             }
-
-            
         if( data && data["status"] ){
             if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
                 return true;
@@ -492,9 +492,10 @@ class PaymentDetailsTable extends Component {
     render() {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page,
-            showTransactionIDInfoDialog,transactionIDInfoData  } = this.state;
+            showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
+      
         return (
             
             <div>
@@ -631,11 +632,13 @@ class PaymentDetailsTable extends Component {
                                     <TableBody>
                                         {
                                           (rowsPerPage > 0
-                                            ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            : allTransactionsData
-                                          ).filter(e => {
-                                            return this.filterData( e );
-                                        }).map((row, i) => {
+                                            ? allTransactionsData.filter(e => 
+                                            this.filterData( e )
+                                       ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            : allTransactionsData.filter(e => 
+                                                this.filterData( e )
+                                           )
+                                          ).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -769,6 +772,7 @@ class PaymentDetailsTable extends Component {
                                 </Table>}
                     
 
+
                 {this.state.showImageInvoiceModal &&
                     <TransactionInvoiceModal
                         openModal={this.state.showImageInvoiceModal}
@@ -824,8 +828,9 @@ class PaymentDetailsTable extends Component {
                         />}
 
 {allTransactionsData && allTransactionsData.length > 0 && 
-<div className="updateBtndef" style={{ right: "30px" }} data-toggle="tooltip" data-html="true" title="Download">
-                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
+<div className="updateBtndef" style={{ right:"192px"}} data-toggle="tooltip" data-html="true" title="Download">
+                        <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} 
+                        onClick={() => this.setState({ showDownloadModal: true })} >
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div>}
@@ -836,6 +841,17 @@ class PaymentDetailsTable extends Component {
                             onTransactionIDInfoModalClose = {()=> this.setState({ showTransactionIDInfoDialog : false , transactionIDInfoData : undefined  })}
                             transactionInfoData={transactionIDInfoData}
                         />}
+
+                                            {/* DownloadModalPayment */}
+                    {showDownloadModal &&
+                        <DownloadModalPayment
+                            open={showDownloadModal}
+                            downloadFilename={"Payment_details"}
+                            onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
+                            allTransactionsData={ allTransactionsData.filter(e => {
+                                  return this.filterData( e );
+                              })} />}
+
 
                         </MuiThemeProvider>
             </div>);
