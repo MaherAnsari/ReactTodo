@@ -281,7 +281,8 @@ class OrderListTable extends Component {
             "supplier_name":"LA Name",
             "supplier_businessname":"LA Business Name",
             "buyer_name":"CA Name",
-            "buyer_businessname":"CA Businesss Name"
+            "buyer_businessname":"CA Businesss Name",
+            "old_system_order_id":"Old System Order Id"
         }
         Utils.downloadFormattedDataInCSV(this.state.tableBodyData, "Order ", fHeader)
     }

@@ -24,6 +24,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Utils from './../../../app/common/utils';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import commonService from '../../../app/commonService/commonService';
+import orderService from '../../../app/orderService/orderService';
 
 
 const styles = theme => ({
@@ -62,8 +64,7 @@ class PayoutModal extends Component {
         this.state = {
             open: this.props.openPayoutModal,
             payoutData: this.props.payoutData,
-            acctData: [1, 2, 3],
-            selectedAcctInfo: undefined,
+            acctData: [],
             currentPayoutView: "defaultPayout", //selectAccount, addAccount,loading
             addAccountData: {
                 actno: "",
@@ -85,9 +86,17 @@ class PayoutModal extends Component {
                 "utr": "",
                 "remarks": ""
             },
-            errorFieldsOfSkipTrans: {}
+            errorFieldsOfSkipTrans: {},
+            showChangeBankAcctOption : false,
+            selected_bank_detail : {
+                "bank_map_id": null,
+                "bank_ifsc_code":"",
+                "bank_account_number":"",
+                "bank_account_holder_name":""
+                },
+            selectedAcctInfoIndex : undefined
         }
-        // console.log(this.props.payoutData)
+        console.log(this.props.payoutData)
     }
 
     componentWillMount() {
@@ -109,15 +118,34 @@ class PayoutModal extends Component {
         }
     }
 
+    getBankDetailsList = async ( mobile ) => {
+        try {
+            this.setState({ currentPayoutView: "loading" });
+            // let param = { "mobile": mobile };
+            // let resp = await commonService.getbankDetail(param);
+            let resp = await orderService.getOrderAcount(mobile);
+            if (resp.data.status === 1) {
+                if (resp.data.result) {
+                    this.setState({ currentPayoutView: "selectAccount",  acctData: resp.data.result || [] });
+                } else {
+                    this.setState({ currentPayoutView: "selectAccount",  acctData: resp.data.result })
+                }
+            } else {
+                alert("An error occured while getting the account details");
+                this.setState({ currentPayoutView: "defaultPayout"});
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occured while getting the account details")
+        }
+    }
 
     handleDialogCancel(event) {
         this.setState({ open: false })
         this.props.onPayoutModalClose();
     }
 
-    handelAccountSelection(actInfo, event) {
-        this.setState({ selectedAcctInfo: actInfo })
-    }
+
 
     handleInputChange(event) {
         event.preventDefault();
@@ -199,6 +227,18 @@ class PayoutModal extends Component {
         }
     }
 
+    handelAccountSelection(actInfo, index, event) {
+        let bank_detailVal = this.state.selected_bank_detail;
+        console.log(actInfo)
+        console.log(index)
+
+        bank_detailVal["bank_map_id"] = actInfo.hasOwnProperty("bank_map_id") ? actInfo["bank_map_id"] : null;
+        bank_detailVal["bank_account_holder_name"] = actInfo["bank_account_holder_name"];
+        bank_detailVal["bank_account_number"] = actInfo["bank_account_number"];
+        bank_detailVal["bank_ifsc_code"] = actInfo["bank_ifsc_code"];
+        this.setState({ selectedAcctInfoIndex: index, selected_bank_detail: bank_detailVal , acctDetails :bank_detailVal })
+    }
+
     onConfirmPayout = async () => {
         try {
             
@@ -223,7 +263,18 @@ class PayoutModal extends Component {
                     return;
                 }
             }
+
+            // on bank account changed
+            if( this.state.selectedAcctInfoIndex ||  this.state.selectedAcctInfoIndex === 0 ){
+                payload["is_bank_update"] = true;
+                payload["bank_details"] = this.state.selected_bank_detail;
+            }
+
+
             this.setState({ currentPayoutView: "loading" });
+            // let resp = { data : { status : 0 }};
+
+            console.log( payload )
             let resp = await paymentService.confirmPayout(payload);
             if (resp.data.status === 1) {
                 // console.log(payload)
@@ -231,6 +282,7 @@ class PayoutModal extends Component {
                 this.props.onPayoutSuccessfull();
             } else {
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
+                this.setState({ showChangeBankAcctOption : true });
             }
             this.setState({ currentPayoutView: "defaultPayout" });
         } catch (err) {
@@ -246,12 +298,16 @@ class PayoutModal extends Component {
         });
     }
 
+    changeAccountInfoClicked(){
+        this.setState({ currentPayoutView : "selectAccount" }, ()=> this.getBankDetailsList( this.props.payoutData["supplier_mobile"]) );
+    }
+
 
     render() {
         const { classes } = this.props;
-        const { transferType, acctDetails, payoutData, acctData, selectedAcctInfo,
+        const { transferType, acctDetails, payoutData, acctData, selectedAcctInfoIndex,
             currentPayoutView, addAccountData, errorFields,
-            skipRazorPayTrans, skipRazorPayTransObj, errorFieldsOfSkipTrans } = this.state;
+            skipRazorPayTrans, skipRazorPayTransObj, errorFieldsOfSkipTrans, showChangeBankAcctOption } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -288,6 +344,7 @@ class PayoutModal extends Component {
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Number     </span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_number"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{ textTransform: "uppercase" }} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
+                                            {showChangeBankAcctOption && <div style={{ textAlign: "center", marginTop: "5%"}}> <span onClick={()=> this.changeAccountInfoClicked() }  className={classes.actcardtext} style={{padding: "3px 5px",background: "#E91E63",borderRadius: "4px",color: "#fff", cursor: "pointer"}}> Select Another Account </span></div>}
                                         </span> :
                                         <div style={{ padding: "14px" }} className={classes.actcardtext} >
                                             Oops no bank account available.
@@ -389,38 +446,45 @@ class PayoutModal extends Component {
                     {currentPayoutView === "selectAccount" && <React.Fragment>
                         {acctData && acctData.length > 0 ? <div> Select an Account </div> : <div> Please add an account to continue </div>}
                         <List className={classes.root}>
-                            {acctData.map(value => {
-                                const labelId = `checkbox-list-label-${value}`;
-                                return (
-                                    <ListItem key={value} role={undefined} dense button
-                                        onClick={this.handelAccountSelection.bind(this, value)}>
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                edge="start"
-                                                checked={selectedAcctInfo === value}
-                                                tabIndex={-1}
-                                                disableRipple={false}
-                                                inputProps={{ 'aria-labelledby': labelId }}
-                                            />
-                                        </ListItemIcon>
-                                        <ListItemText id={labelId} primary={`Account ${value + 1}`} />
-                                        {value === selectedAcctInfo &&
-                                            <ListItemSecondaryAction>
-                                                <IconButton edge="end" aria-label="comments">
-                                                    <CheckCircleOutlineIcon style={{ color: "green" }} />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>}
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
+                                        {acctData && acctData.map((obj, index) => {
+                                            const labelId = `checkbox-list-label-${index}`;
+                                            return (
+                                                <ListItem key={index} role={undefined} dense button
+                                                    onClick={this.handelAccountSelection.bind(this, obj, index)}>
+                                                    <ListItemIcon>
+                                                        <Checkbox
+                                                            edge="start"
+                                                            checked={selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false}
+                                                            tabIndex={-1}
+                                                            disableRipple={false}
+                                                            inputProps={{ 'aria-labelledby': labelId }}
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        id={labelId}
+                                                        primary={obj["bank_account_holder_name"]}
+                                                        secondary={"IFSC : " + (obj["bank_ifsc_code"] ? obj["bank_ifsc_code"].toUpperCase() : obj["bank_ifsc_code"]) + ", Account no. : " + obj["bank_account_number"]} />
+                                                    {(selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ? selectedAcctInfoIndex === index : false) &&
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton edge="end" aria-label="comments">
+                                                                <CheckCircleOutlineIcon style={{ color: "green" }} />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>}
+                                                </ListItem>
+                                            );
+                                        })}
+                                    </List>
                         <div>
                             {/* <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "addAccount" })}
                                 style={{ background: "blue", color: "#fff" }}>Add a new Account</Button> */}
-                            {selectedAcctInfo &&
-                                <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "selectAmount" })}
-                                    style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Save</Button>}
+                                                   {!acctData || acctData.length === 0 ? 
+                        <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout" })}
+                        style={{ background: "blue", color: "#fff" }}>Back</Button>:""}
+                            {selectedAcctInfoIndex || selectedAcctInfoIndex === 0 ?
+                                <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "defaultPayout" })}
+                                    style={{ background: "green", color: "#fff", right: "5%", position: "absolute" }}>Change</Button> : ""}
                         </div>
+                        
                     </React.Fragment>}
 
                     {currentPayoutView === "addAccount" && <React.Fragment>
