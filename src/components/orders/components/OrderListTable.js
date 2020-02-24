@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-// import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 import InfoDialog from './infoDialog';
 
 import TableFooter from '@material-ui/core/TableFooter';
@@ -94,6 +94,13 @@ const styles = theme => ({
         marginLeft: '8px',
         color: '#fd0671',
         cursor: 'pointer'
+    },
+    textEllpses:{
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        maxWidth: "110px",
+        lineHeight: "18px",
+        display: "block"
     }
 });
 
@@ -103,7 +110,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt", "Date", "source/target", "commodity", "", "Order Amt  "],
+            tableHeadData: ["order Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt Pltf", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -448,7 +455,13 @@ class OrderListTable extends Component {
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} >
-                                                    {row.source_location ? row.source_location : "-"}/{row.target_location ? row.target_location : "-"}
+                                                
+                                                {/* {(row.source_location ? row.source_location : "-")+"/"+ (row.target_location ? row.target_location : "-")} */}
+                                                
+                                                <Tooltip title={(row.source_location ? row.source_location : "-")+"/\n"+ (row.target_location ? row.target_location : "-")} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                        <div className={classes.textEllpses}>{(row.source_location ? row.source_location : "-")+"/\n"+ (row.target_location ? row.target_location : "-")}</div>
+                                                    </Tooltip>
+                                                    
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{

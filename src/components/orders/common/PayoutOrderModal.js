@@ -237,6 +237,8 @@ class PayoutOrderModal extends Component {
                 "payment_mode": "bijak",
                 "transaction_type": "b_out",
                 "transaction_date": this.formateDateForApi(new Date()),
+                "bijak_order_reference_id": pdata["id"],
+                "unsettled_amount_pltf":pdata["unsettled_amount_pltf"],
 
                 "bank_detail": {
                     "account_holder_name": this.state.addAccountData["bank_account_holder_name"],
@@ -341,7 +343,7 @@ class PayoutOrderModal extends Component {
 
                                 <div style={{ width: "100%", display: "flex" }}>
                                     <div style={{ width: "60%", lineHeight: "45px" }} className={classes.actcardtext} >
-                                        Unsettled amount : ₹ {payoutData["unsettled_amount_pltf"]}
+                                        Unsettled amount pltf: ₹ {payoutData["unsettled_amount_pltf"]}
                                     </div>
                                     &nbsp;
                                     &nbsp;
