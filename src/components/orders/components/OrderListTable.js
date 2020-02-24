@@ -318,7 +318,7 @@ class OrderListTable extends Component {
     }
 
     getActionButton(row) {
-        if (row &&  row["unsettled_amount"] > 0  && (row["status"] !== "settled" || row["status"] === null)) {
+        if (row &&  row["unsettled_amount_pltf"] > 0 ) {
             return (<Fab
                 variant="extended"
                 size="small"
@@ -441,7 +441,7 @@ class OrderListTable extends Component {
                                                 </TableCell> */}
 
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "right" }}>
-                                                ₹ {row.unsettled_amount ? Utils.formatNumberWithComma(row.unsettled_amount) : 0}
+                                                ₹ {row.unsettled_amount_pltf ? Utils.formatNumberWithComma(row.unsettled_amount_pltf) : 0}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 

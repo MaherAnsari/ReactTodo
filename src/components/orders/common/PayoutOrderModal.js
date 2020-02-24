@@ -83,7 +83,7 @@ class PayoutOrderModal extends Component {
     componentWillMount() {
         this.getAvailableCredit(this.props.payoutData["buyer_mobile"]);
         this.getBankDetails(this.props.payoutData["supplier_mobile"]);
-        this.setState({ transactionAmount: this.props.payoutData["unsettled_amount"] ? this.props.payoutData["unsettled_amount"] : 0 })
+        this.setState({ transactionAmount: this.props.payoutData["unsettled_amount_pltf"] ? this.props.payoutData["unsettled_amount_pltf"] : 0 })
     }
 
     getBankDetails = async (mobile) => {
@@ -144,7 +144,7 @@ class PayoutOrderModal extends Component {
         var val = event.target.value;
         if (val === "" || !isNaN(val)) {
             this.setState({ transactionAmount: Number(val), showAmountexceedError: false }, function () {
-                if (Number(val) > this.state.payoutData["unsettled_amount"] || Number(val) > this.state.availableCreditAmount) {
+                if (Number(val) > this.state.payoutData["unsettled_amount_pltf"] || Number(val) > this.state.availableCreditAmount) {
                     this.setState({ showAmountexceedError: true })
                 }
             })
@@ -341,7 +341,7 @@ class PayoutOrderModal extends Component {
 
                                 <div style={{ width: "100%", display: "flex" }}>
                                     <div style={{ width: "60%", lineHeight: "45px" }} className={classes.actcardtext} >
-                                        Unsettled amount : ₹ {payoutData["unsettled_amount"]}
+                                        Unsettled amount : ₹ {payoutData["unsettled_amount_pltf"]}
                                     </div>
                                     &nbsp;
                                     &nbsp;
