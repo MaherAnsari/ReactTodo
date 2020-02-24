@@ -270,7 +270,7 @@ class OrderListTable extends Component {
             // "": "Total Amount",
             // "": "Bank Transfer",
             "source_location": "Source",
-            "uyer_state": "Destination",
+            "target_location": "Destination",
             // "": "Cashback (LA)",
             // "": "Cashback (CA)",
             "supplierid": "LA ID",
