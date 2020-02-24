@@ -63,11 +63,37 @@ class DownloadModalPayment extends Component {
         let fHeader = {};
         let filteredData = [];
         if (this.state.downloadType === "Amt in") {
-            
+
             filteredData = this.props.allTransactionsData.filter(e => {
-                return ( e["transaction_type"] === "b_in" )
+                return (e["transaction_type"] === "b_in")
             });
 
+            fHeader = {
+                "transaction_date": "Date",
+                "buyer_fullname": "Buyer Details",
+                "supplier_fullname": "Supp. Details",
+                "bank_id": "Bank ID/ Razorpay",
+                "amount": "Amount",
+                "amount_bank_entry": "Bank Entry",
+                "id": "Txn",
+                "bank_trxn_id": "Reference No",
+                // "":"Comments"
+
+                
+                "supplier_mobile": "LA Phone",
+                "buyer_mobile": "CA Phone",
+                "supplier_fullname": "LA Name",
+                "supplier_business_name": "LA Business Name",
+                "buyer_fullname": "CA Name",
+                "buyer_business_name": "CA Businesss Name"
+
+            }
+
+      
+        } else {
+            filteredData = this.props.allTransactionsData.filter(e => {
+                return (e["transaction_type"] === "b_out")
+            });
             fHeader = {
                 "transaction_date": "Date",
                 "pay_id": "Txn",
@@ -78,28 +104,20 @@ class DownloadModalPayment extends Component {
                 "bank_trxn_id": "Reference No",
                 "supplierid": "LA ID",
                 "buyerid": "CA ID",
-            }
-        } else {
-            filteredData = this.props.allTransactionsData.filter(e => {
-                return ( e["transaction_type"] === "b_out" )
-            });
-            fHeader = {
-                "transaction_date": "Date",
-                "buyer_fullname": "Buyer Details",
-                "supplier_fullname": "Supp. Details",
-                "bank_id": "Bank ID/ Razorpay",
-                "amount": "Amount",
-                "amount_bank_entry": "Bank Entry",
-                "id": "Txn",
-                "bank_trxn_id": "Reference No"
-                // "":"Comments"
+
+                "supplier_mobile": "LA Phone",
+                "buyer_mobile": "CA Phone",
+                "supplier_fullname": "LA Name",
+                "supplier_business_name": "LA Business Name",
+                "buyer_fullname": "CA Name",
+                "buyer_business_name": "CA Businesss Name"
 
             }
         }
 
-       
 
-        this.downloadFormattedDataInCSV_forPayment(filteredData , this.props.downloadFilename +"_"+ this.state.downloadType, fHeader)
+
+        this.downloadFormattedDataInCSV_forPayment(filteredData, this.props.downloadFilename + "_" + this.state.downloadType, fHeader)
         this.handleDialogCancel();
     }
 
@@ -109,12 +127,12 @@ class DownloadModalPayment extends Component {
         if (row && row["status"]) {
             for (let i in statusKeysToOmit) {
                 if (row["status"].indexOf(statusKeysToOmit[i]) > -1) {
-                    isValid =  false;
+                    isValid = false;
                     break;
                 }
             }
-             
-        } 
+
+        }
         return isValid;
     }
 
@@ -126,27 +144,27 @@ class DownloadModalPayment extends Component {
             var values = (keysInFile && Object.values(keysInFile)) || [];
             csv += values.join(',') + '\n';
             for (let line of json) {
-                if( !this.checkIfOmittedStatusKeys( line )){
-                   // ignore this lines for omit keys
-                }else{
-                csv += keys.map(key => {
+                if (!this.checkIfOmittedStatusKeys(line)) {
+                    // ignore this lines for omit keys
+                } else {
+                    csv += keys.map(key => {
 
-                   
-                    if (line[key] && typeof (line[key]) === "object" && line[key].length > 0) {
-                        let fstr = line[key].toString();
-                        fstr = fstr.replace(/,/g, "|");
-                        return fstr;
-                    }
 
-                    if (line[key] && typeof (line[key]) === "string" && line[key].indexOf(",") > -1) {
-                        let fArry = [];
-                        fArry.push(line[key].replace(/,/g, "|"));
-                        return fArry;
-                    }
+                        if (line[key] && typeof (line[key]) === "object" && line[key].length > 0) {
+                            let fstr = line[key].toString();
+                            fstr = fstr.replace(/,/g, "|");
+                            return fstr;
+                        }
 
-                    return line[key]
-                }).join(',') + '\n';
-            }
+                        if (line[key] && typeof (line[key]) === "string" && line[key].indexOf(",") > -1) {
+                            let fArry = [];
+                            fArry.push(line[key].replace(/,/g, "|"));
+                            return fArry;
+                        }
+
+                        return line[key]
+                    }).join(',') + '\n';
+                }
             }
             // console.log(csv);
             var hiddenElement = document.createElement('a');

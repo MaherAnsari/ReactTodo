@@ -274,7 +274,14 @@ class OrderListTable extends Component {
             // "": "Cashback (LA)",
             // "": "Cashback (CA)",
             "supplierid": "LA ID",
-            "buyerid":"CA ID"
+            "buyerid":"CA ID",
+            
+            "supplier_mobile":"LA Phone",
+            "buyer_mobile":"CA Phone",
+            "supplier_name":"LA Name",
+            "supplier_businessname":"LA Business Name",
+            "buyer_name":"CA Name",
+            "buyer_businessname":"CA Businesss Name"
         }
         Utils.downloadFormattedDataInCSV(this.state.tableBodyData, "Order ", fHeader)
     }
