@@ -164,7 +164,7 @@ class PayoutOrderModal extends Component {
             var addAccountDataVal = this.state.addAccountData;
             if (intejarIds.indexOf(id) > -1) {
                 if (val === "" || !isNaN(val)) {
-                    addAccountDataVal[id] = Number(val);
+                    addAccountDataVal[id] = val; 
                 }
             } else {
                 addAccountDataVal[id] = val ? val.toUpperCase() : "";
