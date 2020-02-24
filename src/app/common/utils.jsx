@@ -151,6 +151,10 @@ function downloadFormattedDataInCSV(json, filename, keysInFile) {
                     fArry.push(line[key].replace(/,/g, "|"));
                     return fArry;
                 }
+
+                if( line[key] === null || line[key] === "null" ){
+                    return "";
+                }
               
                 return line[key]
             }).join(',') + '\n';
