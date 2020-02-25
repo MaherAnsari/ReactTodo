@@ -78,7 +78,7 @@ class PreviewReceiptModal extends Component {
                             </React.Fragment>
                         </DialogContent>
                         <DialogActions>
-                            <Button className={classes.formCancelBtn} onClick={()=>bijakReceipt.downloadAsPdf( transactionInfoData ) } color="primary">Download</Button>
+                            <Button className={classes.formCancelBtn} onClick={()=>{bijakReceipt.downloadAsPdf( transactionInfoData ) ; this.handleDialogCancel(this); }} color="primary">Download</Button>
                             <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Close</Button>
                         </DialogActions>
             </Dialog>
