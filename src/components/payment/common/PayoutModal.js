@@ -287,7 +287,9 @@ class PayoutModal extends Component {
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
                 // this.setState({ showChangeBankAcctOption : true });
             }
-            this.setState({ currentPayoutView: "defaultPayout" });
+            this.setState({ currentPayoutView: "defaultPayout" }, ()=>{
+                this.handleDialogCancel( this );
+            });
         } catch (err) {
             console.error(err);
             this.setState({ currentPayoutView: "defaultPayout" });
