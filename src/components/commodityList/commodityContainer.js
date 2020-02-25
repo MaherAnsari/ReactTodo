@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import CommodityTable from './component/commodityTable';
 import commodityService from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
+import AddCommodityModal from './component/AddCommodityModal';
 // import { IoTThingsGraph } from 'aws-sdk';
 
 const styles = theme => ({
@@ -42,7 +43,8 @@ class CommodityContainer extends React.Component {
             open: false,
             showAddModal: false,
             dataList: null,
-            showLoader: true
+            showLoader: true,
+            showAddCommodityModal: false
 
         };
     }
@@ -53,15 +55,14 @@ class CommodityContainer extends React.Component {
         this.getData();
 
     }
+
     async getData() {
-        // let rows = [];
 
         let resp = await commodityService.getCommodityTable();
-        // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data });
-
-
+        } else {
+            alert("Oops there was an error while getting commodity list")
         }
 
     }
@@ -85,18 +86,28 @@ class CommodityContainer extends React.Component {
     }
     render() {
         const { classes } = this.props;
+        const { showAddCommodityModal } = this.state;
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
                     <CommodityTable onClose={this.handleClose.bind(this)} tableData={this.state.dataList} />
-                    {/* <div className="updateBtndef">
-                        <div className="updateBtnFixed"
+
+
+                    <div className="updateBtndef">
+                        <div
+                            className="updateBtnFixed"
                             style={{ display: 'flex' }}
-                            onClick={this.handleClickOpen.bind(this)}>
+                            onClick={(event) => this.setState({ showAddCommodityModal: true })}>
                             <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>ADD LOCATION</p>
+                            <p>Add Commodity</p>
                         </div>
-                    </div> */}
+                    </div>
+
+                    {showAddCommodityModal && <AddCommodityModal
+                        openModal={this.state.showAddCommodityModal}
+                        onEditModalClosed={() => this.setState({ showAddCommodityModal: false, dataList: null }, () => this.getData())}
+                        onEditModalCancel={() => this.setState({ showAddCommodityModal: false })}
+                    />}
 
                 </Card> : <Loader />}
             </div>
