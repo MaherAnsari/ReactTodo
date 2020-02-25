@@ -222,7 +222,7 @@ class CommodityTable extends Component {
 
                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                       <div style={{ display: "grid", textAlign: "left" }}>
-                            <span>{row.name}</span>
+                            <span style={{textTransform: "capitalize"}}>{row.name}</span>
                             <span style={{ fontSize: "12px" }}>{"( " + row.expected_lang + " )"}</span>
                           </div>
                     

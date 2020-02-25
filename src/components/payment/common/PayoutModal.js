@@ -282,6 +282,7 @@ class PayoutModal extends Component {
                 // console.log(payload)
                 alert("Successfully completed");
                 this.props.onPayoutSuccessfull();
+                
             } else {
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
                 // this.setState({ showChangeBankAcctOption : true });

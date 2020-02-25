@@ -884,7 +884,7 @@ class ViewTransactionModal extends Component {
                     <PayoutModal
                         openPayoutModal={this.state.showPayoutModal}
                         onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
-                        onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
+                        onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined, allTransactionsData: undefined }, function () {
                             this.getTransactionList(this.state.mobileNumber, this.state.transDate);
                         })}
                         payoutData={this.state.payoutData} />}

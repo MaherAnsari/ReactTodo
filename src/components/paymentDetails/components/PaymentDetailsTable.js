@@ -857,7 +857,7 @@ class PaymentDetailsTable extends Component {
                         <PayoutModal
                             openPayoutModal={this.state.showPayoutModal}
                             onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
-                            onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
+                            onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined, allTransactionsData : undefined }, function () {
                                 this.props.OnPaymentUpdated();
                             })}
                             payoutData={this.state.payoutData} />}

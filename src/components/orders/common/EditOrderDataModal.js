@@ -110,13 +110,14 @@ class EditOrderDataModal extends Component {
                 "target_location": "",
                 "source_location": "",
                 "rate_unit": "",
-                
+
                 "broker_mobile": "",
                 "bijak_total_amount": "",
                 "invoice_no": "",
                 "old_system_order_id": "",
                 "pkt": "",
-                "brokerage": ""
+                "brokerage": "",
+                "unsettled_amount_pltf" : ""
             },
 
             buyerid: "",
@@ -171,7 +172,7 @@ class EditOrderDataModal extends Component {
 
     handleInputChange(event) {
         // console.log(event)
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate", "bijak_total_amount", "pkt", "brokerage", "unsettled_amount_pltf"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -260,7 +261,7 @@ class EditOrderDataModal extends Component {
         if (data) {
             for (var i = 0; i < data.length; i++) {
                 // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + ")", value: data[i][valuekey] });
-                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
@@ -303,7 +304,7 @@ class EditOrderDataModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate"]
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","unsettled_amount_pltf"]
         var formateddata = {};
         for (var key in this.state.orderPayloadToUpdate) {
             if (data[key] && data[key] !== "") {
@@ -345,9 +346,9 @@ class EditOrderDataModal extends Component {
         var isValid = true;
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
-            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt", 
-            "unit","rate_unit","broker_mobile","bijak_total_amount",
-            "invoice_no","old_system_order_id","pkt","brokerage"
+            "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt",
+            "unit", "rate_unit", "broker_mobile", "bijak_total_amount",
+            "invoice_no", "old_system_order_id", "pkt", "brokerage"
         ];
         var extraMandatoryFields = ["creator_role"];
         for (var key in data) {
@@ -781,7 +782,7 @@ class EditOrderDataModal extends Component {
                                 style={{ width: '49%', marginTop: '5px' }}
                                 value={orderPayload.rate_unit}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton","Rs/Packet","Rs/Crate","Rs/Box","Rs/Pc"].map((key, i) => (
+                                {["Rs/Kg", "Rs/Quintal", "Rs/Ton", "Rs/Packet", "Rs/Crate", "Rs/Box", "Rs/Pc"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
@@ -889,6 +890,19 @@ class EditOrderDataModal extends Component {
                                 type="text"
                                 style={{ width: '49%' }}
                                 value={orderPayload.brokerage}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+
+                        <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="unsettled_amount_pltf"
+                                error={errorFields["unsettled_amount_pltf"] ? true : false}
+                                label="Unsettled Amount Pltf"
+                                type="text"
+                                style={{ width: '100%' }}
+                                value={orderPayload.unsettled_amount_pltf}
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                         </div>
@@ -1015,8 +1029,8 @@ class EditOrderDataModal extends Component {
                                 // </div>
                                 <div key={"imhs_" + i} className="transaction-supporting-image">
                                     <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }}
-                                    onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
-                                     onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                        onError={(e) => { e.target.onerror = null; e.target.src = "https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                        onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
                                     <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
                                         <i className="fa fa-trash fa-lg"></i>
                                     </div>

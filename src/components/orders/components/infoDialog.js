@@ -512,12 +512,12 @@ class InfoDialog extends Component {
                 <div style={{ display: 'flex' }}>
                     <TextField
                         margin="dense"
-                        id="unsettled_amount"
-                        label="Unsettled Amount"
+                        id="unsettled_amount_pltf"
+                        label="Unsettled Amount Pltf"
                         type="text"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
-                        value={this.state.dataObj.unsettled_amount}
+                        value={this.state.dataObj.unsettled_amount_pltf}
                         fullWidth
                     />
 

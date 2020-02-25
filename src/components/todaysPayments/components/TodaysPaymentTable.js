@@ -924,7 +924,7 @@ class TodaysPaymentTable extends Component {
                         open={showEditTransactionModal}
                         editableTransactionData={this.state.editableData}
                         onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
-                            this.getTodaysTransactionList();
+                            this.getTodaysTransactionList( this.state.datePayloads );
                         })}
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
@@ -943,8 +943,8 @@ class TodaysPaymentTable extends Component {
                     <PayoutModal
                         openPayoutModal={this.state.showPayoutModal}
                         onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
-                        onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined }, function () {
-                            this.getTodaysTransactionList();
+                        onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined, allTransactionsData: undefined }, function () {
+                            this.getTodaysTransactionList( this.state.datePayloads );
                         })}
                         payoutData={this.state.payoutData} />}
 
