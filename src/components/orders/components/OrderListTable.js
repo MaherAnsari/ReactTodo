@@ -110,7 +110,7 @@ class OrderListTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHeadData: ["order Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt Pltf", "Date", "source/target", "commodity", "", "Order Amt  "],
+            tableHeadData: ["order Id", "Old Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt Pltf", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
             rawTableBodyData: [],
             searchedText: "",
@@ -371,7 +371,7 @@ class OrderListTable extends Component {
     render() {
         const { classes } = this.props;
         const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
-        const leftAlignedIndexs = [1, 2];
+        const leftAlignedIndexs = [2, 3];
         const rightAlignedIndexs = [3, 8];
         // const highlight = true;
         return (
@@ -386,7 +386,7 @@ class OrderListTable extends Component {
                                             key={option}
                                             className={this.getTableCellClass(classes, i)}
                                             style={{
-                                                minWidth: i === 0 ? "100px" : '120px',
+                                                minWidth:( i === 0 || i === 1 || i === 4 || i === 5 || i === (this.state.tableHeadData.length -1 )) ? (i !== 1 ? "100px" : "66px" ) : '120px',
                                                 textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
                                             }}>{option}</TableCell>
                                     ))}
@@ -420,6 +420,9 @@ class OrderListTable extends Component {
                                                     
                                                 </TableCell>
                                                 
+                                                <TableCell className={classes.tableCell}>
+                                                        {row.old_system_order_id ? row.old_system_order_id : "-"}
+                                                    </TableCell>
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
                                                     <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}

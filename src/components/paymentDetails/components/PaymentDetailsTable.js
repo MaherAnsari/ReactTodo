@@ -122,7 +122,7 @@ class PaymentDetailsTable extends Component {
         this.state = {
             allTransactionsData: this.props.allTransactionsData,
             paymentMetaInfo : this.props.paymentMetaInfo,
-            tableHeadData: ["status","id", "Buyer Name/ Bussiness Name", "Supplier Name/ Bussiness Name", "Created Time",  "Payment mode","Payment type","Amount", "Supporting images"],
+            tableHeadData: ["status","id","Lnked Order Id", "Buyer Name/ Bussiness Name", "Supplier Name/ Bussiness Name", "Created Time",  "Payment mode/ Payment type","Amount", "Supporting images"],
             invoiceModalData: [],
             showImageInvoiceModal: false,
             editableData: undefined,
@@ -676,7 +676,7 @@ class PaymentDetailsTable extends Component {
                                                 <TableCell 
                                                 key={option} 
                                                 className={classes.tableCell} 
-                                                style={{ width:(option === "id" ? "70px":""), minWidth: (option === "id" ? "70px":"120px"), paddingLeft: i === 0 ? '22px' : '',
+                                                style={{ width:(option === "id" || option === "Lnked Order Id"? "70px":""), minWidth: (option === "id" || option === "Lnked Order Id" ? "70px":"120px"), paddingLeft: i === 0 ? '22px' : '',
                                                 textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
                                             }}>{option}</TableCell>
                                             ))}
@@ -720,6 +720,10 @@ class PaymentDetailsTable extends Component {
                                                         </span>
                                                        { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} className="fa fa-mobile" aria-hidden="true"></i>}
                                                     </TableCell>
+
+                                                    <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
+                                                        {row.linked_order_id ? row.linked_order_id : "-"}
+                                                    </TableCell>
                                                    
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
                                                         <div className="text-ellpses">
@@ -749,12 +753,11 @@ class PaymentDetailsTable extends Component {
                                                         </div>
                                                     </TableCell>
                                                     
-                                                    <TableCell className={classes.tableCell}>
+                                                    {/* <TableCell className={classes.tableCell}>
                                                         {row.payment_mode ? row.payment_mode : "-"}
-                                                        {/* <span id="livetransactionId"> <img className="livetransaction" src={transactionIcon} alt="transacionIcon"/></span> */}
-                                                    </TableCell>
+                                                    </TableCell> */}
                                                     <TableCell className={classes.tableCell}>
-                                                                        {row.transaction_type ? row.transaction_type : "-"}
+                                                                        {row.payment_mode ? row.payment_mode : "-"} / <span style={{fontWeight: "bold"}}>{row.transaction_type ? row.transaction_type : "-"} </span>
                                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
                                                     ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}

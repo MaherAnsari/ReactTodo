@@ -79,6 +79,7 @@ class DownloadModalPayment extends Component {
                 "bank_trxn_id": "Reference No",
                 // "":"Comments"
 
+                "linked_order_id":"Linked Order Id",
                 
                 "supplier_mobile": "LA Phone",
                 "buyer_mobile": "CA Phone",
@@ -104,6 +105,9 @@ class DownloadModalPayment extends Component {
                 "bank_trxn_id": "Reference No",
                 "supplierid": "LA ID",
                 "buyerid": "CA ID",
+
+                
+                "linked_order_id":"Linked Order Id",
 
                 "supplier_mobile": "LA Phone",
                 "buyer_mobile": "CA Phone",
