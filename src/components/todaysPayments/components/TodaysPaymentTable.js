@@ -904,7 +904,7 @@ class TodaysPaymentTable extends Component {
                                                     {row.payment_mode ? row.payment_mode : "-"} / <span style={{fontWeight: "bold"}}>{row.transaction_type ? row.transaction_type : "-"} </span>
                                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{ color: this.getTransactionTypeColor(row.transaction_type) , textAlign: "right"}}>
-                                                    ₹ {row.amount ? Utils.formatNumberWithComma(row.amount) : "-"}
+                                                    ₹ {row.amount || row.amount === 0 ? Utils.formatNumberWithComma(row.amount) : "-"}
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell}>
 

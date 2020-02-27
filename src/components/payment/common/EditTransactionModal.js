@@ -240,10 +240,10 @@ class EditTransactionModal extends Component {
                 var resp = await paymentService.updatePayementInfo(id, payloadData);
                 this.setState({ showLoader : false });
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully added this transaction ");
+                    alert("Successfully updated this transaction ");
                     this.props.onTransactionUpdated();
                 } else {
-                    alert("There was an error while adding this transaction");
+                    alert("There was an error while updating this transaction");
                 }
             } else {
                 alert("please fill the mandatory fields highlighted");
@@ -302,7 +302,8 @@ class EditTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", "cashback_value", "cashback_allotted_to", "remarks", "reason","buyer_business_name","supplier_locality"]
+        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", 
+        "cashback_value", "cashback_allotted_to", "remarks", "reason","buyer_business_name","supplier_business_name","supplier_locality"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
