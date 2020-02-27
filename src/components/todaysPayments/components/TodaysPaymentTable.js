@@ -45,8 +45,10 @@ import Button from '@material-ui/core/Button';
 import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
 import AddTransactionModal from '../../payment/components/AddTransactionModal';
 import DownloadModalPayment from '../../common/DownloadModalPayment';
-
-
+import FilterListComponent from '../../paymentDetails/components/FilterListComponent';
+import supplierService from '../../../app/supplierService/supplierService';
+import buyerService from '../../../app/buyerService/buyerService';
+import paymentDetailsService from '../../../app/paymentDetailsService/paymentDetailsService';
 var moment = require('moment');
 
 const theme = createMuiTheme({
@@ -157,8 +159,9 @@ class TodaysPaymentTable extends Component {
 
             showTransactionInfoDialog: false,
             transactionInfoData : undefined,
-            datePayloads: { "startDate": "" },
-
+            // datePayloads: { "startDate": "" },
+            datePayloads: { "startDate": "", "endDate": "" },
+            params: {},
             showPaymentFilterOption: false,
             filterDataArray : [],
             transactionTypeArray : [],
@@ -170,17 +173,69 @@ class TodaysPaymentTable extends Component {
 
             showAddTransactionModal: false,
 
-            showDownloadModal : false
+            showDownloadModal : false,
+
+            buyersList: [],
+            suppliersList: [],
         }
     }
 
     componentDidMount() {
         // this.getTodaysTransactionList( this.state.datePayloads );
+        this.getBuyersList();
+        this.getSuppliersList();
     }
 
-    getTodaysTransactionList = async ( datePayloads ) => {
+    async getBuyersList() {
         try {
-            let resp = await paymentService.getTodaysPaymentDataApi( datePayloads );
+            let resp = await buyerService.getBuyerList();
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ buyersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile") });
+                }
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async getSuppliersList() {
+        try {
+            let resp = await supplierService.getSupplierList();
+            if (this.ismounted) {
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ suppliersList: this.formatDataForDropDown(resp.data.result.data, "fullname", "mobile") });
+                }
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    formatDataForDropDown(data, labelKey, valuekey) {
+
+        var optionsData = [];
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + " )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
+            }
+        }
+        return optionsData;
+    }
+
+
+    getTodaysTransactionList = async ( params ) => {
+        try {
+            this.setState({ params: params });
+            if (this.state.datePayloads["startDate"] !== "") {
+                params["startDate"] = this.state.datePayloads["startDate"];
+            }
+            if (this.state.datePayloads["endDate"] !== "") {
+                params["endDate"] = this.state.datePayloads["endDate"];
+            }
+            // let resp = await paymentService.getTodaysPaymentDataApi( datePayloads );
+            let resp = await paymentDetailsService.getPaymentDetails(params);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
                 this.setState({
@@ -232,7 +287,7 @@ class TodaysPaymentTable extends Component {
       handelRefreshModal( event ){
           this.setState({             
             allTransactionsData: undefined}, function(){
-                this.getTodaysTransactionList( this.state.datePayloads );
+                this.getTodaysTransactionList( this.state.params );
             });
       }
     
@@ -433,7 +488,7 @@ class TodaysPaymentTable extends Component {
     onUserInfoModalCancel(event) {
         this.setState({ showUserInfo : false,  isInfo: false });
         if(this.state.isLimitUpdate){
-            this.getTodaysTransactionList( this.state.datePayloads );
+            this.getTodaysTransactionList( this.state.params );
         }
     }
 
@@ -465,8 +520,11 @@ class TodaysPaymentTable extends Component {
     }
 
     checkIfAccountInfoAvaialble( data ){
-        if( (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
-          (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") ){
+        if( 
+            (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
+            // (data["transaction_type"] === "b_out" && data["payment_mode"] === "bank") ||
+            (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") 
+            ){
         if(  data &&
              data["bank_details"] &&
              (data["status"] === "payout_processed" || 
@@ -496,7 +554,7 @@ class TodaysPaymentTable extends Component {
 
     onDateChaged(data) {
         this.setState({ datePayloads: data }, function () {
-            this.getTodaysTransactionList( data );
+            this.getTodaysTransactionList( this.state.params );
         });
     }
 
@@ -541,7 +599,7 @@ class TodaysPaymentTable extends Component {
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             // this.getPaymentInfoDetails(this.state.datePayloads);
-            this.getTodaysTransactionList( this.state.datePayloads );
+            this.getTodaysTransactionList( this.state.params );
         })
     }
 
@@ -621,6 +679,11 @@ class TodaysPaymentTable extends Component {
                         </Badge>
                     </div>
                     </div>
+                    <FilterListComponent
+                        buyersList={this.state.buyersList}
+                        // brokersList={this.state.brokersList}
+                        suppliersList={this.state.suppliersList}
+                        getPaymentDetailsData={this.getTodaysTransactionList.bind(this)} />
            
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
@@ -926,7 +989,7 @@ class TodaysPaymentTable extends Component {
                         open={showEditTransactionModal}
                         editableTransactionData={this.state.editableData}
                         onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
-                            this.getTodaysTransactionList( this.state.datePayloads );
+                            this.getTodaysTransactionList( this.state.params );
                         })}
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
@@ -946,7 +1009,7 @@ class TodaysPaymentTable extends Component {
                         openPayoutModal={this.state.showPayoutModal}
                         onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
                         onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined, allTransactionsData: undefined }, function () {
-                            this.getTodaysTransactionList( this.state.datePayloads );
+                            this.getTodaysTransactionList( this.state.params );
                         })}
                         payoutData={this.state.payoutData} />}
 

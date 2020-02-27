@@ -98,7 +98,8 @@ class RoleDialog extends Component {
                 "PaymentManagment",
                 "SupportingDataManagement",
                 "SuperAdmin",
-                "ViewUserMobileNumber"
+                "ViewUserMobileNumber",
+                // "RazorpayX"
             ],
 
             showLoader: false

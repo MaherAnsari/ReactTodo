@@ -478,8 +478,11 @@ class PaymentDetailsTable extends Component {
     }
 
     checkIfAccountInfoAvaialble( data ){
-        if( (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
-          (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") ){
+        if( 
+            (data["transaction_type"] === "b_out" && data["payment_mode"] === "bijak") ||
+            // (data["transaction_type"] === "b_out" && data["payment_mode"] === "bank") ||
+            (data["transaction_type"] === "b_in" && data["payment_mode"] === "bank") 
+            ){
         if(  data &&
              data["bank_details"] &&
              (data["status"] === "payout_processed" || 

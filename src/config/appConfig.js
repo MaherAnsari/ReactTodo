@@ -52,7 +52,10 @@ export function getAccessAccordingToRole(option) {
             },
             "ViewUserMobileNumber":{
                 "ViewMobileNumber" : true
-            }
+            },
+            // "RazorpayX":{
+            //     "viewRazorpayX" : true
+            // }
         }
 
         // let roles2 = {

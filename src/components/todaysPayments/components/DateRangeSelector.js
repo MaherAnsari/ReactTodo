@@ -18,13 +18,13 @@ class DateRangeSelector extends React.Component {
     }
 
     componentDidMount() {
-        this.props.onDateChanged({ "startDate": this.formateDateForApi(this.state.selectedStartDate) });
+        this.props.onDateChanged({ "startDate": this.formateDateForApi(this.state.selectedStartDate) , "endDate": this.formateDateForApi(this.state.selectedStartDate)});
     }
 
 
     handleStartDateChange = (date) => {
         this.setState({ selectedStartDate: date }, function () {
-            this.props.onDateChanged({ "startDate": this.formateDateForApi(date)});
+            this.props.onDateChanged({ "startDate": this.formateDateForApi(date), "endDate": this.formateDateForApi(date) });
         })
     }
 
