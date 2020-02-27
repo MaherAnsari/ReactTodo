@@ -65,6 +65,19 @@ let commonService = {
         },3);
     },
 
+    deleteBankDetail : async function ( payload ) {
+        // https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/bijak/disableAccount
+        //ifsc  / accountnumber / mobile
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/bijak/disableAccount',
+            data: payload
+        },3);
+    },
+
     
     getUserSpecificRole : async function ( mobile ) {
         mobile = mobile.replace("+","")

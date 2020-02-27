@@ -57,7 +57,10 @@ class AddBankAccountContainer extends React.Component {
             showConfirmDialog: false,
             dialogText: "",
             dialogTitle:"",
-            forceUpdateData: undefined
+            forceUpdateData: undefined,
+
+            deleteAccountObj: undefined,
+            isActDeleteClicked : false
         }
     }
 
@@ -223,8 +226,14 @@ class AddBankAccountContainer extends React.Component {
                 disabled={ !getAccessAccordingToRole("addBankAccount") }
                 size="small"
                 aria-label="Force validate"
-                onClick={( event )=> this.setState({ dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
-                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, forceUpdateData : obj, showConfirmDialog : true })}
+                onClick={( event )=> this.setState({ 
+                    dialogTitle: "Are you sure to force validate this account ?",
+                    dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
+                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, 
+                forceUpdateData : obj, 
+                isActDeleteClicked : false,
+                showConfirmDialog : true
+             })}
                 style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0": "gray", color: "#ffffff", padding: "0 8px" }}
             >
                 Force validate
@@ -258,9 +267,54 @@ class AddBankAccountContainer extends React.Component {
         }
     }
 
+    handelConfirmBtnClicked(){
+        if( this.state.isActDeleteClicked ){
+            this.deleteBankAccountDetailApi();
+        }else{
+            this.onForceUpdateBankDetail();
+        }
+    }
+
+    deleteBankAccountDetailApi = async ( ) => {
+        try {
+            this.setState({ showLoader : true , showConfirmDialog : false });
+            let data = this.state.deleteAccountObj;
+            let payload ={
+                ifsc :data["ifsc"],
+                accountnumber :data["account"],
+                mobile:data["mobile"],
+                name: data["name"],
+                "is_deleted": true
+            }
+            // let resp = { data  :{ status : 1}}
+            let resp = await commonService.deleteBankDetail(payload);
+            this.setState({ showLoader : false });
+                if (resp.data.status === 1) {
+                    alert("Successfully deleted");
+                    this.getBankDetails(this.state.currentSelectedUserDetails)
+                }else{
+                    alert("Oops an error occured while deleting the account details.");
+                }
+            
+        }catch( err ){
+            console.log( err )
+        }
+    }
+
     handelCancelUpdate(event) {
-        this.setState({ showConfirmDialog: false, forceUpdateData : undefined });
+        this.setState({ showConfirmDialog: false, forceUpdateData : undefined ,deleteAccountObj : undefined, isActDeleteClicked : false  });
       }
+
+    onDeleteButtonClicked( obj ){
+        this.setState({
+            dialogTitle: "Are you sure to delete this account ?",
+            dialogText: 
+                            <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
+                            <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
+            isActDeleteClicked : true, 
+            deleteAccountObj : obj, 
+            showConfirmDialog : true });
+    }
 
     render() {
         const { classes } = this.props;
@@ -292,8 +346,12 @@ class AddBankAccountContainer extends React.Component {
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
+                                                    
                                                     {/* <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span> */}
                                                     {this.getStatusOfAccount( obj )}
+                                                    <Icon edge="end" aria-label="comments" style={{ color: "red", cursor:"pointer" }} onClick={()=> this.onDeleteButtonClicked( obj )}>
+                                                        delete_forever
+                                                    </Icon>
                                                 </ListItem>
                                             );
                                         })}
@@ -408,7 +466,7 @@ class AddBankAccountContainer extends React.Component {
                                     dialogText={this.state.dialogText}
                                     dialogTitle={this.state.dialogTitle}
                                     show={this.state.showConfirmDialog}
-                                    onConfirmed={()=>this.onForceUpdateBankDetail()}
+                                    onConfirmed={()=>this.handelConfirmBtnClicked()}
                                     onCanceled={()=>this.handelCancelUpdate()} /> : ""}
 
                     </div>

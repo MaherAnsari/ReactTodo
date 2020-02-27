@@ -53,8 +53,11 @@ class BankDetail extends React.Component {
             currentSelectedUserDetails: this.props.userData,
             showConfirmDialog: false,
             dialogText: "",
-            dialogTitle:"",
-            forceUpdateData: undefined
+            dialogTitle: "",
+            forceUpdateData: undefined,
+
+            deleteAccountObj: undefined,
+            isActDeleteClicked: false
         }
     }
 
@@ -95,7 +98,7 @@ class BankDetail extends React.Component {
             var addAccountDataVal = this.state.addAccountData;
             if (intejarIds.indexOf(id) > -1) {
                 if (val === "" || !isNaN(val)) {
-                    addAccountDataVal[id] = val;  
+                    addAccountDataVal[id] = val;
                 }
             } else {
                 if (id === "bank_name") {
@@ -216,51 +219,103 @@ class BankDetail extends React.Component {
         }
     }
 
-    getStatusOfAccount( obj ){
-        if( obj["status"] !== "active"){
+    getStatusOfAccount(obj) {
+        if (obj["status"] !== "active") {
             return (<Fab
                 variant="extended"
-                disabled={ !getAccessAccordingToRole("addBankAccount") }
+                disabled={!getAccessAccordingToRole("addBankAccount")}
                 size="small"
                 aria-label="Force validate"
-                onClick={( event )=> this.setState({ dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
-                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, forceUpdateData : obj, showConfirmDialog : true })}
-                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0": "gray", color: "#ffffff", padding: "0 8px" }}
+                onClick={(event) => this.setState({
+                    dialogText: <div style={{ display: "block" }}><div style={{ fontSize: "13px" }}>{`Name : ${obj["name"]} `}</div>
+                        <div style={{ fontSize: "13px" }}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
+                    forceUpdateData: obj,
+                    isActDeleteClicked: false,
+                    showConfirmDialog: true
+                })}
+                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0" : "gray", color: "#ffffff", padding: "0 8px" }}
             >
                 Force validate
     </Fab>)
-        }else{
+        } else {
             return (<span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>);
         }
     }
 
-    onForceUpdateBankDetail = async ( ) => {
+    onForceUpdateBankDetail = async () => {
         try {
-            this.setState({ showLoader : true , showConfirmDialog : false });
+            this.setState({ showLoader: true, showConfirmDialog: false });
             let data = this.state.forceUpdateData;
-            let payload ={
-                ifsc :data["ifsc"],
-                accountnumber :data["account"],
-                mobile:data["mobile"],
+            let payload = {
+                ifsc: data["ifsc"],
+                accountnumber: data["account"],
+                mobile: data["mobile"],
                 name: data["name"],
             }
             let resp = await commonService.forceUpdateBankDetail(payload);
-            this.setState({ showLoader : false });
-                if (resp.data.status === 1) {
-                    alert("Successfully updated");
-                    this.getBankDetails(this.state.currentSelectedUserDetails)
-                }else{
-                    alert("Oops an error occured while validating your account details.");
-                }
-            
-        }catch( err ){
-            console.log( err )
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                alert("Successfully updated");
+                this.getBankDetails(this.state.currentSelectedUserDetails)
+            } else {
+                alert("Oops an error occured while validating your account details.");
+            }
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    handelConfirmBtnClicked() {
+        if (this.state.isActDeleteClicked) {
+            this.deleteBankAccountDetailApi();
+        } else {
+            this.onForceUpdateBankDetail();
+        }
+    }
+
+    deleteBankAccountDetailApi = async () => {
+        try {
+            this.setState({ showLoader: true, showConfirmDialog: false });
+            let data = this.state.deleteAccountObj;
+            let payload = {
+                ifsc: data["ifsc"],
+                accountnumber: data["account"],
+                mobile: data["mobile"],
+                name: data["name"],
+                "is_deleted": true
+            }
+            // let resp = { data: { status: 1 } }
+            let resp = await commonService.deleteBankDetail(payload);
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                alert("Successfully deleted");
+                this.getBankDetails(this.state.currentSelectedUserDetails)
+            } else {
+                alert("Oops an error occured while deleting the account details.");
+            }
+
+        } catch (err) {
+            console.log(err)
         }
     }
 
     handelCancelUpdate(event) {
-        this.setState({ showConfirmDialog: false, forceUpdateData : undefined });
-      }
+        this.setState({ showConfirmDialog: false, forceUpdateData: undefined, deleteAccountObj: undefined, isActDeleteClicked: false });
+    }
+
+    onDeleteButtonClicked(obj) {
+        this.setState({
+            dialogTitle: "Are you sure to delete this account ?",
+            dialogText:
+                <div style={{ display: "block" }}><div style={{ fontSize: "13px" }}>{`Name : ${obj["name"]} `}</div>
+                    <div style={{ fontSize: "13px" }}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
+            isActDeleteClicked: true,
+            deleteAccountObj: obj,
+            showConfirmDialog: true
+        });
+    }
+
 
     render() {
         const { classes } = this.props;
@@ -292,8 +347,11 @@ class BankDetail extends React.Component {
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    {this.getStatusOfAccount( obj )}
+                                                    {this.getStatusOfAccount(obj)}
                                                     {/* <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span> */}
+                                                    <Icon edge="end" aria-label="comments" style={{ color: "red", cursor: "pointer" }} onClick={() => this.onDeleteButtonClicked(obj)}>
+                                                        delete_forever
+                                                    </Icon>
                                                 </ListItem>
                                             );
                                         })}
@@ -394,13 +452,13 @@ class BankDetail extends React.Component {
                             <React.Fragment>
                                 <Loader />
                             </React.Fragment>}
-                            {this.state.showConfirmDialog ?
-                                <ConfirmDialog
-                                    dialogText={this.state.dialogText}
-                                    dialogTitle={this.state.dialogTitle}
-                                    show={this.state.showConfirmDialog}
-                                    onConfirmed={()=>this.onForceUpdateBankDetail()}
-                                    onCanceled={()=>this.handelCancelUpdate()} /> : ""}
+                        {this.state.showConfirmDialog ?
+                            <ConfirmDialog
+                                dialogText={this.state.dialogText}
+                                dialogTitle={this.state.dialogTitle}
+                                show={this.state.showConfirmDialog}
+                                onConfirmed={() => this.handelConfirmBtnClicked()}
+                                onCanceled={() => this.handelCancelUpdate()} /> : ""}
 
                     </div>
                 </Paper>

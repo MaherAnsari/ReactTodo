@@ -115,9 +115,9 @@ function downloadDataInCSV(json, filename) {
         for (let line of json) {
             csv += keys.map(key => line[key]).join(',') + '\n';
         }
-        console.log(csv);
+        // console.log(csv);
         var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + csv;
         hiddenElement.target = '_blank';
         hiddenElement.download = (filename + ".csv");
         hiddenElement.click();
@@ -161,7 +161,7 @@ function downloadFormattedDataInCSV(json, filename, keysInFile) {
         }
         // console.log(csv);
         var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' +csv;
         hiddenElement.target = '_blank';
         hiddenElement.download = (filename + ".csv");
         // console.log(csv);
@@ -199,7 +199,7 @@ function formatDownloadDataInCSVThroughApi(json, filename) {
             }).join(',') + '\n';
         }
         var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + csv;
         hiddenElement.target = '_blank';
         hiddenElement.download = (filename + ".csv");
         hiddenElement.click();

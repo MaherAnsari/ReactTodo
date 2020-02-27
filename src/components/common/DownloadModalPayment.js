@@ -172,7 +172,7 @@ class DownloadModalPayment extends Component {
             }
             // console.log(csv);
             var hiddenElement = document.createElement('a');
-            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + csv;
             hiddenElement.target = '_blank';
             hiddenElement.download = (filename + ".csv");
             // console.log(csv);
