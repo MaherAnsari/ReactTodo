@@ -16,12 +16,12 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import paymentService from '../../../app/paymentService/paymentService';
 import Loader from '../../common/Loader';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
+// import Radio from '@material-ui/core/Radio';
+// import RadioGroup from '@material-ui/core/RadioGroup';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import FormControl from '@material-ui/core/FormControl';
+// import FormLabel from '@material-ui/core/FormLabel';
+// import FormHelperText from '@material-ui/core/FormHelperText';
 import Utils from './../../../app/common/utils';
 import orderService from '../../../app/orderService/orderService';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
@@ -313,7 +313,8 @@ class PayoutOrderModal extends Component {
     render() {
         const { classes } = this.props;
         const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount,
-            transferType, acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
+            // transferType,
+             acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
             errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}

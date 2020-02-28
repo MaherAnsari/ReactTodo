@@ -455,7 +455,7 @@ class AddOrderModal extends Component {
             this.setState({
                 isFileUpload: false
             })
-            let data = err
+            // let data = err
             console.log(err)
         }
         );
@@ -473,7 +473,7 @@ class AddOrderModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, addOrderPayload, supplierid, buyerid, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const { showLoader, addOrderPayload, supplierid, buyerid, commodityList, tempVar, errorFields } = this.state;
         console.log(commodityList)
         return (<div>
             <Dialog style={{ zIndex: '1' }}

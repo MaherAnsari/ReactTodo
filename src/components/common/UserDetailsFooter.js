@@ -17,7 +17,6 @@ const styles = theme => ({
         fontSize: "15px",
         fontWeight: 500,
         padding: "8px",
-        color: "#fff",
         borderRadius: "5px",
         marginLeft: "10px",
         fontStretch: "normal",

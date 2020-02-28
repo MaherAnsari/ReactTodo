@@ -439,7 +439,7 @@ class PaymentTable extends Component {
                     </TableRow>
                 </TableFooter></Table>}
             
-            {this.props.data && this.props.data.length == 0 && < NoDataAvailable style={{ height: '25vh' }} />}
+            {this.props.data && this.props.data.length === 0 && < NoDataAvailable style={{ height: '25vh' }} />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}

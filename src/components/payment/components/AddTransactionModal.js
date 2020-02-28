@@ -85,7 +85,7 @@ const transactionType = {
 };
 // const payment_statusOption = ["pending","pending_approved"];
 const payment_modeOption = ["bank", "cash", "bijak"];
-const cashback_allotted_toOption = ["none", "la", "ca"];
+// const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
 class AddTransactionModal extends Component {
 

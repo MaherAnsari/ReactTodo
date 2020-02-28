@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 // import blockListService from '../../../app/blockListService/blockListService';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
-import Utils from '../../app/common/utils';
+// import Utils from '../../app/common/utils';
 const csv=require('csvtojson')
 const styles = theme => ({
     heading: {
@@ -73,9 +73,9 @@ class FileUploader extends Component {
     }
     fileChangedHandler = (event) => {
         let file = event.target.files[0];
-        var fileName = file.name;
+        // var fileName = file.name;
         var fileSize = file.size;
-        var fileExtension = fileName.substring(fileName.indexOf(".") + 1);
+        // var fileExtension = fileName.substring(fileName.indexOf(".") + 1);
         if (fileSize < 20000000 ) {
             this.handleFiles(event);
 

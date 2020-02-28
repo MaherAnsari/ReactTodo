@@ -455,7 +455,7 @@ class EditOrderDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload, brokerid, commodityList, tempVar, errorFields } = this.state;
+        const { showLoader, orderPayload,  commodityList,  errorFields } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}

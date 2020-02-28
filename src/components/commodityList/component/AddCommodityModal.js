@@ -187,7 +187,7 @@ class AddCommodityModal extends Component {
             }
         });
 
-        let updatedNameOfFile = this.state.addCommodityDataObj["name"] + "." + file.name.split(".")[1];
+        // let updatedNameOfFile = this.state.addCommodityDataObj["name"] + "." + file.name.split(".")[1];
 
         Storage.put("commodity/" + updatedFileName, file, {
             contentType: 'image/png'
