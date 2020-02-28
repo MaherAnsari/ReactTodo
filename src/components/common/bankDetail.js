@@ -13,6 +13,7 @@ import commonService from '../../app/commonService/commonService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import Fab from '@material-ui/core/Fab';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
+import NoDataAvailable from './NoDataAvailable';
 
 const styles = theme => ({
     root: {
@@ -356,6 +357,10 @@ class BankDetail extends React.Component {
                                             );
                                         })}
                                     </List>
+
+                                    {acctData && acctData.length === 0 && 
+                                    < NoDataAvailable style={{ height: '25vh' }} />
+                                    }
                                     {getAccessAccordingToRole("addBankAccount") && <div className="updateBtnFixedModal" style={{ right: '7px', bottom: '90px' }}>
                                         <Button variant="contained"
                                             onClick={(event) =>

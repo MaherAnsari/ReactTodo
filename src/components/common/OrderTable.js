@@ -191,7 +191,7 @@ class OrderTable extends Component {
                                 className={this.getTableCellClass(classes, i)}
                                 style={{
                                     textTransform: 'uppercase',
-                                    minWidth: i === 0 ? "80px" : '120px', paddingRight: i === 5 ? "10px" : '',
+                                    minWidth: i === 0 ? "85px" : '120px', paddingRight: i === 5 ? "10px" : '',
                                     textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
                                 }}>{option}</TableCell>
                         ))}

@@ -24,7 +24,7 @@ const styles = theme => ({
     dialogPaper: {
         minWidth: '500px',
         // maxWidth: '700px',
-        minHeight: '500px',
+        minHeight: '450px',
         // maxHeight: '500px'
     },
     formAddBtn: {

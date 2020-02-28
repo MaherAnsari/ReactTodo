@@ -28,7 +28,7 @@ const styles = theme => ({
     card: {
         maxWidth: '100%',
         minHeight: '70vh',
-        marginTop: '15px',
+        marginTop: '5%',
         height: '97%',
     }
 });

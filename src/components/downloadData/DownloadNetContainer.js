@@ -96,8 +96,8 @@ class DownloadNetContainer extends React.Component {
     }
 
     onDownLoadAPiSuccess(data) {
-
-        Utils.formatDownloadDataInCSVThroughApi(data , "payment_details");
+        let fileName = this.state.type+ "_payment_details";
+        Utils.formatDownloadDataInCSVThroughApi(data , fileName);
     }
 
 
@@ -151,11 +151,13 @@ class DownloadNetContainer extends React.Component {
 
                                 </div>
 
-                                { !showLoader && <Button style={{ marginTop: "10%", background:"#e74a52", "color":"#fff" }}
+                                 <Button style={{ marginTop: "10%", background:"#e74a52", "color":"#fff" }}
                                     onClick={this.onDownloadClicked.bind( this )} 
+                                    disabled={showLoader}
                                     color="primary" autoFocus>
-                                    Download
-                                 </Button>}
+                                        { showLoader && <i className="fa fa-spinner fa-spin" /> }
+                                        &nbsp; Download
+                                 </Button>
                             </React.Fragment> 
                     </div>
                 </Paper>

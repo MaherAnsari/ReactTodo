@@ -333,6 +333,18 @@ class SignIn extends React.Component {
                             Continue {this.state.disabledForgotBtn ? <i className="fa fa-spinner fa-spin tableContainer"></i> : ""}
                         </button>
                     </div>
+                    <div className="flex-sb-m w-full p-t-3 p-b-32"
+                    style={{
+                        paddingTop: "12px",
+                        color: "blue",
+                        fontWeight: 500,
+                        fontSize: "14px",
+                        cursor: "pointer"
+                    }} onClick={() => this.setState({
+                        action: "sigin", forgotPasswordViewStep: 1
+                    })}>
+                  <i className="fa fa-arrow-left" aria-hidden="true"></i> &nbsp;  Back to login
+                </div>
                 </form> :
                 <form id="forgotpasswordUserOtpNewPassword" className="login100-form validate-form" autoComplete="off">
                     <img src='https://static.wixstatic.com/media/3ae3ef_e4ffe8f5fc524099b6a01ad4652b5bed~mv2.png/v1/fill/w_153,h_46,al_c,q_80,usm_1.20_1.00_0.01/Bijak%20Agritech%20Logo.webp' alt="logo" style={{ height: '8vh', marginBottom: '10px' }} />

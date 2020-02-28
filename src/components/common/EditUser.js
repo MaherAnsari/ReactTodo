@@ -267,10 +267,11 @@ class EditUser extends Component {
                     margin="dense"
                     id="mobile"
                     label="Mobile"
+                    size="small"
                     type="number"
                     maxLength="10"
                     disabled={true}
-                    style={{ marginRight: '2%', width: '48%' }}
+                    style={{ marginRight: '2%', width: '48%', fontSize: "14px" }}
                     value={this.state.dataObj.mobile}
                     onChange={this.handleChange.bind(this)}
                     required

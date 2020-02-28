@@ -109,6 +109,7 @@ class InfoDialog extends Component {
                         label="Supplier Mobile"
                         type="text"
                         maxLength="10"
+                        size="small"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={Utils.maskMobileNumber(this.state.dataObj.supplier_mobile)}
@@ -121,6 +122,7 @@ class InfoDialog extends Component {
                         type="text"
                         maxLength="10"
                         disabled={true}
+                        size="small"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={Utils.maskMobileNumber(this.state.dataObj.buyer_mobile)}
                         fullWidth
@@ -138,6 +140,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.buyer_name}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -149,6 +152,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.buyer_businessname}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -162,6 +166,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.broker_name}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -173,6 +178,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.broker_businessname}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -186,6 +192,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.supplier_name}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -197,6 +204,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.supplier_businessname}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -209,6 +217,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.source_location}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -219,6 +228,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.target_location}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -232,6 +242,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.commodity}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -243,6 +254,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.qnt}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -256,6 +268,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.unit}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -267,6 +280,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={Utils.maskMobileNumber(this.state.dataObj.mobile)}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -281,6 +295,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.type}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -292,6 +307,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.bijak_amt}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -305,6 +321,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.transport_info}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -315,6 +332,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.author_name}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -329,6 +347,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={Utils.maskMobileNumber(this.state.dataObj.author_mobile)}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -339,6 +358,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.status}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -352,6 +372,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.remark}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -362,6 +383,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.actual_dispatch_date}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -375,6 +397,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.actual_arrival_date}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -385,6 +408,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.expected_arrival_date}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -398,6 +422,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.createdtime}
                         fullWidth
+                        size="small"
                     />
                     <TextField
                         margin="dense"
@@ -408,6 +433,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.updatedtime}
                         fullWidth
+                        size="small"
                     />
 
                 </div>
@@ -421,6 +447,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.brokerid}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -432,6 +459,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.other_info}
                         fullWidth
+                        size="small"
                     />
 
 
@@ -447,6 +475,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.supplierid}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -458,6 +487,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.buyerid}
                         fullWidth
+                        size="small"
                     />
                 </div>
 
@@ -472,6 +502,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.rate}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -483,6 +514,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.commission_rate}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -496,6 +528,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.commission_unit}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -507,6 +540,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.rate_unit}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 <div style={{ display: 'flex' }}>
@@ -519,6 +553,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.unsettled_amount_pltf}
                         fullWidth
+                        size="small"
                     />
 
                     <TextField
@@ -530,6 +565,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.creator_role}
                         fullWidth
+                        size="small"
                     />
                 </div>
                 {/*--------------- newly Added---------------- */}
@@ -543,6 +579,7 @@ class InfoDialog extends Component {
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.broker_mobile}
+                        size="small"
                         fullWidth />
                     &nbsp;
                     &nbsp;
@@ -554,6 +591,7 @@ class InfoDialog extends Component {
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.bijak_total_amount}
                         disabled={true}
+                        size="small"
                         fullWidth />
                 </div>
 
@@ -567,6 +605,7 @@ class InfoDialog extends Component {
                         type="text"
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.invoice_no}
+                        size="small"
                         fullWidth />
                     &nbsp;
                     &nbsp;
@@ -577,6 +616,7 @@ class InfoDialog extends Component {
                         type="text"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
+                        size="small"
                         value={this.state.dataObj.old_system_order_id}
                         fullWidth />
                 </div>
@@ -590,6 +630,7 @@ class InfoDialog extends Component {
                         type="text"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
+                        size="small"
                         value={this.state.dataObj.pkt}
                         fullWidth />
                     &nbsp;
@@ -599,6 +640,7 @@ class InfoDialog extends Component {
                         id="brokerage"
                         label="brokerage"
                         type="text"
+                        size="small"
                         disabled={true}
                         style={{ marginRight: '2%', width: '48%' }}
                         value={this.state.dataObj.brokerage}

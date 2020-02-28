@@ -27,7 +27,7 @@ const styles = theme => ({
     dialogPaper: {
         minWidth: '700px',
         // maxWidth: '700px',
-        minHeight: '600px',
+        minHeight: '500px',
         // maxHeight: '500px'
     },
     formAddBtn: {
@@ -222,7 +222,7 @@ class RoleDialog extends Component {
             onClose={this.handleDialogCancel.bind(this)}
             aria-labelledby="form-dialog-title"                >
             {!showLoader ? <div>
-                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '20px' }}>User Data
+                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><div style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}> Edit Role-Permission
 </div>  </DialogTitle>
                 <DialogContent>
 
