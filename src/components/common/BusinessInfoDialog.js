@@ -105,6 +105,7 @@ class BusinessInfoDialog extends Component {
                 this.setState({ userInfoData: resp.data.result, showLoader: false });
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
+                alert("Oops an error occured while getting the info");
             }
         } catch (err) {
             console.error(err);

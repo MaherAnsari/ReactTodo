@@ -124,6 +124,7 @@ class OrderTable extends Component {
                 this.setState({ tableBodyData: resp.data.result.data });
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
+                alert("Oops an error occured while getting order data");
             }
 
         } catch (err) {

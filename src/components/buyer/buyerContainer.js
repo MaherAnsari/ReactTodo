@@ -65,9 +65,9 @@ class BuyerContainer extends React.Component {
         let resp = await buyerService.getBuyerList();
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
-
             this.setState({ dataList: resp.data.result.data });
-
+        }else{
+            alert("Oops an error occured while getting the list");
         }
     }
     handleClose(event) {
@@ -91,7 +91,8 @@ class BuyerContainer extends React.Component {
             if (resp.data.status === 1 && resp.data.result) {
                 alert("Data Successfuly Uploaded ");
                 this.getData();
-
+            }else{
+                alert("Oops an error occured while uploading the data")
             }
 
         } catch (err) {

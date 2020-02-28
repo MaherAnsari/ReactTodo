@@ -107,6 +107,8 @@ class BrokerContainer extends React.Component {
                 alert("Data Successfuly Uploaded ");
                 this.getData();
 
+            }else{
+                alert("Oops an error occured while uploading");
             }
 
         } catch (err) {

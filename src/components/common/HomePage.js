@@ -209,6 +209,8 @@ class Home extends React.Component {
     let resp = await mandiDataService.getDistrictList();
     if (resp.data.status === 1 && resp.data.result) {
       Utils.setDistrictData(resp.data.result.data)
+    }else{
+      alert("Oops an error occured while getting the district list");
     }
   }
 
