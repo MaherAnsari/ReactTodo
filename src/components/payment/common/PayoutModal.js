@@ -88,13 +88,15 @@ class PayoutModal extends Component {
             },
             errorFieldsOfSkipTrans: {},
             // showChangeBankAcctOption : false,
-            selected_bank_detail : {
+            selected_bank_detail: {
                 "bank_map_id": null,
                 "bank_ifsc_code": "",
                 "bank_account_number": "",
                 "bank_account_holder_name": ""
             },
-            selectedAcctInfoIndex: undefined
+            selectedAcctInfoIndex: undefined,
+            narration: "",
+            narrationError: false
         }
         console.log(this.props.payoutData)
     }
@@ -252,6 +254,11 @@ class PayoutModal extends Component {
             payload["reference_id"] = this.props.payoutData["supplier_fullname"];
             payload["notes"] = {};
             payload["mode"] = this.state.transferType;
+
+            if (!this.state.skipRazorPayTrans && this.state.narration && this.state.narration !== "" && this.state.narration.trim() !== "") {
+                payload["narration"] = this.state.narration;
+            }
+
             if (this.state.skipRazorPayTrans) {
                 if (this.checkForValidFormOnSkipTransaction()) {
                     payload["skipRazorpayX"] = true;
@@ -276,17 +283,17 @@ class PayoutModal extends Component {
             this.setState({ currentPayoutView: "loading" });
             // let resp = { data : { status : 0 }};
 
-            console.log(payload)
+            // console.log(payload)
             let resp = await paymentService.confirmPayout(payload);
             if (resp.data.status === 1) {
                 // console.log(payload)
                 alert("Successfully completed");
-                
+
             } else {
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
                 // this.setState({ showChangeBankAcctOption : true });
             }
-            this.setState({ currentPayoutView: "defaultPayout" }, ()=>{
+            this.setState({ currentPayoutView: "defaultPayout" }, () => {
                 this.props.onPayoutSuccessfull();
             });
         } catch (err) {
@@ -304,6 +311,16 @@ class PayoutModal extends Component {
 
     changeAccountInfoClicked() {
         this.setState({ currentPayoutView: "selectAccount" }, () => this.getBankDetailsList(this.props.payoutData["supplier_mobile"]));
+    }
+
+    handelNarrationChange(event) {
+        var letterNumber = /^[0-9a-zA-Z]+$/;
+        let inputtxt = event.target.value;
+        if (inputtxt.match(letterNumber) || inputtxt === "" ) {
+            this.setState({ narration: inputtxt, narrationError: false });
+        } else {
+            this.setState({ narrationError: true });
+        }
     }
 
 
@@ -349,7 +366,7 @@ class PayoutModal extends Component {
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Ifsc               </span>: &nbsp;<strong className={classes.actcardtext} style={{ textTransform: "uppercase" }} > {acctDetails["bank_ifsc_code"]} </strong> </div>
                                             <div style={{ display: "flex" }}> <span className={classes.actcardtext} style={{ width: "40%" }}> Account Holder Name</span>: &nbsp;<strong className={classes.actcardtext} > {acctDetails["bank_account_holder_name"]} </strong> </div>
                                             {/* {showChangeBankAcctOption &&  */}
-                                            <div style={{ textAlign: "center", marginTop: "5%"}}> <span onClick={()=> this.changeAccountInfoClicked() }  className={classes.actcardtext} style={{padding: "3px 5px",background: "#E91E63",borderRadius: "4px",color: "#fff", cursor: "pointer"}}> Select another account </span></div>
+                                            <div style={{ textAlign: "center", marginTop: "5%" }}> <span onClick={() => this.changeAccountInfoClicked()} className={classes.actcardtext} style={{ padding: "3px 5px", background: "#E91E63", borderRadius: "4px", color: "#fff", cursor: "pointer" }}> Select another account </span></div>
                                         </span> :
                                         <div style={{ padding: "14px" }} className={classes.actcardtext} >
                                             Oops no bank account available.
@@ -385,8 +402,20 @@ class PayoutModal extends Component {
                                         </RadioGroup>
                                         {this.state.transferType === "NEFT" && <FormHelperText>*After 6 PM (IST) This request will be processed on Next Working Day</FormHelperText>}
                                         {this.state.transferType === "RTGS" && <FormHelperText>*After 5 PM (IST) This request will be processed on Next Working Day</FormHelperText>}
-
                                         {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
+
+                                        <TextField
+                                            margin="dense"
+                                            id="narration"
+                                            error={this.state.narrationError}
+                                            label="Enter narration (optional)"
+                                            type="text"
+                                            style={{ width: '100%' }}
+                                            value={this.state.narration}
+                                            onChange={this.handelNarrationChange.bind(this)}
+                                            helperText={this.state.narrationError ? "*Special characters are not allowed": ""}
+                                            fullWidth />
+
                                     </FormControl>}
                                 </div>
                                 <div>
