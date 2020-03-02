@@ -314,9 +314,9 @@ class PayoutModal extends Component {
     }
 
     handelNarrationChange(event) {
-        var letterNumber = /^[0-9a-zA-Z]+$/;
+        var letterNumber = /^[0-9a-zA-Z\s]+$/;
         let inputtxt = event.target.value;
-        if (inputtxt.length >= 0 && inputtxt.length <= 30 ) {
+        if ( inputtxt.length <= 30 ) {
             if (inputtxt.match(letterNumber) || inputtxt === "") {
                 this.setState({ narration: inputtxt, narrationError: false });
             } else {
@@ -406,7 +406,7 @@ class PayoutModal extends Component {
                                         {this.state.transferType === "RTGS" && <FormHelperText>*After 5 PM (IST) This request will be processed on Next Working Day</FormHelperText>}
                                         {payoutData["amount"] > 200000 && <FormHelperText>*IMPS is not available as amount is greater than 2,00,000</FormHelperText>}
 
-                                        <TextField
+                                        {!skipRazorPayTrans && <TextField
                                             margin="dense"
                                             id="narration"
                                             error={this.state.narrationError}
@@ -416,7 +416,7 @@ class PayoutModal extends Component {
                                             value={this.state.narration}
                                             onChange={this.handelNarrationChange.bind(this)}
                                             helperText={this.state.narrationError ? "*Special characters are not allowed" : ""}
-                                            fullWidth />
+                                            fullWidth />}
 
                                     </FormControl>}
                                 </div>
