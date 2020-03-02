@@ -159,9 +159,17 @@ class PaymentDetailsContainer extends React.Component {
         this.ismounted = false;
     }
 
-    onDateChaged(data) {
+    // this function brings default selected date from the DateRangeSelection and call the Api 
+    //when first Landed on this page
+    onDefaultDateFromDateRangeShown(data) {
         this.setState({ datePayloads: data }, function () {
             this.getPaymentDetailsData(this.state.params);
+        });
+    }
+
+    onDateChaged(data) {
+        this.setState({ datePayloads: data }, function () {
+            // this.getPaymentDetailsData(this.state.params);
         });
     }
 
@@ -185,7 +193,7 @@ class PaymentDetailsContainer extends React.Component {
                     <div style={{ display: "flex" }}>
                         <i onClick={(event) => { this.setState({  filterDataArray :[], 
                             transactionTypeArray : [] },()=>this.handelRefreshData(event) )}} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind( this )}/>
                         <div style={{ padding: "15px 15px 15px 0px" }}>
                             <Badge className={classes.margin} style={{ height: '25px' }}
                                 badgeContent={filterDataArray.length + transactionTypeArray.length} color="primary">

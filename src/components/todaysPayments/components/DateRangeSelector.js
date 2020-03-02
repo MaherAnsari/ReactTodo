@@ -18,7 +18,7 @@ class DateRangeSelector extends React.Component {
     }
 
     componentDidMount() {
-        this.props.onDateChanged({ "startDate": this.formateDateForApi(this.state.selectedStartDate) , "endDate": this.formateDateForApi(this.state.selectedStartDate)});
+        this.props.onDefaultDateFromDateRangeShown({ "startDate": this.formateDateForApi(this.state.selectedStartDate) , "endDate": this.formateDateForApi(this.state.selectedStartDate)});
     }
 
 

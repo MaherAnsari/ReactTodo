@@ -552,9 +552,17 @@ class TodaysPaymentTable extends Component {
         // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
-    onDateChaged(data) {
+    // this function brings default selected date from the DateRangeSelection and call the Api 
+    //when first Landed on this page
+    onDefaultDateFromDateRangeShown(data) {
         this.setState({ datePayloads: data }, function () {
             this.getTodaysTransactionList( this.state.params );
+        });
+    }
+
+    onDateChaged(data) {
+        this.setState({ datePayloads: data }, function () {
+            // this.getTodaysTransactionList( this.state.params );
         });
     }
 
@@ -668,7 +676,7 @@ class TodaysPaymentTable extends Component {
                 <MuiThemeProvider theme={theme}>
 
                     <div style={{  display : "flex" }}>
-                    <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                    <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind( this )} />
                     <div style={{ padding : "15px 15px 15px 0px"}}>
                         <Badge className={classes.margin} style={{height:'25px'}} 
                         badgeContent={ filterDataArray.length + transactionTypeArray.length } color="primary">

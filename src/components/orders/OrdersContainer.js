@@ -141,9 +141,17 @@ class OrdersContainer extends React.Component {
         this.ismounted = false;
     }
 
-    onDateChaged(data) {
+    // this function brings default selected date from the DateRangeSelection and call the Api 
+    //when first Landed on this page
+    onDefaultDateFromDateRangeShown(data) {
         this.setState({ datePayloads: data }, function () {
             this.getSearchedOrderListData(this.state.params);
+        });
+    }
+
+    onDateChaged(data) {
+        this.setState({ datePayloads: data }, function () {
+            // this.getSearchedOrderListData(this.state.params);
         });
     }
 
@@ -160,7 +168,7 @@ class OrdersContainer extends React.Component {
                 <Paper className={classes.card} >
                     <div style={{display:"flex"}}>
                     <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind( this )}  />
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
