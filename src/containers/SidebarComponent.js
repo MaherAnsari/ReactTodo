@@ -37,7 +37,7 @@ const _items = [
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
       { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
       { name: 'Payments Detail', route: '/payment-details', iconClassName: 'payment', iconColor: "#4980ea" },
-      { name: 'Download Data', route: '/downlaod-net', iconClassName: 'cloud_download', iconColor: "#62cc42" },
+      // { name: 'Download Data', route: '/downlaod-net', iconClassName: 'cloud_download', iconColor: "#62cc42" },
     ]
   },
   {

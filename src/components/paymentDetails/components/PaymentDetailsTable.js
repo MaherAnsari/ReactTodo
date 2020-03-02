@@ -887,7 +887,7 @@ class PaymentDetailsTable extends Component {
                             transactionInfoData={this.state.transactionInfoData}
                         />}
 
-{allTransactionsData && allTransactionsData.length > 0 && 
+{allTransactionsData && allTransactionsData.length > 0 && getAccessAccordingToRole("allowDownload") && 
 <div className="updateBtndef" style={{ right:"192px"}} data-toggle="tooltip" data-html="true" title="Download">
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} 
                         onClick={() => this.setState({ showDownloadModal: true })} >

@@ -25,7 +25,7 @@ export default () =>
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/payment-details" exact component={Home}  />}
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/todays-payment" exact component={Home}  />}
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/add-bank-account" exact component={Home}  />}
-    {getStatusOfRole("BasicUser") && <AppliedRoute path='/home/downlaod-net' exact  component={Home}  />}
+    {getStatusOfRole("DownloadData") && <AppliedRoute path='/home/downlaod-net' exact  component={Home}  />}
     {/* supporting Data tab routes */}
     {getStatusOfRole("SupportingDataManagement") && <AppliedRoute path="/home/comodity-list" exact component={Home}  />}
     {getStatusOfRole("SupportingDataManagement") && <AppliedRoute path="/home/mandi-data" exact component={Home}  />}

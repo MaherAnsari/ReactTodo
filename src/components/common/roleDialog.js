@@ -99,6 +99,7 @@ class RoleDialog extends Component {
                 "SupportingDataManagement",
                 "SuperAdmin",
                 "ViewUserMobileNumber",
+                "DownloadData"
                 // "RazorpayX"
             ],
 

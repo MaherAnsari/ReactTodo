@@ -53,6 +53,9 @@ export function getAccessAccordingToRole(option) {
             "ViewUserMobileNumber":{
                 "ViewMobileNumber" : true
             },
+            "DownloadData":{
+                "allowDownload" : true
+            }
             // "RazorpayX":{
             //     "viewRazorpayX" : true
             // }
