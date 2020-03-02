@@ -1,9 +1,9 @@
 // import React from 'react';
 export function getAccessAccordingToRole(option) {
     try {
-        // if( window.location.href.indexOf("localhost/")){
-        //     sessionStorage.setItem("userRole", "SuperAdmin,ViewMobileNumber"); // special check for developer
-        // }
+        if( window.location.href.indexOf("localhost/")){
+            sessionStorage.setItem("userRole", "SuperAdmin,ViewMobileNumber"); // special check for developer
+        }
 // console.log( sessionStorage.getItem("userRole") )
         let role = "";
         if (sessionStorage.getItem("userRole")) {
@@ -159,6 +159,8 @@ export function getStatusOfRole(role) {
             } else if (role === "permissions") { // not avalaiable for any user except superAdmin
                 return false;
             }else if( role === "BasicUser" && sessionStorage.getItem("userRole").indexOf(role) === -1){
+                return false;
+            }else if( role === "DownloadData" && sessionStorage.getItem("userRole").indexOf(role) === -1){
                 return false;
             }
             return true;
