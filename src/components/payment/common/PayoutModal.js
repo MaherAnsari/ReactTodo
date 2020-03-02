@@ -316,10 +316,12 @@ class PayoutModal extends Component {
     handelNarrationChange(event) {
         var letterNumber = /^[0-9a-zA-Z]+$/;
         let inputtxt = event.target.value;
-        if (inputtxt.match(letterNumber) || inputtxt === "" ) {
-            this.setState({ narration: inputtxt, narrationError: false });
-        } else {
-            this.setState({ narrationError: true });
+        if (inputtxt.length >= 0 && inputtxt.length <= 30 ) {
+            if (inputtxt.match(letterNumber) || inputtxt === "") {
+                this.setState({ narration: inputtxt, narrationError: false });
+            } else {
+                this.setState({ narrationError: true });
+            }
         }
     }
 
@@ -413,7 +415,7 @@ class PayoutModal extends Component {
                                             style={{ width: '100%' }}
                                             value={this.state.narration}
                                             onChange={this.handelNarrationChange.bind(this)}
-                                            helperText={this.state.narrationError ? "*Special characters are not allowed": ""}
+                                            helperText={this.state.narrationError ? "*Special characters are not allowed" : ""}
                                             fullWidth />
 
                                     </FormControl>}
