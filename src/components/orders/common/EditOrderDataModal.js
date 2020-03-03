@@ -293,7 +293,8 @@ class EditOrderDataModal extends Component {
                     alert("Successfully updated this order ");
                     this.props.onOrderDataUpdated();
                 } else {
-                    alert("There was an error while updating this order");
+                    // alert("There was an error while updating this order");
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
                 }
             } else {
                 alert("please fill the mandatory fields highlighted");

@@ -297,7 +297,8 @@ class AddTransactionModal extends Component {
                     this.setState({ acctDataArray: resp.data.result })
                 }
             } else {
-                alert("An error occured while getting the account details");
+                // alert("An error occured while getting the account details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
             }
         } catch (err) {
             console.error(err);
@@ -347,7 +348,8 @@ class AddTransactionModal extends Component {
                 alert("Successfully added this transaction ");
                 this.props.onTransactionAdded();
             } else {
-                alert("There was an error while adding this transaction");
+                // alert("There was an error while adding this transaction");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error while adding this transaction");
             }
 
         } catch (err) {

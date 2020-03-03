@@ -76,7 +76,7 @@ class AddBankAccountContainer extends React.Component {
                     this.setState({ showLoader: false, acctData: resp.data.result })
                 }
             } else {
-                alert("An error occured while getting the account details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
                 this.setState({ showLoader: false });
             }
         } catch (err) {
@@ -205,7 +205,8 @@ class AddBankAccountContainer extends React.Component {
                         });
                     } else {
                         this.setState({ showLoader: false })
-                        alert("An error occured while adding the account details");
+                        // alert("An error occured while adding the account details");
+                        alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details");
                     }
                 } else {
                     this.setState({ showLoader: false })
@@ -259,7 +260,9 @@ class AddBankAccountContainer extends React.Component {
                     alert("Successfully updated");
                     this.getBankDetails(this.state.currentSelectedUserDetails)
                 }else{
-                    alert("Oops an error occured while validating your account details.");
+                    // alert("Oops an error occured while validating your account details.");
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
+                    
                 }
             
         }catch( err ){
@@ -293,7 +296,8 @@ class AddBankAccountContainer extends React.Component {
                     alert("Successfully deleted");
                     this.getBankDetails(this.state.currentSelectedUserDetails)
                 }else{
-                    alert("Oops an error occured while deleting the account details.");
+                    // alert("Oops an error occured while deleting the account details.");
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.");
                 }
             
         }catch( err ){

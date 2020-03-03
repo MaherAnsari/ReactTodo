@@ -154,7 +154,8 @@ class CommodityTable extends Component {
       alert("Successfully Update");
       this.props.onClose();
     } else {
-      alert("Ooops! there was an error");
+      // alert("Ooops! there was an error");
+      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
     }
   }
 

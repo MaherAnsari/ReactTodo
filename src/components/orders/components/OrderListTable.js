@@ -307,6 +307,8 @@ class OrderListTable extends Component {
                 alert("Data Successfuly Uploaded ");
                 this.props.onOrderAdded();
                 this.setState({ open: false, showUploader: false });
+            }else{
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured");
             }
 
         } catch (err) {

@@ -67,7 +67,8 @@ class BuyerContainer extends React.Component {
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data });
         }else{
-            alert("Oops an error occured while getting the list");
+            // alert("Oops an error occured while getting the list");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
         }
     }
     handleClose(event) {
@@ -92,7 +93,8 @@ class BuyerContainer extends React.Component {
                 alert("Data Successfuly Uploaded ");
                 this.getData();
             }else{
-                alert("Oops an error occured while uploading the data")
+                // alert("Oops an error occured while uploading the data")
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading the data");
             }
 
         } catch (err) {

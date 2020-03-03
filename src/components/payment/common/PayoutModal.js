@@ -112,7 +112,8 @@ class PayoutModal extends Component {
                 // console.log(resp.data.result)
                 this.setState({ acctDetails: resp.data.result })
             } else {
-                alert("An error occured while getting the account details");
+                // alert("An error occured while getting the account details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
             }
         } catch (err) {
             console.error(err);
@@ -133,7 +134,8 @@ class PayoutModal extends Component {
                     this.setState({ currentPayoutView: "selectAccount", acctData: resp.data.result })
                 }
             } else {
-                alert("An error occured while getting the account details");
+                // alert("An error occured while getting the account details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
                 this.setState({ currentPayoutView: "defaultPayout" });
             }
         } catch (err) {

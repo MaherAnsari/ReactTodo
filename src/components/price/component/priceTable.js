@@ -119,7 +119,8 @@ class PriceTable extends Component {
       alert("Succesfully Deleted");
       this.getData('a');
     } else {
-      alert("Opps there was an error, while deleted");
+      // alert("Opps there was an error, while deleted");
+      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while deleting");
     }
    
   }

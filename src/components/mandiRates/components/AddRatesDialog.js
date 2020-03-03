@@ -96,7 +96,8 @@ class AddRatesDialog extends Component {
         if (resp.data.status === 1) {
            this.setState({marketList:resp.data.result});
         } else {
-            alert("Opps there was an error, while getting market list");
+            // alert("Opps there was an error, while getting market list");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while getting market list");
         }
         // this.setState({ showConfirmDialog: false, alertData: {} });
     }
@@ -114,7 +115,8 @@ class AddRatesDialog extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
         }
     }
 
@@ -126,7 +128,8 @@ class AddRatesDialog extends Component {
             alert("Succesfully submitted");
             this.props.onEditModalClosed();
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
         }
         this.setState({  alertData: {} });
     }

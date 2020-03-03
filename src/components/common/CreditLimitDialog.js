@@ -114,7 +114,8 @@ class CreditLimitDialog extends Component {
           this.setState({ creditLimit: resp.data.result });
         } else {
           // this.setState({ tableBodyData: [] });
-          alert("Oops an error occured while getting the credit limit");
+          // alert("Oops an error occured while getting the credit limit");
+          alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
         }
       } catch (err) {
         console.error(err)
@@ -143,7 +144,8 @@ class CreditLimitDialog extends Component {
         if (resp.data.status === 1 && resp.data.result) {
           this.setState({ tableBodyData: resp.data.result });
         } else {
-          alert("Oops an error occured while getting the list");
+          // alert("Oops an error occured while getting the list");
+          alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
           this.setState({ tableBodyData: [] });
         }
       } catch (err) {

@@ -274,7 +274,9 @@ class InfoDialog extends Component {
             this.props.onEditModalClosed();
 
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            
         }
         this.setState({ showConfirmDialog: false, alertData: {} });
     }

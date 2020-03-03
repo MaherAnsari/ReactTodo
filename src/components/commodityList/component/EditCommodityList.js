@@ -160,7 +160,8 @@ class EditCommodityList extends Component {
             alert("Successfully Update");
             this.props.onEditModalClosed();
         } else {
-            alert("Oops! There was an error");
+            // alert("Oops! There was an error");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
         }
     }
 

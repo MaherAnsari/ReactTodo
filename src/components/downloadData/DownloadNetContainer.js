@@ -77,7 +77,8 @@ class DownloadNetContainer extends React.Component {
                     alert("No data available")
                 }
             } else {
-                alert("Oops an error occured while downloading the data.");
+                // alert("Oops an error occured while downloading the data.");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
             }
 
         } catch (err) {

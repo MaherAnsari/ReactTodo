@@ -243,7 +243,8 @@ class UserListTable extends Component {
             alert("Succesfully submitted");
             this.props.onClose();
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
         }
 
     }

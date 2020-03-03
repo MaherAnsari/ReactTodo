@@ -62,7 +62,8 @@ class CommodityContainer extends React.Component {
         if (resp.data.status === 1 && resp.data.result) {
             this.setState({ dataList: resp.data.result.data });
         } else {
-            alert("Oops there was an error while getting commodity list")
+            // alert("Oops there was an error while getting commodity list")
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error while getting commodity list");
         }
 
     }

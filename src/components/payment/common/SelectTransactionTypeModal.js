@@ -103,7 +103,8 @@ class SelectTransactionTypeModal extends Component {
               alert( "Successfully updated ");
               this.props.onUpdateSuccessFull( );
             } else {
-              alert( "An error occured while updating the status")
+            //   alert( "An error occured while updating the status")
+              alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while updating the status");
             }
         } catch (err) {
             console.error(err);

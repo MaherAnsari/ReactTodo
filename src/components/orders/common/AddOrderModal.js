@@ -327,7 +327,8 @@ class AddOrderModal extends Component {
                     alert("Successfully added this order ");
                     this.props.onOrderDataAdded();
                 } else {
-                    alert("There was an error while adding this order");
+                    // alert("There was an error while adding this order");
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while adding this order");
                 }
             } else {
                 alert("please fill the mandatory fields highlighted");

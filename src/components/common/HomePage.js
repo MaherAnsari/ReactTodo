@@ -210,7 +210,8 @@ class Home extends React.Component {
     if (resp.data.status === 1 && resp.data.result) {
       Utils.setDistrictData(resp.data.result.data)
     }else{
-      alert("Oops an error occured while getting the district list");
+      // alert("Oops an error occured while getting the district list");
+      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the district list");
     }
   }
 

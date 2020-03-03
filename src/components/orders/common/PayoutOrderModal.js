@@ -96,7 +96,8 @@ class PayoutOrderModal extends Component {
                     this.setState({ acctDetails: resp.data.result, acctData: resp.data.result })
                 }
             } else {
-                alert("An error occured while getting the account details");
+                // alert("An error occured while getting the account details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
             }
         } catch (err) {
             console.error(err);
@@ -115,7 +116,8 @@ class PayoutOrderModal extends Component {
                     this.setState({ availableCreditAmountError: resp.data["message"] })
                 }
             } else {
-                alert("An error occured while getting the available credit details");
+                // alert("An error occured while getting the available credit details");
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the available credit details");
             }
         } catch (err) {
             console.error(err);
