@@ -8,6 +8,7 @@ import cookie from 'react-cookies';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faMicroscope } from '@fortawesome/free-solid-svg-icons'
 import "../assets/css/cardcss.scss";
+import userAuth from "../config/authActions";
 
 library.add(faMicroscope)
 
@@ -61,6 +62,8 @@ class App extends Component {
 
   async componentDidMount(){
     window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+    userAuth.startTokenGenaerationAfter45Min();
+    userAuth.setup();
   
   }
   componentWillMount() {
@@ -69,12 +72,12 @@ class App extends Component {
       .then(user => {
         var authk = user.signInUserSession.idToken.jwtToken;
         var username = user.signInUserSession.idToken.payload.name;
-        cookie.save('token', authk, { path: '/' })
+        cookie.save('bijak_token', authk, { path: '/' })
         cookie.save('username', username, { path: '/' });
       })
       .catch(err => {
         console.log(err);
-        cookie.remove('token', { path: '/' });
+        cookie.remove('bijak_token', { path: '/' });
         cookie.remove('username', { path: '/' });
       });
       

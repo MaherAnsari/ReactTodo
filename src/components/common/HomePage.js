@@ -264,7 +264,7 @@ class Home extends React.Component {
     try {
       Auth.signOut()
         .then(data => {
-          cookie.remove('token', { path: '/' })
+          cookie.remove('bijak_token', { path: '/' })
           cookie.remove('username', { path: '/' });
           this.props.history.push("/");
         })
@@ -342,7 +342,7 @@ class Home extends React.Component {
                 {/* </Grid> */}
 
                 <Grid style={{ marginLeft: '34%' }} item xs={3} sm={4}>
-                  {!cookie.load('token')
+                  {!cookie.load('bijak_token')
 
                     ? <div></div>
                     : <div style={{ textAlign: "right", display: "flex", float: "right" }}>

@@ -1,6 +1,8 @@
 import cookie from 'react-cookies';
 import * as zlib from "react-zlib-js";
 import { getAccessAccordingToRole } from '../../config/appConfig';
+import userAuth from '../../config/authActions';
+
 
 // to vget the current date
 let districtData = {};
@@ -78,9 +80,12 @@ function getCurrentTime() {
 
 
 function getToken() {
-    let token = cookie.load('token') ? cookie.load('token') : null;
-    // console.log(token);
-    return "Bearer " + token;
+    // let bijak_token = cookie.load('bijak_token') ? cookie.load('bijak_token') : null;
+    // return "Bearer " + bijak_token;
+
+    return userAuth.getToken();
+
+
 }
 
 function getDistrictData() {

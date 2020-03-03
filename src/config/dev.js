@@ -72,7 +72,7 @@ const request = function (options, type) {
           .then(data => {
 
             window.location.href = window.location.origin
-            cookie.remove('token', { path: '/' })
+            cookie.remove('bijak_token', { path: '/' })
             cookie.remove('username', { path: '/' });
 
           })
@@ -107,7 +107,7 @@ const request = function (options, type) {
         Auth.signOut()
           .then(data => {
             // userAuth.resetAppOnLogout();
-            cookie.remove('token', { path: '/' })
+            cookie.remove('bijak_token', { path: '/' })
             cookie.remove('username', { path: '/' });
             window.location.href = window.location.origin;
             return;

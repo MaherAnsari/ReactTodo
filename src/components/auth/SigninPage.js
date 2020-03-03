@@ -444,7 +444,8 @@ class SignIn extends React.Component {
                 var username = data.signInUserSession.idToken.payload.name;
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
-                cookie.save('token', authk, { path: '/' });
+                cookie.save('bijak_token', authk, { path: '/' });
+                localStorage.setItem("bijak_token_ExpTime", (new Date()).getTime());
                 cookie.save('username', username, { path: '/' });
                 localStorage.setItem('name', data.attributes.name);
 
@@ -492,7 +493,8 @@ class SignIn extends React.Component {
 
                             var authk = user.signInUserSession.idToken.jwtToken;
                             var username = user.signInUserSession.idToken.payload.name;
-                            cookie.save('token', authk, { path: '/' })
+                            cookie.save('bijak_token', authk, { path: '/' })
+                            localStorage.setItem("bijak_token_ExpTime", (new Date()).getTime());
                             cookie.save('username', username, { path: '/' });
                             var userId = user.username;
                             cookie.save('userId', userId, { path: '/' });
@@ -562,7 +564,8 @@ class SignIn extends React.Component {
 
                 var authk = data.signInUserSession.idToken.jwtToken;
                 var username = data.signInUserSession.idToken.payload.name;
-                cookie.save('token', authk, { path: '/' })
+                cookie.save('bijak_token', authk, { path: '/' })
+                localStorage.setItem("bijak_token_ExpTime", (new Date()).getTime());
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
@@ -595,7 +598,8 @@ class SignIn extends React.Component {
 
                 var authk = data.signInUserSession.idToken.jwtToken;
                 var username = data.signInUserSession.idToken.payload.name;
-                cookie.save('token', authk, { path: '/' })
+                cookie.save('bijak_token', authk, { path: '/' })
+                localStorage.setItem("bijak_token_ExpTime", (new Date()).getTime());
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
@@ -613,7 +617,7 @@ class SignIn extends React.Component {
     }
 
     render() {
-        if (cookie.load('token')) {
+        if (cookie.load('bijak_token')) {
             // return <Redirect to={"/" + Utils.getDbName() + "/home/buyer-list"} />;
 
             // return <Redirect to={"/home/buyer-list"} />;
