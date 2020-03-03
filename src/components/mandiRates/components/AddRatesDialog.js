@@ -115,8 +115,7 @@ class AddRatesDialog extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            // alert("Oops there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            alert("Oops there was an error, while adding");
         }
     }
 
