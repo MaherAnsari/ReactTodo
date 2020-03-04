@@ -8,13 +8,13 @@ import Utils from '../app/common/utils';
 // let baseUrl =  'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/';
 
 var hostName = window.location.hostname;
-const baseUrl = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('localhost') > -1) ?
+const baseUrl = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?
   `https://lwjh5tmr5k.execute-api.ap-south-1.amazonaws.com/prod/` :
   `https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/`;
 
 
 
-const baseUrl1 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('localhost') > -1) ?
+const baseUrl1 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?
   `https://mh53vat5i6.execute-api.ap-south-1.amazonaws.com/prod/` :
   `https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/`;
 const client = axios.create({
@@ -25,14 +25,14 @@ const client1 = axios.create({
   baseURL: baseUrl1
 });
 
-const baseUrl3 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('localhost') > -1) ?
+const baseUrl3 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?
   `https://9yuezfm6k2.execute-api.ap-south-1.amazonaws.com/prod/` :
   `https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/`;
 const client3 = axios.create({
   baseURL: baseUrl3
 });
 
-const baseUrl4 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('localhost') > -1) ?
+const baseUrl4 = (hostName.indexOf('d3mluaqvz2cod7.cloudfront.net') > -1 || hostName.indexOf('bijakbiz') > -1) ?
   `https://z8ez4q59j2.execute-api.ap-south-1.amazonaws.com/prod/` :
   `https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/`;
 const client4 = axios.create({
