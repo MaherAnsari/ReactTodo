@@ -136,7 +136,7 @@ class TodaysPaymentTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            allTransactionsData: undefined,
+            allTransactionsData: [],
             tableHeadData: ["status","id","Lnked Order Id", "Buyer Name/ Bussiness Name", "Supplier Name/ Bussiness Name", "Created Time",  "Payment mode/ Payment type","Amount", "Supporting images"],
             invoiceModalData: [],
             showImageInvoiceModal: false,
@@ -161,7 +161,11 @@ class TodaysPaymentTable extends Component {
             transactionInfoData : undefined,
             // datePayloads: { "startDate": "" },
             datePayloads: { "startDate": "", "endDate": "" },
-            params: {},
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            totalDataCount: 0, 
             showPaymentFilterOption: false,
             filterDataArray : [],
             transactionTypeArray : [],
@@ -227,6 +231,13 @@ class TodaysPaymentTable extends Component {
 
     getTodaysTransactionList = async ( params ) => {
         try {
+            if (!params.hasOwnProperty("limit")) {
+                params["limit"] = this.state.params["limit"];
+            }
+            if (!params.hasOwnProperty("offset")) {
+                params["offset"] = this.state.params["offset"];
+            } 
+
             this.setState({ params: params });
             if (this.state.datePayloads["startDate"] !== "") {
                 params["startDate"] = this.state.datePayloads["startDate"];
@@ -239,19 +250,30 @@ class TodaysPaymentTable extends Component {
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
                 this.setState({
-                    allTransactionsData: respData["allTransactions"],
+                    allTransactionsData: this.state.allTransactionsData.concat(respData["allTransactions"]),
+                    totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
                     paymentMetaInfo : respData["metainfo"],
                     page: 0
                 });
             } else {
                 this.setState({
                     allTransactionsData: [],
+                    totalDataCount: 0,
                 });
             }
         } catch (err) {
             console.error(err);
         }
     }
+
+    // this function brings default selected date from the DateRangeSelection and call the Api 
+    //when first Landed on this page
+    onDefaultDateFromDateRangeShown(data) {
+        this.setState({ datePayloads: data }, function () {
+            this.handelGetData(this.state.params);
+        });
+    }
+
 
     handelTransactionInvoiceModal(row, event) {
         this.setState({ invoiceModalData: row["images"] }, function () {
@@ -286,7 +308,7 @@ class TodaysPaymentTable extends Component {
 
       handelRefreshModal( event ){
           this.setState({             
-            allTransactionsData: undefined}, function(){
+            allTransactionsData: [] }, function(){
                 this.getTodaysTransactionList( this.state.params );
             });
       }
@@ -516,7 +538,16 @@ class TodaysPaymentTable extends Component {
     }
 
     handelRefreshData(){
-        this.handelRefreshModal();
+        // this.handelRefreshModal();
+        this.handelGetData(this.state.params);
+    }
+    
+    handelGetData(param) {
+        param["offset"] = 0;
+        param["limit"] = 1000;
+        this.setState({ allTransactionsData: [], resetPageNumber: true }, () =>
+            this.getTodaysTransactionList(param)
+        )
     }
 
     checkIfAccountInfoAvaialble( data ){
@@ -607,9 +638,20 @@ class TodaysPaymentTable extends Component {
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             // this.getPaymentInfoDetails(this.state.datePayloads);
-            this.getTodaysTransactionList( this.state.params );
+            // this.getTodaysTransactionList( this.state.params );
+            this.handelGetData(this.state.params);
         })
     }
+
+    
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval }, function () {
+            this.getTodaysTransactionList(paramsval);
+        })
+    }
+
 
     checkIfOmittedStatusKeys(row) {
         let isValid = true;
@@ -667,7 +709,7 @@ class TodaysPaymentTable extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
             showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData,
-             transactionTypeArray, showAddTransactionModal , showDownloadModal} = this.state;
+             transactionTypeArray, showAddTransactionModal , showDownloadModal, totalDataCount} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -691,7 +733,7 @@ class TodaysPaymentTable extends Component {
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
-                        getPaymentDetailsData={this.getTodaysTransactionList.bind(this)} />
+                        getPaymentDetailsData={this.handelGetData.bind(this)} />
            
            {paymentMetaInfo && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
@@ -969,9 +1011,9 @@ class TodaysPaymentTable extends Component {
                   <TablePagination
                     rowsPerPageOptions={[25, 50, 100]}
                     colSpan={1}
-                    count={allTransactionsData.filter(e => {
+                    count={filterDataArray.length > 0 || transactionTypeArray.length > 0 ? allTransactionsData.filter(e => {
                         return this.filterData( e );
-                    }).length}
+                    }).length : totalDataCount}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     SelectProps={{
@@ -997,7 +1039,8 @@ class TodaysPaymentTable extends Component {
                         open={showEditTransactionModal}
                         editableTransactionData={this.state.editableData}
                         onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
-                            this.getTodaysTransactionList( this.state.params );
+                            // this.getTodaysTransactionList( this.state.params );
+                            this.handelGetData(this.state.params )
                         })}
                         onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
                     />}
@@ -1017,7 +1060,8 @@ class TodaysPaymentTable extends Component {
                         openPayoutModal={this.state.showPayoutModal}
                         onPayoutModalClose={() => { this.setState({ showPayoutModal: false, payoutData: undefined }) }}
                         onPayoutSuccessfull={(event) => this.setState({ showPayoutModal: false, payoutData: undefined, allTransactionsData: undefined }, function () {
-                            this.getTodaysTransactionList( this.state.params );
+                            // this.getTodaysTransactionList( this.state.params );
+                            this.handelGetData(this.state.params )
                         })}
                         payoutData={this.state.payoutData} />}
 

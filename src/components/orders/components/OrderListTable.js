@@ -112,6 +112,8 @@ class OrderListTable extends Component {
         this.state = {
             tableHeadData: ["order Id", "Old Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt Pltf", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
+            totalDataCount: this.props.totalDataCount || 0,
+            currentOffset : this.props.currentOffset || 0,
             rawTableBodyData: [],
             searchedText: "",
             editableData: {},
@@ -185,6 +187,17 @@ class OrderListTable extends Component {
         if (this.state.tableBodyData !== nextprops.tableData) {
             this.setState({ tableBodyData: nextprops.tableData });
         }
+        if (this.state.totalDataCount !== nextprops.totalDataCount) {
+            this.setState({ totalDataCount: nextprops.totalDataCount });
+        }
+        if (this.state.currentOffset !== nextprops.currentOffset) {
+            this.setState({ currentOffset: nextprops.currentOffset });
+        }
+        if (nextprops.resetPageNumber) {
+            this.setState({ page : 0 },()=>
+            this.props.setPageNumber());
+        }
+
     }
 
 
@@ -238,6 +251,9 @@ class OrderListTable extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
+        if(  this.state.tableBodyData.length === (newPage *this.state.rowsPerPage ) ){
+            this.props.resetOffsetAndGetData();
+        }
     };
 
     handleChangeRowsPerPage = event => {
@@ -371,14 +387,13 @@ class OrderListTable extends Component {
     }
 
     render() {
-        const { classes } = this.props;
-        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, commodityList } = this.state;
+        const { classes,showLoader } = this.props;
+        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, totalDataCount, commodityList } = this.state;
         const leftAlignedIndexs = [2, 3];
         const rightAlignedIndexs = [3, 8];
-        // const highlight = true;
         return (
             <MuiThemeProvider theme={theme}>
-                <Paper className={classes.root} >
+                { !showLoader && <Paper className={classes.root} >
                     {this.state.tableBodyData ? <div> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
                         <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
@@ -506,8 +521,9 @@ class OrderListTable extends Component {
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[25, 50, 100]}
+                                        // rowsPerPageOptions={[1,2,3]}
                                         colSpan={6}
-                                        count={this.state.tableBodyData.length}
+                                        count={totalDataCount}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         SelectProps={{
@@ -606,7 +622,7 @@ class OrderListTable extends Component {
                             onLimitUpdate= {this.changeLimitSucces.bind(this)}
                             onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
 
-                </Paper>
+                </Paper>}
             </MuiThemeProvider>
         );
     }

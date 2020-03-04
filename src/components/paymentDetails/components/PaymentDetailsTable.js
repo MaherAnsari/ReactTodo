@@ -154,18 +154,44 @@ class PaymentDetailsTable extends Component {
             showTransactionIDInfoDialog: false,
             transactionIDInfoData: undefined,
             
-            showDownloadModal: false
+            showDownloadModal: false,
+
+            totalDataCount: this.props.totalDataCount || 0,
+            currentOffset : this.props.currentOffset || 0,
         }
     }
 
     componentWillReceiveProps( nextProps ){
         if( nextProps.filterDataArray !== this.state.filterDataArray ){
-            this.setState({ filterDataArray : nextProps.filterDataArray  }, ()=>
+            this.setState({ filterDataArray : nextProps.filterDataArray, page : 0  }, ()=>
             this.setState({ paymentMetaInfo : this.getTransactionCountSumOnFilterChanged()  }));
         }
+        
         if( nextProps.transactionTypeArray !== this.state.transactionTypeArray ){
-            this.setState({ transactionTypeArray : nextProps.transactionTypeArray  }, ()=>
+            this.setState({ transactionTypeArray : nextProps.transactionTypeArray , page : 0 }, ()=>
             this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() }));
+        }
+
+        if( nextProps.filterDataArray.length > 0 && nextProps.transactionTypeArray > 0 && nextProps.paymentMetaInfo !== this.state.paymentMetaInfo){
+            this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() })
+            
+        }
+        
+        if (this.state.allTransactionsData !== nextProps.allTransactionsData) {
+            this.setState({ allTransactionsData: nextProps.allTransactionsData });
+        }
+
+        if (this.state.totalDataCount !== nextProps.totalDataCount) {
+            this.setState({ totalDataCount: nextProps.totalDataCount });
+        }
+
+        if (this.state.currentOffset !== nextProps.currentOffset) {
+            this.setState({ currentOffset: nextProps.currentOffset });
+        }
+
+        if (nextProps.resetPageNumber) {
+            this.setState({ page : 0 },()=>
+            this.props.setPageNumber());
         }
     }
 
@@ -194,6 +220,9 @@ class PaymentDetailsTable extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
+        if(  this.state.allTransactionsData.length === (newPage *this.state.rowsPerPage ) ){
+            this.props.resetOffsetAndGetData();
+        }
       };
     
       handleChangeRowsPerPage = event => {
@@ -547,12 +576,11 @@ class PaymentDetailsTable extends Component {
 
 
     render() {
-        const { classes } = this.props;
+        const { classes , showLoader} = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page,
-            showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal} = this.state;
+            showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal, totalDataCount} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
-      
         return (
             
             <div>
@@ -670,6 +698,7 @@ class PaymentDetailsTable extends Component {
 
                         </div>
                     </div>}
+                    {!showLoader && <div>
                         {allTransactionsData ? <div style={{ marginTop : 14,maxHeight: "65vh", overflowY: "scroll" }}>
                             {allTransactionsData && allTransactionsData.length > 0 &&
                                 <Table  className='table-body' stickyHeader aria-label="sticky table">
@@ -815,9 +844,9 @@ class PaymentDetailsTable extends Component {
                                         <TablePagination
                                             rowsPerPageOptions={[25, 50, 100]}
                                             colSpan={1}
-                                            count={allTransactionsData.filter(e => {
+                                            count={this.state.filterDataArray.length  > 0 || this.state.transactionTypeArray.length  > 0 ? allTransactionsData.filter(e => {
                                                 return this.filterData( e );
-                                            }).length}
+                                            }).length : totalDataCount }
                                             rowsPerPage={rowsPerPage}
                                             page={page}
                                             SelectProps={{
@@ -830,8 +859,8 @@ class PaymentDetailsTable extends Component {
                                         </TableRow>
                                     </TableFooter>
                                 </Table>}
-                    
-
+                    </div>}
+                                
 
                 {this.state.showImageInvoiceModal &&
                     <TransactionInvoiceModal

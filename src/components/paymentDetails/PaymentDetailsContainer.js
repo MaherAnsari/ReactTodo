@@ -49,17 +49,22 @@ class PaymentDetailsContainer extends React.Component {
             buyersList: [],
             brokersList: [],
             suppliersList: [],
-            orderedListData: undefined,
+            allTransactionsData: [],
             showLoader: false,
             datePayloads: { "startDate": "", "endDate": "" },
-            params: {},
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            totalDataCount: 0,
 
             showPaymentFilterOption: false,
             filterDataArray: [],
             transactionTypeArray: [],
 
 
-            showAddTransactionModal: false
+            showAddTransactionModal: false,
+            paymentMetaInfo: undefined
 
         }
         this.ismounted = true;
@@ -123,6 +128,13 @@ class PaymentDetailsContainer extends React.Component {
     }
 
     async getPaymentDetailsData(params) {
+        if (!params.hasOwnProperty("limit")) {
+            params["limit"] = this.state.params["limit"];
+        }
+        if (!params.hasOwnProperty("offset")) {
+            params["offset"] = this.state.params["offset"];
+        }
+
         this.setState({ params: params });
         // { "startDate": "", "endDate": "" }
         if (this.state.datePayloads["startDate"] !== "") {
@@ -137,21 +149,25 @@ class PaymentDetailsContainer extends React.Component {
             let resp = await paymentDetailsService.getPaymentDetails(params);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
+                console.log(respData)
                 this.setState({
-                    allTransactionsData: respData["allTransactions"],
+                    allTransactionsData: this.state.allTransactionsData.concat(respData["allTransactions"]),
+                    totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
                     paymentMetaInfo: respData["metainfo"],
                     showLoader: false
                 });
             } else {
                 this.setState({
                     allTransactionsData: [],
+                    totalDataCount: 0,
+                    paymentMetaInfo: [],
                     showLoader: false
                 });
             }
 
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ orderedListData: [], showLoader: false }); }
+            if (this.ismounted) { this.setState({ allTransactionsData: [], totalDataCount: 0, showLoader: false }); }
         }
     }
 
@@ -163,7 +179,7 @@ class PaymentDetailsContainer extends React.Component {
     //when first Landed on this page
     onDefaultDateFromDateRangeShown(data) {
         this.setState({ datePayloads: data }, function () {
-            this.getPaymentDetailsData(this.state.params);
+            this.handelGetData(this.state.params);
         });
     }
 
@@ -174,13 +190,29 @@ class PaymentDetailsContainer extends React.Component {
     }
 
     handelRefreshData() {
-        this.getPaymentDetailsData(this.state.params);
+        this.handelGetData(this.state.params);
     }
 
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
-            this.getPaymentDetailsData(this.state.params);
+            this.handelGetData(this.state.params);
         })
+    }
+
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval }, function () {
+            this.getPaymentDetailsData(paramsval);
+        })
+    }
+
+    handelGetData(param) {
+        param["offset"] = 0;
+        param["limit"] = 1000;
+        this.setState({ allTransactionsData: [], resetPageNumber: true }, () =>
+            this.getPaymentDetailsData(param)
+        )
     }
 
     render() {
@@ -191,9 +223,13 @@ class PaymentDetailsContainer extends React.Component {
             <div className={classes.root}>
                 <Paper className={classes.card} >
                     <div style={{ display: "flex" }}>
-                        <i onClick={(event) => { this.setState({  filterDataArray :[], 
-                            transactionTypeArray : [] },()=>this.handelRefreshData(event) )}} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind( this )}/>
+                        <i onClick={(event) => {
+                            this.setState({
+                                filterDataArray: [],
+                                transactionTypeArray: []
+                            }, () => this.handelRefreshData(event))
+                        }} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
+                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind(this)} />
                         <div style={{ padding: "15px 15px 15px 0px" }}>
                             <Badge className={classes.margin} style={{ height: '25px' }}
                                 badgeContent={filterDataArray.length + transactionTypeArray.length} color="primary">
@@ -209,19 +245,28 @@ class PaymentDetailsContainer extends React.Component {
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
-                        getPaymentDetailsData={this.getPaymentDetailsData.bind(this)} />
+                        getPaymentDetailsData={this.handelGetData.bind(this)} />
 
 
 
 
-                    {this.state.showLoader ?
-                        <Loader /> :
-                        <PaymentDetailsTable
-                            allTransactionsData={allTransactionsData}
-                            paymentMetaInfo={paymentMetaInfo}
-                            filterDataArray={filterDataArray}
-                            transactionTypeArray={transactionTypeArray}
-                            OnPaymentUpdated={() => this.getPaymentDetailsData({})} />}
+                    {this.state.showLoader &&
+                        <Loader />}
+                    <PaymentDetailsTable
+                        allTransactionsData={allTransactionsData}
+                        paymentMetaInfo={paymentMetaInfo}
+                        filterDataArray={filterDataArray}
+                        transactionTypeArray={transactionTypeArray}
+                        OnPaymentUpdated={() => this.handelGetData({})}
+
+                        resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                        currentOffset={this.state.params["offset"]}
+                        resetPageNumber={this.state.resetPageNumber}
+                        showLoader={this.state.showLoader}
+                        setPageNumber={() => this.setState({ resetPageNumber: false })}
+                        totalDataCount={this.state.totalDataCount}
+
+                    />
 
                     {showPaymentFilterOption &&
                         <PaymentFilterOptionModal
@@ -230,6 +275,7 @@ class PaymentDetailsContainer extends React.Component {
                             transactionTypeArray={transactionTypeArray}
                             onEditModalCancel={(event) => this.setState({ showPaymentFilterOption: false })}
                             onFilterAdded={(data) => this.setState({
+                                resetPageNumber: 0,
                                 filterDataArray: data["paymentType"],
                                 transactionTypeArray: data["transactionType"],
                                 showPaymentFilterOption: false

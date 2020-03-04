@@ -44,10 +44,15 @@ class OrdersContainer extends React.Component {
             buyersList: [],
             brokersList: [],
             suppliersList: [],
-            orderedListData: undefined,
+            orderedListData: [],
             showLoader: false,
             datePayloads: { "startDate": "", "endDate": "" },
-            params:{}
+            totalDataCount: 0,
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            resetPageNumber: false
 
         }
         this.ismounted = true;
@@ -104,14 +109,20 @@ class OrdersContainer extends React.Component {
         if (data) {
             for (var i = 0; i < data.length; i++) {
                 // optionsData.push({ label: data[i][labelKey] +" ("+data[i][valuekey]+" )", value: data[i][valuekey] });
-                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
     }
 
     async getSearchedOrderListData(params) {
-        this.setState({params:params});
+        if (!params.hasOwnProperty("limit")) {
+            params["limit"] = this.state.params["limit"];
+        }
+        if (!params.hasOwnProperty("offset")) {
+            params["offset"] = this.state.params["offset"];
+        }
+        this.setState({ params: params });
         // { "startDate": "", "endDate": "" }
         if (this.state.datePayloads["startDate"] !== "") {
             params["startDate"] = this.state.datePayloads["startDate"];
@@ -123,17 +134,22 @@ class OrdersContainer extends React.Component {
         this.setState({ showLoader: true });
         try {
             let resp = await orderService.getOrderListData(params);
+            console.log(resp.data.result)
             if (this.ismounted) {
                 if (resp.data.status === 1 && resp.data.result) {
-                    this.setState({ orderedListData: resp.data.result.data, showLoader: false });
+                    this.setState({
+                        orderedListData: this.state.orderedListData.concat(resp.data.result.data),
+                        totalDataCount: resp.data.result.totalCount && resp.data.result.totalCount[0] && resp.data.result.totalCount[0]["count"] ? parseInt(resp.data.result.totalCount[0]["count"], 10) : 0,
+                        showLoader: false
+                    });
                 } else {
-                    this.setState({ orderedListData: [], showLoader: false });
+                    this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false });
                 }
             }
 
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ orderedListData: [], showLoader: false }); }
+            if (this.ismounted) { this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false }); }
         }
     }
 
@@ -155,10 +171,26 @@ class OrdersContainer extends React.Component {
         });
     }
 
-    handelRefreshData(){
+    handelRefreshData() {
         this.getSearchedOrderListData(this.state.params);
     }
 
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval }, function () {
+            this.getSearchedOrderListData(paramsval);
+        })
+    }
+
+    handelGetOrderData(param) {
+        param["offset"] = 0;
+        param["limit"] = 1000;
+
+        this.setState({ orderedListData: [], resetPageNumber: true }, () =>
+            this.getSearchedOrderListData(param)
+        )
+    }
 
 
     render() {
@@ -166,17 +198,17 @@ class OrdersContainer extends React.Component {
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
-                    <div style={{display:"flex"}}>
-                    <i onClick={(event)=> this.handelRefreshData( event)} style={{ padding: "18px",fontSize:"18px", color:"#50a1cf",cursor:"pointer"}}  data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind( this )}  />
+                    <div style={{ display: "flex" }}>
+                        <i onClick={(event) => this.handelRefreshData(event)} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
+                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} onDefaultDateFromDateRangeShown={this.onDefaultDateFromDateRangeShown.bind(this)} />
                     </div>
                     <FilterListComponent
                         buyersList={this.state.buyersList}
                         // brokersList={this.state.brokersList}
                         suppliersList={this.state.suppliersList}
-                        getSearchedOrderListData={this.getSearchedOrderListData.bind(this)} />
-                    
-                   
+                        getSearchedOrderListData={this.handelGetOrderData.bind(this)} />
+
+
                     {/* <div className="fixedLeftBtnContainer">
                     <a download={"bulk-add-order-data-sample.csv"} href={sampleFile} title="sampleFile">
                         <div className="fixedLeftBtn" style={{ display: 'flex' }}
@@ -191,14 +223,21 @@ class OrdersContainer extends React.Component {
                             </a>
                     </div> */}
 
-                  
-                   
-                    {this.state.showLoader ? 
-                    <Loader /> : 
-                    <OrderListTable 
-                    tableData={this.state.orderedListData} 
-                    onOrderAdded={()=> this.getSearchedOrderListData({}) } />}
-                 
+
+
+                    {this.state.showLoader &&
+                        <Loader />}
+                    <OrderListTable
+                        tableData={this.state.orderedListData}
+                        resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                        currentOffset={this.state.params["offset"]}
+                        resetPageNumber={this.state.resetPageNumber}
+                        showLoader={this.state.showLoader}
+                        setPageNumber={() => this.setState({ resetPageNumber: false })}
+                        totalDataCount={this.state.totalDataCount}
+                        onOrderAdded={() => this.handelGetOrderData({})} />
+                    {/* } */}
+
 
                 </Paper>
             </div>
