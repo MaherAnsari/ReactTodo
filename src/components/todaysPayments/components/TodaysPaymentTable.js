@@ -181,6 +181,7 @@ class TodaysPaymentTable extends Component {
 
             buyersList: [],
             suppliersList: [],
+            showLoader : false
         }
     }
 
@@ -238,7 +239,7 @@ class TodaysPaymentTable extends Component {
                 params["offset"] = this.state.params["offset"];
             } 
 
-            this.setState({ params: params });
+            this.setState({ params: params, showLoader : true });
             if (this.state.datePayloads["startDate"] !== "") {
                 params["startDate"] = this.state.datePayloads["startDate"];
             }
@@ -253,12 +254,14 @@ class TodaysPaymentTable extends Component {
                     allTransactionsData: this.state.allTransactionsData.concat(respData["allTransactions"]),
                     totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
                     paymentMetaInfo : respData["metainfo"],
-                    page: 0
+                    page: 0,
+                    showLoader : false
                 });
             } else {
                 this.setState({
                     allTransactionsData: [],
                     totalDataCount: 0,
+                    showLoader : false
                 });
             }
         } catch (err) {
@@ -709,7 +712,7 @@ class TodaysPaymentTable extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
             showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData,
-             transactionTypeArray, showAddTransactionModal , showDownloadModal, totalDataCount} = this.state;
+             transactionTypeArray, showAddTransactionModal , showDownloadModal, totalDataCount, showLoader} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -860,7 +863,7 @@ class TodaysPaymentTable extends Component {
 
                         </div>
                     </div>}
-                        {allTransactionsData ? <div style={{ marginTop : 14,maxHeight: "65vh", overflowY: "scroll" }}>
+                        {!showLoader ? <div style={{ marginTop : 14,maxHeight: "65vh", overflowY: "scroll" }}>
                             {allTransactionsData && allTransactionsData.length > 0 &&
                                 <Table  className='table-body' stickyHeader aria-label="sticky table">
                                     <TableHead style={{ borderLeft: "4px solid #05073a", borderRight: "4px solid #05073a" }}>
