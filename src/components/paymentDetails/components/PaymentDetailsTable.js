@@ -172,9 +172,8 @@ class PaymentDetailsTable extends Component {
             this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() }));
         }
 
-        if( nextProps.filterDataArray.length > 0 && nextProps.transactionTypeArray > 0 && nextProps.paymentMetaInfo !== this.state.paymentMetaInfo){
-            this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() })
-            
+        if( nextProps.filterDataArray.length === 0 && nextProps.transactionTypeArray.length === 0 ){
+            this.setState({ paymentMetaInfo :   nextProps.paymentMetaInfo  })            
         }
         
         if (this.state.allTransactionsData !== nextProps.allTransactionsData) {
@@ -416,7 +415,7 @@ class PaymentDetailsTable extends Component {
       }
 
     getPaymentInOutInfo(type, key) {
-  
+  if(this.state.paymentMetaInfo){
         let arr = this.state.paymentMetaInfo
         for (let i = 0; i < arr.length; i++) {
             let obj = arr[i];
@@ -424,6 +423,7 @@ class PaymentDetailsTable extends Component {
                 return Utils.formatNumberWithComma(obj[key]);
             }
         }
+    }
         return "0";
     }
 
@@ -577,7 +577,7 @@ class PaymentDetailsTable extends Component {
 
     render() {
         const { classes , showLoader} = this.props;
-        const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page,
+        const {  allTransactionsData,showEditTransactionModal, rowsPerPage, page,
             showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal, totalDataCount} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
@@ -585,7 +585,7 @@ class PaymentDetailsTable extends Component {
             
             <div>
                 <MuiThemeProvider theme={theme}>
-                    {paymentMetaInfo && <div className={classes.detailHeadmain}>
+                    {<div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
                        
                             <List style={{ display: "contents" }}>
