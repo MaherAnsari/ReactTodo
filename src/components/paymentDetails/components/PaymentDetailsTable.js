@@ -585,7 +585,7 @@ class PaymentDetailsTable extends Component {
             
             <div>
                 <MuiThemeProvider theme={theme}>
-                    {<div className={classes.detailHeadmain}>
+                    {!showLoader && <div className={classes.detailHeadmain}>
                         <div style={{ width: "100%", display: "flex" }}>
                        
                             <List style={{ display: "contents" }}>
