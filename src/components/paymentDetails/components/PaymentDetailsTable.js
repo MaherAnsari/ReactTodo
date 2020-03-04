@@ -158,6 +158,7 @@ class PaymentDetailsTable extends Component {
 
             totalDataCount: this.props.totalDataCount || 0,
             currentOffset : this.props.currentOffset || 0,
+            isTableDataLoading : this.props.isTableDataLoading
         }
     }
 
@@ -183,9 +184,13 @@ class PaymentDetailsTable extends Component {
         if (this.state.totalDataCount !== nextProps.totalDataCount) {
             this.setState({ totalDataCount: nextProps.totalDataCount });
         }
-
+        
         if (this.state.currentOffset !== nextProps.currentOffset) {
             this.setState({ currentOffset: nextProps.currentOffset });
+        }
+
+        if (this.state.isTableDataLoading !== nextProps.isTableDataLoading) {
+            this.setState({ isTableDataLoading: nextProps.isTableDataLoading });
         }
 
         if (nextProps.resetPageNumber) {
@@ -578,7 +583,7 @@ class PaymentDetailsTable extends Component {
     render() {
         const { classes , showLoader} = this.props;
         const {  allTransactionsData,showEditTransactionModal, rowsPerPage, page,
-            showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal, totalDataCount} = this.state;
+            showTransactionIDInfoDialog,transactionIDInfoData ,showDownloadModal, totalDataCount, isTableDataLoading} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -716,7 +721,7 @@ class PaymentDetailsTable extends Component {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {
+                                        { !isTableDataLoading &&
                                           (rowsPerPage > 0
                                             ? allTransactionsData.filter(e => 
                                             this.filterData( e )
@@ -819,6 +824,7 @@ class PaymentDetailsTable extends Component {
                                         })}
                                     </TableBody>
                                 </Table>}
+                                {isTableDataLoading && <div><Loader/> </div>}
                             {allTransactionsData && allTransactionsData.length > 0  && allTransactionsData.filter(e => {
                             return this.filterData( e );
                         }).length > 0 ? "" :

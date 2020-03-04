@@ -181,7 +181,8 @@ class TodaysPaymentTable extends Component {
 
             buyersList: [],
             suppliersList: [],
-            showLoader : false
+            showLoader : false,
+            isTableDataLoading : false
         }
     }
 
@@ -239,7 +240,7 @@ class TodaysPaymentTable extends Component {
                 params["offset"] = this.state.params["offset"];
             } 
 
-            this.setState({ params: params, showLoader : true });
+            this.setState({ params: params });
             if (this.state.datePayloads["startDate"] !== "") {
                 params["startDate"] = this.state.datePayloads["startDate"];
             }
@@ -254,14 +255,15 @@ class TodaysPaymentTable extends Component {
                     allTransactionsData: this.state.allTransactionsData.concat(respData["allTransactions"]),
                     totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
                     paymentMetaInfo : respData["metainfo"],
-                    page: 0,
-                    showLoader : false
+                    showLoader : false,
+                    isTableDataLoading : false
                 });
             } else {
                 this.setState({
                     allTransactionsData: [],
                     totalDataCount: 0,
-                    showLoader : false
+                    showLoader : false,
+                    isTableDataLoading : false
                 });
             }
         } catch (err) {
@@ -303,6 +305,9 @@ class TodaysPaymentTable extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
+        if(  this.state.allTransactionsData.length === (newPage *this.state.rowsPerPage ) ){
+            this.resetOffsetAndGetData();
+        }
       };
     
       handleChangeRowsPerPage = event => {
@@ -311,7 +316,7 @@ class TodaysPaymentTable extends Component {
 
       handelRefreshModal( event ){
           this.setState({             
-            allTransactionsData: [] }, function(){
+            allTransactionsData: [] , showLoader : true}, function(){
                 this.getTodaysTransactionList( this.state.params );
             });
       }
@@ -513,7 +518,9 @@ class TodaysPaymentTable extends Component {
     onUserInfoModalCancel(event) {
         this.setState({ showUserInfo : false,  isInfo: false });
         if(this.state.isLimitUpdate){
-            this.getTodaysTransactionList( this.state.params );
+            this.setState({ showLoader : true},()=>
+                this.getTodaysTransactionList( this.state.params )
+            )
         }
     }
 
@@ -548,7 +555,7 @@ class TodaysPaymentTable extends Component {
     handelGetData(param) {
         param["offset"] = 0;
         param["limit"] = 1000;
-        this.setState({ allTransactionsData: [],page:0 }, () =>
+        this.setState({ allTransactionsData: [],page:0 , showLoader : true}, () =>
             this.getTodaysTransactionList(param)
         )
     }
@@ -589,7 +596,7 @@ class TodaysPaymentTable extends Component {
     // this function brings default selected date from the DateRangeSelection and call the Api 
     //when first Landed on this page
     onDefaultDateFromDateRangeShown(data) {
-        this.setState({ datePayloads: data }, function () {
+        this.setState({ datePayloads: data, showLoader : true }, function () {
             this.getTodaysTransactionList( this.state.params );
         });
     }
@@ -650,7 +657,7 @@ class TodaysPaymentTable extends Component {
     resetOffsetAndGetData() {
         let paramsval = this.state.params;
         paramsval["offset"] = paramsval["offset"] + 1000;
-        this.setState({ params: paramsval }, function () {
+        this.setState({ params: paramsval, isTableDataLoading: true }, function () {
             this.getTodaysTransactionList(paramsval);
         })
     }
@@ -712,7 +719,8 @@ class TodaysPaymentTable extends Component {
         const { classes } = this.props;
         const { paymentMetaInfo, allTransactionsData,showEditTransactionModal, rowsPerPage, page ,
             showPaymentFilterOption , filterDataArray, showTransactionIDInfoDialog,transactionIDInfoData,
-             transactionTypeArray, showAddTransactionModal , showDownloadModal, totalDataCount, showLoader} = this.state;
+             transactionTypeArray, showAddTransactionModal , showDownloadModal, totalDataCount, showLoader,
+             isTableDataLoading} = this.state;
         const leftAlignedIndexs = [0,1, 2,3];
         const rightAlignedIndexs = [7];
         return (
@@ -880,7 +888,7 @@ class TodaysPaymentTable extends Component {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {
+                                        { !isTableDataLoading &&
                                           (rowsPerPage > 0
                                             ? allTransactionsData.filter(e => 
                                                 this.filterData( e )
@@ -914,7 +922,7 @@ class TodaysPaymentTable extends Component {
                                                       onClick={( event )=> this.setState({ showTransactionIDInfoDialog : true, transactionIDInfoData : row })}
                                                       className=" name-span" style={{ cursor: "pointer"}} > 
                                                        {row.id ? row.id : "-"}
-                                                       { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
+                                                       { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginLeft:"4px",color:"#50aa35"}} className="fa fa-mobile" aria-hidden="true"></i>}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className={classes.tableCell} style={{textAlign: "left"}}>
@@ -986,7 +994,7 @@ class TodaysPaymentTable extends Component {
                  
                                 </Table>}
 
-                               
+                                {isTableDataLoading && <div><Loader/> </div>}
                            
 
 

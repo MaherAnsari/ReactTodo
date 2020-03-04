@@ -52,7 +52,8 @@ class OrdersContainer extends React.Component {
                 limit: 1000, // total amount of data 
                 offset: 0 // data from which data needs to be get
             },
-            resetPageNumber: false
+            resetPageNumber: false,
+            isTableDataLoading : false
 
         }
         this.ismounted = true;
@@ -131,7 +132,7 @@ class OrdersContainer extends React.Component {
             params["endDate"] = this.state.datePayloads["endDate"];
         }
         // params["supplierid"] = "9953368723";
-        this.setState({ showLoader: true });
+        
         try {
             let resp = await orderService.getOrderListData(params);
             console.log(resp.data.result)
@@ -140,16 +141,17 @@ class OrdersContainer extends React.Component {
                     this.setState({
                         orderedListData: this.state.orderedListData.concat(resp.data.result.data),
                         totalDataCount: resp.data.result.totalCount && resp.data.result.totalCount[0] && resp.data.result.totalCount[0]["count"] ? parseInt(resp.data.result.totalCount[0]["count"], 10) : 0,
-                        showLoader: false
+                        showLoader: false,
+                        isTableDataLoading : false
                     });
                 } else {
-                    this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false });
+                    this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false , isTableDataLoading : false});
                 }
             }
 
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false }); }
+            if (this.ismounted) { this.setState({ orderedListData: [], totalDataCount: 0, showLoader: false , isTableDataLoading : false}); }
         }
     }
 
@@ -160,7 +162,7 @@ class OrdersContainer extends React.Component {
     // this function brings default selected date from the DateRangeSelection and call the Api 
     //when first Landed on this page
     onDefaultDateFromDateRangeShown(data) {
-        this.setState({ datePayloads: data }, function () {
+        this.setState({ datePayloads: data , showLoader : true }, function () {
             this.getSearchedOrderListData(this.state.params);
         });
     }
@@ -172,13 +174,15 @@ class OrdersContainer extends React.Component {
     }
 
     handelRefreshData() {
+        this.setState({showLoader : true }, function () {
         this.getSearchedOrderListData(this.state.params);
+        })
     }
 
     resetOffsetAndGetData() {
         let paramsval = this.state.params;
         paramsval["offset"] = paramsval["offset"] + 1000;
-        this.setState({ params: paramsval }, function () {
+        this.setState({ params: paramsval , isTableDataLoading : true }, function () {
             this.getSearchedOrderListData(paramsval);
         })
     }
@@ -187,7 +191,7 @@ class OrdersContainer extends React.Component {
         param["offset"] = 0;
         param["limit"] = 1000;
 
-        this.setState({ orderedListData: [], resetPageNumber: true }, () =>
+        this.setState({ orderedListData: [], showLoader : true, resetPageNumber: true }, () =>
             this.getSearchedOrderListData(param)
         )
     }
@@ -235,6 +239,7 @@ class OrdersContainer extends React.Component {
                         showLoader={this.state.showLoader}
                         setPageNumber={() => this.setState({ resetPageNumber: false })}
                         totalDataCount={this.state.totalDataCount}
+                        isTableDataLoading ={ this.state.isTableDataLoading }
                         onOrderAdded={() => this.handelGetOrderData({})} />
                     {/* } */}
 

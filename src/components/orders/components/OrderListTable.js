@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoDialog from './infoDialog';
-
+import Loader from '../../common/Loader';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import ViewSupportingInvoiceModal from '../common/ViewSupportingInvoiceModal';
@@ -192,6 +192,9 @@ class OrderListTable extends Component {
         }
         if (this.state.currentOffset !== nextprops.currentOffset) {
             this.setState({ currentOffset: nextprops.currentOffset });
+        }
+        if( this.state.isTableDataLoading !== nextprops.isTableDataLoading ){
+            this.setState({ isTableDataLoading : nextprops.isTableDataLoading });
         }
         if (nextprops.resetPageNumber) {
             this.setState({ page : 0 },()=>
@@ -388,7 +391,7 @@ class OrderListTable extends Component {
 
     render() {
         const { classes,showLoader } = this.props;
-        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, totalDataCount, commodityList } = this.state;
+        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, totalDataCount, commodityList, isTableDataLoading } = this.state;
         const leftAlignedIndexs = [2, 3];
         const rightAlignedIndexs = [3, 8];
         return (
@@ -411,7 +414,7 @@ class OrderListTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.tableBodyData &&
+                                { !isTableDataLoading && this.state.tableBodyData &&
 
                                     (rowsPerPage > 0
                                         ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -504,10 +507,10 @@ class OrderListTable extends Component {
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    })}
+                                    }) }
                             </TableBody>
-
                         </Table>
+                        {isTableDataLoading && <div><Loader/> </div>}
                         {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>

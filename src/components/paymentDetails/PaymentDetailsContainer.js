@@ -64,7 +64,8 @@ class PaymentDetailsContainer extends React.Component {
 
 
             showAddTransactionModal: false,
-            paymentMetaInfo: undefined
+            paymentMetaInfo: undefined,
+            isTableDataLoading : false
 
         }
         this.ismounted = true;
@@ -144,7 +145,7 @@ class PaymentDetailsContainer extends React.Component {
             params["endDate"] = this.state.datePayloads["endDate"];
         }
         // params["supplierid"] = "9953368723";
-        this.setState({ showLoader: true });
+        
         try {
             let resp = await paymentDetailsService.getPaymentDetails(params);
             if (resp.data.status === 1 && resp.data.result) {
@@ -154,20 +155,22 @@ class PaymentDetailsContainer extends React.Component {
                     allTransactionsData: this.state.allTransactionsData.concat(respData["allTransactions"]),
                     totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
                     paymentMetaInfo: respData["metainfo"],
-                    showLoader: false
+                    showLoader: false,
+                    isTableDataLoading : false
                 });
             } else {
                 this.setState({
                     allTransactionsData: [],
                     totalDataCount: 0,
                     paymentMetaInfo: [],
-                    showLoader: false
+                    showLoader: false,
+                    isTableDataLoading : false
                 });
             }
 
         } catch (err) {
             console.error(err);
-            if (this.ismounted) { this.setState({ allTransactionsData: [], totalDataCount: 0, showLoader: false }); }
+            if (this.ismounted) { this.setState({ allTransactionsData: [], totalDataCount: 0, showLoader: false, isTableDataLoading : false }); }
         }
     }
 
@@ -202,7 +205,7 @@ class PaymentDetailsContainer extends React.Component {
     resetOffsetAndGetData() {
         let paramsval = this.state.params;
         paramsval["offset"] = paramsval["offset"] + 1000;
-        this.setState({ params: paramsval }, function () {
+        this.setState({ params: paramsval , isTableDataLoading : true}, function () {
             this.getPaymentDetailsData(paramsval);
         })
     }
@@ -210,7 +213,7 @@ class PaymentDetailsContainer extends React.Component {
     handelGetData(param) {
         param["offset"] = 0;
         param["limit"] = 1000;
-        this.setState({ allTransactionsData: [], resetPageNumber: true }, () =>
+        this.setState({ allTransactionsData: [], resetPageNumber: true, showLoader : true }, () =>
             this.getPaymentDetailsData(param)
         )
     }
@@ -265,6 +268,7 @@ class PaymentDetailsContainer extends React.Component {
                         showLoader={this.state.showLoader}
                         setPageNumber={() => this.setState({ resetPageNumber: false })}
                         totalDataCount={this.state.totalDataCount}
+                        isTableDataLoading={ this.state.isTableDataLoading}
 
                     />
 
