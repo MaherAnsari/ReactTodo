@@ -545,7 +545,7 @@ class TodaysPaymentTable extends Component {
     handelGetData(param) {
         param["offset"] = 0;
         param["limit"] = 1000;
-        this.setState({ allTransactionsData: [], resetPageNumber: true }, () =>
+        this.setState({ allTransactionsData: [],page:0 }, () =>
             this.getTodaysTransactionList(param)
         )
     }
@@ -1097,6 +1097,7 @@ class TodaysPaymentTable extends Component {
                              transactionTypeArray={ transactionTypeArray }
                              onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
                             onFilterAdded={( data )=> this.setState({ 
+                                page : 0,
                                 filterDataArray : data["paymentType"], 
                                 transactionTypeArray : data["transactionType"], 
                                 showPaymentFilterOption : false },
