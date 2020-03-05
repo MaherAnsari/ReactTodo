@@ -38,6 +38,7 @@ import TransactionIfoModal from '../../payment/common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
 import TransactionIdInfoModal from '../../common/TransactionIdInfoModal';
 import DownloadModalPayment from '../../common/DownloadModalPayment';
+import Tooltip from '@material-ui/core/Tooltip';
 
 var moment = require('moment');
 
@@ -100,6 +101,7 @@ const styles = theme => ({
     },
     lightTooltip: {
         fontSize: '15px',
+        fontWeight:500,
         maxWidth: 'none',
     },
     inline: {
@@ -266,14 +268,15 @@ class PaymentDetailsTable extends Component {
                 row["status"] === "payout_cancelled" || 
                 row["status"] === "payout_rejected" ){
                     return( <span>
+                        <Tooltip title={row["status"] +":"+ row["failure_reason"]} placement="top" classes={{ tooltip: this.props.classes.lightTooltip }}>
                         <span 
                         style={{paddingLeft: "6px"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
                         title={row["status"] }>
                         <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
-                       
                     </span> 
+                    </Tooltip>
                     <span 
                         style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
                         data-toggle="tooltip" 

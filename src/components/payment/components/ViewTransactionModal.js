@@ -45,6 +45,8 @@ import SelectTransactionTypeModal from '../common/SelectTransactionTypeModal';
 import PayoutModal from '../common/PayoutModal';
 import TransactionIfoModal from '../common/TransactionIfoModal';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import Tooltip from '@material-ui/core/Tooltip';
+
 var moment = require('moment');
 
 const theme = createMuiTheme({
@@ -108,6 +110,7 @@ const styles = theme => ({
     },
     lightTooltip: {
         fontSize: '15px',
+        fontWeight:500,
         maxWidth: 'none',
     },
 });
@@ -311,14 +314,15 @@ class ViewTransactionModal extends Component {
                 row["status"] === "payout_cancelled" || 
                 row["status"] === "payout_rejected" ){
                     return( <span>
+                         <Tooltip title={row["status"] + (row["failure_reason"] ? (":"+ row["failure_reason"]) : "")} placement="top" classes={{ tooltip: this.props.classes.lightTooltip }}>
                         <span 
                         style={{paddingLeft: "6px"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
                         title={row["status"] }>
                         <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
-                       
                     </span> 
+                    </Tooltip>
                     <span 
                         style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
                         data-toggle="tooltip" 
