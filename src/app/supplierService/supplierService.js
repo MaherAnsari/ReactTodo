@@ -4,6 +4,16 @@ import Utils from '../common/utils';
 
 let supplierService = {
 
+    getDefaultSupplierList: async function (param) {
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url:'/user/list/supplier',
+            params: param
+        },1);
+    },
     getSupplierList: async function (param) {
         return Api({
             method: 'get',

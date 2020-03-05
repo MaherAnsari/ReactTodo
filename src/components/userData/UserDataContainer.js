@@ -45,10 +45,19 @@ class UserDataContainer extends React.Component {
         this.state = {
             open: false,
             showAddModal: false,
-            dataList: null,
+            dataList: [],
             showLoader: true,
             commodityList: null,
-            showUploader: false
+            showUploader: false,
+
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            totalDataCount: 0,
+            showLoader: false,
+            isTableDataLoading: false,
+            resetPageNumber: false
 
         };
     }
@@ -56,8 +65,8 @@ class UserDataContainer extends React.Component {
 
 
     async componentDidMount() {
-        this.getData();
-        //    this.getCommodityNames();
+        this.handelGetData();
+        //    this.getCommodityNames(); 
 
     }
 
@@ -75,22 +84,36 @@ class UserDataContainer extends React.Component {
     //     }
     // }
 
-    async getData() {
-        this.setState({ dataList: null, showAddModal: false, showUploader: false });
-        let resp = await userListService.getUserList();
-        // console.log(resp.data);
+    async getData(params) {
+        this.setState({ showAddModal: false, showUploader: false });
+        let resp = await userListService.getUserList(params);
+
         if (resp.data.status === 1 && resp.data.result) {
-
-            this.setState({ dataList: resp.data.result.data });
-
+            let respData = resp.data.result;
+            console.log(respData);
+            this.setState({
+                dataList: this.state.dataList.concat(respData.data),
+                totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+        } else {
+            this.setState({
+                dataList: [],
+                totalDataCount: 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
         }
     }
+
     handleClose(event) {
         this.setState({ open: false, showAddModal: false });
-        this.getData();
+        this.handelGetData();
     }
     onModalCancel(event) {
-        this.setState({ open: false, showAddModal: false ,showUploader:false});
+        this.setState({ open: false, showAddModal: false, showUploader: false });
     }
 
 
@@ -118,23 +141,36 @@ class UserDataContainer extends React.Component {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
                 alert("Data Successfuly Uploaded ");
-                this.getData();
-
+                this.handelGetData();
             }
 
         } catch (err) {
             console.error(err)
-            this.getData();
+            this.handelGetData();
         }
     }
 
-    
+
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    handelRefreshData( event ){
-        this.getData();
+    handelRefreshData(event) {
+        this.handelGetData();
+    }
+
+    handelGetData() {
+        this.setState({ dataList: [], resetPageNumber: true, showLoader: true, params: { limit: 1000, offset: 0 } }, () =>
+            this.getData(this.state.params)
+        );
+    }
+
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval, isTableDataLoading: true }, function () {
+            this.getData(paramsval);
+        })
     }
 
     render() {
@@ -142,16 +178,25 @@ class UserDataContainer extends React.Component {
         return (
             <div className={classes.root}>
 
-                {this.state.dataList ? <Card className={classes.card}>
+                {this.state.showLoader && <Loader />}
+                <Card className={classes.card} style={{ display: this.state.showLoader ? "none" : "unset" }}>
 
                     <UserListTable
                         tableData={this.state.dataList}
-                        onClose={this.getData.bind(this)}
+                        onClose={() => this.handelGetData()}
                         downloadAbleFileName="user_list_data"
-                        handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
-                        commodityList={this.state.commodityList} />
+                        handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
+                        commodityList={this.state.commodityList}
 
-                   {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
+                        resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                        resetPageNumber={this.state.resetPageNumber}
+                        setPageNumber={() => this.setState({ resetPageNumber: false })}
+                        totalDataCount={this.state.totalDataCount}
+                        showLoader={this.state.showLoader}
+                        isTableDataLoading={this.state.isTableDataLoading}
+                    />
+
+                    {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
@@ -174,7 +219,7 @@ class UserDataContainer extends React.Component {
                             </a>
                     </div> */}
 
-                     {/* <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}>
                             <i className="fa fa-cloud-upload add-icon" aria-hidden="true"></i>
@@ -185,17 +230,23 @@ class UserDataContainer extends React.Component {
                             }}>Upload file</p></div>
                     </div> */}
 
-                </Card> : <Loader />}
+                </Card>
 
-                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
-                     onEditModalClosed={this.handleClose.bind(this)}
-                     commodityList={ this.state.commodityList}
-                     onEditModalCancel={this.onModalCancel.bind(this)}/> :""}
-                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                    onEditModalClosed={this.handleFileUploader.bind(this)}
-                    //  commodityList={ this.state.commodityList}
-                    onEditModalCancel={this.onModalCancel.bind(this)}
-                />
+
+
+                {this.state.showAddModal ?
+                    <InfoDialog openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        commodityList={this.state.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                        
+                {this.state.showUploader ?
+                    <FileUploader
+                        openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)}
+                    />
                     : ""}
             </div>
         );

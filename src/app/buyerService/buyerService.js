@@ -4,6 +4,16 @@ import Utils from '../common/utils';
 
 let buyerService = {
 
+    getDefaultBuyerList: async function (param) {
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url:'/user/list/buyer',
+            params: param
+        },1);
+    },
     getBuyerList: async function (param) {
         return Api({
             method: 'get',

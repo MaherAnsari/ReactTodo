@@ -47,9 +47,17 @@ class SupplierContainer extends React.Component {
         this.state = {
             open: false,
             showAddModal: false,
-            dataList: null,
-            showLoader: true,
-            showUploader: false
+            dataList: [],
+            showUploader: false,
+
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            totalDataCount: 0,
+            showLoader: false,
+            isTableDataLoading: false,
+            resetPageNumber: false
 
         };
     }
@@ -57,23 +65,36 @@ class SupplierContainer extends React.Component {
 
 
     async componentDidMount() {
-        this.getData();
+        // this.getData();
+        this.handelGetData();
 
     }
 
-    async getData() {
-        this.setState({ dataList: null, showAddModal: false, showUploader: false });
-        let resp = await supplierService.getSupplierList();
-        // console.log(resp.data);
+    async getData(params) {
+        this.setState({ showAddModal: false, showUploader: false });
+        let resp = await supplierService.getDefaultSupplierList(params);
         if (resp.data.status === 1 && resp.data.result) {
-
-            this.setState({ dataList: resp.data.result.data });
-
+            let respData = resp.data.result;
+            console.log(respData);
+            this.setState({
+                dataList: this.state.dataList.concat(respData.data),
+                totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+        } else {
+            this.setState({
+                dataList: [],
+                totalDataCount: 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
         }
     }
     handleClose(event) {
         this.setState({ open: false, showAddModal: false });
-        this.getData();
+        this.handelGetData();
     }
     onModalCancel(event) {
         this.setState({ open: false, showAddModal: false, showUploader: false });
@@ -92,13 +113,12 @@ class SupplierContainer extends React.Component {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
                 alert("Data Successfuly Uploaded ");
-                this.getData();
-
+                this.handelGetData();
             }
 
         } catch (err) {
             console.error(err)
-            this.getData();
+            this.handelGetData();
         }
     }
 
@@ -108,11 +128,11 @@ class SupplierContainer extends React.Component {
     }
 
     handelRefreshData(event) {
-        this.getData();
+        this.handelGetData();
     }
 
     handelDownloadClicked = () => {
-        let fHeader = { 
+        let fHeader = {
             "id": "LA ID",
             "fullname": "LA Name",
             "business_name": "Firm Name",
@@ -127,17 +147,41 @@ class SupplierContainer extends React.Component {
         Utils.downloadFormattedDataInCSV(this.state.dataList, "LA Data (supplier)", fHeader)
     }
 
+    handelGetData() {
+        this.setState({ dataList: [], resetPageNumber: true, showLoader: true, params: { limit: 1000, offset: 0 } }, () =>
+            this.getData(this.state.params)
+        );
+    }
+
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval, isTableDataLoading: true }, function () {
+            this.getData(paramsval);
+        })
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ? <Card className={classes.card}>
+
+                {this.state.showLoader && <Loader />}
+
+                <Card className={classes.card} style={{ display: this.state.showLoader ? "none" : "unset" }} >
                     <UserTable
                         tableData={this.state.dataList}
                         role="la"
                         handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
                         downloadAbleFileName="supplier_list_data"
-                        onClose={this.getData.bind(this)} />
+                        onClose={() => this.handelGetData(this)}
+
+                        resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                        resetPageNumber={this.state.resetPageNumber}
+                        setPageNumber={() => this.setState({ resetPageNumber: false })}
+                        totalDataCount={this.state.totalDataCount}
+                        showLoader={this.state.showLoader}
+                        isTableDataLoading={this.state.isTableDataLoading} />
 
                     {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex', right: "-5px" }} onClick={this.handleClickOpen.bind(this)}>
@@ -176,24 +220,26 @@ class SupplierContainer extends React.Component {
                     </div> */}
 
 
-                    {getAccessAccordingToRole("allowDownload") &&  <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
+                    {getAccessAccordingToRole("allowDownload") && <div className="updateBtndef" style={{ right: "160px" }} data-toggle="tooltip" data-html="true" title="Download">
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div>}
 
-                </Card> : <Loader />}
+                </Card>
 
-                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
-                    onEditModalClosed={this.handleClose.bind(this)}
-                    role="la"
-                    onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                {this.state.showAddModal ?
+                    <InfoDialog openModal={this.state.open}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        role="la"
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
-                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                    onEditModalClosed={this.handleFileUploader.bind(this)}
-                    //  commodityList={ this.state.commodityList}
-                    onEditModalCancel={this.onModalCancel.bind(this)}
-                />
+                {this.state.showUploader ?
+                    <FileUploader openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)}
+                    />
                     : ""}
             </div>
         );

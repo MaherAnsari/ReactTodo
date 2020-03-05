@@ -46,10 +46,18 @@ class BrokerContainer extends React.Component {
         this.state = {
             open: false,
             showAddModal: false,
-            dataList: null,
-            showLoader: true,
+            dataList: [],
             commodityList: [],
-            showUploader:false
+            showUploader:false,
+
+            params: {
+                limit: 1000, // total amount of data 
+                offset: 0 // data from which data needs to be get
+            },
+            totalDataCount: 0,
+            showLoader: false,
+            isTableDataLoading: false,
+            resetPageNumber: false
 
         };
     }
@@ -57,18 +65,31 @@ class BrokerContainer extends React.Component {
 
 
     async componentDidMount() {
-        this.getData();
+        this.handelGetData();
         this.getCommodityNames();
     }
 
-    async getData() {
-        this.setState({ dataList: null, showAddModal: false, showUploader: false  });
-        let resp = await brokerService.getBrokerList(null);
+    async getData( params ) {
+        this.setState({ showAddModal: false, showUploader: false  });
+        let resp = await brokerService.getDefaultBrokerList(params);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
-
-            this.setState({ dataList: resp.data.result.data });
-
+            let respData = resp.data.result;
+            console.log(respData);
+            this.setState({
+                dataList: this.state.dataList.concat(respData.data),
+                totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+        } else {
+            this.setState({
+                dataList: [],
+                totalDataCount: 0,
+                showLoader: false,
+                isTableDataLoading: false
+            });
+            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
         }
     }
 
@@ -88,7 +109,7 @@ class BrokerContainer extends React.Component {
 
     handleClose(event) {
         this.setState({ open: false, showAddModal: false });
-        this.getData();
+        this.handelGetData();
     }
     onModalCancel(event) {
         this.setState({ open: false, showAddModal: false ,showUploader:false});
@@ -105,7 +126,7 @@ class BrokerContainer extends React.Component {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
                 alert("Data Successfuly Uploaded ");
-                this.getData();
+                this.handelGetData();
 
             }else{
                 // alert("Oops an error occured while uploading");
@@ -115,7 +136,7 @@ class BrokerContainer extends React.Component {
 
         } catch (err) {
             console.error(err)
-            this.getData();
+            this.handelGetData();
         }
     }
 
@@ -125,21 +146,45 @@ class BrokerContainer extends React.Component {
     }
 
     handelRefreshData( event ){
-        this.getData();
+        this.handelGetData();
+    }
+
+    handelGetData() {
+        this.setState({ dataList:[], resetPageNumber: true, showLoader: true, params: { limit: 1000, offset: 0 } }, () =>
+            this.getData(this.state.params)
+        );
+    }
+
+    resetOffsetAndGetData() {
+        let paramsval = this.state.params;
+        paramsval["offset"] = paramsval["offset"] + 1000;
+        this.setState({ params: paramsval, isTableDataLoading: true }, function () {
+            this.getData(paramsval);
+        })
     }
     
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                {this.state.dataList ? <Card className={classes.card}>
+                {this.state.showLoader &&  <Loader />}
+                
+                <Card className={classes.card} style={{ display: this.state.showLoader ? "none": "unset" }}>
                     <UserListTable 
                     tableData={this.state.dataList} 
                     role="broker" 
                     downloadAbleFileName="broker_list_data"
                     handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
                     commodityList={this.state.commodityList} 
-                    onClose={this.getData.bind(this)} />
+                    onClose={()=>this.handelGetData()} 
+                    
+                    resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                    resetPageNumber={this.state.resetPageNumber}
+                    setPageNumber={() => this.setState({ resetPageNumber: false })}
+                    totalDataCount= {this.state.totalDataCount}
+                    showLoader={this.state.showLoader}
+                    isTableDataLoading={this.state.isTableDataLoading}
+                    />
                     
                     {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
                         <div className="updateBtnFixed" style={{ display: 'flex', right:"2px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
@@ -175,7 +220,7 @@ class BrokerContainer extends React.Component {
                             }}>Upload file</p></div>
                     </div> */}
 
-                </Card> : <Loader />}
+                </Card> 
                 {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
                     role="broker"
                     commodityList={this.state.commodityList}

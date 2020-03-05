@@ -4,13 +4,14 @@ import Utils from '../common/utils';
 
 let userListService = {
 
-    getUserList: async function () {
+    getUserList: async function ( param ) {
         return Api({
             method: 'get',
             headers: {
                 // "Authorization": Utils.getToken()
             },
-            url: 'user/list'
+            url: 'user/list',
+            params: param
         },1);
     },
     addUserData: async function (isUpdate,id,props) {

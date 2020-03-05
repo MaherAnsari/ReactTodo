@@ -4,6 +4,16 @@ import Utils from '../common/utils';
 
 let brokerService = {
 
+    getDefaultBrokerList: async function (param) {
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/user/list/broker',
+            params : param
+        },1);
+    },
     getBrokerList: async function (param) {
         return Api({
             method: 'get',
