@@ -103,6 +103,13 @@ class SignIn extends React.Component {
                 }
             })
         })
+
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function (event) {
+            if (window.location.pathname === "/" || window.location.pathname === "/login") {
+                window.history.pushState(null, null, window.location.href);
+            }
+        });
     }
 
     handleValueChange = event => {
@@ -334,16 +341,16 @@ class SignIn extends React.Component {
                         </button>
                     </div>
                     <div className="flex-sb-m w-full p-t-3 p-b-32"
-                    style={{
-                        paddingTop: "12px",
-                        color: "blue",
-                        fontWeight: 500,
-                        fontSize: "14px",
-                        cursor: "pointer"
-                    }} onClick={() => this.setState({
-                        action: "sigin", forgotPasswordViewStep: 1
-                    })}>
-                  <i className="fa fa-arrow-left" aria-hidden="true"></i> &nbsp;  Back to login
+                        style={{
+                            paddingTop: "12px",
+                            color: "blue",
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            cursor: "pointer"
+                        }} onClick={() => this.setState({
+                            action: "sigin", forgotPasswordViewStep: 1
+                        })}>
+                        <i className="fa fa-arrow-left" aria-hidden="true"></i> &nbsp;  Back to login
                 </div>
                 </form> :
                 <form id="forgotpasswordUserOtpNewPassword" className="login100-form validate-form" autoComplete="off">
