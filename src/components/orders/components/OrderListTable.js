@@ -315,7 +315,7 @@ class OrderListTable extends Component {
 
     //edit option
     handelEditModalOpen(data) {
-        this.setState({ editableData: data, showEditDataModal: true });
+        this.setState({ editableData: Object.assign({},data), showEditDataModal: true });
     }
 
     async handleFileUploader(event) {

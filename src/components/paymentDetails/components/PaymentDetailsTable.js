@@ -221,7 +221,7 @@ class PaymentDetailsTable extends Component {
 
     //edit option
     handelEditModalOpen(data) {
-        this.setState({ editableData: data, showEditTransactionModal: true });
+        this.setState({ editableData:Object.assign({},data) , showEditTransactionModal: true });
     }
 
     handleChangePage = (event, newPage) => {
@@ -838,7 +838,7 @@ class PaymentDetailsTable extends Component {
                                         fontSize: "24px"
                                     }}>
                                     {<span style={{ display:"grid"}}>
-                                        <i className={" fa fa-frown-o"} style={{fontSize: "44px"}} aria-hidden="true"></i>
+                                        <i className={"fa fa-frown-o"} style={{fontSize: "44px"}} aria-hidden="true"></i>
                                         {"No data available"}
                                         </span>}
                                 </div>}
@@ -884,7 +884,7 @@ class PaymentDetailsTable extends Component {
                         onTransactionUpdated={(event) => this.setState({ showEditTransactionModal: false, isDataUpdated: true }, function () {
                             this.props.OnPaymentUpdated();
                         })}
-                        onEditModalCancel={(event) => this.setState({ showEditTransactionModal: false })}
+                        onEditModalCancel={(event) => this.setState({ editableData : undefined, showEditTransactionModal: false })}
                     />}
 
 

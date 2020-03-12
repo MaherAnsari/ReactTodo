@@ -225,7 +225,7 @@ class MandiListTable extends Component {
   }
 
   handelEditModalOpen(data) {
-    this.setState({ editableData: data, showEditDataModal: true })
+    this.setState({ editableData: Object.assign({},data), showEditDataModal: true })
   }
 
   handelEditModalClose() {

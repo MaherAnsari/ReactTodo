@@ -302,7 +302,7 @@ class TodaysPaymentTable extends Component {
 
     //edit option
     handelEditModalOpen(data) {
-        this.setState({ editableData: data, showEditTransactionModal: true });
+        this.setState({ editableData: Object.assign({},data), showEditTransactionModal: true });
     }
 
     handleChangePage = (event, newPage) => {
