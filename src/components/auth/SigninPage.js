@@ -104,12 +104,12 @@ class SignIn extends React.Component {
             })
         })
 
-        window.history.pushState(null, null, window.location.href);
-        window.addEventListener('popstate', function (event) {
-            if (window.location.pathname === "/" || window.location.pathname === "/login") {
-                window.history.pushState(null, null, window.location.href);
-            }
-        });
+        // window.history.pushState(null, null, window.location.href);
+        // window.addEventListener('popstate', function (event) {
+        //     if (window.location.pathname === "/" || window.location.pathname === "/login") {
+        //         window.history.pushState(null, null, window.location.href);
+        //     }
+        // });
     }
 
     handleValueChange = event => {
