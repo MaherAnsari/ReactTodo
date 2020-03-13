@@ -8,7 +8,7 @@ import NoDataAvailable from "../../common/NoDataAvailable";
 const styles = theme => ({
 
     dialogPaper: {
-        minWidth: '600px',
+        minWidth: 'fit-content',
         // maxWidth: '700px',
         // minHeight: '700px',
         // maxHeight: '500px'
@@ -71,7 +71,7 @@ class TransactionInvoiceModal extends Component {
                         this.state.invoiceUrlData.map((url, index) =>
                             <div key={index + "imgs"} className="supportingimgCard" >
                                 <img src={url} alt={url} style={{
-                                    width: "100%",
+                                    // width: "100%",
                                     // height: "500px"
                                 }} 
                                 onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
