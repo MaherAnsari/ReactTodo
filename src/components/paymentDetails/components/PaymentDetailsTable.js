@@ -163,6 +163,11 @@ class PaymentDetailsTable extends Component {
 
     componentWillReceiveProps( nextProps ){
 
+
+        if (this.state.paymentMetaInfo !== nextProps.paymentMetaInfo) {
+            this.setState({ paymentMetaInfo: nextProps.paymentMetaInfo });
+        }
+
         if (this.state.allTransactionsData !== nextProps.allTransactionsData) {
             this.setState({ allTransactionsData: nextProps.allTransactionsData });
         }
