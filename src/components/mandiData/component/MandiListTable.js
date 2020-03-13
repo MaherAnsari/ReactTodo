@@ -393,7 +393,7 @@ class MandiListTable extends Component {
           </Table>
          
           </div>
-          <Table>
+          {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>
           <TableFooter style={{ borderTop: "2px solid #858792" }}>
               <TableRow>
                 <TablePagination
@@ -411,7 +411,7 @@ class MandiListTable extends Component {
                 />
               </TableRow>
             </TableFooter>
-            </Table>
+            </Table>}
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>

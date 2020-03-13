@@ -242,6 +242,23 @@ class TodaysPaymentTable extends Component {
                 params["offset"] = this.state.params["offset"];
             } 
 
+            
+        if (this.state.filterDataArray.length > 0) {
+            params["filter_status"] = this.state.filterDataArray.toString();
+        }else{
+            if(params.hasOwnProperty("filter_status") ){
+                delete params["filter_status"];
+            }
+        }
+
+        if (this.state.transactionTypeArray.length > 0) {
+            params["filter_transaction_type"] = this.state.transactionTypeArray.toString();
+        }else{
+            if(params.hasOwnProperty("filter_transaction_type") ){
+                delete params["filter_transaction_type"];
+            }
+        }
+
             this.setState({ params: params });
             if (this.state.datePayloads["startDate"] !== "") {
                 params["startDate"] = this.state.datePayloads["startDate"];
@@ -614,40 +631,6 @@ class TodaysPaymentTable extends Component {
         Utils.downloadDataInCSV(this.state.allTransactionsData,"Day-wise")
     }
 
-    filterData( data ){
-        if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
-            return data;
-        }
-
-        if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
-
-            if(this.state.filterDataArray.length === 0 ){
-                return data;
-            }
-
-        if( data && data["status"] ){
-            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return data;
-            }else{
-                return "";
-            }
-        }else{
-            return "";
-        }
-    }else{
-        if( data && data["status"] ){
-            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return data;
-            }else{
-                return "";
-            }
-        }else{
-            return "";
-        }
-    }
-
-    }
-
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             // this.getPaymentInfoDetails(this.state.datePayloads);
@@ -687,7 +670,7 @@ class TodaysPaymentTable extends Component {
         let b_out_sum = 0;
         let allTransactionsData = this.state.allTransactionsData;
         if(allTransactionsData){
-            let trans = allTransactionsData.filter(e => this.filterData( e ) );
+            let trans = allTransactionsData;
             
             for (let line of trans) {
                 if( !this.checkIfOmittedStatusKeys( line )){
@@ -893,13 +876,8 @@ class TodaysPaymentTable extends Component {
                                     <TableBody>
                                         { !isTableDataLoading &&
                                           (rowsPerPage > 0
-                                            ? allTransactionsData.filter(e => 
-                                                this.filterData( e )
-                                           ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            : allTransactionsData.filter(e => 
-                                                this.filterData( e )
-                                           )
-                                          ).map((row, i) => {
+                                            ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            : allTransactionsData).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
                                                 <TableRow key={'table_' + i} style={{ background: (i % 2 === 0 ? "#e5e8ec" : "#fff"), borderLeft: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}`, borderRight: `4px solid ${this.getTransactionTypeColor(row.transaction_type)}` }}>
@@ -1001,9 +979,7 @@ class TodaysPaymentTable extends Component {
                            
 
 
-                            {allTransactionsData && allTransactionsData.length > 0 && allTransactionsData.filter(e => {
-                            return this.filterData( e );
-                        }).length > 0 ? "" :
+                            {allTransactionsData && allTransactionsData.length > 0  ? "" :
                                 <div className={classes.defaultTemplate}
                                     style={{
                                         marginTop: "10%",
@@ -1016,18 +992,13 @@ class TodaysPaymentTable extends Component {
                             {/* {!allTransactionsData && <Loader />} */}
                         </div> : <Loader />}
                         {allTransactionsData && allTransactionsData.length > 0 &&
-                        allTransactionsData.filter(e => {
-                            return this.filterData( e );
-                        }).length > 0 && 
                                 <Table>  
                                     <TableFooter style={{ borderTop: "2px solid #858792" }}>
                 <TableRow>
                   <TablePagination
                     rowsPerPageOptions={[25, 50, 100]}
                     colSpan={1}
-                    count={filterDataArray.length > 0 || transactionTypeArray.length > 0 ? allTransactionsData.filter(e => {
-                        return this.filterData( e );
-                    }).length : totalDataCount}
+                    count={totalDataCount}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     SelectProps={{
@@ -1110,13 +1081,10 @@ class TodaysPaymentTable extends Component {
                              filterDataArr = { filterDataArray }
                              transactionTypeArray={ transactionTypeArray }
                              onEditModalCancel = {( event )=> this.setState({ showPaymentFilterOption : false })}
-                            onFilterAdded={( data )=> this.setState({ 
-                                page : 0,
+                            onFilterAdded={( data )=> this.setState({
                                 filterDataArray : data["paymentType"], 
                                 transactionTypeArray : data["transactionType"], 
-                                showPaymentFilterOption : false },
-                                 ()=>
-            this.setState({ paymentMetaInfo : this.getTransactionCountSumOnFilterChanged()  })) } />}
+                                showPaymentFilterOption : false } ) } />}
 
                     {showTransactionIDInfoDialog && 
                         <TransactionIdInfoModal
@@ -1146,9 +1114,7 @@ class TodaysPaymentTable extends Component {
                             open={showDownloadModal}
                             downloadFilename={"Day_wise_payment"}
                             onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
-                            allTransactionsData={allTransactionsData.filter(e => {
-                                return this.filterData( e );
-                            })} />}
+                            allTransactionsData={allTransactionsData} />}
 
                     {showAddTransactionModal &&
                         <AddTransactionModal

@@ -148,9 +148,6 @@ class PaymentDetailsTable extends Component {
             transactionInfoData : undefined,
             datePayloads: { "startDate": "" },
 
-            filterDataArray: this.props.filterDataArray,
-            transactionTypeArray : this.props.transactionTypeArray,
-
             userId: undefined,
 
             showTransactionIDInfoDialog: false,
@@ -165,20 +162,7 @@ class PaymentDetailsTable extends Component {
     }
 
     componentWillReceiveProps( nextProps ){
-        if( nextProps.filterDataArray !== this.state.filterDataArray ){
-            this.setState({ filterDataArray : nextProps.filterDataArray, page : 0  }, ()=>
-            this.setState({ paymentMetaInfo : this.getTransactionCountSumOnFilterChanged()  }));
-        }
-        
-        if( nextProps.transactionTypeArray !== this.state.transactionTypeArray ){
-            this.setState({ transactionTypeArray : nextProps.transactionTypeArray , page : 0 }, ()=>
-            this.setState({ paymentMetaInfo :  this.getTransactionCountSumOnFilterChanged() }));
-        }
 
-        if( nextProps.filterDataArray.length === 0 && nextProps.transactionTypeArray.length === 0 ){
-            this.setState({ paymentMetaInfo :   nextProps.paymentMetaInfo  })            
-        }
-        
         if (this.state.allTransactionsData !== nextProps.allTransactionsData) {
             this.setState({ allTransactionsData: nextProps.allTransactionsData });
         }
@@ -449,44 +433,6 @@ class PaymentDetailsTable extends Component {
         return isValid;
     }
 
-    getTransactionCountSumOnFilterChanged(  ){
-        let b_in_count = 0;
-        let b_out_count = 0;
-        let b_in_sum = 0;
-        let b_out_sum = 0;
-        let allTransactionsData = this.state.allTransactionsData;
-        if(allTransactionsData){
-            let trans = allTransactionsData.filter(e => this.filterData( e ) );
-            
-            for (let line of trans) {
-                if( !this.checkIfOmittedStatusKeys( line )){
-                   // ignore this lines for omit keys
-                }else{ 
-                    if(  line["transaction_type"] === "b_in"  ){
-                        b_in_count++ ;
-                        b_in_sum = b_in_sum + line["amount"] ;
-                    }
-
-                    if(  line["transaction_type"] === "b_out"  ){
-                         b_out_count++ ;
-                        b_out_sum = b_out_sum + line["amount"] ;
-                    }
-                }
-            }
-            return (
-                [ {"count": b_in_count  ,"sum": b_in_sum ,"transaction_type":"b_in"},
-                  {"count": b_out_count ,"sum": b_out_sum ,"transaction_type":"b_out"}
-                ]);
-
-        }else{
-            return (
-                [   {"count": 0 ,"sum":0,"transaction_type":"b_in"},
-                    {"count": 0 ,"sum":0,"transaction_type":"b_out"}
-                ]);
-        }
-    }
-
-    
     onUserInfoModalCancel(event) {
         this.setState({ showUserInfo : false,  isInfo: false });
         if(this.state.isLimitUpdate){
@@ -549,38 +495,6 @@ class PaymentDetailsTable extends Component {
     // handelDownloadClicked = () => {
     //     Utils.downloadDataInCSV(this.state.allTransactionsData,"payments-detail")
     // }
-    
-    filterData( data ){
-        if( this.state.filterDataArray.length === 0 && this.state.transactionTypeArray.length === 0 ){
-            return true;
-        }
-
-        if(this.state.transactionTypeArray.length > 0 && this.state.transactionTypeArray.indexOf( data["transaction_type"] ) > -1  ){
-            if(this.state.filterDataArray.length === 0 ){
-                return true;
-            }
-        if( data && data["status"] ){
-            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
-        }
-    }else{
-        if( data && data["status"] ){
-            if(this.state.filterDataArray.indexOf( data["status"] ) > -1 ){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
-        }
-    }
-
-    }
 
 
     render() {
@@ -726,12 +640,8 @@ class PaymentDetailsTable extends Component {
                                     <TableBody>
                                         { !isTableDataLoading &&
                                           (rowsPerPage > 0
-                                            ? allTransactionsData.filter(e => 
-                                            this.filterData( e )
-                                       ).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            : allTransactionsData.filter(e => 
-                                                this.filterData( e )
-                                           )
+                                            ? allTransactionsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            : allTransactionsData
                                           ).map((row, i) => {
                                             return (
                                                 //tableHeadData:["id","Supplier Name","Supplier Bussiness Name","Created Time","Amount","Payment mode","Invoice images"],
@@ -828,9 +738,7 @@ class PaymentDetailsTable extends Component {
                                     </TableBody>
                                 </Table>}
                                 {isTableDataLoading && <div><Loader/> </div>}
-                            {allTransactionsData && allTransactionsData.length > 0  && allTransactionsData.filter(e => {
-                            return this.filterData( e );
-                        }).length > 0 ? "" :
+                            {allTransactionsData && allTransactionsData.length > 0 ? "" :
                                 <div className={classes.defaultTemplate}
                                     style={{
                                         marginTop: "10%",
@@ -844,18 +752,13 @@ class PaymentDetailsTable extends Component {
                                 </div>}
                         </div> : <Loader />}
                         {allTransactionsData && allTransactionsData.length > 0 &&
-                        allTransactionsData.filter(e => {
-                            return this.filterData( e );
-                        }).length > 0 && 
                                 <Table>  
                                     <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                         <TableRow>
                                         <TablePagination
                                             rowsPerPageOptions={[25, 50, 100]}
                                             colSpan={1}
-                                            count={this.state.filterDataArray.length  > 0 || this.state.transactionTypeArray.length  > 0 ? allTransactionsData.filter(e => {
-                                                return this.filterData( e );
-                                            }).length : totalDataCount }
+                                            count={ totalDataCount }
                                             rowsPerPage={rowsPerPage}
                                             page={page}
                                             SelectProps={{
@@ -946,9 +849,7 @@ class PaymentDetailsTable extends Component {
                             open={showDownloadModal}
                             downloadFilename={"Payment_details"}
                             onDownLoadModalCancelled={() => this.setState({ showDownloadModal: false })}
-                            allTransactionsData={ allTransactionsData.filter(e => {
-                                  return this.filterData( e );
-                              })} />}
+                            allTransactionsData={ allTransactionsData } />}
 
 
                         </MuiThemeProvider>
