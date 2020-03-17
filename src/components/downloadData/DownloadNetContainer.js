@@ -69,11 +69,11 @@ class DownloadNetContainer extends React.Component {
 
     onDownloadClicked = async () => {
         try {
-            if (this.state.type === "lanet" || this.state.type === "canet") {
-                this.downLoadDataCAandLA();
-            } else {
+            // if (this.state.type === "lanet" || this.state.type === "canet") {
+            //     this.downLoadDataCAandLA();
+            // } else {
                 this.setState({ isDownlaodModalOpen: true });
-            }
+            // }
         } catch (err) {
             console.log(err)
         }
