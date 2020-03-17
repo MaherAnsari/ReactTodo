@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../app/common/utils';
 import commonService from '../../app/commonService/commonService';
+import EmailInputModal from './component/EmailInputModal';
 
 const styles = theme => ({
     root: {
@@ -22,7 +23,7 @@ const styles = theme => ({
     card: {
         maxWidth: '100%',
         minHeight: '70vh',
-        paddingTop:"10%",
+        paddingTop: "10%",
         marginTop: '15px',
         height: '97%',
     }
@@ -58,22 +59,24 @@ class DownloadNetContainer extends React.Component {
 
     onDownloadClicked = async () => {
         try {
+            this.setState({ isDownlaodModalOpen: true });
+            return;
             this.setState({ showLoader: true });
 
             let payload = {
-                "type": this.state.type === "LA net" ? "lanet":"canet",
+                "type": this.state.type === "LA net" ? "lanet" : "canet",
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
-                "endDate":  this.formateDateForApi(this.state.datePayloads["endDate"]),
+                "endDate": this.formateDateForApi(this.state.datePayloads["endDate"]),
             }
             // console.log( payload )
             // let resp = {};
-            let resp = await commonService.getNetDataForDownload( payload )
+            let resp = await commonService.getNetDataForDownload(payload)
             this.setState({ showLoader: false });
             // console.log( resp )
             if (resp.data.status === 1) {
-                if(resp.data.result !== "-" && resp.data.result.length !== 0 ){
-                    this.onDownLoadAPiSuccess(  resp.data.result );
-                }else{
+                if (resp.data.result !== "-" && resp.data.result.length !== 0) {
+                    this.onDownLoadAPiSuccess(resp.data.result);
+                } else {
                     alert("No data available")
                 }
             } else {
@@ -97,8 +100,8 @@ class DownloadNetContainer extends React.Component {
     }
 
     onDownLoadAPiSuccess(data) {
-        let fileName = this.state.type+ "_payment_details";
-        Utils.formatDownloadDataInCSVThroughApi(data , fileName);
+        let fileName = this.state.type + "_payment_details";
+        Utils.formatDownloadDataInCSVThroughApi(data, fileName);
     }
 
 
@@ -121,45 +124,58 @@ class DownloadNetContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, type } = this.state;
+        const { showLoader, type, isDownlaodModalOpen } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
-                    <div style={{ paddingRight : '10%' }}>
+                    <div style={{ paddingRight: '10%' }}>
                         <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
                     </div>
                     <div>
 
-                            <React.Fragment>
-                                <div >
-                                    <TextField
-                                        select
-                                        id="type"
-                                        label="Select "
-                                        type="text"
-                                        style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
-                                        value={type}
-                                        onChange={this.handleStateChange.bind(this, 'type')}
+                        <React.Fragment>
+                            <div >
+                                <TextField
+                                    select
+                                    id="type"
+                                    label="Select "
+                                    type="text"
+                                    style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
+                                    value={type}
+                                    onChange={this.handleStateChange.bind(this, 'type')}
 
-                                    >
+                                >
 
-                                        {["CA net", "LA net"].map((option, i) => (
-                                            <MenuItem key={i} value={option} selected={true}>
-                                                {option}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    {["CA net", "LA net"].map((option, i) => (
+                                        <MenuItem key={i} value={option} selected={true}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
 
-                                </div>
+                            </div>
 
-                                 <Button style={{ marginTop: "10%", background:"#e74a52", "color":"#fff" }}
-                                    onClick={this.onDownloadClicked.bind( this )} 
-                                    disabled={showLoader}
-                                    color="primary" autoFocus>
-                                        { showLoader && <i className="fa fa-spinner fa-spin" /> }
-                                        &nbsp; Download
+                            <Button style={{ marginTop: "10%", background: "#e74a52", "color": "#fff" }}
+                                onClick={this.onDownloadClicked.bind(this)}
+                                disabled={showLoader}
+                                color="primary" autoFocus>
+                                 Continue
                                  </Button>
-                            </React.Fragment> 
+                        </React.Fragment>
+
+                        {isDownlaodModalOpen &&
+                            <EmailInputModal
+                                show={isDownlaodModalOpen}
+                                isEmailSentSuccess={this.state.isEmailSentSuccess}
+                                onModalClose={(ModalStatus) => { this.setState({ isDownlaodModalOpen: false }); }}
+                                onCanceled={() => { this.setState({ isDownlaodModalOpen: false }) }}
+                                onConfirmed={(emailId) => {
+                                    alert( emailId );
+                                    this.setState({ isEmailSentSuccess: "success" });
+                                    // this.setState({  isEmailSentSuccess: "failed" });
+                                    // , function(){
+                                    // this.connectDownLoadThroughEmail(emailId);
+                                }} />}
                     </div>
                 </Paper>
             </div>
