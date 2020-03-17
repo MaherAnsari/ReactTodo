@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import DateRangeSelector from '../payment/common/DateRangeSelector';
+import DateRangeSelector from './component/DateRangeSelector';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -39,14 +39,24 @@ class DownloadNetContainer extends React.Component {
             showLoader: false,
             // currentPayoutView: "default", //selectAccount, addAccount,loading
             datePayloads: { "startDate": "", "endDate": "" },
-            "type": "CA net"
+            "type": "lanet",
+            dropOptions: {
+                "alluser": "All User",
+                "la": "CA Data (Buyer)",
+                "ca": "LA Data (Supplier)",
+                "lanet": "LA net",
+                "canet": "CA net",
+                "orders": "Orders",
+                "payments": "Payments"
+            },
+            isEmailSentSuccess :"emailView"
 
         }
     }
 
     componentDidMount() {
         var datePayloadsVal = this.state.datePayloads;
-        datePayloadsVal["startDate"] = this.formateDateForApi(this.getPreviousDate(7));
+        datePayloadsVal["startDate"] = this.formateDateForApi(new Date("01/01/2019" ));
         datePayloadsVal["endDate"] = this.formateDateForApi(new Date());
         this.setState({ datePayloads: datePayloadsVal })
 
@@ -59,20 +69,65 @@ class DownloadNetContainer extends React.Component {
 
     onDownloadClicked = async () => {
         try {
-            this.setState({ isDownlaodModalOpen: true });
-            return;
+            if (this.state.type === "lanet" || this.state.type === "canet") {
+                this.downLoadDataCAandLA();
+            } else {
+                this.setState({ isDownlaodModalOpen: true });
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    downloadOtherData = async (email) => {
+        try {
+            this.setState({ showLoader: true , isEmailSentSuccess : "loading"});
+            let payload = {
+                "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
+                "endDate": this.formateDateForApi(this.state.datePayloads["endDate"]),
+                "email": email
+            }
+            let resp = "";
+            if (this.state.type === "orders") {
+                resp = await commonService.getOrdersBulkDataForDownload(payload);
+            } else if (this.state.type === "payments") {
+                resp = await commonService.getPaymentBulkDataForDownload(payload);
+            }else if (this.state.type === "lanet" || this.state.type === "canet" ) {
+                payload["type"] = this.state.type ;
+                resp = await commonService.getCAnetAndLAnetDataForDownload(payload);
+            }else if (this.state.type === "la" || this.state.type === "ca" ) {
+                payload["role"] = this.state.type ;
+                resp = await commonService.getUserDataForDownload(payload);
+            }else if (this.state.type === "alluser" ){
+                resp = await commonService.getUserDataForDownload(payload);
+            }
+            
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                if (resp.data.result !== "-" && resp.data.result.length !== 0) {
+                    this.setState({ isEmailSentSuccess: "success" });
+                } else {
+                    this.setState({ isEmailSentSuccess: "failed" });
+                }
+            } else {
+                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    downLoadDataCAandLA = async () => {
+        try {
             this.setState({ showLoader: true });
 
             let payload = {
-                "type": this.state.type === "LA net" ? "lanet" : "canet",
+                "type": this.state.type,
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
                 "endDate": this.formateDateForApi(this.state.datePayloads["endDate"]),
             }
-            // console.log( payload )
-            // let resp = {};
             let resp = await commonService.getNetDataForDownload(payload)
             this.setState({ showLoader: false });
-            // console.log( resp )
             if (resp.data.status === 1) {
                 if (resp.data.result !== "-" && resp.data.result.length !== 0) {
                     this.onDownLoadAPiSuccess(resp.data.result);
@@ -80,10 +135,8 @@ class DownloadNetContainer extends React.Component {
                     alert("No data available")
                 }
             } else {
-                // alert("Oops an error occured while downloading the data.");
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
             }
-
         } catch (err) {
             console.log(err)
         }
@@ -124,7 +177,7 @@ class DownloadNetContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, type, isDownlaodModalOpen } = this.state;
+        const { showLoader, type, isDownlaodModalOpen, dropOptions } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -146,9 +199,9 @@ class DownloadNetContainer extends React.Component {
 
                                 >
 
-                                    {["CA net", "LA net"].map((option, i) => (
+                                    {Object.keys(dropOptions).map((option, i) => (
                                         <MenuItem key={i} value={option} selected={true}>
-                                            {option}
+                                            {dropOptions[option]}
                                         </MenuItem>
                                     ))}
                                 </TextField>
@@ -159,7 +212,8 @@ class DownloadNetContainer extends React.Component {
                                 onClick={this.onDownloadClicked.bind(this)}
                                 disabled={showLoader}
                                 color="primary" autoFocus>
-                                 Continue
+                                {showLoader && <i className="fa fa-spinner fa-spin" />}
+                                Continue
                                  </Button>
                         </React.Fragment>
 
@@ -170,11 +224,11 @@ class DownloadNetContainer extends React.Component {
                                 onModalClose={(ModalStatus) => { this.setState({ isDownlaodModalOpen: false }); }}
                                 onCanceled={() => { this.setState({ isDownlaodModalOpen: false }) }}
                                 onConfirmed={(emailId) => {
-                                    alert( emailId );
-                                    this.setState({ isEmailSentSuccess: "success" });
+                                    // alert(emailId);
+                                    // this.setState({ isEmailSentSuccess: "success" });
                                     // this.setState({  isEmailSentSuccess: "failed" });
                                     // , function(){
-                                    // this.connectDownLoadThroughEmail(emailId);
+                                    this.downloadOtherData(emailId);
                                 }} />}
                     </div>
                 </Paper>

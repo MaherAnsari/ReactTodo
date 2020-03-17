@@ -115,6 +115,54 @@ let commonService = {
             params :param
         },2);
     },
+
+    getPaymentBulkDataForDownload : async function ( param ) {
+        // https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/get/payment/bulk
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/get/payment/bulk',
+            data :param
+        },4);
+    },
+    
+    getOrdersBulkDataForDownload : async function ( param ) {
+        // https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/get/order/bulk
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/get/order/bulk',
+            data :param
+        },4);
+    },
+
+    getCAnetAndLAnetDataForDownload : async function ( param ) {
+        // https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/get/order/bulk
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/get/payment/calanet',
+            data :param
+        },4);
+    },
+    
+    getUserDataForDownload : async function ( param ) {
+        // https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/get/user/bulk
+        return Api({
+            method: 'post',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/get/user/bulk',
+            data :param
+        },4);
+    },
 }
 
 export default commonService;

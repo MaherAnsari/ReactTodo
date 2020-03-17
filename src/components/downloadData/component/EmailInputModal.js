@@ -180,7 +180,7 @@ class EmailInputModal extends React.Component {
                                         label="Please enter your email"
                                         fullWidth
                                         className={classes.textField}
-                                        classes={{ input: classes.textField }}
+                                        // classes={{ input: classes.textField }}
                                         value={this.state.enteredEmail}
                                         onChange={this.handelInputChange.bind(this, "enteredEmail")}
                                         margin="normal"

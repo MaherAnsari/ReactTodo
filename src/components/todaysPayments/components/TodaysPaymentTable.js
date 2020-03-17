@@ -1094,12 +1094,12 @@ class TodaysPaymentTable extends Component {
                         />}
 
                      <div className="updateBtndef">
-                     {allTransactionsData && allTransactionsData.length > 0 && getAccessAccordingToRole("allowDownload") && 
+                     {/* {allTransactionsData && allTransactionsData.length > 0 && getAccessAccordingToRole("allowDownload") && 
                       <div className="updateBtnFixed"
                             style={{ right:"192px", display: 'flex', background: "#e72e89", borderRadius: "6px" }}
                             onClick={() => this.setState({ showDownloadModal: true })}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
-                        </div>}
+                        </div>} */}
 
                         {getAccessAccordingToRole("addPayment") && <div
                             className="updateBtnFixed"
