@@ -110,9 +110,11 @@ class DownloadNetContainer extends React.Component {
                     this.setState({ isEmailSentSuccess: "failed" });
                 }
             } else {
+                this.setState({ isEmailSentSuccess: "failed" });
                 alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
             }
         } catch (err) {
+            this.setState({ isEmailSentSuccess: "failed" });
             console.log(err)
         }
     }
