@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
+import { Auth } from 'aws-amplify';
 // import AsyncSelect from 'react-select/lib/Async';
 import buyerService from '../../../app/buyerService/buyerService';
 import supplierService from '../../../app/supplierService/supplierService';
@@ -127,13 +128,20 @@ class EditOrderDataModal extends Component {
             errorFields: {},
             attachmentArray: [],
             commodityList: this.props.commodityList,
-            showLoader: false
-
+            showLoader: false,
+            subId:""
         }
 
     }
 
     componentDidMount() {
+        
+
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => this.setState({ subId : user.attributes.sub}))
+        .catch(err => console.log(err));
+
         console.log(this.state.orderPayload)
         if (this.state.orderPayload) {
 
@@ -160,8 +168,8 @@ class EditOrderDataModal extends Component {
     }
 
 
-    componentWillReceiveProps() {
-        if (this.props !== this.state) {
+    componentWillReceiveProps( nextProps) {
+        if ( nextProps.open !== this.state.open) {
             this.setState({ open: this.props.open });
         }
     }
@@ -287,7 +295,7 @@ class EditOrderDataModal extends Component {
                 payload = this.removeBlankNonMandatoryFields(payload);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 // var resp= { data:{ status : 1, result:{} }}
-                var resp = await orderService.updateExistingOrder(id, payload);
+                var resp = await orderService.updateExistingOrder(this.state.subId, id, payload);
                 this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
                     alert("Successfully updated this order ");

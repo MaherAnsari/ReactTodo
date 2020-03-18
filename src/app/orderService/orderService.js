@@ -27,7 +27,7 @@ let orderService = {
     },
 
     // https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/order/detail/7
-    updateExistingOrder : async function ( id, payload ) {
+    updateExistingOrder : async function ( subid, id, payload ) {
         console.log( payload )
         if(payload.id){
             delete payload.id;
@@ -35,7 +35,8 @@ let orderService = {
         return Api({
             method: 'post',
             headers: {
-                "Authorization": Utils.getToken()
+                "Authorization": Utils.getToken(),
+                "subid": subid
             },
             url: 'order/detail/'+id,
             data : payload

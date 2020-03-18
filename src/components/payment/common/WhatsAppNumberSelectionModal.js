@@ -137,13 +137,13 @@ class WhatsAppNumberSelectionModal extends Component {
                                 <FormControlLabel
                                     value="supplier"
                                     control={<Radio color="primary" />}
-                                    label={transactionInfoData["supplier_mobile"] ? "CA (" + transactionInfoData["supplier_mobile"] + ")" : "Supplier"}
+                                    label={transactionInfoData["supplier_mobile"] ? "LA (" + transactionInfoData["supplier_mobile"] + ")" : "Supplier"}
                                     labelPlacement="end"
                                 />
                                 <FormControlLabel
                                     value="buyer"
                                     control={<Radio color="primary" />}
-                                    label={transactionInfoData["buyer_mobile"] ? "LA (" + transactionInfoData["buyer_mobile"] + ")" : "Buyer"}
+                                    label={transactionInfoData["buyer_mobile"] ? "CA (" + transactionInfoData["buyer_mobile"] + ")" : "Buyer"}
                                     labelPlacement="end"
                                 />
                                 <FormControlLabel

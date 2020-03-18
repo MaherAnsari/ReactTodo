@@ -274,7 +274,7 @@ class OrderListTable extends Component {
     }
 
     onOrderDataAdded() {
-        this.setState({ showAddOrderModal: false }, function () {
+        this.setState({ showAddOrderModal: false, showEditDataModal  : false  }, function () {
             this.props.onOrderAdded();
         });
     }
