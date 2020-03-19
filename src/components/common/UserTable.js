@@ -23,6 +23,7 @@ import UserFilterDataView from './UserFilterDataView';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Loader from './Loader';
+import { Auth } from 'aws-amplify';
 
 const theme = createMuiTheme({
     overrides: {
@@ -150,6 +151,7 @@ class UserListTable extends Component {
 
             totalDataCount: this.props.totalDataCount || 0,
             isTableDataLoading: this.props.isTableDataLoading || false,
+            subId : ""
 
             // commodityList:["dd"]
 
@@ -177,6 +179,14 @@ class UserListTable extends Component {
         }
     }
 
+    componentDidMount(){
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => this.setState({ subId : user.attributes.sub}))
+        .catch(err => console.log(err));
+
+
+    }
 
     getStateData() {
         let data = Utils.getStateData();
@@ -267,7 +277,7 @@ class UserListTable extends Component {
 
     handelConfirmUpdate = async () => {
 
-        let resp = await userListService.addUserData(this.state.userId, this.state.payload);
+        let resp = await userListService.addUserData( this.state.subId , this.state.userId, this.state.payload);
         this.setState({ showConfirmDialog: false, alertData: {} });
         if (resp.data.status === 1) {
             alert("Succesfully submitted");

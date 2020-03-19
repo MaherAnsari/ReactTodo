@@ -12,7 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from './../../app/common/utils';
-
+import { Auth } from 'aws-amplify';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from './../../app/commodityService/commodityService';
@@ -137,7 +137,8 @@ class InfoDialog extends Component {
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
             showLoader: false,
-            isMobileRequired:true
+            isMobileRequired:true,
+            subId : ""
 
 
         }
@@ -145,6 +146,12 @@ class InfoDialog extends Component {
     }
     componentDidMount() {
         this.getCommodityNames();
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => this.setState({ subId : user.attributes.sub}))
+        .catch(err => console.log(err));
+
+
         if (this.props.data) {
             let data = this.props.data;
             let arr = ['state', 'district', 'locality', 'business_name', 'business_name_hindi', 'fullname_hindi']
@@ -266,7 +273,7 @@ class InfoDialog extends Component {
         // let resp = {};
         // console.log(reqObj);
         this.setState({ showLoader : true, showConfirmDialog: false  });
-        let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
+        let resp = await userListService.addUserData(this.state.subId ,this.state.isUpdate, id, reqObj);
         this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Successfully Added");

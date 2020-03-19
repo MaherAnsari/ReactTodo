@@ -14,7 +14,7 @@ import commodityService from '../../app/commodityService/commodityService';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Loader from './Loader';
 import { getAccessAccordingToRole } from '../../config/appConfig';
-
+import { Auth } from 'aws-amplify';
 
 const theme = createMuiTheme({
     overrides: {
@@ -53,14 +53,20 @@ class EditUser extends Component {
             stateList: Utils.getStateData(),
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
-            showLoader: false
-
+            showLoader: false,
+            subId : ""
 
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
     componentDidMount() {
         //  this.getCommodityNames();
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => this.setState({ subId : user.attributes.sub}))
+        .catch(err => console.log(err));
+
+
         if (this.props.data) {
             let data = this.props.data;
             let arr = ['state', 'district', 'locality', 'business_name', 'business_name_hindi', 'fullname_hindi']
@@ -181,7 +187,7 @@ class EditUser extends Component {
         // let resp = {}; 
         // console.log(reqObj);
         this.setState({ showLoader : true, showConfirmDialog: false  });
-        let resp = await userListService.addUserData(this.state.isUpdate, id, reqObj);
+        let resp = await userListService.addUserData(this.state.subId ,this.state.isUpdate, id, reqObj);
         this.setState({ showLoader : false });
         if (resp.data.status === 1) {
             alert("Successfully Updated");

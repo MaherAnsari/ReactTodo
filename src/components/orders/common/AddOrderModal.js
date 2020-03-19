@@ -25,6 +25,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
+import { Auth } from 'aws-amplify';
 
 const styles = theme => ({
     heading: {
@@ -122,7 +123,8 @@ class AddOrderModal extends Component {
             errorFields: {},
             attachmentArray: [],
             commodityList: [],
-            showLoader: false
+            showLoader: false,
+            subId : ""
 
         }
         this.getCommodityNames();
@@ -131,6 +133,12 @@ class AddOrderModal extends Component {
 
 
     componentDidMount() {
+
+        Auth.currentAuthenticatedUser({
+            bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+        }).then(user => this.setState({ subId : user.attributes.sub}))
+        .catch(err => console.log(err));
+
         if (this.props.userdata && this.props.userdata.role === "ca") {
             this.state.addOrderPayload['buyerid'] = this.props.userdata.id;
             this.state.addOrderPayload['buyer_mobile'] = this.props.userdata.mobile;
@@ -320,7 +328,7 @@ class AddOrderModal extends Component {
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
 
-                var resp = await orderService.addNewOrder(payloadData);
+                var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
                 console.log(resp);
                 this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {

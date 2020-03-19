@@ -14,11 +14,12 @@ let userListService = {
             params: param
         },1);
     },
-    addUserData: async function (isUpdate,id,props) {
+    addUserData: async function (subId, isUpdate,id,props) {
         return Api({
             method: 'post',
             headers: {
-    			"Authorization": Utils.getToken()
+                "Authorization": Utils.getToken(),
+                "subid": subId
                 },
             url: isUpdate ? '/user/detail/'+id : '/user/detail',
             data: props

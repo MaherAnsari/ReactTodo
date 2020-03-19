@@ -15,11 +15,12 @@ let orderService = {
         },1);
     },
 // /https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/order/detail
-    addNewOrder : async function ( payload ) {
+    addNewOrder : async function ( subId, payload ) {
         return Api({
             method: 'post',
             headers: {
-                "Authorization": Utils.getToken()
+                "Authorization": Utils.getToken(),
+                "subid" : subId
             },
             url: '/order/detail',
             data : payload
