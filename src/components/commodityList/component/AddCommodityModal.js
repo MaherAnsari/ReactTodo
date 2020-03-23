@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import { Storage } from 'aws-amplify';
 import Loader from '../../common/Loader';
 import Utils from '../../../app/common/utils';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -60,15 +61,22 @@ class AddCommodityModal extends Component {
         this.state = {
             open: this.props.openModal,
             addCommodityDataObj: {
-                "name":"",
-                "category":"",
-                "weight":"",
-                "image_url":[],
-                "active":true,
-                "name_hindi":""
-                },
+                "name": "",
+                "category": "",
+                "weight": "",
+                "image_url": [],
+                "active": true,
+                "name_hindi": ""
+            },
             attachmentArray: [],
-            showLoader: false
+            showLoader: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
@@ -88,7 +96,7 @@ class AddCommodityModal extends Component {
         } else {
             data[id] = val;
         }
-        this.setState({ addCommodityDataObj : data });
+        this.setState({ addCommodityDataObj: data });
     }
 
     onSubmitClick = () => {
@@ -123,23 +131,23 @@ class AddCommodityModal extends Component {
             data[id] = event.target.checked;
         } else {
             let val = event.target.value;
-                data[id] = val;
+            data[id] = val;
         }
         this.setState({ addCommodityDataObj: data });
     };
 
 
     handleAddCommodityClicked(event) {
-        let obj =  this.state.addCommodityDataObj
+        let obj = this.state.addCommodityDataObj
         if (this.state.attachmentArray && this.state.attachmentArray.length > 0) {
             obj["image_url"] = this.state.attachmentArray[0]["image_url"];
         }
 
-        if( this.checkIfValidForm( obj )){
-        this.addCommodity(obj);
-    }else{
-        alert("Please fill all the fields")
-    }
+        if (this.checkIfValidForm(obj)) {
+            this.addCommodity(obj);
+        } else {
+            alert("Please fill all the fields")
+        }
     }
 
     checkIfValidForm(data) {
@@ -147,10 +155,10 @@ class AddCommodityModal extends Component {
         for (var key in data) {
             if (data[key] === "") {
                 isValid = false;
-                console.log( key + "========="+ data[key])
+                console.log(key + "=========" + data[key])
             }
             if (key === "weight" && typeof (data[key]) === "string") {
-                console.log( key + "========="+ data[key])
+                console.log(key + "=========" + data[key])
                 isValid = false;
             }
         }
@@ -159,15 +167,30 @@ class AddCommodityModal extends Component {
 
 
     async addCommodity(payload) {
-        this.setState({ showLoader : true});
-        let resp = await commodityService.addCommodity(payload);
-        this.setState({ showLoader : false });
-        if (resp.data.status === 1) {
-            alert("Successfully added");
-            this.props.onEditModalClosed();
-        } else {
-            // alert("Oops! There was an error");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+        try {
+            this.setState({ showLoader: true });
+            let resp = await commodityService.addCommodity(payload);
+            this.setState({ showLoader: false });
+            let sweetAlrtData = this.state.sweetAlertData;
+            if (resp.data.status === 1) {
+                // alert("Successfully added");
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully Added";
+                // this.props.onEditModalClosed();
+            } else {
+                // alert("Oops! There was an error");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message :  "Oops! There was an error";
+            }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -237,131 +260,136 @@ class AddCommodityModal extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onEditModalClosed()
+        )
+    }
 
     render() {
         const { classes } = this.props;
-        const {showLoader, addCommodityDataObj } = this.state;
+        const { showLoader, addCommodityDataObj, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle
-                    style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
-                    id="form-dialog-title">
-                    <p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}
-                    >Add commodity data</p>
-                </DialogTitle>
-                <DialogContent>
-                    <div style={{ display: 'flex' }}>
-                        <div style={{ width: '100%' }}>
+                {!showLoader ? <div>
+                    <DialogTitle
+                        style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
+                        id="form-dialog-title">
+                        <p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}
+                        >Add commodity data</p>
+                    </DialogTitle>
+                    <DialogContent>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ width: '100%' }}>
 
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Commodity name"
-                                    type="text"
-                                    style={{ marginRight: '2%' }}
-                                    value={addCommodityDataObj.name}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
-                            <div >
-                                <span style={{ lineHeight: "40px" }}>Enable / disable commodity</span>
-                                <Switch
-                                    classes={{ root: classes.muiSwitchroot }}
-                                    checked={addCommodityDataObj.active}
-                                    onChange={this.handleStateChange.bind(this, "active")}
-                                    value={addCommodityDataObj.active}
-                                    color="primary"
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                />
-
-                            </div>
-
-                            <div >
-                                <TextField
-                                    select
-                                    id="category"
-                                    label="Select category"
-                                    type="text"
-                                    style={{ marginRight: '2%', width: "100%" }}
-                                    value={addCommodityDataObj.category}
-                                    onChange={this.handleStateChange.bind(this, 'category')}>
-                                    {commodity_category.map((option, i) => (
-                                        <MenuItem key={i} value={option} selected={true}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </div>
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="name_hindi"
-                                    label="Hindi name"
-                                    type="text"
-                                    style={{ marginRight: '2%' }}
-                                    value={addCommodityDataObj.name_hindi}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="weight"
-                                    label="Weight"
-                                    type="text"
-                                    style={{ marginRight: '2%' }}
-                                    value={addCommodityDataObj.weight}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
-
-                            {/* image Option */}
-                            {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
-                            <div style={{ fontFamily: "lato", padding: "10px" }}>
-                                Uploaded Images
-                        </div>}
-                        <div style={{ display: "flex" }}>
-                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
-                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
-                                //     <img src={key} alt={key} height="150px" />
-                                // </div>
-                                <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
-                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
-                                        <i className="fa fa-trash fa-lg"></i>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                            <div style={{ width: "423px" }}>
-
-                                <Grid container direction="row" alignItems="stretch">
-                                {this.state.attachmentArray && this.state.attachmentArray.length === 0 && <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
-                                    <input
-                                        className={classes.input}
-                                        id="flat-button2-file"
-                                        type="file"
-                                        onClick={(event) => {
-                                            event.target.value = null
-                                        }}
-                                        onChange={this.fileChangedHandler.bind(this)}
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="name"
+                                        label="Commodity name"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={addCommodityDataObj.name}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
                                     />
-                                    <label htmlFor="flat-button2-file">
-                                        <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
-                                            Choose commodity image
+                                </div>
+                                <div >
+                                    <span style={{ lineHeight: "40px" }}>Enable / disable commodity</span>
+                                    <Switch
+                                        classes={{ root: classes.muiSwitchroot }}
+                                        checked={addCommodityDataObj.active}
+                                        onChange={this.handleStateChange.bind(this, "active")}
+                                        value={addCommodityDataObj.active}
+                                        color="primary"
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    />
+
+                                </div>
+
+                                <div >
+                                    <TextField
+                                        select
+                                        id="category"
+                                        label="Select category"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: "100%" }}
+                                        value={addCommodityDataObj.category}
+                                        onChange={this.handleStateChange.bind(this, 'category')}>
+                                        {commodity_category.map((option, i) => (
+                                            <MenuItem key={i} value={option} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="name_hindi"
+                                        label="Hindi name"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={addCommodityDataObj.name_hindi}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="weight"
+                                        label="Weight"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={addCommodityDataObj.weight}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+
+                                {/* image Option */}
+                                {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                                    <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                        Uploaded Images
+                        </div>}
+                                <div style={{ display: "flex" }}>
+                                    {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                        // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                        //     <img src={key} alt={key} height="150px" />
+                                        // </div>
+                                        <div key={"imhs_" + i} className="transaction-supporting-image">
+                                            <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                            <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                                <i className="fa fa-trash fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ width: "423px" }}>
+
+                                    <Grid container direction="row" alignItems="stretch">
+                                        {this.state.attachmentArray && this.state.attachmentArray.length === 0 && <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                            <input
+                                                className={classes.input}
+                                                id="flat-button2-file"
+                                                type="file"
+                                                onClick={(event) => {
+                                                    event.target.value = null
+                                                }}
+                                                onChange={this.fileChangedHandler.bind(this)}
+                                            />
+                                            <label htmlFor="flat-button2-file">
+                                                <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                                    Choose commodity image
                             </Button>
-                                    </label>
-                                </Grid>}
-                                    {/* <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                            </label>
+                                        </Grid>}
+                                        {/* <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
                                         <input
                                             className={classes.input}
                                             id="flat-button2-file"
@@ -377,7 +405,7 @@ class AddCommodityModal extends Component {
                             </Button>
                                         </label>
                                     </Grid> */}
-                                    {/* <Grid item xs={12} sm={12} md={12}>
+                                        {/* <Grid item xs={12} sm={12} md={12}>
                                         {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
                                             <React.Fragment>
                                                 {this.state.attachmentArray.map((indUpload, index) => (
@@ -399,18 +427,18 @@ class AddCommodityModal extends Component {
                                             </React.Fragment>
                                         }
                                     </Grid> */}
-                                </Grid>
+                                    </Grid>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.handleAddCommodityClicked.bind(this)} color="primary">Add</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.handleAddCommodityClicked.bind(this)} color="primary">Add</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
@@ -419,6 +447,14 @@ class AddCommodityModal extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
         );
     }

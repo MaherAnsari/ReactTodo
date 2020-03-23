@@ -26,6 +26,7 @@ import Utils from './../../../app/common/utils';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
 // import commonService from '../../../app/commonService/commonService';
 import orderService from '../../../app/orderService/orderService';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 
 const styles = theme => ({
@@ -96,7 +97,14 @@ class PayoutModal extends Component {
             },
             selectedAcctInfoIndex: undefined,
             narration: "",
-            narrationError: false
+            narrationError: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
         console.log(this.props.payoutData)
     }
@@ -287,16 +295,28 @@ class PayoutModal extends Component {
 
             // console.log(payload)
             let resp = await paymentService.confirmPayout(payload);
+            let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
                 // console.log(payload)
-                alert("Successfully completed");
+                // alert("Successfully completed");
+
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully completed";
 
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout");
                 // this.setState({ showChangeBankAcctOption : true });
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while payout";
             }
-            this.setState({ currentPayoutView: "defaultPayout" }, () => {
-                this.props.onPayoutSuccessfull();
+            this.setState({
+                currentPayoutView: "defaultPayout",
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            }, () => {
+                // this.props.onPayoutSuccessfull();
             });
         } catch (err) {
             console.error(err);
@@ -318,7 +338,7 @@ class PayoutModal extends Component {
     handelNarrationChange(event) {
         var letterNumber = /^[0-9a-zA-Z\s]+$/;
         let inputtxt = event.target.value;
-        if ( inputtxt.length <= 30 ) {
+        if (inputtxt.length <= 30) {
             if (inputtxt.match(letterNumber) || inputtxt === "") {
                 this.setState({ narration: inputtxt, narrationError: false });
             } else {
@@ -327,12 +347,18 @@ class PayoutModal extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onPayoutSuccessfull()
+        )
+    }
 
     render() {
         const { classes } = this.props;
         const { transferType, acctDetails, payoutData, acctData, selectedAcctInfoIndex,
             currentPayoutView, addAccountData, errorFields,
-            skipRazorPayTrans, skipRazorPayTransObj, errorFieldsOfSkipTrans } = this.state;
+            skipRazorPayTrans, skipRazorPayTransObj, errorFieldsOfSkipTrans
+            , showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -574,6 +600,16 @@ class PayoutModal extends Component {
                         <React.Fragment>
                             <Loader primaryText={"Please wait.."} />
                         </React.Fragment>}
+
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
+
                 </DialogContent>
             </Dialog>
         </div>

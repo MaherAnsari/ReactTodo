@@ -24,6 +24,7 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     heading: {
@@ -118,7 +119,7 @@ class EditOrderDataModal extends Component {
                 "old_system_order_id": "",
                 "pkt": "",
                 "brokerage": "",
-                "unsettled_amount_pltf" : ""
+                "unsettled_amount_pltf": ""
             },
 
             buyerid: "",
@@ -129,18 +130,25 @@ class EditOrderDataModal extends Component {
             attachmentArray: [],
             commodityList: this.props.commodityList,
             showLoader: false,
-            subId:""
+            subId: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
 
     }
 
     componentDidMount() {
-        
+
 
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        }).then(user => this.setState({ subId : user.attributes.sub}))
-        .catch(err => console.log(err));
+        }).then(user => this.setState({ subId: user.attributes.sub }))
+            .catch(err => console.log(err));
 
         console.log(this.state.orderPayload)
         if (this.state.orderPayload) {
@@ -168,8 +176,8 @@ class EditOrderDataModal extends Component {
     }
 
 
-    componentWillReceiveProps( nextProps) {
-        if ( nextProps.open !== this.state.open) {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.open !== this.state.open) {
             this.setState({ open: this.props.open });
         }
     }
@@ -297,13 +305,25 @@ class EditOrderDataModal extends Component {
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(this.state.subId, id, payload);
                 this.setState({ showLoader: false });
+                let sweetAlrtData = this.state.sweetAlertData;
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully updated this order ");
-                    this.props.onOrderDataUpdated();
+                    // alert("Successfully updated this order ");
+                    // this.props.onOrderDataUpdated();
+
+                    sweetAlrtData["type"] = "success";
+                    sweetAlrtData["title"] = "Success";
+                    sweetAlrtData["text"] = "Successfully updated this order";
                 } else {
                     // alert("There was an error while updating this order");
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order";
                 }
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             } else {
                 alert("please fill the mandatory fields highlighted");
             }
@@ -313,7 +333,7 @@ class EditOrderDataModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","unsettled_amount_pltf"]
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate", "unsettled_amount_pltf"]
         var formateddata = {};
         for (var key in this.state.orderPayloadToUpdate) {
             if (data[key] && data[key] !== "") {
@@ -462,9 +482,15 @@ class EditOrderDataModal extends Component {
         this.setState({ orderPayload: orderPayloadVal })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onOrderDataUpdated()
+        )
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload,  commodityList,  errorFields } = this.state;
+        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData  } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -1079,6 +1105,16 @@ class EditOrderDataModal extends Component {
                     </DialogActions>
                 </div> :
                     <Loader primaryText="Please wait.." />}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
+
             </Dialog>
         </div>
         );

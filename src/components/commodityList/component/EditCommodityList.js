@@ -14,6 +14,7 @@ import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import { Storage } from 'aws-amplify';
 import Loader from '../../common/Loader';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -61,7 +62,14 @@ class EditCommodityList extends Component {
             editableDataObj: this.props.editableData,
             isEditableField: false,
             attachmentArray: [],
-            showLoader: false
+            showLoader: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
@@ -81,7 +89,7 @@ class EditCommodityList extends Component {
         } else {
             data[id] = val;
         }
-        this.setState({ editableDataObj : data });
+        this.setState({ editableDataObj: data });
     }
 
     onSubmitClick = () => {
@@ -116,7 +124,7 @@ class EditCommodityList extends Component {
             data[id] = event.target.checked;
         } else {
             let val = event.target.value;
-                data[id] = val;
+            data[id] = val;
         }
         this.setState({ editableDataObj: data });
     };
@@ -131,11 +139,11 @@ class EditCommodityList extends Component {
         }
 
         delete obj["data"]["id"];
-        if( this.checkIfValidForm( obj["data"] )){
-        this.updateCommodity(obj);
-    }else{
-        alert("Please fill all the fields")
-    }
+        if (this.checkIfValidForm(obj["data"])) {
+            this.updateCommodity(obj);
+        } else {
+            alert("Please fill all the fields")
+        }
     }
 
     checkIfValidForm(data) {
@@ -153,16 +161,28 @@ class EditCommodityList extends Component {
 
 
     async updateCommodity(payload) {
-        this.setState({ showLoader : true});
+        this.setState({ showLoader: true });
         let resp = await commodityService.updateCommodity(payload);
-        this.setState({ showLoader : false });
+        this.setState({ showLoader: false });
+        let sweetAlrtData = this.state.sweetAlertData;
         if (resp.data.status === 1) {
-            alert("Successfully Update");
-            this.props.onEditModalClosed();
+            // alert("Successfully Update");
+            // this.props.onEditModalClosed();
+            
+            sweetAlrtData["type"] = "success";
+            sweetAlrtData["title"] = "Success";
+            sweetAlrtData["text"] = "Successfully Updated";
         } else {
             // alert("Oops! There was an error");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error";
         }
+        this.setState({
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData
+        });
     }
 
 
@@ -231,157 +251,163 @@ class EditCommodityList extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onEditModalClosed()
+        )
+    }
+
 
     render() {
         const { classes } = this.props;
-        const {showLoader, editableDataObj, isEditableField } = this.state;
+        const { showLoader, editableDataObj, isEditableField, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle
-                    style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
-                    id="form-dialog-title">
-                    <p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}
-                    >Edit commodity data</p>
-                </DialogTitle>
-                <DialogContent>
-                    <div style={{ display: 'flex' }}>
-                        <div style={{ width: '100%' }}>
+                {!showLoader ? <div>
+                    <DialogTitle
+                        style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
+                        id="form-dialog-title">
+                        <p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}
+                        >Edit commodity data</p>
+                    </DialogTitle>
+                    <DialogContent>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ width: '100%' }}>
 
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="name"
-                                    label="Commodity name"
-                                    type="text"
-                                    disabled={true}
-                                    style={{ marginRight: '2%' }}
-                                    value={editableDataObj.name}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
-                            <div >
-                                <span style={{ lineHeight: "40px" }}>Enable / disable commodity</span>
-                                <Switch
-                                    classes={{ root: classes.muiSwitchroot }}
-                                    checked={editableDataObj.active}
-                                    onChange={this.handleStateChange.bind(this, "active")}
-                                    disabled={isEditableField}
-                                    value={editableDataObj.active}
-                                    color="primary"
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                />
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="name"
+                                        label="Commodity name"
+                                        type="text"
+                                        disabled={true}
+                                        style={{ marginRight: '2%' }}
+                                        value={editableDataObj.name}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <span style={{ lineHeight: "40px" }}>Enable / disable commodity</span>
+                                    <Switch
+                                        classes={{ root: classes.muiSwitchroot }}
+                                        checked={editableDataObj.active}
+                                        onChange={this.handleStateChange.bind(this, "active")}
+                                        disabled={isEditableField}
+                                        value={editableDataObj.active}
+                                        color="primary"
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    />
 
-                            </div>
+                                </div>
 
-                            <div >
-                                <TextField
-                                    select
-                                    id="category"
-                                    label="Select category"
-                                    type="text"
-                                    disabled={isEditableField}
-                                    style={{ marginRight: '2%', width: "100%" }}
-                                    value={editableDataObj.category}
-                                    onChange={this.handleStateChange.bind(this, 'category')}>
-                                    {commodity_category.map((option, i) => (
-                                        <MenuItem key={i} value={option} selected={true}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </div>
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="expected_lang"
-                                    label="Hindi name"
-                                    type="text"
-                                    disabled={isEditableField}
-                                    style={{ marginRight: '2%' }}
-                                    value={editableDataObj.expected_lang}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
-                            <div >
-                                <TextField
-                                    margin="dense"
-                                    id="weight"
-                                    label="Weight"
-                                    type="text"
-                                    disabled={isEditableField}
-                                    style={{ marginRight: '2%' }}
-                                    value={editableDataObj.weight}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                            </div>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="category"
+                                        label="Select category"
+                                        type="text"
+                                        disabled={isEditableField}
+                                        style={{ marginRight: '2%', width: "100%" }}
+                                        value={editableDataObj.category}
+                                        onChange={this.handleStateChange.bind(this, 'category')}>
+                                        {commodity_category.map((option, i) => (
+                                            <MenuItem key={i} value={option} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="expected_lang"
+                                        label="Hindi name"
+                                        type="text"
+                                        disabled={isEditableField}
+                                        style={{ marginRight: '2%' }}
+                                        value={editableDataObj.expected_lang}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="weight"
+                                        label="Weight"
+                                        type="text"
+                                        disabled={isEditableField}
+                                        style={{ marginRight: '2%' }}
+                                        value={editableDataObj.weight}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
 
-                            {/* image Option */}
-                            <div style={{ height: "160px", display: "grid", textAlign: "center" }}>
-                                <span> Existing Image </span>
-                                <img src={editableDataObj.image_url} height="150px" style={{ margin: "auto" }} alt="commodiity_url" 
-                                  onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}/>
-                            </div>
-                            <div style={{ width: "423px" }}>
+                                {/* image Option */}
+                                <div style={{ height: "160px", display: "grid", textAlign: "center" }}>
+                                    <span> Existing Image </span>
+                                    <img src={editableDataObj.image_url} height="150px" style={{ margin: "auto" }} alt="commodiity_url"
+                                        onError={(e) => { e.target.onerror = null; e.target.src = "https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }} />
+                                </div>
+                                <div style={{ width: "423px" }}>
 
-                                <Grid container direction="row" alignItems="stretch">
-                                    <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
-                                        <input
-                                            className={classes.input}
-                                            id="flat-button2-file"
-                                            type="file"
-                                            onClick={(event) => {
-                                                event.target.value = null
-                                            }}
-                                            onChange={this.fileChangedHandler.bind(this)}
-                                        />
-                                        <label htmlFor="flat-button2-file">
-                                            <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
-                                                change commodity image
+                                    <Grid container direction="row" alignItems="stretch">
+                                        <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                            <input
+                                                className={classes.input}
+                                                id="flat-button2-file"
+                                                type="file"
+                                                onClick={(event) => {
+                                                    event.target.value = null
+                                                }}
+                                                onChange={this.fileChangedHandler.bind(this)}
+                                            />
+                                            <label htmlFor="flat-button2-file">
+                                                <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                                    change commodity image
                             </Button>
-                                        </label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12}>
-                                        {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
-                                            <React.Fragment>
-                                                {this.state.attachmentArray.map((indUpload, index) => (
-                                                    <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
-                                                        <React.Fragment>
-                                                            <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
-                                                                <img src="https://img.icons8.com/plasticine/2x/file.png" alt="file" height="24" width="24"></img>
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={12} md={10} >
-                                                                <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12} md={12}>
+                                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) &&
+                                                <React.Fragment>
+                                                    {this.state.attachmentArray.map((indUpload, index) => (
+                                                        <Grid key={index} container direction="row" style={{ border: '1px solid #cbccd4', padding: '2px 5px', backgroundColor: '#f4f4f4', borderRadius: 20, marginBottom: 5, alignItems: 'center' }}>
+                                                            <React.Fragment>
+                                                                <Grid item xs={1} sm={1} md={1} style={{ textAlign: 'center' }}>
+                                                                    <img src="https://img.icons8.com/plasticine/2x/file.png" alt="file" height="24" width="24"></img>
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} md={10} >
+                                                                    <span target="_blank"><span style={{ margin: 0, fontSize: 13 }}>{indUpload.filename}</span></span>
 
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
-                                                                <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
-                                                            </Grid>
-                                                        </React.Fragment>
-                                                    </Grid>
-                                                ))}
-                                            </React.Fragment>
-                                        }
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} md={1} onClick={this.deleteItem.bind(this, indUpload.key)}>
+                                                                    <p style={{ margin: 0, fontSize: 13, color: '#547df9', textAlign: 'center', cursor: 'pointer', fontWeight: 600 }}>X</p>
+                                                                </Grid>
+                                                            </React.Fragment>
+                                                        </Grid>
+                                                    ))}
+                                                </React.Fragment>
+                                            }
+                                        </Grid>
                                     </Grid>
-                                </Grid>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
@@ -390,6 +416,15 @@ class EditCommodityList extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
         );
     }

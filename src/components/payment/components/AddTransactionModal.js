@@ -31,6 +31,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import Utils from '../../../app/common/utils';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     heading: {
@@ -126,6 +127,13 @@ class AddTransactionModal extends Component {
             acctDataArray: undefined,
             selectedAcctInfoIndex: undefined,
 
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
+
         }
 
     }
@@ -169,8 +177,8 @@ class AddTransactionModal extends Component {
             delete errors[id];
         }
 
-        if( id === "transaction_type" && val === "b_in"){
-            this.setState({supplierid : {value :"10926", label:"BIJAK (LA), BIJAK (LA) ( sector 15 gurgaon haryana, 1111111111 )"} });
+        if (id === "transaction_type" && val === "b_in") {
+            this.setState({ supplierid: { value: "10926", label: "BIJAK (LA), BIJAK (LA) ( sector 15 gurgaon haryana, 1111111111 )" } });
             addTransactionPayloadVal["supplierid"] = "10926";
             addTransactionPayloadVal["supplier_mobile"] = "1111111111";
         }
@@ -197,7 +205,7 @@ class AddTransactionModal extends Component {
                     bankData[id] = Number(val);
                 }
             } else {
-                bankData[id] = val ? val.toUpperCase() : val ;
+                bankData[id] = val ? val.toUpperCase() : val;
             }
 
             if (errors.hasOwnProperty(id)) {
@@ -262,7 +270,7 @@ class AddTransactionModal extends Component {
         var optionsData = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
                 // optionsData.push({ label: data[i][labelKey] + " (" + data[i][valuekey] + ")", value: data[i][valuekey] });
             }
         }
@@ -342,15 +350,28 @@ class AddTransactionModal extends Component {
             payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
             payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
             payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
+            // let resp = { data: { status: 1, message: "custom msg" , result:[]} };
             var resp = await paymentService.addPayemtData(payloadData);
+            let sweetAlrtData = this.state.sweetAlertData;
             this.setState({ showLoader: false });
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Successfully added this transaction ");
-                this.props.onTransactionAdded();
+                // alert("Successfully added this transaction ");
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully added this transaction ";
+                // this.props.onTransactionAdded();
             } else {
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error while adding this transaction";
                 // alert("There was an error while adding this transaction");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error while adding this transaction");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error while adding this transaction");
             }
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
 
         } catch (err) {
             console.log(err);
@@ -358,15 +379,15 @@ class AddTransactionModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
-        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; 
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"];
         var formateddata = {};
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
 
-            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
-                formateddata[key] = parseFloat( data[key] );
+            if (formateddata[key] && floatIds.indexOf(key) > -1) {
+                formateddata[key] = parseFloat(data[key]);
             }
 
             if (key === "cashback_value" && data[key] === "") {
@@ -449,7 +470,7 @@ class AddTransactionModal extends Component {
             }
             let { attachmentArray } = this.state;
 
-            Storage.get("payment/" + updatedFileName )
+            Storage.get("payment/" + updatedFileName)
                 .then(result => {
                     attachmentObj["image_url"] = result.split("?")[0];
                     attachmentArray.push(attachmentObj)
@@ -486,10 +507,19 @@ class AddTransactionModal extends Component {
         this.setState({ selectedAcctInfoIndex: index, bank_detail: bank_detailVal })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData["type"] !== "error") {
+                this.props.onTransactionAdded();
+            }
+        })
+    }
+
     render() {
         const { classes } = this.props;
         const { bank_detail, currentAddTransactionView, showLoader, addTransactionPayload,
-            supplierid, buyerid, tempVar, errorFields, acctDataArray, selectedAcctInfoIndex } = this.state;
+            supplierid, buyerid, tempVar, errorFields, acctDataArray,
+            selectedAcctInfoIndex, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -708,8 +738,8 @@ class AddTransactionModal extends Component {
                                         value={addTransactionPayload.amount_bank_entry}
                                         onChange={this.handleInputChange.bind(this)}
                                         fullWidth /> */}
-                                    
-                        <TextField
+
+                                    <TextField
                                         margin="dense"
                                         id="bank_trxn_id"
                                         label="Bank transaction id"
@@ -719,8 +749,8 @@ class AddTransactionModal extends Component {
                                         value={addTransactionPayload.bank_trxn_id}
                                         onChange={this.handleInputChange.bind(this)}
                                         fullWidth />
-                                        &nbsp;
                                     &nbsp;
+                                &nbsp;
                                     <TextField
                                         margin="dense"
                                         id="remarks"
@@ -792,25 +822,25 @@ class AddTransactionModal extends Component {
                                 </div> */}
 
                                 {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
-                            <div style={{ fontFamily: "lato", padding: "10px" }}>
-                                Uploaded Images
+                                    <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                        Uploaded Images
                         </div>}
-                        <div style={{ display: "flex" }}>
-                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
-                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
-                                //     <img src={key} alt={key} height="150px" />
-                                // </div>
-                                <div key={"imhs_" + i} className="transaction-supporting-image">
-                                    <img src={keyObj["image_url"]} 
-                                    onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
-                                    style={{cursor: "zoom-in"}} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
-                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
-                                        <i className="fa fa-trash fa-lg"></i>
-                                    </div>
+                                <div style={{ display: "flex" }}>
+                                    {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                        // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                        //     <img src={key} alt={key} height="150px" />
+                                        // </div>
+                                        <div key={"imhs_" + i} className="transaction-supporting-image">
+                                            <img src={keyObj["image_url"]}
+                                                onError={(e) => { e.target.onerror = null; e.target.src = "https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                                style={{ cursor: "zoom-in" }} onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                            <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                                <i className="fa fa-trash fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        
+
                                 <div >
                                     <Grid container direction="row" alignItems="stretch">
                                         <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
@@ -953,6 +983,15 @@ class AddTransactionModal extends Component {
                     </DialogActions>}
                 </div> :
                     <Loader primaryText="Please wait.." />}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </Dialog>
         </div>
         );

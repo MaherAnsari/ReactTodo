@@ -26,6 +26,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import { Auth } from 'aws-amplify';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     heading: {
@@ -124,7 +125,14 @@ class AddOrderModal extends Component {
             attachmentArray: [],
             commodityList: [],
             showLoader: false,
-            subId : ""
+            subId: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         }
         this.getCommodityNames();
@@ -136,8 +144,8 @@ class AddOrderModal extends Component {
 
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        }).then(user => this.setState({ subId : user.attributes.sub}))
-        .catch(err => console.log(err));
+        }).then(user => this.setState({ subId: user.attributes.sub }))
+            .catch(err => console.log(err));
 
         if (this.props.userdata && this.props.userdata.role === "ca") {
             this.state.addOrderPayload['buyerid'] = this.props.userdata.id;
@@ -190,7 +198,7 @@ class AddOrderModal extends Component {
     }
 
     handleInputChange(event) {
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate", "bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
         var errors = this.state.errorFields;
         var id = event.target.id;
         if (!id && id === undefined) {
@@ -327,17 +335,27 @@ class AddOrderModal extends Component {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
-
-                var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
-                console.log(resp);
+                let resp = { data: { status: 1, message: "custom Mas" ,result:[]} }
+                // var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
+                let sweetAlrtData = this.state.sweetAlertData;
                 this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully added this order ");
-                    this.props.onOrderDataAdded();
+                    // alert("Successfully added this order ");
+                    // this.props.onOrderDataAdded();
+                    sweetAlrtData["type"] = "success";
+                    sweetAlrtData["title"] = "Success";
+                    sweetAlrtData["text"] = "Successfully added this order ";
                 } else {
                     // alert("There was an error while adding this order");
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while adding this order");
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while adding this order");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "There was an error while adding this order";
                 }
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             } else {
                 alert("please fill the mandatory fields highlighted");
             }
@@ -387,8 +405,8 @@ class AddOrderModal extends Component {
         var error = {};
         var nonMandatoryFields = ["transport_info", "type", "author_name", "brokerid",
             "remark", "other_info", "commission_rate", "commission_unit", "rate", "qnt",
-             "unit", "rate_unit","broker_mobile","bijak_total_amount",
-             "invoice_no","old_system_order_id","pkt","brokerage"]
+            "unit", "rate_unit", "broker_mobile", "bijak_total_amount",
+            "invoice_no", "old_system_order_id", "pkt", "brokerage"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -477,12 +495,17 @@ class AddOrderModal extends Component {
         this.setState({ addOrderPayload: addOrderPayloadVal })
     }
 
-
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onOrderDataAdded()
+        )
+    }
 
 
     render() {
         const { classes } = this.props;
-        const { showLoader, addOrderPayload, supplierid, buyerid, commodityList, tempVar, errorFields } = this.state;
+        const { showLoader, addOrderPayload, supplierid, buyerid,
+            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData } = this.state;
         console.log(commodityList)
         return (<div>
             <Dialog style={{ zIndex: '1' }}
@@ -1105,6 +1128,15 @@ class AddOrderModal extends Component {
                 </div> :
                     <Loader primaryText="Please wait.." />}
             </Dialog>
+
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
         );
     }

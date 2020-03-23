@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import TextField from '@material-ui/core/TextField';
 import commonService from '../../../app/commonService/commonService';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -52,7 +53,14 @@ class WhatsAppNumberSelectionModal extends Component {
             open: this.props.open,
             transactionInfoData: this.props.transactionInfoData,
             selectedUser: "supplier",
-            otherNumber: ""
+            otherNumber: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
@@ -93,13 +101,26 @@ class WhatsAppNumberSelectionModal extends Component {
             let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
             let resp = await commonService.sendinvoicefromwhatsapp(payload);
             console.log(resp);
+            let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
-                alert("Receipt sent to whatsapp number " + whatsappNumber);
+                // alert("Receipt sent to whatsapp number " + whatsappNumber);
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Receipt sent to whatsapp number " + whatsappNumber;
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt");
                 // alert("Oops there was an error sending the watsapp receipt");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt";
             }
-            this.handleDialogCancel();
+            // this.handleDialogCancel();
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.error(err)
@@ -109,10 +130,15 @@ class WhatsAppNumberSelectionModal extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.handleDialogCancel()
+        )
+    }
 
     render() {
         const { classes } = this.props;
-        const { transactionInfoData, selectedUser, otherNumber } = this.state;
+        const { transactionInfoData, selectedUser, otherNumber, showSweetAlert, sweetAlertData } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
@@ -170,6 +196,15 @@ class WhatsAppNumberSelectionModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </Dialog>
         </div>
         );

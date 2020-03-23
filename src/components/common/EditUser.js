@@ -15,12 +15,13 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Loader from './Loader';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import { Auth } from 'aws-amplify';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
     overrides: {
-      
-        MuiInputBase:{
-            input:{
+
+        MuiInputBase: {
+            input: {
                 color: "#000"
             }
         }
@@ -44,7 +45,7 @@ class EditUser extends Component {
         this.state = {
             commodityList: [],
             open: this.props.openModal,
-            dataObj:this.props.data,
+            dataObj: this.props.data,
             requiredKey: ['fullname', 'mobile', 'role'],
             roleList: ['la', 'ca', 'broker'],
             isUpdate: false,
@@ -54,8 +55,14 @@ class EditUser extends Component {
             "districtMap": Utils.getDistrictData(),
             "districtList": [],
             showLoader: false,
-            subId : ""
+            subId: "",
 
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
@@ -63,8 +70,8 @@ class EditUser extends Component {
         //  this.getCommodityNames();
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        }).then(user => this.setState({ subId : user.attributes.sub}))
-        .catch(err => console.log(err));
+        }).then(user => this.setState({ subId: user.attributes.sub }))
+            .catch(err => console.log(err));
 
 
         if (this.props.data) {
@@ -85,12 +92,12 @@ class EditUser extends Component {
 
             // console.log(this.props.data);
 
-            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo,commodityList:this.props.commodityList });
+            this.setState({ dataObj: this.props.data, districtList: list, isUpdate: true, isInfo: this.props.isInfo, commodityList: this.props.commodityList });
         }
 
         // console.log(this.state.dataObj); 
         //getting the Commodity Names for ten drop Down  
-       
+
     }
 
     // componentWillReceiveProps(nextProps) {
@@ -150,11 +157,11 @@ class EditUser extends Component {
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
         let data = this.state.dataObj;
-        if (values.length > 0) { 
-            for (var i = 0; i < values.length; i++) { 
-                commoditylist.push(values[i]); 
-            } 
-        } 
+        if (values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                commoditylist.push(values[i]);
+            }
+        }
         data["default_commodity"] = values;
         this.setState({ dataObj: data })
     }
@@ -184,20 +191,32 @@ class EditUser extends Component {
             reqObj['data'] = [];
             reqObj['data'][0] = obj;
         }
-        // let resp = {}; 
+        // let resp = { data :{ status : 1, message : "cust msg"}}; 
         // console.log(reqObj);
-        this.setState({ showLoader : true, showConfirmDialog: false  });
-        let resp = await userListService.addUserData(this.state.subId ,this.state.isUpdate, id, reqObj);
-        this.setState({ showLoader : false });
+        this.setState({ showLoader: true, showConfirmDialog: false });
+        let resp = await userListService.addUserData(this.state.subId, this.state.isUpdate, id, reqObj);
+        this.setState({ showLoader: false });
+        let sweetAlrtData = this.state.sweetAlertData;
         if (resp.data.status === 1) {
-            alert("Successfully Updated");
-            this.props.onEditModalClosed();
+            // alert("Successfully Updated");
+            // this.props.onEditModalClosed();
+
+            sweetAlrtData["type"] = "success";
+            sweetAlrtData["title"] = "Success";
+            sweetAlrtData["text"] = "Successfully Updated";
 
         } else {
             // alert("Opps there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
         }
-        this.setState({ alertData: {} });
+        this.setState({
+            alertData: {},
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData
+        });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -263,117 +282,126 @@ class EditUser extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>{
+            if(this.state.sweetAlertData["type"] !== "error"){
+                this.props.onEditModalClosed();
+            }
+    }
+        )
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader } = this.state;
+        const { showLoader, showSweetAlert, sweetAlertData } = this.state;
         return (
-            <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px',marginTop:'50px'  }}>
-            { !showLoader ? <div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="mobile"
-                    label="Mobile"
-                    size="small"
-                    type="number"
-                    maxLength="10"
-                    disabled={true}
-                    style={{ marginRight: '2%', width: '48%', fontSize: "14px" }}
-                    value={this.state.dataObj.mobile}
-                    onChange={this.handleChange.bind(this)}
-                    required
-                    fullWidth
-                />
-                <TextField
-                    select
-                    id="role"
-                    label="Role"
-                    disabled={this.state.isInfo}
-                    type="text"
-                    style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
-                    value={this.state.dataObj.role}
-                    onChange={this.handleStateChange.bind(this, 'role')}
+            <MuiThemeProvider theme={theme}><div style={{ width: '100%', padding: '8px 24px', marginTop: '50px' }}>
+                {!showLoader ? <div>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            margin="dense"
+                            id="mobile"
+                            label="Mobile"
+                            size="small"
+                            type="number"
+                            maxLength="10"
+                            disabled={true}
+                            style={{ marginRight: '2%', width: '48%', fontSize: "14px" }}
+                            value={this.state.dataObj.mobile}
+                            onChange={this.handleChange.bind(this)}
+                            required
+                            fullWidth
+                        />
+                        <TextField
+                            select
+                            id="role"
+                            label="Role"
+                            disabled={this.state.isInfo}
+                            type="text"
+                            style={{ marginRight: '2%', width: '48%', marginTop: '5px' }}
+                            value={this.state.dataObj.role}
+                            onChange={this.handleStateChange.bind(this, 'role')}
 
-                >
+                        >
 
-                    {this.state.roleList.map((option, i) => (
-                        <MenuItem key={i} value={option} selected={true}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                            {this.state.roleList.map((option, i) => (
+                                <MenuItem key={i} value={option} selected={true}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
 
-            </div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="fullname"
-                    label="Fullname"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
-                    value={this.state.dataObj.fullname}
-                    onChange={this.handleChange.bind(this)}
-                    required
-                    fullWidth
-                />
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            margin="dense"
+                            id="fullname"
+                            label="Fullname"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
+                            value={this.state.dataObj.fullname}
+                            onChange={this.handleChange.bind(this)}
+                            required
+                            fullWidth
+                        />
 
-                {this.state.isUpdate && <TextField
-                    margin="dense"
-                    id="fullname_hindi"
-                    disabled={this.state.isInfo}
-                    label="Fullname (Hindi)"
-                    type="text"
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.fullname_hindi}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />}
-            </div>
+                        {this.state.isUpdate && <TextField
+                            margin="dense"
+                            id="fullname_hindi"
+                            disabled={this.state.isInfo}
+                            label="Fullname (Hindi)"
+                            type="text"
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.fullname_hindi}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />}
+                    </div>
 
 
-            <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex' }}>
 
-                <TextField
-                    select
-                    margin="dense"
-                    id="state"
-                    label="State"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.state}
-                    onChange={this.handleStateChange.bind(this, 'state')}
-                    fullWidth>
+                        <TextField
+                            select
+                            margin="dense"
+                            id="state"
+                            label="State"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.state}
+                            onChange={this.handleStateChange.bind(this, 'state')}
+                            fullWidth>
 
-                    {this.state.stateList.map((option, i) => (
-                        <MenuItem key={i} value={option.toLowerCase()} selected={true}>
-                            {option.toLowerCase()}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    select
-                    id="district"
-                    label="District"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', marginTop: '5px', width: '48%' }}
-                    value={this.state.dataObj.district}
-                    onChange={this.handleStateChange.bind(this, 'district')}
+                            {this.state.stateList.map((option, i) => (
+                                <MenuItem key={i} value={option.toLowerCase()} selected={true}>
+                                    {option.toLowerCase()}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <TextField
+                            select
+                            id="district"
+                            label="District"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', marginTop: '5px', width: '48%' }}
+                            value={this.state.dataObj.district}
+                            onChange={this.handleStateChange.bind(this, 'district')}
 
-                >
+                        >
 
-                    {this.state.districtList.map((option, i) => (
-                        <MenuItem key={i} value={option.district_name} selected={true}>
-                            {option.district_name}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            </div>
+                            {this.state.districtList.map((option, i) => (
+                                <MenuItem key={i} value={option.district_name} selected={true}>
+                                    {option.district_name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
 
-            <div style={{ display: 'flex' }}>
-                {/* <TextField 
+                    <div style={{ display: 'flex' }}>
+                        {/* <TextField 
                         margin="dense" 
                         id="default_commodity" 
                         label="Default Commodity" 
@@ -384,198 +412,207 @@ class EditUser extends Component {
                         fullWidth 
                     /> */}
 
-                <Autocomplete
-                    multiple
-                    id="fixed-tags-demo"
-                    disabled={this.state.isInfo}
-                    options={this.props.commodityList}
-                    getOptionLabel={e => e}
-                    defaultValue={this.state.dataObj.default_commodity}
-                    onChange={this.handelAutoCompleteChange}
-                    renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                            <Chip  label={option} {...getTagProps({ index })} />
-                        ))
-                    }
-                    style={{ width: "98%" }}
-                    renderInput={params => (
+                        <Autocomplete
+                            multiple
+                            id="fixed-tags-demo"
+                            disabled={this.state.isInfo}
+                            options={this.props.commodityList}
+                            getOptionLabel={e => e}
+                            defaultValue={this.state.dataObj.default_commodity}
+                            onChange={this.handelAutoCompleteChange}
+                            renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip label={option} {...getTagProps({ index })} />
+                                ))
+                            }
+                            style={{ width: "98%" }}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    label="Default Commodity"
+                                    placeholder="Search"
+                                    fullWidth
+                                />
+                            )}
+                        />
+                    </div>
+                    <div style={{ display: 'flex' }}>
                         <TextField
-                            {...params}
-                            label="Default Commodity"
-                            placeholder="Search"
+                            margin="dense"
+                            id="business_name"
+                            label="Buisness Name"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
+                            value={this.state.dataObj.business_name}
+                            onChange={this.handleChange.bind(this)}
                             fullWidth
                         />
-                    )}
-                />
+
+                        {this.state.isUpdate && <TextField
+                            margin="dense"
+                            id="business_name_hindi"
+                            label="Buisness Name (Hindi)"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.business_name_hindi}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />}
+
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            margin="dense"
+                            id="sec_mobile"
+                            label="Second Mobile"
+                            type="number"
+                            maxLength="10"
+                            disabled={this.state.isInfo}
+                            // disabled={this.state.isUpdate} 
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.sec_mobile}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                        <TextField
+                            margin="dense"
+                            id="third_mobile"
+                            label="Third Mobile"
+                            type="number"
+                            maxLength="10"
+                            disabled={this.state.isInfo}
+                            // disabled={this.state.isUpdate} 
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.third_mobile}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            margin="dense"
+                            id="bijak_credit_limit"
+                            label="bijak Credit Limit"
+                            type="number"
+                            maxLength="10"
+                            disabled={true}
+                            // disabled={this.state.isUpdate} 
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.bijak_credit_limit}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+
+                        <TextField
+                            margin="dense"
+                            id="partner_names"
+                            label="Partner Name"
+                            type="text"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.partner_names}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            margin="dense"
+                            id="locality"
+                            label="Locality"
+                            disabled={this.state.isInfo}
+                            type="text"
+                            style={{ marginRight: '2%', width: '48%' }}
+                            value={this.state.dataObj.locality}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                        <TextField
+                            margin="dense"
+                            id="exposure_cutoff_limit"
+                            label="Cutoff Limit"
+                            type="number"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: '23%' }}
+                            value={this.state.dataObj.exposure_cutoff_limit}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                        <TextField
+                            margin="dense"
+                            id="rating"
+                            label="Rating"
+                            type="number"
+                            disabled={this.state.isInfo}
+                            style={{ marginRight: '2%', width: '23%' }}
+                            value={this.state.dataObj.rating}
+                            onChange={this.handleChange.bind(this)}
+                            fullWidth
+                        />
+                    </div>
+
+
+
+
+                    <div style={{ display: 'flex', marginTop: '20px' }}>
+                        <div style={{ marginRight: '2%', width: '38%' }}>
+                            <Checkbox
+                                style={{ height: 24, width: 34 }}
+                                disabled={this.state.isInfo}
+                                checked={this.state.dataObj.bijak_verified}
+                                onClick={this.handleCheckbox.bind(this, "bijak_verified")}
+                                tabIndex={-1}
+                                disableRipple
+                            />Is Bijak Verified</div>
+
+                        <div style={{ marginRight: '2%', width: '38%' }}>
+                            <Checkbox
+                                style={{ height: 24, width: 34 }}
+                                disabled={this.state.isInfo}
+                                checked={this.state.dataObj.bijak_assured}
+                                onClick={this.handleCheckbox.bind(this, "bijak_assured")}
+                                tabIndex={-1}
+                                disableRipple
+                            />Is Bijak Assured</div>
+                        <div style={{ marginRight: '2%', width: '38%' }}>
+                            <Checkbox
+                                style={{ height: 24, width: 34 }}
+                                checked={this.state.dataObj.active}
+                                disabled={this.state.isInfo}
+                                onClick={this.handleCheckbox.bind(this, "active")}
+                                tabIndex={-1}
+                                disableRipple
+                            />Is User Enabled</div>
+                    </div>
+
+                    <div style={{ textAlign: 'end', marginRight: '4%', marginTop: '2%' }}>
+                        {getAccessAccordingToRole("editUser") && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </div>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
+
+                {this.state.showConfirmDialog ?
+                    <ConfirmDialog
+                        dialogText={this.state.dialogText}
+                        dialogTitle={this.state.dialogTitle}
+                        show={this.state.showConfirmDialog}
+                        onConfirmed={this.handelConfirmUpdate}
+                        onCanceled={this.handelCancelUpdate} /> : ""}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="business_name"
-                    label="Buisness Name"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: this.state.isUpdate ? '48%' : "98%" }}
-                    value={this.state.dataObj.business_name}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-
-                {this.state.isUpdate && <TextField
-                    margin="dense"
-                    id="business_name_hindi"
-                    label="Buisness Name (Hindi)"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.business_name_hindi}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />}
-
-            </div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="sec_mobile"
-                    label="Second Mobile"
-                    type="number"
-                    maxLength="10"
-                    disabled={this.state.isInfo}
-                    // disabled={this.state.isUpdate} 
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.sec_mobile}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-                <TextField
-                    margin="dense"
-                    id="third_mobile"
-                    label="Third Mobile"
-                    type="number"
-                    maxLength="10"
-                    disabled={this.state.isInfo}
-                    // disabled={this.state.isUpdate} 
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.third_mobile}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-            </div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="bijak_credit_limit"
-                    label="bijak Credit Limit"
-                    type="number"
-                    maxLength="10"
-                    disabled={true}
-                    // disabled={this.state.isUpdate} 
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.bijak_credit_limit}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-
-                <TextField
-                    margin="dense"
-                    id="partner_names"
-                    label="Partner Name"
-                    type="text"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.partner_names}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-
-            </div>
-            <div style={{ display: 'flex' }}>
-                <TextField
-                    margin="dense"
-                    id="locality"
-                    label="Locality"
-                    disabled={this.state.isInfo}
-                    type="text"
-                    style={{ marginRight: '2%', width: '48%' }}
-                    value={this.state.dataObj.locality}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-                <TextField
-                    margin="dense"
-                    id="exposure_cutoff_limit"
-                    label="Cutoff Limit"
-                    type="number"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: '23%' }}
-                    value={this.state.dataObj.exposure_cutoff_limit}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-                <TextField
-                    margin="dense"
-                    id="rating"
-                    label="Rating"
-                    type="number"
-                    disabled={this.state.isInfo}
-                    style={{ marginRight: '2%', width: '23%' }}
-                    value={this.state.dataObj.rating}
-                    onChange={this.handleChange.bind(this)}
-                    fullWidth
-                />
-            </div>
-
-
-
-
-            <div style={{ display: 'flex', marginTop: '20px' }}>
-                <div style={{ marginRight: '2%', width: '38%' }}>
-                    <Checkbox
-                        style={{ height: 24, width: 34 }}
-                        disabled={this.state.isInfo}
-                        checked={this.state.dataObj.bijak_verified}
-                        onClick={this.handleCheckbox.bind(this, "bijak_verified")}
-                        tabIndex={-1}
-                        disableRipple
-                    />Is Bijak Verified</div>
-
-                <div style={{ marginRight: '2%', width: '38%' }}>
-                    <Checkbox
-                        style={{ height: 24, width: 34 }}
-                        disabled={this.state.isInfo}
-                        checked={this.state.dataObj.bijak_assured}
-                        onClick={this.handleCheckbox.bind(this, "bijak_assured")}
-                        tabIndex={-1}
-                        disableRipple
-                    />Is Bijak Assured</div>
-                <div style={{ marginRight: '2%', width: '38%' }}>
-                    <Checkbox
-                        style={{ height: 24, width: 34 }}
-                        checked={this.state.dataObj.active}
-                        disabled={this.state.isInfo}
-                        onClick={this.handleCheckbox.bind(this, "active")}
-                        tabIndex={-1}
-                        disableRipple
-                    />Is User Enabled</div>
-            </div>
-
-            <div style={{ textAlign: 'end', marginRight: '4%', marginTop: '2%' }}>
-                {getAccessAccordingToRole("editUser") && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
-                <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-            </div>
-            </div>:
-                 <Loader primaryText="Please wait.."/>}
-            
-            {this.state.showConfirmDialog ?
-                <ConfirmDialog
-                    dialogText={this.state.dialogText}
-                    dialogTitle={this.state.dialogTitle}
-                    show={this.state.showConfirmDialog}
-                    onConfirmed={this.handelConfirmUpdate}
-                    onCanceled={this.handelCancelUpdate} /> : ""}
-        </div>
-        </MuiThemeProvider>
+            </MuiThemeProvider>
         );
     }
 }

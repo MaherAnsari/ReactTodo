@@ -24,6 +24,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 
 const theme = createMuiTheme({
@@ -157,7 +158,14 @@ class MandiListTable extends Component {
       sort: {
         column: null,
         direction: 'desc',
+      },
+      showSweetAlert: false,
+      sweetAlertData: {
+        "type": "",
+        "title": "",
+        "text": ""
       }
+
 
     }
   }
@@ -197,13 +205,25 @@ class MandiListTable extends Component {
   handelConfirmUpdate = async () => {
     let resp = await mandiDataService.deleteSpecificMandi(this.state.deleteMarket);
     this.setState({ showConfirmDialog: false, alertData: {} });
+    let sweetAlrtData = this.state.sweetAlertData;
     if (resp.data.status === 1) {
-      alert("Succesfully Deleted");
-      this.getData("");
+      // alert("Succesfully Deleted");
+      // this.getData("");
+      sweetAlrtData["type"] = "success";
+      sweetAlrtData["title"] = "Success";
+      sweetAlrtData["text"] = "Successfully Deleted";
+
     } else {
       // alert("Opps there was an error, while deleted");
-      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while deleted");
+      // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while deleted");
+      sweetAlrtData["type"] = "error";
+      sweetAlrtData["title"] = "Error";
+      sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while deleting";
     }
+    this.setState({
+      showSweetAlert: true,
+      sweetAlertData: sweetAlrtData
+    });
   }
 
   getTableCellClass(classes, index) {
@@ -225,7 +245,7 @@ class MandiListTable extends Component {
   }
 
   handelEditModalOpen(data) {
-    this.setState({ editableData: Object.assign({},data), showEditDataModal: true })
+    this.setState({ editableData: Object.assign({}, data), showEditDataModal: true })
   }
 
   handelEditModalClose() {
@@ -290,10 +310,16 @@ class MandiListTable extends Component {
     return iconClass;
   };
 
+  handelSweetAlertClosed() {
+    this.setState({ showSweetAlert: false }, () =>
+      this.getData("")
+    )
+  }
+
 
   render() {
     const { classes } = this.props;
-    const { rowsPerPage, page, tableHeadDataKey } = this.state;
+    const { rowsPerPage, page, tableHeadDataKey, showSweetAlert, sweetAlertData } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -317,100 +343,100 @@ class MandiListTable extends Component {
             </div> */}
           </div>
           <div>
-          <div style={{ maxHeight: "70vh", overflowY: "scroll" }}>
-            <Table className='table-body' stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow style={{ borderBottom: "2px solid #858792" }} >
-                  {this.state.tableHeadData.map((option, i) => (
-                    <TableCell
-                      onClick={this.onSort(tableHeadDataKey[i])}
-                      key={option}
-                      style={{ textAlign: i < 3 ? "left" : "center", cursor: tableHeadDataKey[i] !== "" ? "pointer" : "unset" }}
-                      className={this.getTableCellClass(classes, i)}>{option}
-                      {tableHeadDataKey[i] !== "" && <i className={this.setArrow(tableHeadDataKey[i])} aria-hidden="true"></i>}
-                    </TableCell>
-                  ))}
+            <div style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+              <Table className='table-body' stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow style={{ borderBottom: "2px solid #858792" }} >
+                    {this.state.tableHeadData.map((option, i) => (
+                      <TableCell
+                        onClick={this.onSort(tableHeadDataKey[i])}
+                        key={option}
+                        style={{ textAlign: i < 3 ? "left" : "center", cursor: tableHeadDataKey[i] !== "" ? "pointer" : "unset" }}
+                        className={this.getTableCellClass(classes, i)}>{option}
+                        {tableHeadDataKey[i] !== "" && <i className={this.setArrow(tableHeadDataKey[i])} aria-hidden="true"></i>}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/*  ["state","state (Hindi)","district", "market","market (Hindi)","district (Hindi)", "Mandi Grade","Mandi Grade( HINDI)", "APMC","Mandi Off Day","Location","Action"], */}
+                  {this.state.tableBodyData &&
+                    (rowsPerPage > 0
+                      ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      : this.state.tableBodyData
+                    ).map((row, i) => {
+                      return (
+                        <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                          <TableCell component="th" scope="row" className={this.getTableCustomBgCellClass(classes, 0)}>
+                            <div style={{ display: "grid", textAlign: "left" }}>
+                              <span>{row.market}</span>
+                              <span style={{ fontSize: "12px" }}>{"( " + row.market_hindi + " )"}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left" }} >
+                            {/* {row.district + " (" + row.district_hindi + ")"} */}
+                            <div style={{ display: "grid", textAlign: "left" }}>
+                              <span>{row.district}</span>
+                              <span style={{ fontSize: "12px" }}>{"( " + row.district_hindi + " )"}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className={this.getTableCellClass(classes)} style={{ textAlign: "left" }}>
+                            <div style={{ display: "grid", textAlign: "left" }}>
+                              <span>{row.state}</span>
+                              <span style={{ fontSize: "12px" }}>{"( " + row.state_hindi + " )"}</span>
+                            </div>
+                          </TableCell>
+                          {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
+                          <TableCell className={this.getTableCellClass(classes, 2)} > {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi : "-)" : "-"}</TableCell>
+                          {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell> */}
+                          <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 2)}>
+                            {row.is_open ? <LockOpenIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} /> :
+                              <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
+                          </TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 2)}>{(row.opening_time ? row.opening_time : "-")}</TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 4)}>
+                            <div>
+                              {row.businessAddedPlace ?
+                                <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a', height: "18px", fontSize: "18px" }} />
+                                :
+                                <DoneAllIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} />}
+                              {row.businessAddedPlace ?
+                                <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ height: "18px", fontSize: "18px", color: 'red', cursor: 'pointer' }} /> : ""
+                              }
+                              {getAccessAccordingToRole("editMandi") && <EditIcon
+                                className="material-Icon"
+                                onClick={() => this.handelEditModalOpen(row)}
+                                style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+
+              </Table>
+
+            </div>
+            {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>
+              <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[25, 50, 100]}
+                    colSpan={6}
+                    count={this.state.tableBodyData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'rows per page' },
+                      native: true,
+                    }}
+                    onChangePage={this.handleChangePage.bind(this)}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                  />
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {/*  ["state","state (Hindi)","district", "market","market (Hindi)","district (Hindi)", "Mandi Grade","Mandi Grade( HINDI)", "APMC","Mandi Off Day","Location","Action"], */}
-                {this.state.tableBodyData &&
-                  (rowsPerPage > 0
-                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    : this.state.tableBodyData
-                  ).map((row, i) => {
-                    return (
-                      <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                        <TableCell component="th" scope="row" className={this.getTableCustomBgCellClass(classes, 0)}>
-                          <div style={{ display: "grid", textAlign: "left" }}>
-                            <span>{row.market}</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.market_hindi + " )"}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left" }} >
-                          {/* {row.district + " (" + row.district_hindi + ")"} */}
-                          <div style={{ display: "grid", textAlign: "left" }}>
-                            <span>{row.district}</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.district_hindi + " )"}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className={this.getTableCellClass(classes)} style={{ textAlign: "left" }}>
-                          <div style={{ display: "grid", textAlign: "left" }}>
-                            <span>{row.state}</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.state_hindi + " )"}</span>
-                          </div>
-                        </TableCell>
-                        {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.district_hindi ? row.district_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)} > {row.mandi_grade ? row.mandi_grade + " (" + row.mandi_grade_hindi ? row.mandi_grade_hindi : "-)" : "-"}</TableCell>
-                        {/* <TableCell className={this.getTableCellClass(classes, 2)}>{row.mandi_grade_hindi ? row.mandi_grade_hindi : "-"}</TableCell> */}
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{row.apmc_req ? (row.apmc_req ? "Yes" : "No") : "-"}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>
-                          {row.is_open ? <LockOpenIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} /> :
-                            <LockIcon className="material-Icon" style={{ color: 'red', height: "18px", fontSize: "18px" }} />}
-                        </TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.loc_lat ? row.loc_lat : "-") + "/\n" + (row.loc_long ? row.loc_long : "-")}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 2)}>{(row.opening_time ? row.opening_time : "-")}</TableCell>
-                        <TableCell className={this.getTableCellClass(classes, 4)}>
-                          <div>
-                            {row.businessAddedPlace ?
-                              <PersonIcon className="material-Icon" style={{ color: row.profile_completed ? '' : '#0000008a', height: "18px", fontSize: "18px" }} />
-                              :
-                              <DoneAllIcon className="material-Icon" style={{ height: "18px", fontSize: "18px" }} />}
-                            {row.businessAddedPlace ?
-                              <DeleteIcon className="material-Icon" onClick={this.onDeleteMandi.bind(this, row.market)} style={{ height: "18px", fontSize: "18px", color: 'red', cursor: 'pointer' }} /> : ""
-                            }
-                            {getAccessAccordingToRole("editMandi") && <EditIcon
-                              className="material-Icon"
-                              onClick={() => this.handelEditModalOpen(row)}
-                              style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-        
-          </Table>
-         
-          </div>
-          {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>
-          <TableFooter style={{ borderTop: "2px solid #858792" }}>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[25, 50, 100]}
-                  colSpan={6}
-                  count={this.state.tableBodyData.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    inputProps: { 'aria-label': 'rows per page' },
-                    native: true,
-                  }}
-                  onChangePage={this.handleChangePage.bind(this)}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                />
-              </TableRow>
-            </TableFooter>
+              </TableFooter>
             </Table>}
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
@@ -436,6 +462,16 @@ class MandiListTable extends Component {
               onEditModalClosed={this.handelEditModalClose.bind(this)}
               onEditModalCancel={this.handelEditModalCancel.bind(this)}
             />}
+
+          {showSweetAlert &&
+            <SweetAlertPage
+              show={true}
+              type={sweetAlertData.type}
+              title={sweetAlertData.title}
+              text={sweetAlertData.text}
+              sweetAlertClose={() => this.handelSweetAlertClosed()}
+            />}
+
         </Paper>
       </MuiThemeProvider>
     );

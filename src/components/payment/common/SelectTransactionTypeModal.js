@@ -9,6 +9,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import paymentService from '../../../app/paymentService/paymentService';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
+
 
 const styles = theme => ({
 
@@ -30,8 +32,15 @@ class SelectTransactionTypeModal extends Component {
             errorFields: {},
             rowData: this.props.rowDataObj,
             statusUpdateObj: {
-                "status" : "",
-                "reason" : ""
+                "status": "",
+                "reason": ""
+            },
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
             }
         }
     }
@@ -61,23 +70,23 @@ class SelectTransactionTypeModal extends Component {
         })
     }
 
-    checkIfValidDataForUpload( data ){
-        console.log( data )
+    checkIfValidDataForUpload(data) {
+        console.log(data)
         var isValid = true;
-        var errors =  {};
-        if( !data["status"] || data["status"] === ""){
+        var errors = {};
+        if (!data["status"] || data["status"] === "") {
             isValid = false;
             errors["status"] = true;
         }
 
-        if( data["status"] !== "approved"){
-            if(!data["reason"] || data["reason"] === ""){
-            isValid = false;
-            errors["reason"] = true;
-        }
+        if (data["status"] !== "approved") {
+            if (!data["reason"] || data["reason"] === "") {
+                isValid = false;
+                errors["reason"] = true;
+            }
         }
 
-        this.setState({ errorFields : errors });
+        this.setState({ errorFields: errors });
         return isValid;
     }
 
@@ -87,35 +96,52 @@ class SelectTransactionTypeModal extends Component {
 
         var obj = {};
         obj["id"] = row["id"];
-        console.log( this.checkIfValidDataForUpload( statusUpdateObj_val ))
-        if(this.checkIfValidDataForUpload( statusUpdateObj_val ) ){
+        console.log(this.checkIfValidDataForUpload(statusUpdateObj_val))
+        if (this.checkIfValidDataForUpload(statusUpdateObj_val)) {
             obj["status"] = statusUpdateObj_val["status"];
             obj["reason"] = statusUpdateObj_val["reason"] && statusUpdateObj_val["reason"] !== "" ? statusUpdateObj_val["reason"] : "-";
             obj["pay_id"] = row["pay_id"];
-            this.updatePaymentStatus( obj );
+            this.updatePaymentStatus(obj);
         }
     }
 
-    updatePaymentStatus = async ( payload ) => {
+    updatePaymentStatus = async (payload) => {
         try {
-            let resp = await paymentService.updateStatusOfPayment( payload );
-            if (resp.data.status === 1 ) {
-              alert( "Successfully updated ");
-              this.props.onUpdateSuccessFull( );
+            let resp = await paymentService.updateStatusOfPayment(payload);
+            let sweetAlrtData = this.state.sweetAlertData;
+            if (resp.data.status === 1) {
+                // alert("Successfully updated ");
+                // this.props.onUpdateSuccessFull();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully Added";
             } else {
-            //   alert( "An error occured while updating the status")
-              alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while updating the status");
+                //   alert( "An error occured while updating the status")
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while updating the status");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while updating the status";
             }
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         } catch (err) {
             console.error(err);
-            alert( "An error occured while updating the status")
+            alert("An error occured while updating the status")
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onUpdateSuccessFull()
+        )
+    }
 
     render() {
         const { classes } = this.props;
-        const { errorFields, statusUpdateObj } = this.state;
+        const { errorFields, statusUpdateObj, showSweetAlert, sweetAlertData } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
@@ -169,6 +195,16 @@ class SelectTransactionTypeModal extends Component {
                     <Button className={classes.formCancelBtn} onClick={this.onStatusUpdatedClicked.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                 </DialogActions>
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
+
             </Dialog>
         </div>
         );

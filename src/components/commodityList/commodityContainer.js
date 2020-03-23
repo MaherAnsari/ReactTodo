@@ -7,6 +7,7 @@ import CommodityTable from './component/commodityTable';
 import commodityService from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
 import AddCommodityModal from './component/AddCommodityModal';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 // import { IoTThingsGraph } from 'aws-sdk';
 
 const styles = theme => ({
@@ -44,7 +45,14 @@ class CommodityContainer extends React.Component {
             showAddModal: false,
             dataList: null,
             showLoader: true,
-            showAddCommodityModal: false
+            showAddCommodityModal: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         };
     }
@@ -57,15 +65,26 @@ class CommodityContainer extends React.Component {
     }
 
     async getData() {
+        try {
+            let resp = await commodityService.getCommodityTable();
+            let sweetAlrtData = this.state.sweetAlertData;
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({ dataList: resp.data.result.data });
+            } else {
+                // alert("Oops there was an error while getting commodity list")
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error while getting commodity list");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error while getting commodity list";
+                this.setState({ 
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData });
+            }
 
-        let resp = await commodityService.getCommodityTable();
-        if (resp.data.status === 1 && resp.data.result) {
-            this.setState({ dataList: resp.data.result.data });
-        } else {
-            // alert("Oops there was an error while getting commodity list")
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error while getting commodity list");
+
+        } catch (err) {
+            console.log(err)
         }
-
     }
 
 
@@ -85,9 +104,14 @@ class CommodityContainer extends React.Component {
     handleClickOpen(event) {
         this.setState({ showAddModal: true, open: true });
     }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false })
+    }
+
     render() {
         const { classes } = this.props;
-        const { showAddCommodityModal } = this.state;
+        const { showAddCommodityModal , showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
                 {this.state.dataList ? <Card className={classes.card}>
@@ -111,6 +135,14 @@ class CommodityContainer extends React.Component {
                     />}
 
                 </Card> : <Loader />}
+                {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
             </div>
         )
     }

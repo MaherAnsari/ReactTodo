@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
 import Loader from '../../common/Loader';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -27,16 +28,16 @@ const styles = theme => ({
         marginTop: '33px',
         marginLeft: '10px'
     },
-    close:{
-        color:'#000',
-        fontSize:'20px'
+    close: {
+        color: '#000',
+        fontSize: '20px'
     },
-    card:{
+    card: {
         boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
-    transition: '0.3s',
-    padding: '10px',
-    borderRadius: '10px',
-    marginTop:'15px'
+        transition: '0.3s',
+        padding: '10px',
+        borderRadius: '10px',
+        marginTop: '15px'
     }
 
 });
@@ -65,10 +66,18 @@ class EditMandiDataModal extends Component {
             "isManuallyAdded": this.props.editableData && this.props.editableData["businessAddedPlace"] ? this.props.editableData["businessAddedPlace"] : false,
             dayArr: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
             dayType: ['first', "second", "third", "fourth", "last"],
-            typeArr: ["dates", "every","all"],
+            typeArr: ["dates", "every", "all"],
             offDayArr: [],
-            timeoption:["am","pm"],
-            showLoader: false
+            timeoption: ["am", "pm"],
+            showLoader: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
+
 
         }
 
@@ -76,23 +85,23 @@ class EditMandiDataModal extends Component {
 
     componentDidMount() {
         // console.log(this.props.editableData);
-        let data = this.props.editableData.mandi_off_date ? this.props.editableData.mandi_off_date:[];
-        let offDayData=[];
-        for(let i=0;i<data.length;i++){
+        let data = this.props.editableData.mandi_off_date ? this.props.editableData.mandi_off_date : [];
+        let offDayData = [];
+        for (let i = 0; i < data.length; i++) {
             let obj = { "offType": "", "dayType": "", "day": "", "dates": "" };
             // let  "every|first|monday"
             let arr = data[i].split("|");
             // console.log(arr[0]);
-            if(arr[0] === "every"){
+            if (arr[0] === "every") {
                 obj["offType"] = arr[0];
-                obj["dayType"] =  arr[1];
-                obj["day"] =  arr[2];
-             }else if(arr[0] === "all"){
+                obj["dayType"] = arr[1];
+                obj["day"] = arr[2];
+            } else if (arr[0] === "all") {
                 obj["offType"] = arr[0];
-                obj["day"] =  arr[1];
-             }else{
+                obj["day"] = arr[1];
+            } else {
                 obj["offType"] = arr[0];
-                obj["dates"] =  arr[1];
+                obj["dates"] = arr[1];
             }
 
 
@@ -107,15 +116,17 @@ class EditMandiDataModal extends Component {
         // let openingHour = "00";
         // let openingMin = "00";
         let dataObj = this.props.editableData;
-        if(this.props.editableData.opening_time){
+        if (this.props.editableData.opening_time) {
             let str = this.props.editableData.opening_time.split(" ");
             dataObj['time'] = str[1];
             dataObj['openingHour'] = str[0].split(":")[0];
             dataObj['openingMin'] = str[0].split(":")[1];
         }
         // console.log(dataObj);
-        this.setState({ districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()] ,offDayArr:offDayData,
-                dataObj:dataObj});
+        this.setState({
+            districtList: Utils.getDistrictData()[this.props.editableData["state"].toLowerCase()], offDayArr: offDayData,
+            dataObj: dataObj
+        });
     }
 
     componentWillReceiveProps() {
@@ -143,7 +154,7 @@ class EditMandiDataModal extends Component {
 
     handelConfirmUpdate = async () => {
         // console.log(this.state.dataObj);
-        this.setState({ showLoader : true });
+        this.setState({ showLoader: true });
         var data = this.state.dataObj;
         var payload = {
             "market": data["market"],
@@ -152,23 +163,31 @@ class EditMandiDataModal extends Component {
             "mandi_grade_hindi": data["mandi_grade_hindi"],
             "loc_lat": data["loc_lat"],
             "loc_long": data["loc_long"],
-            "mandi_off_date":data["mandi_off_date"],
-            "opening_time":data["opening_time"]
+            "mandi_off_date": data["mandi_off_date"],
+            "opening_time": data["opening_time"]
         }
         // console.log(payload)
-        let resp = await mandiDataService.updateMandiData( payload );
-        this.setState({ showLoader : false });
+        let resp = await mandiDataService.updateMandiData(payload);
+        let sweetAlrtData = this.state.sweetAlertData;
+        this.setState({ showLoader: false });
         if (resp.data.status === 1) {
-            alert("Succesfully submitted");
-            this.props.onEditModalClosed();
+            // alert("Succesfully submitted");
+            // this.props.onEditModalClosed();
+            
+            sweetAlrtData["type"] = "success";
+            sweetAlrtData["title"] = "Success";
+            sweetAlrtData["text"] = "Successfully submitted";
         } else {
             // alert("Opps there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
         }
-        this.setState({ showConfirmDialog: false, alertData: {} });
+        this.setState({ showConfirmDialog: false, alertData: {},
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData });
     }
-
-    checkForValid
 
 
     handelCancelUpdate = () => {
@@ -203,8 +222,8 @@ class EditMandiDataModal extends Component {
         for (let i = 0; i < offdata.length; i++) {
             let str = "";
             if (offdata[i]['offType'] === "every") {
-                str = "every|"+ offdata[i]['dayType'] + "|" + offdata[i]['day'];
-            }else if (offdata[i]['offType'] === "all") {
+                str = "every|" + offdata[i]['dayType'] + "|" + offdata[i]['day'];
+            } else if (offdata[i]['offType'] === "all") {
                 str = "all|" + offdata[i]['day'];
             } else {
                 str = "dates|" + offdata[i]['dates'];
@@ -213,7 +232,7 @@ class EditMandiDataModal extends Component {
             offDayArr.push(str);
         }
         this.state.dataObj.mandi_off_date = offDayArr;
-        this.state.dataObj.opening_time = this.state.dataObj.openingHour+":"+this.state.dataObj.openingMin+" "+this.state.dataObj.time;
+        this.state.dataObj.opening_time = this.state.dataObj.openingHour + ":" + this.state.dataObj.openingMin + " " + this.state.dataObj.time;
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
@@ -238,299 +257,307 @@ class EditMandiDataModal extends Component {
         data[index][id] = event.target.value;
         this.setState({ offDayArr: data });
     }
-    onCancelClick(id,event){
+    onCancelClick(id, event) {
         let data = this.state.offDayArr;
-        data.splice(id,1);
+        data.splice(id, 1);
         this.setState({ offDayArr: data });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onEditModalClosed()
+        )
+    }
+
+
     render() {
         const { classes } = this.props;
-        const { showLoader, isManuallyAdded, mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
+        const { showLoader, isManuallyAdded, mandiGradeOptions, 
+            mandiGradeHindiOptions, timeoption, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
                 classes={{ paper: classes.dialogPaper }}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Edit Mandi Data</p>  </DialogTitle>
-                <DialogContent>
-                <div style={{ display: 'flex' }}>
-                        <div style={{ width: '50%' }}>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="market"
-                            label="Market"
-                            type="text"
-                            disabled={true}
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.market}
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        /></div>
-                    <div >
-                        <TextField
-                            select
-                            id="state"
-                            label="State"
-                            type="text"
-                            disabled={!isManuallyAdded}
-                            style={{ marginRight: '2%', width: '100%' }}
-                            value={this.state.dataObj.state}
-                            onChange={this.handleStateChange.bind(this, 'state')}>
-                            {this.state.stateList.map((option, i) => (
-                                <MenuItem key={i} value={option.toLowerCase()} selected={true}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
+                {!showLoader ? <div>
+                    <DialogTitle style={{ background: '#05073a', textAlign: 'center', height: '60px' }} id="form-dialog-title"><p style={{ color: '#fff', fontFamily: 'Lato', fontSize: '18px' }}>Edit Mandi Data</p>  </DialogTitle>
+                    <DialogContent>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ width: '50%' }}>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="market"
+                                        label="Market"
+                                        type="text"
+                                        disabled={true}
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.market}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    /></div>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="state"
+                                        label="State"
+                                        type="text"
+                                        disabled={!isManuallyAdded}
+                                        style={{ marginRight: '2%', width: '100%' }}
+                                        value={this.state.dataObj.state}
+                                        onChange={this.handleStateChange.bind(this, 'state')}>
+                                        {this.state.stateList.map((option, i) => (
+                                            <MenuItem key={i} value={option.toLowerCase()} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
 
-                    <div >
-                        <TextField
-                            select
-                            id="district"
-                            label="District"
-                            type="text"
-                            disabled={!isManuallyAdded}
-                            style={{ marginRight: '2%', width: '100%' }}
-                            value={this.state.dataObj.district}
-                            onChange={this.handleStateChange.bind(this, 'district')}>
-                            {this.state.districtList.map((option, i) => (
-                                <MenuItem key={i} value={option.district_name} selected={true}>
-                                    {option.district_name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="state_hindi"
-                            label="State (Hindi)"
-                            type="text"
-                            disabled={!isManuallyAdded}
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.state_hindi}
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        />
-                    </div>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="district_hindi"
-                            label="District (Hindi)"
-                            type="text"
-                            disabled={!isManuallyAdded}
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.district_hindi}
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        /></div>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="market_hindi"
-                            label="Market (Hindi)"
-                            type="text"
-                            disabled={!isManuallyAdded}
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.market_hindi}
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        />
-                    </div>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="district"
+                                        label="District"
+                                        type="text"
+                                        disabled={!isManuallyAdded}
+                                        style={{ marginRight: '2%', width: '100%' }}
+                                        value={this.state.dataObj.district}
+                                        onChange={this.handleStateChange.bind(this, 'district')}>
+                                        {this.state.districtList.map((option, i) => (
+                                            <MenuItem key={i} value={option.district_name} selected={true}>
+                                                {option.district_name}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="state_hindi"
+                                        label="State (Hindi)"
+                                        type="text"
+                                        disabled={!isManuallyAdded}
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.state_hindi}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="district_hindi"
+                                        label="District (Hindi)"
+                                        type="text"
+                                        disabled={!isManuallyAdded}
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.district_hindi}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    /></div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="market_hindi"
+                                        label="Market (Hindi)"
+                                        type="text"
+                                        disabled={!isManuallyAdded}
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.market_hindi}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
 
-                    <div >
-                        <TextField
-                            select
-                            id="mandi_grade"
-                            label="Mandi Grade"
-                            type="text"
-                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
-                            value={this.state.dataObj.mandi_grade }
-                            onChange={this.handleStateChange.bind(this, 'mandi_grade')}>
-                            {mandiGradeOptions.map((option, i) => (
-                                <MenuItem key={i} value={option.toLowerCase()} selected={true}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div >
-                        <TextField
-                            select
-                            id="mandi_grade_hindi"
-                            label="Mandi Grade ( Hindi )"
-                            type="text"
-                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
-                            value={this.state.dataObj.mandi_grade_hindi || ""}
-                            onChange={this.handleStateChange.bind(this, 'mandi_grade_hindi')}>
-                            {mandiGradeHindiOptions.map((option, i) => (
-                                <MenuItem key={i} value={option} selected={true}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div >
-                        <TextField
-                            select
-                            id="apmc_req"
-                            label="APMC"
-                            type="text"
-                            style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
-                            value={this.state.dataObj.apmc_req}
-                            onChange={this.handleStateChange.bind(this, 'apmc_req')}>
-                            {[true, false].map((option, i) => (
-                                <MenuItem key={i} value={option} selected={true}>
-                                    {option ? "Yes" : "No"}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="loc_lat"
-                            label="Latitude"
-                            type="text"
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.loc_lat }
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        />
-                    </div>
-                    <div >
-                        <TextField
-                            margin="dense"
-                            id="loc_long"
-                            label="Longitude"
-                            type="text"
-                            style={{ marginRight: '2%' }}
-                            value={this.state.dataObj.loc_long }
-                            onChange={this.handleChange.bind(this)}
-                            fullWidth
-                        />
-                    </div>
-                    <div style={{marginTop:'5px',fontSize:'16px'}}>Mandi Opening Time :</div>                
-                            <div style={{display:'flex'}}>
-                                <TextField
-                                    margin="dense"
-                                    id="openingHour"
-                                    label="Hour"
-                                    type="text"
-                                    style={{ marginRight: '2%',width:'30%' }}
-                                    value={this.state.dataObj.openingHour}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                                 <TextField
-                                    margin="dense"
-                                    id="openingMin"
-                                    label="Minute"
-                                    type="text"
-                                    style={{ marginRight: '2%',width:'30%' }}
-                                    value={this.state.dataObj.openingMin}
-                                    onChange={this.handleChange.bind(this)}
-                                    fullWidth
-                                />
-                                  <TextField
-                                    select
-                                    id="time"
-                                    label="Time"
-                                    type="text"
-                                    style={{ marginRight: '2%', width: '30%' ,paddingTop:'20px'}}
-                                    value={this.state.dataObj.time}
-                                    onChange={this.handleStateChange.bind(this, 'time')}>
-                                    {timeoption.map((option, i) => (
-                                        <MenuItem key={i} value={option} selected={true}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="mandi_grade"
+                                        label="Mandi Grade"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                                        value={this.state.dataObj.mandi_grade}
+                                        onChange={this.handleStateChange.bind(this, 'mandi_grade')}>
+                                        {mandiGradeOptions.map((option, i) => (
+                                            <MenuItem key={i} value={option.toLowerCase()} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="mandi_grade_hindi"
+                                        label="Mandi Grade ( Hindi )"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                                        value={this.state.dataObj.mandi_grade_hindi || ""}
+                                        onChange={this.handleStateChange.bind(this, 'mandi_grade_hindi')}>
+                                        {mandiGradeHindiOptions.map((option, i) => (
+                                            <MenuItem key={i} value={option} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        select
+                                        id="apmc_req"
+                                        label="APMC"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '100%', marginTop: "8px" }}
+                                        value={this.state.dataObj.apmc_req}
+                                        onChange={this.handleStateChange.bind(this, 'apmc_req')}>
+                                        {[true, false].map((option, i) => (
+                                            <MenuItem key={i} value={option} selected={true}>
+                                                {option ? "Yes" : "No"}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="loc_lat"
+                                        label="Latitude"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.loc_lat}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="loc_long"
+                                        label="Longitude"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={this.state.dataObj.loc_long}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div style={{ marginTop: '5px', fontSize: '16px' }}>Mandi Opening Time :</div>
+                                <div style={{ display: 'flex' }}>
+                                    <TextField
+                                        margin="dense"
+                                        id="openingHour"
+                                        label="Hour"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '30%' }}
+                                        value={this.state.dataObj.openingHour}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                    <TextField
+                                        margin="dense"
+                                        id="openingMin"
+                                        label="Minute"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '30%' }}
+                                        value={this.state.dataObj.openingMin}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                    <TextField
+                                        select
+                                        id="time"
+                                        label="Time"
+                                        type="text"
+                                        style={{ marginRight: '2%', width: '30%', paddingTop: '20px' }}
+                                        value={this.state.dataObj.time}
+                                        onChange={this.handleStateChange.bind(this, 'time')}>
+                                        {timeoption.map((option, i) => (
+                                            <MenuItem key={i} value={option} selected={true}>
+                                                {option}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </div>
+
                             </div>
-
-                    </div>
-                        <div className={classes.offDay}>
-                            Mandi Off Day<i style={{ fontSize: '20px', marginLeft: '5px', color: 'red', cursor: 'pointer' }} onClick={this.onAddOffDayClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
-                            {this.state.offDayArr.map((row, i) => {
-                                return (<div key={i} className={classes.card} >
-                                    <div >
-                                        <TextField
-                                            select
-                                            id="offType"
-                                            label="Select Type"
-                                            type="text"
-                                            style={{ marginRight: '2%', width: '86%',marginLeft:'5%' }}
-                                            value={row.offType}
-                                            onChange={this.handleOffDayChange.bind(this, i, 'offType')} >
-                                            {this.state.typeArr.map((option, i) => (
-                                                <MenuItem key={i} value={option} selected={true}>
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                        <i className={"fa fa-window-close "  +classes.close} onClick={this.onCancelClick.bind(this,i)} aria-hidden="true"></i>
-                                    </div>
-                                    {row.offType === "every" && <div >
-                                        <TextField
-                                            select
-                                            id="dayType"
-                                            label="Day Type"
-                                            type="text"
-                                            style={{ marginRight: '2%', width: '88%' }}
-                                            value={row.dayType}
-                                            onChange={this.handleOffDayChange.bind(this, i, 'dayType')} >
-                                            {this.state.dayType.map((option, i) => (
-                                                <MenuItem key={i} value={option} selected={true}>
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </div>}
-                                    {row.offType !== "dates" && <div >
-                                        <TextField
-                                            select
-                                            id="day"
-                                            label="Select Day"
-                                            type="text"
-                                            style={{ marginRight: '2%', width: '88%' }}
-                                            value={row.day}
-                                            onChange={this.handleOffDayChange.bind(this, i, 'day')} >
-                                            {this.state.dayArr.map((option, i) => (
-                                                <MenuItem key={i} value={option} selected={true}>
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </div>}
-                                    {row.offType === "dates" && <div >
-                                        <TextField
-                                            margin="dense"
-                                            id="dates"
-                                            label="Enter Dates (colon Seprates)"
-                                            type="text"
-                                            style={{ marginRight: '2%', width: '88%' }}
-                                            value={row.dates}
-                                            onChange={this.handleOffDayChange.bind(this, i, 'dates')}
-                                            fullWidth
-                                        />
-                                    </div>}
-                                </div>);
-                            })}
+                            <div className={classes.offDay}>
+                                Mandi Off Day<i style={{ fontSize: '20px', marginLeft: '5px', color: 'red', cursor: 'pointer' }} onClick={this.onAddOffDayClick.bind(this)} className="fa fa-plus-circle" aria-hidden="true"></i>
+                                {this.state.offDayArr.map((row, i) => {
+                                    return (<div key={i} className={classes.card} >
+                                        <div >
+                                            <TextField
+                                                select
+                                                id="offType"
+                                                label="Select Type"
+                                                type="text"
+                                                style={{ marginRight: '2%', width: '86%', marginLeft: '5%' }}
+                                                value={row.offType}
+                                                onChange={this.handleOffDayChange.bind(this, i, 'offType')} >
+                                                {this.state.typeArr.map((option, i) => (
+                                                    <MenuItem key={i} value={option} selected={true}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                            <i className={"fa fa-window-close " + classes.close} onClick={this.onCancelClick.bind(this, i)} aria-hidden="true"></i>
+                                        </div>
+                                        {row.offType === "every" && <div >
+                                            <TextField
+                                                select
+                                                id="dayType"
+                                                label="Day Type"
+                                                type="text"
+                                                style={{ marginRight: '2%', width: '88%' }}
+                                                value={row.dayType}
+                                                onChange={this.handleOffDayChange.bind(this, i, 'dayType')} >
+                                                {this.state.dayType.map((option, i) => (
+                                                    <MenuItem key={i} value={option} selected={true}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>}
+                                        {row.offType !== "dates" && <div >
+                                            <TextField
+                                                select
+                                                id="day"
+                                                label="Select Day"
+                                                type="text"
+                                                style={{ marginRight: '2%', width: '88%' }}
+                                                value={row.day}
+                                                onChange={this.handleOffDayChange.bind(this, i, 'day')} >
+                                                {this.state.dayArr.map((option, i) => (
+                                                    <MenuItem key={i} value={option} selected={true}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>}
+                                        {row.offType === "dates" && <div >
+                                            <TextField
+                                                margin="dense"
+                                                id="dates"
+                                                label="Enter Dates (colon Seprates)"
+                                                type="text"
+                                                style={{ marginRight: '2%', width: '88%' }}
+                                                value={row.dates}
+                                                onChange={this.handleOffDayChange.bind(this, i, 'dates')}
+                                                fullWidth
+                                            />
+                                        </div>}
+                                    </div>);
+                                })}
+                            </div>
                         </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
             </Dialog>
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
@@ -539,6 +566,15 @@ class EditMandiDataModal extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
         );
     }
