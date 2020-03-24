@@ -25,6 +25,7 @@ import Loader from '../../common/Loader';
 import Utils from './../../../app/common/utils';
 import orderService from '../../../app/orderService/orderService';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -76,7 +77,13 @@ class PayoutOrderModal extends Component {
             transactionAmount: 0,
             showAmountexceedError: false,
             availableCreditAmount: 0,
-            availableCreditAmountError: false
+            availableCreditAmountError: false,
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
@@ -166,7 +173,7 @@ class PayoutOrderModal extends Component {
             var addAccountDataVal = this.state.addAccountData;
             if (intejarIds.indexOf(id) > -1) {
                 if (val === "" || !isNaN(val)) {
-                    addAccountDataVal[id] = val; 
+                    addAccountDataVal[id] = val;
                 }
             } else {
                 addAccountDataVal[id] = val ? val.toUpperCase() : "";
@@ -240,7 +247,7 @@ class PayoutOrderModal extends Component {
                 "transaction_type": "b_out",
                 "transaction_date": this.formateDateForApi(new Date()),
                 "bijak_order_reference_id": pdata["id"],
-                "unsettled_amount_pltf":pdata["unsettled_amount_pltf"],
+                "unsettled_amount_pltf": pdata["unsettled_amount_pltf"],
 
                 "bank_detail": {
                     "account_holder_name": this.state.addAccountData["bank_account_holder_name"],
@@ -252,12 +259,23 @@ class PayoutOrderModal extends Component {
             payloadData["data"].push(payload)
             let resp = await paymentService.addPayemtData(payloadData);
             this.setState({ currentPayoutView: "selectAccount" });
+            let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
-                alert("Successfully added");
-                this.props.onPayoutSuccessfull();
+                // alert("Successfully added");
+                // this.props.onPayoutSuccessfull();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully Added";
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details";
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details");
             }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         } catch (err) {
             console.error(err);
             this.setState({ currentPayoutView: "selectAccount" });
@@ -311,13 +329,21 @@ class PayoutOrderModal extends Component {
         });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onPayoutSuccessfull()
+            }
+        })
+    }
+
 
     render() {
         const { classes } = this.props;
         const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount,
             // transferType,
-             acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
-            errorFields } = this.state;
+            acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
+            errorFields, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -541,6 +567,14 @@ class PayoutOrderModal extends Component {
                         <React.Fragment>
                             <Loader primaryText={"Please wait.."} />
                         </React.Fragment>}
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
                 </DialogContent>
             </Dialog>
         </div>
