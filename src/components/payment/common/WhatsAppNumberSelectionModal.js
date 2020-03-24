@@ -99,7 +99,8 @@ class WhatsAppNumberSelectionModal extends Component {
                 whatsappNumber = this.state.otherNumber;
             }
             let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
-            let resp = await commonService.sendinvoicefromwhatsapp(payload);
+            let resp = { data:{ status : 0}}
+            // let resp = await commonService.sendinvoicefromwhatsapp(payload);
             console.log(resp);
             let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
@@ -191,20 +192,21 @@ class WhatsAppNumberSelectionModal extends Component {
                                 label="Enter Mobile Number" />
                         </div>}
                     </React.Fragment>
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
 
-                {showSweetAlert &&
+                    {showSweetAlert &&
                     <SweetAlertPage
                         show={true}
+                        style={{zIndex :999999}}
                         type={sweetAlertData.type}
                         title={sweetAlertData.title}
                         text={sweetAlertData.text}
                         sweetAlertClose={() => this.handelSweetAlertClosed()}
                     />}
+                </DialogContent>
+                <DialogActions>
+                    <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
+                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                </DialogActions>
             </Dialog>
         </div>
         );
