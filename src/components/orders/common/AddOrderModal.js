@@ -335,8 +335,8 @@ class AddOrderModal extends Component {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
-                let resp = { data: { status: 1, message: "custom Mas" ,result:[]} }
-                // var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
+                // let resp = { data: { status: 1, message: "custom Mas" ,result:[]} }
+                var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
                 let sweetAlrtData = this.state.sweetAlertData;
                 this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
