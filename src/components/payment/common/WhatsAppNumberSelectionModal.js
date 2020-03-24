@@ -99,8 +99,8 @@ class WhatsAppNumberSelectionModal extends Component {
                 whatsappNumber = this.state.otherNumber;
             }
             let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
-            let resp = { data:{ status : 0}}
-            // let resp = await commonService.sendinvoicefromwhatsapp(payload);
+            // let resp = { data:{ status : 0}}
+            let resp = await commonService.sendinvoicefromwhatsapp(payload);
             console.log(resp);
             let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
