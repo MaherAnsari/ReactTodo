@@ -60,7 +60,8 @@ class WhatsAppNumberSelectionModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showLoader: false
         }
     }
 
@@ -100,8 +101,9 @@ class WhatsAppNumberSelectionModal extends Component {
             }
             let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
             // let resp = { data:{ status : 0}}
+            this.setState({ showLoader: true });
             let resp = await commonService.sendinvoicefromwhatsapp(payload);
-            console.log(resp);
+            // console.log(resp);
             let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
                 // alert("Receipt sent to whatsapp number " + whatsappNumber);
@@ -119,6 +121,7 @@ class WhatsAppNumberSelectionModal extends Component {
             // this.handleDialogCancel();
 
             this.setState({
+                showLoader: false,
                 showSweetAlert: true,
                 sweetAlertData: sweetAlrtData
             });
@@ -139,7 +142,8 @@ class WhatsAppNumberSelectionModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { transactionInfoData, selectedUser, otherNumber, showSweetAlert, sweetAlertData } = this.state;
+        const { transactionInfoData, selectedUser, otherNumber,
+            showSweetAlert, sweetAlertData, showLoader } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
@@ -155,7 +159,7 @@ class WhatsAppNumberSelectionModal extends Component {
                         Confirm Number For Whatsapp </p>
                 </DialogTitle>
                 <DialogContent>
-                    <React.Fragment>
+                    {!showLoader ? <React.Fragment>
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Select Whom to send the receipt</FormLabel>
                             <RadioGroup aria-label="position" name="position" value={selectedUser}
@@ -191,17 +195,29 @@ class WhatsAppNumberSelectionModal extends Component {
                                 onChange={this.onInputChanged.bind(this)}
                                 label="Enter Mobile Number" />
                         </div>}
-                    </React.Fragment>
+                    </React.Fragment> :
+                        <>
+                            <div style={{ textAlign: "center" }}>
+                                <i className="fa fa-spinner fa-spin"
+                                    style={{ fontSize: "56px", color: "#000" }} aria-hidden="true" ></i>
+                                <p style={{
+                                    fontSize: "14px",
+                                    marginBottom: "0"
+                                }} >
+                                    Please wait..
+                                </p>
+                            </div>
+                        </>}
 
                     {showSweetAlert &&
-                    <SweetAlertPage
-                        show={true}
-                        style={{zIndex :999999}}
-                        type={sweetAlertData.type}
-                        title={sweetAlertData.title}
-                        text={sweetAlertData.text}
-                        sweetAlertClose={() => this.handelSweetAlertClosed()}
-                    />}
+                        <SweetAlertPage
+                            show={true}
+                            style={{ zIndex: 999999 }}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
                 </DialogContent>
                 <DialogActions>
                     <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>

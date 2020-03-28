@@ -41,7 +41,8 @@ class SelectTransactionTypeModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showLoader: false
         }
     }
 
@@ -107,6 +108,7 @@ class SelectTransactionTypeModal extends Component {
 
     updatePaymentStatus = async (payload) => {
         try {
+            this.setState({showLoader : true})
             let resp = await paymentService.updateStatusOfPayment(payload);
             let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
@@ -124,6 +126,7 @@ class SelectTransactionTypeModal extends Component {
             }
 
             this.setState({
+                showLoader : false,
                 showSweetAlert: true,
                 sweetAlertData: sweetAlrtData
             });
@@ -141,7 +144,7 @@ class SelectTransactionTypeModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { errorFields, statusUpdateObj, showSweetAlert, sweetAlertData } = this.state;
+        const { errorFields, statusUpdateObj, showSweetAlert, sweetAlertData, showLoader } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
@@ -159,7 +162,7 @@ class SelectTransactionTypeModal extends Component {
                 </DialogTitle>
                 <DialogContent>
 
-                    <div >
+                    { !showLoader ? <div >
                         <TextField
                             select
                             id="status"
@@ -188,7 +191,16 @@ class SelectTransactionTypeModal extends Component {
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
 
-                    </div>
+                    </div>:
+                    <div style={{ textAlign: "center" }}>
+                        <i className="fa fa-spinner fa-spin"
+                            style={{ fontSize: "56px", color: "#000" }} aria-hidden="true" ></i>
+                        <p style={{
+                            fontSize: "14px",
+                            marginBottom: "0"
+                        }} >
+                            Please wait..
+                    </p> </div>}
 
                 </DialogContent>
                 <DialogActions>
