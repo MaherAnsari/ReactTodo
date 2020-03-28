@@ -46,7 +46,7 @@ class UserDataContainer extends React.Component {
             open: false,
             showAddModal: false,
             dataList: [],
-            showLoader: true,
+            // showLoader: true,
             commodityList: null,
             showUploader: false,
 

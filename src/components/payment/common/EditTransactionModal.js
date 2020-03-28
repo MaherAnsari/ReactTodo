@@ -81,7 +81,7 @@ const transactionType = {
     "b_hist": "historical"
 };
 const payment_modeOption = ["bank", "cash", "bijak"];
-const cashback_allotted_toOption = ["none", "la", "ca"];
+// const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
 
 class EditTransactionModal extends Component {

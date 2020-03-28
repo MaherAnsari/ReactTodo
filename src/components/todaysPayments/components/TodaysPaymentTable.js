@@ -292,11 +292,11 @@ class TodaysPaymentTable extends Component {
 
     // this function brings default selected date from the DateRangeSelection and call the Api 
     //when first Landed on this page
-    onDefaultDateFromDateRangeShown(data) {
-        this.setState({ datePayloads: data }, function () {
-            this.handelGetData(this.state.params);
-        });
-    }
+    // onDefaultDateFromDateRangeShown(data) {
+    //     this.setState({ datePayloads: data }, function () {
+    //         this.handelGetData(this.state.params);
+    //     });
+    // }
 
 
     handelTransactionInvoiceModal(row, event) {

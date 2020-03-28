@@ -4,7 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Auth } from "aws-amplify";
 // import Auth from '@aws-amplify/auth'
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import cookie from 'react-cookies';
 import '../../assets/css/login.css';
 import $ from 'jquery';
