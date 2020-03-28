@@ -219,10 +219,11 @@ class WhatsAppNumberSelectionModal extends Component {
                             sweetAlertClose={() => this.handelSweetAlertClosed()}
                         />}
                 </DialogContent>
+                {!showLoader && 
                 <DialogActions>
                     <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
+                </DialogActions>}
             </Dialog>
         </div>
         );

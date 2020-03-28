@@ -203,10 +203,11 @@ class SelectTransactionTypeModal extends Component {
                     </p> </div>}
 
                 </DialogContent>
+                {!showLoader && 
                 <DialogActions>
                     <Button className={classes.formCancelBtn} onClick={this.onStatusUpdatedClicked.bind(this)} color="primary">Update</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
+                </DialogActions>}
 
                 {showSweetAlert &&
                     <SweetAlertPage
