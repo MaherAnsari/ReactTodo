@@ -325,6 +325,19 @@ class EditCommodityList extends Component {
                                 <div >
                                     <TextField
                                         margin="dense"
+                                        id="name_en"
+                                        label="English name"
+                                        type="text"
+                                        disabled={isEditableField}
+                                        style={{ marginRight: '2%' }}
+                                        value={editableDataObj.name_en}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
                                         id="expected_lang"
                                         label="Hindi name"
                                         type="text"

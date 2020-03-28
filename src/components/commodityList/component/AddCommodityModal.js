@@ -66,7 +66,8 @@ class AddCommodityModal extends Component {
                 "weight": "",
                 "image_url": [],
                 "active": true,
-                "name_hindi": ""
+                "name_hindi": "",
+                "name_en":""
             },
             attachmentArray: [],
             showLoader: false,
@@ -326,6 +327,18 @@ class AddCommodityModal extends Component {
                                             </MenuItem>
                                         ))}
                                     </TextField>
+                                </div>
+                                <div >
+                                    <TextField
+                                        margin="dense"
+                                        id="name_en"
+                                        label="English name"
+                                        type="text"
+                                        style={{ marginRight: '2%' }}
+                                        value={addCommodityDataObj.name_en}
+                                        onChange={this.handleChange.bind(this)}
+                                        fullWidth
+                                    />
                                 </div>
                                 <div >
                                     <TextField
