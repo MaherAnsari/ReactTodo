@@ -116,10 +116,8 @@ class OrderTable extends Component {
 
     async getListData(params) {
         this.setState({ showLoader: true });
-
         try {
             let resp = await orderService.getOrderListData(params);
-
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ tableBodyData: resp.data.result.data });
             } else {
@@ -164,6 +162,7 @@ class OrderTable extends Component {
             // console.log(param);
             if (Object.keys(param).length) {
                 this.getListData(param);
+                this.props.onOrderAdded( param );
             }
         });
     }

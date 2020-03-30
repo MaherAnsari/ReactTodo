@@ -278,6 +278,7 @@ class UserInfo extends Component {
                             onEditModalClosed={this.handleDialogCancel.bind(this)}
                             onEditModalCancel={this.handleDialogCancel.bind(this)}
                             showAddOrderModal={this.state.showAddOrderModal}
+                            onOrderAdded={( data )=> this.getListData( data ) }
                             onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
                             data={this.state.orderList}
                             userdata={this.props.data}

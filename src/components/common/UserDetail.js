@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Utils from '../../app/common/utils';
+import Tooltip from '@material-ui/core/Tooltip';
 var moment = require('moment');
 
 const styles = theme => ({
@@ -44,7 +45,10 @@ const styles = theme => ({
         color: '#fff',
         height: '18px',
         marginTop: '4px'
-    }
+    },
+    lightTooltip: {
+        fontSize: '16px',
+    },
 
 });
 
@@ -77,6 +81,28 @@ class UserDetail extends Component {
         // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
+    getCommodityNames(data, classes) {
+        if (data) {
+            let cName = data.join(", ");
+            if (cName.length > 45) {
+                return (
+                    <Tooltip title={cName} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                        <p
+                            className={classes.value} style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                            }} >: &nbsp; {cName} </p>
+                    </Tooltip>
+                )
+            } else {
+                return (<p className={classes.value}>: &nbsp; {cName} </p>)
+            }
+        } else {
+            return (<p className={classes.value}>: &nbsp; {"-"} </p>)
+        }
+    }
+
     render() {
         const { classes, creditLimitData } = this.props;
         return (
@@ -86,7 +112,12 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Full Name  </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.fullname}</p>
+                            <p className={classes.value}
+                                style={{
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}>: &nbsp; {this.props.data.fullname}</p>
                         </div>
 
                         <div className={classes.row}>
@@ -115,7 +146,8 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Commodity </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.default_commodity ? this.props.data.default_commodity.join(", ") : "-"} </p>
+                            {this.getCommodityNames(this.props.data.default_commodity, classes)}
+                            {/* <p className={classes.value}>: &nbsp; {this.props.data.default_commodity ? this.getCommodityName(this.props.data.default_commodity) : "-"} </p> */}
                         </div>
 
                         <div className={classes.row}>
@@ -155,14 +187,14 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Rating </p>
-                            <p className={classes.value}>: &nbsp; {this.props.data.rating ? this.props.data.rating : ""}</p>
+                            <p className={classes.value}>: &nbsp; {this.props.data.rating || this.props.data.rating === 0 ? this.props.data.rating : ""}</p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}>Is Bijak Verified </p>
                             <p className={classes.value}>: &nbsp;
                             <span style={{
-                                    background: (this.props.data.bijak_verified  ? "#5bbc9b":"#e63232"),
+                                    background: (this.props.data.bijak_verified ? "#5bbc9b" : "#e63232"),
                                     padding: "4px",
                                     borderRadius: "3px",
                                     color: "#fff"
@@ -172,21 +204,21 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}>Is Bijak Assured </p>
-                            <p className={classes.value}>: &nbsp; 
+                            <p className={classes.value}>: &nbsp;
                             <span style={{
-                                    background: (this.props.data.bijak_assured  ? "#5bbc9b":"#e63232"),
+                                    background: (this.props.data.bijak_assured ? "#5bbc9b" : "#e63232"),
                                     padding: "4px",
                                     borderRadius: "3px",
                                     color: "#fff"
                                 }}>
-                            {this.props.data.bijak_assured ? "Yes": "No"}</span></p>
+                                    {this.props.data.bijak_assured ? "Yes" : "No"}</span></p>
                         </div>
 
                         <div className={classes.row}>
                             <p className={classes.head}> Is User Enabled </p>
-                            <p className={classes.value}>: &nbsp; 
+                            <p className={classes.value}>: &nbsp;
                             <span style={{
-                                    background: (this.props.data.active  ? "#5bbc9b":"#e63232"),
+                                    background: (this.props.data.active ? "#5bbc9b" : "#e63232"),
                                     padding: "4px",
                                     borderRadius: "3px",
                                     color: "#fff"

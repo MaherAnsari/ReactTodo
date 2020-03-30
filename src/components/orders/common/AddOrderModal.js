@@ -506,7 +506,7 @@ class AddOrderModal extends Component {
         const { classes } = this.props;
         const { showLoader, addOrderPayload, supplierid, buyerid,
             commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData } = this.state;
-        console.log(commodityList)
+
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
