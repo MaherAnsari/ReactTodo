@@ -18,6 +18,8 @@ import paymentService from '../../app/paymentService/paymentService';
 import CreditLimitDialog from './CreditLimitDialog';
 import BankDetail from './bankDetail';
 import UserDetailsFooter from './UserDetailsFooter';
+import creditLimitService from '../../app/creditLimitService/creditLimitService';
+
 const theme = createMuiTheme({
     overrides: {
         head: {
@@ -74,8 +76,9 @@ class UserInfo extends Component {
             orderLabel: "Orders (" + this.props.data.ordercount + ")",
             paymentLabel: "Payments (" + this.props.data.paymentcount + ")",
 
-            showAddTransactionModal : false,
-            showAddOrderModal : false
+            showAddTransactionModal: false,
+            showAddOrderModal: false,
+            creditLimitData : ""
 
 
 
@@ -97,21 +100,40 @@ class UserInfo extends Component {
             this.getListData(param);
         }
         this.getTransactionList();
+        this.getCreditLimit();
     }
+
+    
+
+    async getCreditLimit() {
+        let param = {};
+        if (this.props.data.mobile ) {
+          param['mobile'] = this.props.data.mobile;
+          try {
+            let resp = await creditLimitService.getCreditLimit(this.props.data.mobile);
+            console.log( resp );
+            if (resp.data.status === 1 && resp.data.result) {
+              this.setState({ creditLimitData : resp.data.result });
+            } else {
+                this.setState({ creditLimitData : "-" });
+              alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+            }
+          } catch (err) {
+            console.error(err)
+          }
+        }
+      }
 
 
     async getListData(params) {
         this.setState({ showLoader: true });
-
         try {
             let resp = await orderService.getOrderListData(params);
-
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ orderList: resp.data.result.data, showLoader: false });
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
             }
-
         } catch (err) {
             console.error(err);
             if (this.ismounted) {
@@ -209,18 +231,17 @@ class UserInfo extends Component {
         this.props.onLimitUpdate(event);
     }
 
-    onFooterButtonClickedAction( data ){
+    onFooterButtonClickedAction(data) {
         // console.log( data );
-        if( data.type === "redirect" ){
-            this.setState({ currentView  : data.btnName  })
-        }else{
-            this.setState({ 
-                currentView  : data.btnName, 
-                showAddTransactionModal : (data.btnName === "payment" ? true : false ),
-                showAddOrderModal : (data.btnName === "orders"  ? true : false )
-                });
+        if (data.type === "redirect") {
+            this.setState({ currentView: data.btnName })
+        } else {
+            this.setState({
+                currentView: data.btnName,
+                showAddTransactionModal: (data.btnName === "payment" ? true : false),
+                showAddOrderModal: (data.btnName === "orders" ? true : false)
+            });
         }
-
     }
 
     render() {
@@ -252,16 +273,16 @@ class UserInfo extends Component {
                         </Tabs>
                     </Paper></div>
 
-                    {this.state.currentView === 'orders' ? 
-                    <OrderTable openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        showAddOrderModal={ this.state.showAddOrderModal }
-                        onAddOrderModalClosed={()=> this.setState({showAddOrderModal : false })}
-                        data={this.state.orderList}
-                        userdata={this.props.data}
-                        role={this.props.data.role}
-                    /> : ""}
+                    {this.state.currentView === 'orders' ?
+                        <OrderTable openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            showAddOrderModal={this.state.showAddOrderModal}
+                            onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
+                            data={this.state.orderList}
+                            userdata={this.props.data}
+                            role={this.props.data.role}
+                        /> : ""}
 
                     {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
                         onEditModalClosed={this.handleClose.bind(this)}
@@ -270,28 +291,31 @@ class UserInfo extends Component {
                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                     /> : ""}
 
-                    {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        data={this.props.data}
-                    /> : ""}
+                    {this.state.currentView === 'userInfo' ?
+                        <UserDetail openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            creditLimitData={this.state.creditLimitData}
+                            data={this.props.data}
+                        /> : ""}
 
-                    {this.state.currentView === 'payment' ? 
-                    <PaymentTable openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        showAddTransactionModal = {this.state.showAddTransactionModal}
-                        onTransactionModalClosed={()=> this.setState({showAddTransactionModal : false })}
-                        data={this.state.paymentList}
-                        userdata={this.props.data}
-                        role={this.props.data.role}
-                    /> : ""}
-                    {this.state.currentView === 'creditLimit' ? <CreditLimitDialog openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        userdata={this.props.data}
-                        onLimitChange={this.onLimitChange.bind(this)}
-                    /> : ""}
+                    {this.state.currentView === 'payment' ?
+                        <PaymentTable openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            showAddTransactionModal={this.state.showAddTransactionModal}
+                            onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
+                            data={this.state.paymentList}
+                            userdata={this.props.data}
+                            role={this.props.data.role}
+                        /> : ""}
+                    {this.state.currentView === 'creditLimit' ?
+                        <CreditLimitDialog openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            userdata={this.props.data}
+                            onLimitChange={this.onLimitChange.bind(this)}
+                        /> : ""}
 
                     {this.state.currentView === 'accountDetail' ? <BankDetail openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
@@ -299,9 +323,9 @@ class UserInfo extends Component {
                         userdata={this.props.data}
                     /> : ""}
 
-                {this.state.currentView === 'userInfo' && 
-                 <UserDetailsFooter
-                    onFooterButtonClicked ={( data )=> this.onFooterButtonClickedAction( data ) }/>}
+                    {this.state.currentView === 'userInfo' &&
+                        <UserDetailsFooter
+                            onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
 
                 </DialogContent>
 

@@ -161,7 +161,6 @@ class CreditLimitDialog extends Component {
     let id = event.target.id;
 
     data[id] = event.target.value;
-
     this.setState({ obj: data });
   };
 

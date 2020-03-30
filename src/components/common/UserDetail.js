@@ -78,7 +78,7 @@ class UserDetail extends Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, creditLimitData } = this.props;
         return (
             <div className={classes.root}>
                 <div style={{ width: "100%", display: "flex", marginTop: "5%" }}>
@@ -145,7 +145,7 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}> Available Credit Limit  </p>
-                            <p className={classes.value}>: &nbsp; {""}</p>
+                            <p className={classes.value}>: &nbsp; {creditLimitData ? creditLimitData : ""}</p>
                         </div>
 
                         <div className={classes.row}>
@@ -239,7 +239,7 @@ class UserDetail extends Component {
 
                         <div className={classes.row}>
                             <p className={classes.head}> Available Credit Limit  </p>
-                            <p className={classes.value}>: &nbsp; {""}</p>
+                            <p className={classes.value}>: &nbsp; {creditLimitData ? creditLimitData : ""}</p>
                         </div>
                     </div>
                 </div>
