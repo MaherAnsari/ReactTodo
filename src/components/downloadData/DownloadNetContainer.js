@@ -10,6 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../app/common/utils';
 import commonService from '../../app/commonService/commonService';
 import EmailInputModal from './component/EmailInputModal';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const styles = theme => ({
     root: {
@@ -49,14 +51,15 @@ class DownloadNetContainer extends React.Component {
                 "orders": "Orders",
                 "payments": "Payments"
             },
-            isEmailSentSuccess :"emailView"
+            isEmailSentSuccess: "emailView",
+            isAlltimeChecked : false
 
         }
     }
 
     componentDidMount() {
         var datePayloadsVal = this.state.datePayloads;
-        datePayloadsVal["startDate"] = this.formateDateForApi(new Date("01/01/2019" ));
+        datePayloadsVal["startDate"] = this.formateDateForApi(new Date("01/01/2019"));
         datePayloadsVal["endDate"] = this.formateDateForApi(new Date());
         this.setState({ datePayloads: datePayloadsVal })
 
@@ -72,7 +75,7 @@ class DownloadNetContainer extends React.Component {
             // if (this.state.type === "lanet" || this.state.type === "canet") {
             //     this.downLoadDataCAandLA();
             // } else {
-                this.setState({ isDownlaodModalOpen: true });
+            this.setState({ isDownlaodModalOpen: true });
             // }
         } catch (err) {
             console.log(err)
@@ -81,27 +84,33 @@ class DownloadNetContainer extends React.Component {
 
     downloadOtherData = async (email) => {
         try {
-            this.setState({ showLoader: true , isEmailSentSuccess : "loading"});
+            this.setState({ showLoader: true, isEmailSentSuccess: "loading" });
             let payload = {
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
                 "endDate": this.formateDateForApi(this.state.datePayloads["endDate"]),
                 "email": email
             }
+
+            if( this.state.isAlltimeChecked ){
+                payload["startDate"] = this.formateDateForApi(new Date("01/01/2019"));
+                payload["endDate"] = this.formateDateForApi(new Date());
+            }
+            
             let resp = "";
             if (this.state.type === "orders") {
                 resp = await commonService.getOrdersBulkDataForDownload(payload);
             } else if (this.state.type === "payments") {
                 resp = await commonService.getPaymentBulkDataForDownload(payload);
-            }else if (this.state.type === "lanet" || this.state.type === "canet" ) {
-                payload["type"] = this.state.type ;
+            } else if (this.state.type === "lanet" || this.state.type === "canet") {
+                payload["type"] = this.state.type;
                 resp = await commonService.getCAnetAndLAnetDataForDownload(payload);
-            }else if (this.state.type === "la" || this.state.type === "ca" ) {
-                payload["role"] = this.state.type ;
+            } else if (this.state.type === "la" || this.state.type === "ca") {
+                payload["role"] = this.state.type;
                 resp = await commonService.getUserDataForDownload(payload);
-            }else if (this.state.type === "alluser" ){
+            } else if (this.state.type === "alluser") {
                 resp = await commonService.getUserDataForDownload(payload);
             }
-            
+
             this.setState({ showLoader: false });
             if (resp.data.status === 1) {
                 if (resp.data.result !== "-" && resp.data.result.length !== 0) {
@@ -179,7 +188,7 @@ class DownloadNetContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, type, isDownlaodModalOpen, dropOptions } = this.state;
+        const { showLoader, type, isDownlaodModalOpen, dropOptions, isAlltimeChecked } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -189,6 +198,15 @@ class DownloadNetContainer extends React.Component {
                     <div>
 
                         <React.Fragment>
+                            <div>
+                                <FormControlLabel
+                                    control={<Checkbox
+                                        checked={isAlltimeChecked}
+                                        onChange={( event ) =>  this.setState({ isAlltimeChecked : event.target.checked })}
+                                        name="checkedA" />}
+                                    label="All Time"
+                                />
+                            </div>
                             <div >
                                 <TextField
                                     select
