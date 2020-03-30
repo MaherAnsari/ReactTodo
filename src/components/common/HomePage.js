@@ -415,7 +415,7 @@ class Home extends React.Component {
           {getStatusOfRole("BasicUser") && <Route path='/home/orders-list' exact component={OrdersContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/payment' exact component={PaymentContainer} />}
           {getStatusOfRole("BasicUser") && <Route path='/home/payment-details' exact component={PaymentDetailsContainer} />}
-          {getStatusOfRole("BasicUser") && <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />}
+          {/* {getStatusOfRole("BasicUser") && <Route path='/home/todays-payment' exact component={TodaysPaymentContainer} />} */}
           {getStatusOfRole("BasicUser") && <Route path='/home/add-bank-account' exact component={AddBankAccountContainer} />}
           {getStatusOfRole("DownloadData") && <Route path='/home/downlaod-net' exact component={DownloadNetContainer} />}
 

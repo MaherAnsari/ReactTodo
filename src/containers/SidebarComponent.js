@@ -35,9 +35,9 @@ const _items = [
       { name: 'Rate List', route: '/rate-list', iconClassName: 'local_atm', iconColor: "#ed9649" },
       { name: 'Orders', route: '/orders-list', iconClassName: 'view_list', iconColor: "#e6343a" },
       { name: 'Payments', route: '/payment', iconClassName: 'payment', iconColor: "#62cc42" },
-      { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
+      // { name: "Day-wise Payments", route: '/todays-payment', iconClassName: 'account_tree', iconColor: "#477de3" },
       { name: 'Payments Detail', route: '/payment-details', iconClassName: 'payment', iconColor: "#4980ea" },
-      { name: 'Download Data', route: '/downlaod-net', iconClassName: 'cloud_download', iconColor: "#62cc42" },
+      // { name: 'Download Data', route: '/downlaod-net', iconClassName: 'cloud_download', iconColor: "#62cc42" },
     ]
   },
   {
@@ -45,6 +45,11 @@ const _items = [
       { name: 'Mandi Data', route: '/mandi-data', iconClassName: 'work_outline', iconColor: "#4da443" },
       { name: 'Mandi Rates', route: '/mandi-rates', iconClassName: 'library_books', iconColor: "#f9e646" },
       { name: 'Commodity List', route: '/comodity-list', iconClassName: 'eco', iconColor: "#50a1cf" },
+    ]
+  },
+  {
+    name: 'Download Data', id: "5", route: '/', roletabName: "DownloadData", iconClassName: 'cloud_download', iconColor: "#62cc42", children: [
+      { name: "All Data", route: '/downlaod-net', iconClassName: 'cloud_download', iconColor: "#ed9649" },
     ]
   },
   {

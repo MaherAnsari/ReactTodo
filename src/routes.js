@@ -23,7 +23,7 @@ export default () =>
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/orders-list" exact component={Home}  />}
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/payment" exact component={Home}  />}
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/payment-details" exact component={Home}  />}
-    {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/todays-payment" exact component={Home}  />}
+    {/* {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/todays-payment" exact component={Home}  />} */}
     {getStatusOfRole("BasicUser") && <AppliedRoute path="/home/add-bank-account" exact component={Home}  />}
     {getStatusOfRole("DownloadData") && <AppliedRoute path='/home/downlaod-net' exact  component={Home}  />}
     {/* supporting Data tab routes */}
