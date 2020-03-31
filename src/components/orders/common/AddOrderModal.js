@@ -132,7 +132,8 @@ class AddOrderModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showFormError: false
 
         }
         this.getCommodityNames();
@@ -220,7 +221,8 @@ class AddOrderModal extends Component {
         }
         this.setState({
             addOrderPayload: addOrderPayloadVal,
-            errorFields: errors
+            errorFields: errors,
+            showFormError : false
         })
         console.log(addOrderPayloadVal)
     }
@@ -336,7 +338,7 @@ class AddOrderModal extends Component {
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
                 // let resp = { data: { status: 1, message: "custom Mas" ,result:[]} }
-                var resp = await orderService.addNewOrder( this.state.subId ,payloadData);
+                var resp = await orderService.addNewOrder(this.state.subId, payloadData);
                 let sweetAlrtData = this.state.sweetAlertData;
                 this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
@@ -357,7 +359,8 @@ class AddOrderModal extends Component {
                     sweetAlertData: sweetAlrtData
                 });
             } else {
-                alert("please fill the mandatory fields highlighted");
+                // alert("please fill the mandatory fields highlighted");
+                this.setState({ showFormError: true });
             }
         } catch (err) {
             console.log(err);
@@ -505,7 +508,7 @@ class AddOrderModal extends Component {
     render() {
         const { classes } = this.props;
         const { showLoader, addOrderPayload, supplierid, buyerid,
-            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData } = this.state;
+            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData, showFormError } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '1' }}
@@ -1119,7 +1122,14 @@ class AddOrderModal extends Component {
                                 </Grid>
                             </Grid>
                         </div>
-
+                        {showFormError &&
+                            <div style={{
+                                fontFamily: 'Montserrat, sans-serif',
+                                fontSize: "12px",
+                                color: "red",
+                                textAlign: "right"
+                            }}
+                            > Please fill the mandatory fields highlighted above.</div>}
                     </DialogContent>
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.addOrder.bind(this)} color="primary">Add</Button>

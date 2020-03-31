@@ -351,79 +351,98 @@ class TodaysPaymentTable extends Component {
           if( (row["transaction_type"] === "b_out" && row["payment_mode"] === "bijak") ||  (row["transaction_type"] === "b_in" && row["payment_mode"] === "bank") ){
             
             if(  row["status"] === "transaction_failed" ){
-                return(<span 
+                return(
+                <span 
                     style={{ paddingLeft: "15%"}}  
                     data-toggle="tooltip" 
                     data-placement="center" 
                     title={row["status"] }>
                     <img src={ payment_failureIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
                 </span> );
-               }else if(  row["status"] === "transaction_initiated" ){
-            return(<span 
-                style={{ paddingLeft: "15%"}}  
-                data-toggle="tooltip" 
-                data-placement="center" 
-                title={row["status"] }>
-                <img src={ payment_InitatedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
-            </span> );
-           }else if(  row["status"] === "payout_reversed" ||
-                row["status"] === "payout_cancelled" || 
-                row["status"] === "payout_rejected" ){
-                    return( <span>
-                        <Tooltip title={row["status"] +":"+ row["failure_reason"]} placement="top" classes={{ tooltip: this.props.classes.lightTooltip }}>
-                        <span 
-                        style={{paddingLeft: "6px"}}  
-                        data-toggle="tooltip" 
-                        data-placement="center" 
-                        title={row["status"] }>
-                        <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
-                    </span> 
-                    </Tooltip>
+
+               }else if( row["status"] === "transaction_initiated" ){
+                return(
                     <span 
-                        style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
+                        style={{ paddingLeft: "15%"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
-                        onClick={( event )=> { if( getAccessAccordingToRole("makePayout") ){this.setState({ showPayoutModal : true, payoutData : row })}}}
                         title={row["status"] }>
-                         <i className="fa fa-refresh" aria-hidden="true" style={{color : (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  )}} ></i>
-                    </span> </span>);
+                        <img src={ payment_InitatedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                    </span> );
+                }else if( row["status"] === "payout_reversed" ||
+                        row["status"] === "payout_cancelled" || 
+                        row["status"] === "payout_rejected" ){
+                    return( <span>
+                            <Tooltip title={row["status"] +":"+ row["failure_reason"]} placement="top" classes={{ tooltip: this.props.classes.lightTooltip }}>
+                                <span 
+                                    style={{paddingLeft: "6px"}}  
+                                    data-toggle="tooltip" 
+                                    data-placement="center" 
+                                    title={row["status"] }>
+                                        <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
+                                </span> 
+                            </Tooltip>
+                            <span 
+                                style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
+                                data-toggle="tooltip" 
+                                data-placement="center" 
+                                onClick={( event )=> { if( getAccessAccordingToRole("makePayout") ){this.setState({ showPayoutModal : true, payoutData : row })}}}
+                                title={row["status"] }>
+                                <i className="fa fa-refresh" aria-hidden="true" style={{color : (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  )}} ></i>
+                            </span> 
+                        </span>);
                     } else if(row["status"] === "payout_processed"){
-                return(<span 
-                    style={{ paddingLeft: "15%"}}  
-                    data-toggle="tooltip" 
-                    data-placement="center" 
-                    title={row["status"] }>
-                    <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
-                </span> );
+                    return(
+                    <span 
+                        style={{ paddingLeft: "15%"}}  
+                        data-toggle="tooltip" 
+                        data-placement="center" 
+                        title={row["status"] }>
+                        <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                    </span> );
             } else if(
                 row["status"] === "payout_initiated" || 
                 row["status"] === "payout_queued" || 
                 row["status"] === "payout_pending" || 
                 row["status"] === "payout_processing"){
-                return(<span 
+                return(
+                <span 
                     style={{ paddingLeft: "15%"}}  
                     data-toggle="tooltip" 
                     data-placement="center" 
                     title={row["status"] }>
                     <img src={ hourglassIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
                 </span> );
-            } else if(row["status"] === "approved"){
-                return( <Fab
+            } else if( row["transaction_type"] === "b_out" && row["status"] === "approved" ){
+                return( 
+                <Fab
                     variant="extended"
                     size="small"
                     disabled={!getAccessAccordingToRole("makePayout")}
                     aria-label="PAYOUT"
                     onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
                     style={{ textTransform: "none", background: (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
-                >
-                   PAYOUT
-            </Fab>);
-            }else if(row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ){
+                    > PAYOUT
+                </Fab>);
+            } else if( row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1  ){
+                return( 
+                <Fab
+                    variant="extended"
+                    size="small"
+                    disabled={!getAccessAccordingToRole("makePayout")}
+                    aria-label="PAYOUT"
+                    onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
+                    style={{ textTransform: "none", background: (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
+                    > PAYOUT
+                </Fab>);
+            }else 
+            if(row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null ){
                return(
                    this.getActionAbleIcon( event , row )
                 );
             }else if(row["status"] === "failed" ){
-                return(<span 
+                return(
+                    <span 
                         style={{ paddingLeft: "15%"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
@@ -452,38 +471,32 @@ class TodaysPaymentTable extends Component {
            }else if(  row["status"] === "payout_reversed" ||
                 row["status"] === "payout_cancelled" || 
                 row["status"] === "payout_rejected" ){
-                    return( <span>
+                    return( 
+                    <span>
                         <span 
                         style={{paddingLeft: "6px"}}  
                         data-toggle="tooltip" 
                         data-placement="center" 
                         title={row["status"] }>
-                        <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
-                       
-                    </span> 
-                    {/* <span 
-                        style={{ fontSize: "20px",paddingLeft: "25px", cursor:"pointer"}}  
-                        data-toggle="tooltip" 
-                        data-placement="center" 
-                        onClick={( event )=> { if( getAccessAccordingToRole("makePayout") ){this.setState({ showPayoutModal : true, payoutData : row })}}}
-                        title={row["status"] }>
-                         <i className="fa fa-refresh" aria-hidden="true" style={{color : (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  )}} ></i>
-                    </span> */}
-                     </span>);
+                            <img src={ cancelledIcon } alt={row["status"]} style={{ height: "20px",width: "20px"}}/>
+                        </span> 
+                    </span>);
                     } else if(row["status"] === "payout_processed"){
-                return(<span 
-                    style={{ paddingLeft: "15%"}}  
-                    data-toggle="tooltip" 
-                    data-placement="center" 
-                    title={row["status"] }>
-                    <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
-                </span> );
+                        return(
+                        <span 
+                            style={{ paddingLeft: "15%"}}  
+                            data-toggle="tooltip" 
+                            data-placement="center" 
+                            title={row["status"] }>
+                            <img src={ approvedIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
+                        </span> );
             } else if(
                 row["status"] === "payout_initiated" || 
                 row["status"] === "payout_queued" || 
                 row["status"] === "payout_pending" || 
                 row["status"] === "payout_processing"){
-                return(<span 
+                return(
+                <span 
                     style={{ paddingLeft: "15%"}}  
                     data-toggle="tooltip" 
                     data-placement="center" 

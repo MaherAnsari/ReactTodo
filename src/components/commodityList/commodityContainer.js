@@ -8,7 +8,6 @@ import commodityService from '../../app/commodityService/commodityService';
 import Loader from '../common/Loader';
 import AddCommodityModal from './component/AddCommodityModal';
 import SweetAlertPage from '../../app/common/SweetAlertPage';
-// import { IoTThingsGraph } from 'aws-sdk';
 
 const styles = theme => ({
     root: {
