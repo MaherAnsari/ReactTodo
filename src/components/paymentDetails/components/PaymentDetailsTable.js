@@ -294,7 +294,18 @@ class PaymentDetailsTable extends Component {
                     title={row["status"] }>
                     <img src={ hourglassIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
                 </span> );
-            } else if(row["status"] === "approved"){
+            } else if(row["transaction_type"] === "b_out" && row["status"] === "approved"){
+                return( <Fab
+                    variant="extended"
+                    size="small"
+                    disabled={!getAccessAccordingToRole("makePayout")}
+                    aria-label="PAYOUT"
+                    onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
+                    style={{ textTransform: "none", background: (!getAccessAccordingToRole("makePayout") ? "gray" :"#0c6523"  ), color: "#ffffff", padding: "0 15px" }}
+                >
+                   PAYOUT
+            </Fab>);
+            }else if( row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1  ){
                 return( <Fab
                     variant="extended"
                     size="small"
