@@ -44,8 +44,8 @@ class DownloadNetContainer extends React.Component {
             "type": "lanet",
             dropOptions: {
                 "alluser": "All User",
-                "la": "CA Data (Buyer)",
-                "ca": "LA Data (Supplier)",
+                "ca": "CA Data (Buyer)",
+                "la": "LA Data (Supplier)",
                 "lanet": "LA net",
                 "canet": "CA net",
                 "orders": "Orders",
