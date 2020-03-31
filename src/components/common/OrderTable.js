@@ -117,6 +117,7 @@ class OrderTable extends Component {
     async getListData(params) {
         this.setState({ showLoader: true });
         try {
+            params["userInfo"] = true;
             let resp = await orderService.getOrderListData(params);
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ tableBodyData: resp.data.result.data });

@@ -91,7 +91,7 @@ class BusinessInfoDialog extends Component {
 
     }
 
-    async getCreditLimit( mobileno ) {
+    async getCreditLimit(mobileno) {
         let param = {};
         if (mobileno) {
             param['mobile'] = mobileno;
@@ -135,7 +135,7 @@ class BusinessInfoDialog extends Component {
                     this.getTransactionList(resp.data.result.role, resp.data.result.mobile);
                     this.getCreditLimit(resp.data.result.mobile);
                 }
-                
+
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
                 // alert("Oops an error occured while getting the info");
@@ -151,6 +151,7 @@ class BusinessInfoDialog extends Component {
 
     async getListData(params) {
         // this.setState({ showLoader: true });
+        params["userInfo"] = true;
         try {
             let resp = await orderService.getOrderListData(params);
             console.log(resp)
@@ -237,7 +238,7 @@ class BusinessInfoDialog extends Component {
 
     getTransactionList = async (role, mobile) => {
         try {
-            let param = { "limit": 10000, "role": role }
+            let param = { "limit": 10000, "role": role, userInfo: true }
             let resp = await paymentService.getTransactionDetailsOfBuyer(mobile, param);
             console.log(resp)
             if (resp.data.status === 1 && resp.data.result) {
@@ -334,7 +335,7 @@ class BusinessInfoDialog extends Component {
                                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                                         showAddOrderModal={this.state.showAddOrderModal}
                                         onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
-                                        onOrderAdded={( data )=> this.getListData( data ) }
+                                        onOrderAdded={(data) => this.getListData(data)}
                                         data={this.state.orderList}
                                         userdata={this.state.userInfoData}
                                         role={this.state.userRole}

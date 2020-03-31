@@ -78,7 +78,7 @@ class UserInfo extends Component {
 
             showAddTransactionModal: false,
             showAddOrderModal: false,
-            creditLimitData : ""
+            creditLimitData: ""
 
 
 
@@ -103,31 +103,32 @@ class UserInfo extends Component {
         this.getCreditLimit();
     }
 
-    
+
 
     async getCreditLimit() {
         let param = {};
-        if (this.props.data.mobile ) {
-          param['mobile'] = this.props.data.mobile;
-          try {
-            let resp = await creditLimitService.getCreditLimit(this.props.data.mobile);
-            console.log( resp );
-            if (resp.data.status === 1 && resp.data.result) {
-              this.setState({ creditLimitData : resp.data.result });
-            } else {
-                this.setState({ creditLimitData : "-" });
-              alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+        if (this.props.data.mobile) {
+            param['mobile'] = this.props.data.mobile;
+            try {
+                let resp = await creditLimitService.getCreditLimit(this.props.data.mobile);
+                console.log(resp);
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ creditLimitData: resp.data.result });
+                } else {
+                    this.setState({ creditLimitData: "-" });
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+                }
+            } catch (err) {
+                console.error(err)
             }
-          } catch (err) {
-            console.error(err)
-          }
         }
-      }
+    }
 
 
     async getListData(params) {
         this.setState({ showLoader: true });
         try {
+            params["userInfo"] = true;
             let resp = await orderService.getOrderListData(params);
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ orderList: resp.data.result.data, showLoader: false });
@@ -207,7 +208,7 @@ class UserInfo extends Component {
     }
     getTransactionList = async () => {
         try {
-            let param = { "limit": 10000, "role": this.props.data.role }
+            let param = { "limit": 10000, "role": this.props.data.role, userInfo: true }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.data.mobile, param);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
@@ -278,7 +279,7 @@ class UserInfo extends Component {
                             onEditModalClosed={this.handleDialogCancel.bind(this)}
                             onEditModalCancel={this.handleDialogCancel.bind(this)}
                             showAddOrderModal={this.state.showAddOrderModal}
-                            onOrderAdded={( data )=> this.getListData( data ) }
+                            onOrderAdded={(data) => this.getListData(data)}
                             onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
                             data={this.state.orderList}
                             userdata={this.props.data}

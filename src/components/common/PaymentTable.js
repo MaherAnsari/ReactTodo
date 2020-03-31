@@ -115,7 +115,7 @@ class PaymentTable extends Component {
 
     getTransactionList = async () => {
         try {
-            let param = { "limit": 10, "role": this.props.role }
+            let param = { "limit": 10, "role": this.props.role, userInfo: true }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userdata.mobile, param);
             // console.log( resp.data )
             if (resp.data.status === 1 && resp.data.result) {
