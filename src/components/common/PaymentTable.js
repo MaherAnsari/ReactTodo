@@ -15,6 +15,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import AccountBalanceWalletSharpIcon from '@material-ui/icons/AccountBalanceWalletSharp';
+import Loader from './Loader';
 
 
 const styles = theme => ({
@@ -72,7 +73,7 @@ class PaymentTable extends Component {
         super(props);
         this.state = {
             tableHeadData: ["Supplier Name", "Supplier Bussiness Name", "Created Time", "Payment mode", "Amount"],
-            open: this.props.openModal, 
+            open: this.props.openModal,
             // data: this.props.data,
             showAddTransactionModal: this.props.showAddTransactionModal || false,
             rowsPerPage: 50,
@@ -82,18 +83,18 @@ class PaymentTable extends Component {
     }
     componentDidMount() {
         if (this.props.userdata.role === "la") {
-            let tableHeadData = ["Buyer Name", "Buyer Bussiness Name", "Created Time", "Payment mode","Amount"];
+            let tableHeadData = ["Buyer Name", "Buyer Bussiness Name", "Created Time", "Payment mode", "Amount"];
             this.setState({ tableHeadData: tableHeadData });
-        this.getTransactionList();
+            this.getTransactionList();
         }
     }
 
-    componentWillReceiveProps( nextProps ){
-        if(nextProps.showAddTransactionModal !== this.state.showAddTransactionModal ){
-            this.setState({ showAddTransactionModal : nextProps.showAddTransactionModal });
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.showAddTransactionModal !== this.state.showAddTransactionModal) {
+            this.setState({ showAddTransactionModal: nextProps.showAddTransactionModal });
         }
     }
-    
+
 
     getTableCellClass(classes, index) {
         return classes.tableCell;
@@ -120,7 +121,7 @@ class PaymentTable extends Component {
             // console.log( resp.data )
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
-               
+
                 this.setState({
 
                     data: respData["allTransactions"]
@@ -175,7 +176,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "transaction_initiated") {
                 return (<span
@@ -183,7 +184,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "payout_reversed" ||
                 row["status"] === "payout_cancelled" ||
@@ -193,7 +194,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "payout_processed") {
                 return (<span
@@ -201,7 +202,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
                 </span>);
             } else if (
                 row["status"] === "payout_initiated" ||
@@ -213,46 +214,46 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "yellow"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "yellow" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "approved") {
                 return (
                     <span
-                    style={{ paddingRight: "4%" }}
-                    data-toggle="tooltip"
-                    data-placement="center"
-                    title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
-                </span>
+                        style={{ paddingRight: "4%" }}
+                        data-toggle="tooltip"
+                        data-placement="center"
+                        title={row["status"]}>
+                        <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
+                    </span>
                 );
             } else if (row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null) {
                 return (
                     <span
-                    style={{ paddingRight: "4%" }}
-                    data-toggle="tooltip"
-                    data-placement="center"
-                    title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
-                </span>
+                        style={{ paddingRight: "4%" }}
+                        data-toggle="tooltip"
+                        data-placement="center"
+                        title={row["status"]}>
+                        <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
+                    </span>
                 );
             } else if (row["status"] === "failed") {
-                return ( <span
+                return (<span
                     style={{ paddingRight: "4%" }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>)
-            }else{
-                return ( <span
+            } else {
+                return (<span
                     style={{ paddingRight: "4%" }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>)
             }
-        } else  if( row["transaction_type"] === "b_out" && row["payment_mode"] !== "bijak") {
+        } else if (row["transaction_type"] === "b_out" && row["payment_mode"] !== "bijak") {
 
             if (row["status"] === "transaction_failed") {
                 return (<span
@@ -260,7 +261,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "transaction_initiated") {
                 return (<span
@@ -268,7 +269,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "payout_reversed" ||
                 row["status"] === "payout_cancelled" ||
@@ -278,7 +279,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "payout_processed") {
                 return (<span
@@ -286,7 +287,7 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
                 </span>);
             } else if (
                 row["status"] === "payout_initiated" ||
@@ -298,52 +299,52 @@ class PaymentTable extends Component {
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "yellow"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "yellow" }} aria-hidden="true"></i>
                 </span>);
             } else if (row["status"] === "approved") {
                 return (
                     <span
-                    style={{ paddingRight: "4%" }}
-                    data-toggle="tooltip"
-                    data-placement="center"
-                    title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
-                </span>
+                        style={{ paddingRight: "4%" }}
+                        data-toggle="tooltip"
+                        data-placement="center"
+                        title={row["status"]}>
+                        <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
+                    </span>
                 );
             } else if (row["status"] === "pending" || row["status"] === "pending_approved" || row["status"] === null) {
                 return (
                     <span
-                    style={{ paddingRight: "4%" }}
-                    data-toggle="tooltip"
-                    data-placement="center"
-                    title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "green"}} aria-hidden="true"></i>
-                </span>
+                        style={{ paddingRight: "4%" }}
+                        data-toggle="tooltip"
+                        data-placement="center"
+                        title={row["status"]}>
+                        <i className="fa fa-circle" style={{ color: "green" }} aria-hidden="true"></i>
+                    </span>
                 );
             } else if (row["status"] === "failed") {
-                return ( <span
+                return (<span
                     style={{ paddingRight: "4%" }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>)
-            }else{
-                return ( <span
+            } else {
+                return (<span
                     style={{ paddingRight: "4%" }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title={row["status"]}>
-                    <i className="fa fa-circle" style={{color: "red"}} aria-hidden="true"></i>
+                    <i className="fa fa-circle" style={{ color: "red" }} aria-hidden="true"></i>
                 </span>)
             }
 
 
         } else {
             return (
-            <span style={{ paddingRight: "4%" }}>
-                <AccountBalanceWalletSharpIcon style={{ color: "gray", height: "16px" }} />
-            </span>);
+                <span style={{ paddingRight: "4%" }}>
+                    <AccountBalanceWalletSharpIcon style={{ color: "gray", height: "16px" }} />
+                </span>);
         }
 
     }
@@ -355,91 +356,94 @@ class PaymentTable extends Component {
         const leftAlignedIndexs = [0, 1];
         const rightAlignedIndexs = [4];
         // console.log(this.props.data);
-        return (<div style={{ marginTop: '50px' }}><div style={{ width: '100%', marginTop: '50px', maxHeight: "58vh", overflowY: "scroll" }}>
-            {/* <AddTransactionModal open={true} /> */}
-            <Table stickyHeader aria-label="sticky table" className='table-body'>
-                <TableHead>
-                    <TableRow  >
-                        {this.state.tableHeadData.map((option, i) => (
-                            <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{
-                                minWidth: '120px', paddingLeft: i === 0 ? '10px' : ''
-                                , textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : "",
-                                paddingRight: i === 4 ? "10px" : '', textTransform: 'uppercase'
-                            }}>{option}</TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {this.props.data && this.props.data.length > 0 && this.props.data.map((row, i) => {
-                        return (
+        return (<div style={{ marginTop: '50px' }}>
+            {this.props.data ?
+                <div>
+                    <div style={{ width: '100%', marginTop: '50px', maxHeight: "58vh", overflowY: "scroll" }}>
+                        <Table stickyHeader aria-label="sticky table" className='table-body'>
+                            <TableHead>
+                                <TableRow  >
+                                    {this.state.tableHeadData.map((option, i) => (
+                                        <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{
+                                            minWidth: '120px', paddingLeft: i === 0 ? '10px' : ''
+                                            , textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : "",
+                                            paddingRight: i === 4 ? "10px" : '', textTransform: 'uppercase'
+                                        }}>{option}</TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {this.props.data && this.props.data.length > 0 && this.props.data.map((row, i) => {
+                                    return (
 
-                            <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
-                                {this.props.userdata.role === "la" ?
-                                    <TableCell component="th" style={{ paddingLeft: '10px', textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
-                                        {this.getStatusOption(this, row)}
-                                        {row.buyer_fullname ? row.buyer_fullname : "-"}
-                                    </TableCell>
-                                    : <TableCell component="th" style={{ paddingLeft: '10px', textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
-                                        {this.getStatusOption(this, row)}
-                                        {row.supplier_fullname ? row.supplier_fullname : "-"}
-                                    </TableCell>}
-                                {this.props.userdata.role === "la" ? <TableCell style={{ textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
-                                    <div className="text-ellpses">
-                                        {row.buyer_business_name ? row.buyer_business_name : "-"}
-                                    </div>
-                                </TableCell> : <TableCell style={{ textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
-                                        <div className="text-ellpses">
-                                            {row.supplier_business_name ? row.supplier_business_name : "-"}
-                                        </div>
-                                    </TableCell>
+                                        <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
+                                            {this.props.userdata.role === "la" ?
+                                                <TableCell component="th" style={{ paddingLeft: '10px', textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {this.getStatusOption(this, row)}
+                                                    {row.buyer_fullname ? row.buyer_fullname : "-"}
+                                                </TableCell>
+                                                : <TableCell component="th" style={{ paddingLeft: '10px', textAlign: "left" }} scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    {this.getStatusOption(this, row)}
+                                                    {row.supplier_fullname ? row.supplier_fullname : "-"}
+                                                </TableCell>}
+                                            {this.props.userdata.role === "la" ? <TableCell style={{ textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
+                                                <div className="text-ellpses">
+                                                    {row.buyer_business_name ? row.buyer_business_name : "-"}
+                                                </div>
+                                            </TableCell> : <TableCell style={{ textAlign: "left" }} className={this.getTableCellClass(classes, 2)}>
+                                                    <div className="text-ellpses">
+                                                        {row.supplier_business_name ? row.supplier_business_name : "-"}
+                                                    </div>
+                                                </TableCell>
 
-                                }
-                                <TableCell className={this.getTableCellClass(classes, 3)}>
-                                    <div className="text-ellpses" style={{ fontSize: '12px' }}>
-                                        {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
-                                    </div>
-                                </TableCell>
+                                            }
+                                            <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                <div className="text-ellpses" style={{ fontSize: '12px' }}>
+                                                    {row.createdtime ? Utils.formatDateData(row.createdtime.split("T")[0]) : "-"}
+                                                </div>
+                                            </TableCell>
 
-                                <TableCell className={this.getTableCellClass(classes, 4)} >
+                                            <TableCell className={this.getTableCellClass(classes, 4)} >
 
-                                    <span style={{
-                                        color: "white",
-                                        background: this.getBackgroundColor(row.payment_mode),
-                                        padding: "4px 12px",
-                                        borderRadius: "13px"
-                                    }} >   {row.payment_mode ? row.payment_mode : "-"} </span>
-                                </TableCell>
-                               
-                                <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type), textAlign: "right", paddingRight: '10px' }}>
-                                    ₹ {row.amount ? row.amount : "-"}
-                                </TableCell>
+                                                <span style={{
+                                                    color: "white",
+                                                    background: this.getBackgroundColor(row.payment_mode),
+                                                    padding: "4px 12px",
+                                                    borderRadius: "13px"
+                                                }} >   {row.payment_mode ? row.payment_mode : "-"} </span>
+                                            </TableCell>
+
+                                            <TableCell className={this.getTableCellClass(classes, 4)} style={{ color: this.getTransactionTypeColor(row.transaction_type), textAlign: "right", paddingRight: '10px' }}>
+                                                ₹ {row.amount ? row.amount : "-"}
+                                            </TableCell>
 
 
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-                </Table>
-                </div>
-                {this.props.data && this.props.data.length > 0 && <Table><TableFooter style={{ borderTop: "2px solid #858792" }}>
-                    <TableRow>
-                        <TablePagination
-                            rowsPerPageOptions={[25, 50, 100]}
-                            colSpan={6}
-                            count={this.props.data.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            SelectProps={{
-                                inputProps: { 'aria-label': 'rows per page' },
-                                native: true,
-                            }}
-                            onChangePage={this.handleChangePage.bind(this)}
-                            onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                        />
-                    </TableRow>
-                </TableFooter></Table>}
-            
-            {this.props.data && this.props.data.length === 0 && < NoDataAvailable style={{ height: '25vh' }} />}
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    {this.props.data && this.props.data.length > 0 && <Table><TableFooter style={{ borderTop: "2px solid #858792" }}>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[25, 50, 100]}
+                                colSpan={6}
+                                count={this.props.data.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                SelectProps={{
+                                    inputProps: { 'aria-label': 'rows per page' },
+                                    native: true,
+                                }}
+                                onChangePage={this.handleChangePage.bind(this)}
+                                onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                            />
+                        </TableRow>
+                    </TableFooter></Table>}
+
+                    {this.props.data && this.props.data.length === 0 && < NoDataAvailable style={{ height: '25vh' }} />}
+                </div> : <Loader />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
@@ -462,7 +466,7 @@ class PaymentTable extends Component {
                     onEditModalCancel={(event) => {
                         this.setState({ showAddTransactionModal: false });
                         this.props.onTransactionModalClosed();
-                }}
+                    }}
                 />}
             {this.state.showConfirmDialog ?
                 <ConfirmDialog

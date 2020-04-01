@@ -26,7 +26,7 @@ import Utils from '../../../app/common/utils';
 import FileUploader from '../../common/fileUploader';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
-
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
     overrides: {
@@ -134,7 +134,7 @@ class PaymentComponent extends Component {
             showUploader: false,
 
             showUserInfo: false,
-            userInfoData : undefined,
+            userInfoData: undefined,
             isLimitUpdate: false
 
 
@@ -159,7 +159,7 @@ class PaymentComponent extends Component {
     formateDateForApi(data) {
         if (data && data !== "") {
             var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" +( dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" + (dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
             return dateVal;
         } else {
             return "";
@@ -236,7 +236,7 @@ class PaymentComponent extends Component {
         })
     }
 
-    
+
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             this.getPaymentInfoDetails(this.state.datePayloads);
@@ -269,9 +269,19 @@ class PaymentComponent extends Component {
         try {
             let resp = await paymentService.uplaodPayment(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.getPaymentSearchedUser(" ");
-                this.setState({ open: false, showUploader: false });
+                // alert("Data Successfuly Uploaded ");
+                // this.getPaymentSearchedUser(" ");
+                // this.setState({ open: false, showUploader: false });
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded ";
+                this.setState({
+                    open: false,
+                    showUploader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
 
         } catch (err) {
@@ -305,16 +315,16 @@ class PaymentComponent extends Component {
     }
 
     onUserInfoModalCancel(event) {
-        this.setState({ showUserInfo : false,  isInfo: false });
-        if(this.state.isLimitUpdate){
+        this.setState({ showUserInfo: false, isInfo: false });
+        if (this.state.isLimitUpdate) {
             this.handelRefreshData();
         }
     }
 
-    changeLimitSucces(event){
+    changeLimitSucces(event) {
         let obj = this.state.userInfoData;
         obj['bijak_credit_limit'] = event;
-        this.setState({ userInfoData:obj, isLimitUpdate:true });
+        this.setState({ userInfoData: obj, isLimitUpdate: true });
     }
 
     handleUserInfoClose(event) {
@@ -322,12 +332,20 @@ class PaymentComponent extends Component {
     }
 
     onInfoClick = (info, event) => {
-        this.setState({ showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+        this.setState({ showUserInfo: true, userInfoData: JSON.parse(JSON.stringify(info)), isInfo: true });
+    }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
     }
 
     render() {
         const { classes } = this.props;
-        const { paymentMetaInfo, showLoader, showAddTransactionModal } = this.state;
+        const { paymentMetaInfo, showLoader, showAddTransactionModal, showSweetAlert, sweetAlertData } = this.state;
         const { rowsPerPage, page } = this.state;
         const leftAlignedIndexs = [0, 1, 2];
         const rightAlignedIndexs = [5, 6];
@@ -492,10 +510,10 @@ class PaymentComponent extends Component {
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} style={{ textAlign:"left" }}> */}
                                                     {/* {row.buyer_mobile ? row.buyer_mobile : "-"} */}
 
-                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}} 
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize", cursor: "pointer" }}
                                                         onClick={this.onInfoClick.bind(this, row)}>
                                                         <span>{row.buyer_fullname}</span>
-                                                        <span style={{ fontSize: "12px" }}>{"( " +Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 2)} style={{ textAlign: "left", textTransform: "capitalize" }}>
@@ -537,7 +555,7 @@ class PaymentComponent extends Component {
                                         );
                                     })}
                             </TableBody>
-                            
+
                         </Table>
                         {this.state.tableBodyData.length > 0 ? "" :
                             <div className={classes.defaultTemplate}>
@@ -549,8 +567,8 @@ class PaymentComponent extends Component {
                                         <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>{"No Data Available"}</span>}
                             </div>}
                     </div>
-                    {this.state.tableBodyData.length > 0 &&  <Table>
-                    <TableFooter style={{ borderTop: "2px solid #858792" }}>
+                        {this.state.tableBodyData.length > 0 && <Table>
+                            <TableFooter style={{ borderTop: "2px solid #858792" }}>
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[25, 50, 100]}
@@ -567,26 +585,26 @@ class PaymentComponent extends Component {
                                     />
                                 </TableRow>
                             </TableFooter>
-                    </Table>}
+                        </Table>}
                     </div> :
                         <div style={{ paddingTop: "14%" }} >
                             <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-search-plus"} aria-hidden="true"></i>{"Search from above to check specific Orders"}</span>
                         </div>
-                        }
+                    }
                     {this.state.showTransactionModal &&
-                            <ViewTransactionModal
-                                open={this.state.showTransactionModal}
-                                onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
-                                buyerInfo={this.state.buyerInfo}
-                                transDate={this.state.datePayloads}
-                                onTransactionEdited={() => this.getPaymentInfoDetails(this.state.datePayloads)}
-                                mobileNumber={this.state.mobileNumber} />
-                        }
+                        <ViewTransactionModal
+                            open={this.state.showTransactionModal}
+                            onTransactionModalClose={() => this.setState({ showTransactionModal: false })}
+                            buyerInfo={this.state.buyerInfo}
+                            transDate={this.state.datePayloads}
+                            onTransactionEdited={() => this.getPaymentInfoDetails(this.state.datePayloads)}
+                            mobileNumber={this.state.mobileNumber} />
+                    }
 
                 </Paper> : <Loader />}
 
-                    {/* <div className="fixedLeftBtnContainer">
+                {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left: "16%", background: "#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
                         >
@@ -597,51 +615,60 @@ class PaymentComponent extends Component {
                                 fontWeight: 600
                             }}>Upload file</p></div>
                     </div> */}
-                    {getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
-                        <div
-                            className="updateBtnFixed"
-                            style={{ display: 'flex' }}
-                            onClick={(event) => this.setState({ showAddTransactionModal: true })}
-                        >
-                            <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                            <p>Add Payment</p></div>
-                    </div>}
-                    {/* <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
+                {getAccessAccordingToRole("addPayment") && <div className="updateBtndef">
+                    <div
+                        className="updateBtnFixed"
+                        style={{ display: 'flex' }}
+                        onClick={(event) => this.setState({ showAddTransactionModal: true })}
+                    >
+                        <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p>Add Payment</p></div>
+                </div>}
+                {/* <div className="updateBtndef" style={{ right: "205px" }} data-toggle="tooltip" data-html="true" title="Download" >
                         <div className="updateBtnFixed" style={{ display: 'flex', background: "#e72e89", borderRadius: "6px" }} onClick={this.handelDownloadClicked.bind(this)}>
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div> */}
-                    {showAddTransactionModal &&
-                        <AddTransactionModal
-                            open={showAddTransactionModal}
-                            onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
-                            onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
-                        />}
+                {showAddTransactionModal &&
+                    <AddTransactionModal
+                        open={showAddTransactionModal}
+                        onTransactionAdded={(event) => this.onTransactionDataAdded(event)}
+                        onEditModalCancel={(event) => this.setState({ showAddTransactionModal: false })}
+                    />}
 
-                    {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                        onEditModalClosed={this.handleFileUploader.bind(this)}
-                        //  commodityList={ this.state.commodityList}
-                        onEditModalCancel={this.onFileModalCancel.bind(this)}
-                    />
-                        : ""}
+                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
+                    onEditModalClosed={this.handleFileUploader.bind(this)}
+                    //  commodityList={ this.state.commodityList}
+                    onEditModalCancel={this.onFileModalCancel.bind(this)}
+                />
+                    : ""}
 
-                    {this.state.showUserInfo ? 
-                        <BusinessInfoDialog 
-                            openModal={this.state.showUserInfo}
-                            onEditModalClosed={this.handleUserInfoClose.bind(this)}
-                            data={this.state.userInfoData}
-                            isInfo={true}
-                            userId={ this.state.userInfoData["buyer_mobile"]}
-                            onLimitUpdate= {this.changeLimitSucces.bind(this)}
-                            onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
+                {this.state.showUserInfo ?
+                    <BusinessInfoDialog
+                        openModal={this.state.showUserInfo}
+                        onEditModalClosed={this.handleUserInfoClose.bind(this)}
+                        data={this.state.userInfoData}
+                        isInfo={true}
+                        userId={this.state.userInfoData["buyer_mobile"]}
+                        onLimitUpdate={this.changeLimitSucces.bind(this)}
+                        onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
 
             </MuiThemeProvider>
         );
-            }
-        }
-        
+    }
+}
+
 PaymentComponent.propTypes = {
-                    classes: PropTypes.object.isRequired,
-            };
-            
+    classes: PropTypes.object.isRequired,
+};
+
 export default withStyles(styles)(PaymentComponent);

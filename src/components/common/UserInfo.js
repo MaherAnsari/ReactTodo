@@ -19,6 +19,7 @@ import CreditLimitDialog from './CreditLimitDialog';
 import BankDetail from './bankDetail';
 import UserDetailsFooter from './UserDetailsFooter';
 import creditLimitService from '../../app/creditLimitService/creditLimitService';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
     overrides: {
@@ -71,8 +72,8 @@ class UserInfo extends Component {
             isUpdate: false,
             isInfo: false,
             currentView: "userInfo",
-            orderList: [],
-            paymentList: [],
+            orderList: undefined,
+            paymentList: undefined,
             orderLabel: "Orders (" + this.props.data.ordercount + ")",
             paymentLabel: "Payments (" + this.props.data.paymentcount + ")",
 
@@ -115,8 +116,18 @@ class UserInfo extends Component {
                 if (resp.data.status === 1 && resp.data.result) {
                     this.setState({ creditLimitData: resp.data.result });
                 } else {
-                    this.setState({ creditLimitData: "-" });
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+                    // this.setState({ creditLimitData: "-" });
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+
+                    let sweetAlrtData = this.state.sweetAlertData;
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit";
+                    this.setState({
+                        creditLimitData: "-",
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
                 }
             } catch (err) {
                 console.error(err)
@@ -245,8 +256,18 @@ class UserInfo extends Component {
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
+
         return (<MuiThemeProvider theme={theme}>
             <div> <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -330,6 +351,15 @@ class UserInfo extends Component {
                             onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
 
                 </DialogContent>
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
 
             </Dialog>
 

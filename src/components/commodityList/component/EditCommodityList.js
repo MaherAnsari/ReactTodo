@@ -69,7 +69,9 @@ class EditCommodityList extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+
+            showErrorMsg: false
         }
     }
 
@@ -89,7 +91,7 @@ class EditCommodityList extends Component {
         } else {
             data[id] = val;
         }
-        this.setState({ editableDataObj: data });
+        this.setState({ editableDataObj: data, showErrorMsg: false });
     }
 
     onSubmitClick = () => {
@@ -97,7 +99,15 @@ class EditCommodityList extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -142,7 +152,8 @@ class EditCommodityList extends Component {
         if (this.checkIfValidForm(obj["data"])) {
             this.updateCommodity(obj);
         } else {
-            alert("Please fill all the fields")
+            // alert("Please fill all the fields")
+            this.setState({ showErrorMsg: true });
         }
     }
 
@@ -168,10 +179,10 @@ class EditCommodityList extends Component {
         if (resp.data.status === 1) {
             // alert("Successfully Update");
             // this.props.onEditModalClosed();
-            
+
             sweetAlrtData["type"] = "success";
             sweetAlrtData["title"] = "Success";
-            sweetAlrtData["text"] = "Successfully Updated";
+            sweetAlrtData["text"] = "Commodity updated successfully";
         } else {
             // alert("Oops! There was an error");
             // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
@@ -252,9 +263,11 @@ class EditCommodityList extends Component {
     }
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>
-            this.props.onEditModalClosed()
-        )
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData["type"] !== "error") {
+                this.props.onEditModalClosed();
+            }
+        })
     }
 
 
@@ -415,6 +428,15 @@ class EditCommodityList extends Component {
                             </div>
                         </div>
                     </DialogContent>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign: "right",
+                            paddingRight: "10px"
+                        }}
+                        > Please fill all highlighted fiels above fields</div>}
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

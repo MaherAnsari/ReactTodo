@@ -113,7 +113,8 @@ class RoleDialog extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg : false
         }
     }
 
@@ -144,7 +145,7 @@ class RoleDialog extends Component {
         } else {
             dataObj[id] = event.target.value;
         }
-        this.setState({ data: dataObj });
+        this.setState({ data: dataObj, showErrorMsg : false });
     }
 
 
@@ -156,7 +157,16 @@ class RoleDialog extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+
         }
     }
 
@@ -209,7 +219,8 @@ class RoleDialog extends Component {
         let data = this.state.data;
 
         if (!data['name'] && data['name'] === "" && !data['mobile'] && data['mobile'] === "") {
-            alert("Please check all required field");
+            // alert("Please check all required field");
+            this.setState({ showErrorMsg : true});
             return;
         }
         let dialogText = this.props.isupdate ? "Are you sure  to update ?" : "Are you sure to add ?";
@@ -238,9 +249,11 @@ class RoleDialog extends Component {
 
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>
-            this.props.onEditModalClosed()
-        )
+        this.setState({ showSweetAlert: false }, () =>{
+            if( this.state.sweetAlertData["type"] !== "error"){
+                this.props.onEditModalClosed()
+            }
+        })
     }
 
     render() {
@@ -314,6 +327,15 @@ class RoleDialog extends Component {
 
 
                 </DialogContent>
+                {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > Please check all required fields</div>}
                 <DialogActions>
                     {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

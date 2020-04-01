@@ -62,7 +62,8 @@ class EditUser extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg : false
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
@@ -151,7 +152,7 @@ class EditUser extends Component {
         } else {
             data[id] = event.target.value;
         }
-        this.setState({ dataObj: data });
+        this.setState({ dataObj: data, showErrorMsg : false});
     }
 
     handelAutoCompleteChange = (event, values) => {
@@ -173,7 +174,15 @@ class EditUser extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] =  "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -203,7 +212,7 @@ class EditUser extends Component {
 
             sweetAlrtData["type"] = "success";
             sweetAlrtData["title"] = "Success";
-            sweetAlrtData["text"] = "Successfully Updated";
+            sweetAlrtData["text"] = "User Details updated successfully";
 
         } else {
             // alert("Opps there was an error, while adding");
@@ -232,7 +241,8 @@ class EditUser extends Component {
         let reqArr = this.state.requiredKey;
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
-                alert("Please check all required field");
+                // alert("Please check all required field");
+                this.setState({ showErrorMsg : true});
                 return;
             }
         }
@@ -587,9 +597,19 @@ class EditUser extends Component {
                                 disableRipple
                             />Is User Enabled</div>
                     </div>
-
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > Please check all required field</div>}
                     <div style={{ textAlign: 'end', marginRight: '4%', marginTop: '2%' }}>
-                        {getAccessAccordingToRole("editUser") && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
+                        
+                        {getAccessAccordingToRole("editUser") &&
+                        <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                     </div>
                 </div> :

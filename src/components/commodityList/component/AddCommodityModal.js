@@ -77,7 +77,9 @@ class AddCommodityModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+
+            showErrorMsg : false
         }
     }
 
@@ -97,7 +99,7 @@ class AddCommodityModal extends Component {
         } else {
             data[id] = val;
         }
-        this.setState({ addCommodityDataObj: data });
+        this.setState({ addCommodityDataObj: data ,showErrorMsg : false});
     }
 
     onSubmitClick = () => {
@@ -105,7 +107,15 @@ class AddCommodityModal extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] =  "Oops there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -147,7 +157,8 @@ class AddCommodityModal extends Component {
         if (this.checkIfValidForm(obj)) {
             this.addCommodity(obj);
         } else {
-            alert("Please fill all the fields")
+            // alert("Please fill all the fields")
+            this.setState({ showErrorMsg : true});
         }
     }
 
@@ -177,7 +188,7 @@ class AddCommodityModal extends Component {
                 // alert("Successfully added");
                 sweetAlrtData["type"] = "success";
                 sweetAlrtData["title"] = "Success";
-                sweetAlrtData["text"] = "Successfully Added";
+                sweetAlrtData["text"] = "Commodity successfully added";
                 // this.props.onEditModalClosed();
             } else {
                 // alert("Oops! There was an error");
@@ -446,6 +457,15 @@ class AddCommodityModal extends Component {
                             </div>
                         </div>
                     </DialogContent>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > Please fill all highlighted fields above </div>}
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.handleAddCommodityClicked.bind(this)} color="primary">Add</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

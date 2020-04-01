@@ -8,8 +8,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 // import blockListService from '../../../app/blockListService/blockListService';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 // import Utils from '../../app/common/utils';
-const csv=require('csvtojson')
+const csv = require('csvtojson')
 const styles = theme => ({
     heading: {
         fontSize: '21px',
@@ -61,7 +62,14 @@ class FileUploader extends Component {
             open: this.props.openModal,
             selectedFile: null,
             dataArr: null,
-            displayUpload: false
+            displayUpload: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
 
     }
@@ -76,12 +84,21 @@ class FileUploader extends Component {
         // var fileName = file.name;
         var fileSize = file.size;
         // var fileExtension = fileName.substring(fileName.indexOf(".") + 1);
-        if (fileSize < 20000000 ) {
+        if (fileSize < 20000000) {
             this.handleFiles(event);
 
         } else {
             // this.setState({ isLoding: false })
-            alert('Please select a proper file (type is CSV and size less than 20MB)')
+            // alert('Please select a proper file (type is CSV and size less than 20MB)')
+            
+        let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Please select a proper file (type is CSV and size less than 20MB)";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
 
     }
@@ -93,26 +110,34 @@ class FileUploader extends Component {
             // FileReader are supported.
             this.getAsText(e);
         } else {
-            alert('FileReader are not supported in this browser.');
+            // alert('FileReader are not supported in this browser.');
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = 'FileReader are not supported in this browser.';
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
     async getAsText(e) {
         var reader = new FileReader();
-        let ref  = this;
+        let ref = this;
         reader.onload = function (e) {
             csv()
-            .fromString(reader.result)
-            .then((csvLine)=>{ 
-                // // csvLine =>  "1,2,3" and "4,5,6"
-                // csvData = csvLine;
-                ref.setState({dataArr:csvLine});
-               
-            })
-           
+                .fromString(reader.result)
+                .then((csvLine) => {
+                    // // csvLine =>  "1,2,3" and "4,5,6"
+                    // csvData = csvLine;
+                    ref.setState({ dataArr: csvLine });
+
+                })
+
         }
 
-        this.setState({  displayUpload: true });
+        this.setState({ displayUpload: true });
         reader.readAsText(e.target.files[0]);
         reader.onerror = this.errorHandler;
     }
@@ -121,20 +146,29 @@ class FileUploader extends Component {
     onSubmitClick = () => {
         // console.log(this.state.dataArr);
         let dialogText = `Are you sure to add Upload?`
-        
+
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+            
         }
     }
 
     handelConfirmUpdate = async () => {
 
-        let param = { data:this.state.dataArr };
-      
-            this.props.onEditModalClosed(param);
-        
+        let param = { data: this.state.dataArr };
+
+        this.props.onEditModalClosed(param);
+
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
     handelCancelUpdate = () => {
@@ -143,8 +177,17 @@ class FileUploader extends Component {
     handleDialogCancel(event) {
         this.props.onEditModalCancel();
     }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
+    }
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
         return (<div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
@@ -178,7 +221,16 @@ class FileUploader extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
+
         );
     }
 }

@@ -12,7 +12,7 @@ import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import Utils from '../../app/common/utils';
-
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -57,7 +57,14 @@ class SupplierContainer extends React.Component {
             totalDataCount: 0,
             showLoader: false,
             isTableDataLoading: false,
-            resetPageNumber: false
+            resetPageNumber: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         };
     }
@@ -71,6 +78,7 @@ class SupplierContainer extends React.Component {
     }
 
     async getData(params) {
+        let sweetAlrtData = this.state.sweetAlertData;
         this.setState({ showAddModal: false, showUploader: false });
         let resp = await supplierService.getDefaultSupplierList(params);
         if (resp.data.status === 1 && resp.data.result) {
@@ -83,13 +91,18 @@ class SupplierContainer extends React.Component {
                 isTableDataLoading: false
             });
         } else {
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list";
             this.setState({
                 dataList: [],
                 totalDataCount: 0,
                 showLoader: false,
-                isTableDataLoading: false
+                isTableDataLoading: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
             });
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
         }
     }
     handleClose(event) {
@@ -112,8 +125,16 @@ class SupplierContainer extends React.Component {
         try {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.handelGetData();
+                // alert("Data Successfuly Uploaded ");
+                // this.handelGetData();
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
 
         } catch (err) {
@@ -161,8 +182,17 @@ class SupplierContainer extends React.Component {
         })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
 
@@ -241,6 +271,14 @@ class SupplierContainer extends React.Component {
                         onEditModalCancel={this.onModalCancel.bind(this)}
                     />
                     : ""}
+                    {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </div>
         );
     }

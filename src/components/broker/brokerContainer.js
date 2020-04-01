@@ -8,16 +8,14 @@ import UserListTable from '../common/UserTable';
 import brokerService from '../../app/brokerService/brokerService';
 import InfoDialog from '../common/InfoDialog';
 import commodityService from './../../app/commodityService/commodityService';
-// import sampleFile from '../sampleDownloadFiles/bulk-add-broker-data-sample.csv';
 import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
         width: '100%',
-        // marginTop: '30px',
-        // height: '88vh',
         overflow: 'auto',
         fontFamily: 'Lato !important',
         maxWidth: '1200px'
@@ -32,9 +30,7 @@ const styles = theme => ({
         fontSize: '20px',
         alignTtems: 'center',
         display: '-webkit-inline-box'
-    },
-
-
+    }
 });
 
 
@@ -48,7 +44,7 @@ class BrokerContainer extends React.Component {
             showAddModal: false,
             dataList: [],
             commodityList: [],
-            showUploader:false,
+            showUploader: false,
 
             params: {
                 limit: 1000, // total amount of data 
@@ -57,20 +53,26 @@ class BrokerContainer extends React.Component {
             totalDataCount: 0,
             showLoader: false,
             isTableDataLoading: false,
-            resetPageNumber: false
+            resetPageNumber: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         };
     }
-
-
 
     async componentDidMount() {
         this.handelGetData();
         this.getCommodityNames();
     }
 
-    async getData( params ) {
-        this.setState({ showAddModal: false, showUploader: false  });
+    async getData(params) {
+        let sweetAlrtData = this.state.sweetAlertData;
+        this.setState({ showAddModal: false, showUploader: false });
         let resp = await brokerService.getDefaultBrokerList(params);
         // console.log(resp.data);
         if (resp.data.status === 1 && resp.data.result) {
@@ -83,13 +85,18 @@ class BrokerContainer extends React.Component {
                 isTableDataLoading: false
             });
         } else {
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data";
             this.setState({
                 dataList: [],
                 totalDataCount: 0,
                 showLoader: false,
-                isTableDataLoading: false
+                isTableDataLoading: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
             });
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
         }
     }
 
@@ -111,8 +118,9 @@ class BrokerContainer extends React.Component {
         this.setState({ open: false, showAddModal: false });
         this.handelGetData();
     }
+
     onModalCancel(event) {
-        this.setState({ open: false, showAddModal: false ,showUploader:false});
+        this.setState({ open: false, showAddModal: false, showUploader: false });
     }
 
 
@@ -122,17 +130,27 @@ class BrokerContainer extends React.Component {
 
     async handleFileUploader(event) {
         // console.log(event);
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.handelGetData();
+                // alert("Data Successfuly Uploaded ");
+                // this.handelGetData();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded";
 
-            }else{
+            } else {
                 // alert("Oops an error occured while uploading");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading");
-                
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading";
             }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.error(err)
@@ -140,17 +158,17 @@ class BrokerContainer extends React.Component {
         }
     }
 
-    
+
     handleUploaderClick(event) {
         this.setState({ showUploader: true });
     }
 
-    handelRefreshData( event ){
+    handelRefreshData(event) {
         this.handelGetData();
     }
 
     handelGetData() {
-        this.setState({ dataList:[], resetPageNumber: true, showLoader: true, params: { limit: 1000, offset: 0 } }, () =>
+        this.setState({ dataList: [], resetPageNumber: true, showLoader: true, params: { limit: 1000, offset: 0 } }, () =>
             this.getData(this.state.params)
         );
     }
@@ -162,32 +180,41 @@ class BrokerContainer extends React.Component {
             this.getData(paramsval);
         })
     }
-    
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
-                {this.state.showLoader &&  <Loader />}
-                
-                <Card className={classes.card} style={{ display: this.state.showLoader ? "none": "unset" }}>
-                    <UserListTable 
-                    tableData={this.state.dataList} 
-                    role="broker" 
-                    downloadAbleFileName="broker_list_data"
-                    handelRefreshButtonClicked={( event )=> this.handelRefreshData( event )}
-                    commodityList={this.state.commodityList} 
-                    onClose={()=>this.handelGetData()} 
-                    
-                    resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
-                    resetPageNumber={this.state.resetPageNumber}
-                    setPageNumber={() => this.setState({ resetPageNumber: false })}
-                    totalDataCount= {this.state.totalDataCount}
-                    showLoader={this.state.showLoader}
-                    isTableDataLoading={this.state.isTableDataLoading}
+                {this.state.showLoader && <Loader />}
+
+                <Card className={classes.card} style={{ display: this.state.showLoader ? "none" : "unset" }}>
+                    <UserListTable
+                        tableData={this.state.dataList}
+                        role="broker"
+                        downloadAbleFileName="broker_list_data"
+                        handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
+                        commodityList={this.state.commodityList}
+                        onClose={() => this.handelGetData()}
+
+                        resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
+                        resetPageNumber={this.state.resetPageNumber}
+                        setPageNumber={() => this.setState({ resetPageNumber: false })}
+                        totalDataCount={this.state.totalDataCount}
+                        showLoader={this.state.showLoader}
+                        isTableDataLoading={this.state.isTableDataLoading}
                     />
-                    
+
                     {getAccessAccordingToRole("addUser") && <div className="updateBtndef">
-                        <div className="updateBtnFixed" style={{ display: 'flex', right:"2px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <div className="updateBtnFixed" style={{ display: 'flex', right: "2px" }} onClick={this.handleClickOpen.bind(this)}><i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
                             <p style={{
                                 fontSize: "14px",
                                 fontFamily: "lato",
@@ -208,7 +235,7 @@ class BrokerContainer extends React.Component {
                             </a>
                     </div> */}
 
-                     {/* <div className="fixedLeftBtnContainer">
+                    {/* <div className="fixedLeftBtnContainer">
                         <div className="fixedLeftBtn" style={{ display: 'flex', left:"16%", background:"#4da443" }}
                             onClick={this.handleUploaderClick.bind(this)}
                             >
@@ -220,19 +247,29 @@ class BrokerContainer extends React.Component {
                             }}>Upload file</p></div>
                     </div> */}
 
-                </Card> 
-                {this.state.showAddModal ? <InfoDialog openModal={this.state.open}
-                    role="broker"
-                    commodityList={this.state.commodityList}
-                    onEditModalClosed={this.handleClose.bind(this)}
-                    onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                </Card>
+                {this.state.showAddModal ?
+                    <InfoDialog openModal={this.state.open}
+                        role="broker"
+                        commodityList={this.state.commodityList}
+                        onEditModalClosed={this.handleClose.bind(this)}
+                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
 
-{this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-onEditModalClosed={this.handleFileUploader.bind(this)}
-//  commodityList={ this.state.commodityList}
-onEditModalCancel={this.onModalCancel.bind(this)}
-/>
-: ""}
+                {this.state.showUploader ?
+                    <FileUploader openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)}
+                    />
+                    : ""}
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
 
 
             </div>

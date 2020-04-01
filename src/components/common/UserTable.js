@@ -221,7 +221,15 @@ class UserListTable extends Component {
             respData = resp.data.result;
             rows = resp.data.result.data;
         } else {
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
         this.setState({
             tableBodyData: rows,

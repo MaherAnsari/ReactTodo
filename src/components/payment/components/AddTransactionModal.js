@@ -132,7 +132,9 @@ class AddTransactionModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg: false,
+            errorMsg: ""
 
         }
 
@@ -289,11 +291,16 @@ class AddTransactionModal extends Component {
                 this.addTransaction();
             }
         } else {
-            alert("Please fill the mandatory fields highlighted");
+            // alert("Please fill the mandatory fields highlighted");
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: "Please fill the mandatory fields highlighted"
+            });
         }
     }
 
     getBankDetails = async (mobile) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true });
             let resp = await orderService.getOrderAcount(mobile);
@@ -306,11 +313,27 @@ class AddTransactionModal extends Component {
                 }
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                })
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
         }
     }
 
@@ -338,7 +361,12 @@ class AddTransactionModal extends Component {
             })
             console.log(transData)
         } else {
-            alert("Please fill the mandatory fields highlighted");
+            // alert("Please fill the mandatory fields highlighted");
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: "Please fill the mandatory fields highlighted"
+            });
+
         }
     }
     async addTransaction(event) {
@@ -358,7 +386,7 @@ class AddTransactionModal extends Component {
                 // alert("Successfully added this transaction ");
                 sweetAlrtData["type"] = "success";
                 sweetAlrtData["title"] = "Success";
-                sweetAlrtData["text"] = "Successfully added this transaction ";
+                sweetAlrtData["text"] = "Payment added successfully";
                 // this.props.onTransactionAdded();
             } else {
                 sweetAlrtData["type"] = "error";
@@ -969,6 +997,15 @@ class AddTransactionModal extends Component {
                                         onChange={this.handleBankDetailsChange.bind(this)}
                                         fullWidth />
                                 </div>
+                                {this.state.showErrorMsg &&
+                                    <div style={{
+                                        fontFamily: 'Montserrat, sans-serif',
+                                        fontSize: "12px",
+                                        color: "red",
+                                        textAlign: "right",
+                                        paddingRight: "10px"
+                                    }}
+                                    > {this.state.errorMsg} </div>}
                                 <Button variant="contained" onClick={(event) => this.onTransactionDataAddedWithAccount(event)}
                                     style={{ background: "blue", color: "#fff" }}>Save </Button>
                                 <Button variant="contained" onClick={this.handleDialogCancel.bind(this)}
@@ -977,10 +1014,20 @@ class AddTransactionModal extends Component {
                         }
 
                     </DialogContent>
-                    {currentAddTransactionView === "addPayment" && <DialogActions>
-                        <Button className={classes.formCancelBtn} onClick={this.onTransactionDataAdded.bind(this)} color="primary">Add</Button>
-                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                    </DialogActions>}
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign: "right",
+                            paddingRight: "10px"
+                        }}
+                        > {this.state.errorMsg} </div>}
+                    {currentAddTransactionView === "addPayment" &&
+                        <DialogActions>
+                            <Button className={classes.formCancelBtn} onClick={this.onTransactionDataAdded.bind(this)} color="primary">Add</Button>
+                            <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                        </DialogActions>}
                 </div> :
                     <Loader primaryText="Please wait.." />}
 

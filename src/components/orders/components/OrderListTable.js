@@ -25,7 +25,7 @@ import Fab from '@material-ui/core/Fab';
 import PayoutOrderModal from '../common/PayoutOrderModal';
 import BusinessInfoDialog from '../../common/BusinessInfoDialog';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
-
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 var moment = require('moment');
 
@@ -95,7 +95,7 @@ const styles = theme => ({
         color: '#fd0671',
         cursor: 'pointer'
     },
-    textEllpses:{
+    textEllpses: {
         textOverflow: "ellipsis",
         overflow: "hidden",
         maxWidth: "110px",
@@ -113,7 +113,7 @@ class OrderListTable extends Component {
             tableHeadData: ["order Id", "Old Id", "buyer Name/ Business Name", "supplier Name/ Business Name", "Unsettled Amt Pltf", "Date", "source/target", "commodity", "", "Order Amt  "],
             tableBodyData: this.props.tableData,
             totalDataCount: this.props.totalDataCount || 0,
-            currentOffset : this.props.currentOffset || 0,
+            currentOffset: this.props.currentOffset || 0,
             rawTableBodyData: [],
             searchedText: "",
             editableData: {},
@@ -140,13 +140,21 @@ class OrderListTable extends Component {
             commodityList: [],
             showUploader: false,
 
-            showPayoutModal:false,
-            payoutData : undefined,
+            showPayoutModal: false,
+            payoutData: undefined,
 
             showUserInfo: false,
-            userInfoData : undefined,
+            userInfoData: undefined,
             isLimitUpdate: false,
-            userId: undefined
+            userId: undefined,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+
         }
         this.getCommodityNames();
     }
@@ -193,12 +201,12 @@ class OrderListTable extends Component {
         if (this.state.currentOffset !== nextprops.currentOffset) {
             this.setState({ currentOffset: nextprops.currentOffset });
         }
-        if( this.state.isTableDataLoading !== nextprops.isTableDataLoading ){
-            this.setState({ isTableDataLoading : nextprops.isTableDataLoading });
+        if (this.state.isTableDataLoading !== nextprops.isTableDataLoading) {
+            this.setState({ isTableDataLoading: nextprops.isTableDataLoading });
         }
         if (nextprops.resetPageNumber) {
-            this.setState({ page : 0 },()=>
-            this.props.setPageNumber());
+            this.setState({ page: 0 }, () =>
+                this.props.setPageNumber());
         }
 
     }
@@ -254,7 +262,7 @@ class OrderListTable extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
-        if(  this.state.tableBodyData.length === (newPage *this.state.rowsPerPage ) ){
+        if (this.state.tableBodyData.length === (newPage * this.state.rowsPerPage)) {
             this.props.resetOffsetAndGetData();
         }
     };
@@ -274,7 +282,7 @@ class OrderListTable extends Component {
     }
 
     onOrderDataAdded() {
-        this.setState({ showAddOrderModal: false, showEditDataModal  : false  }, function () {
+        this.setState({ showAddOrderModal: false, showEditDataModal: false }, function () {
             this.props.onOrderAdded();
         });
     }
@@ -300,35 +308,49 @@ class OrderListTable extends Component {
             // "": "Cashback (LA)",
             // "": "Cashback (CA)",
             "supplierid": "LA ID",
-            "buyerid":"CA ID",
-            
-            "supplier_mobile":"LA Phone",
-            "buyer_mobile":"CA Phone",
-            "supplier_name":"LA Name",
-            "supplier_businessname":"LA Business Name",
-            "buyer_name":"CA Name",
-            "buyer_businessname":"CA Businesss Name",
-            "old_system_order_id":"Old System Order Id"
+            "buyerid": "CA ID",
+
+            "supplier_mobile": "LA Phone",
+            "buyer_mobile": "CA Phone",
+            "supplier_name": "LA Name",
+            "supplier_businessname": "LA Business Name",
+            "buyer_name": "CA Name",
+            "buyer_businessname": "CA Businesss Name",
+            "old_system_order_id": "Old System Order Id"
         }
         Utils.downloadFormattedDataInCSV(this.state.tableBodyData, "Order ", fHeader)
     }
 
     //edit option
     handelEditModalOpen(data) {
-        this.setState({ editableData: Object.assign({},data), showEditDataModal: true });
+        this.setState({ editableData: Object.assign({}, data), showEditDataModal: true });
     }
 
     async handleFileUploader(event) {
         console.log(event);
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let resp = await orderService.uploadOrder(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.props.onOrderAdded();
+                // alert("Data Successfuly Uploaded ");
+                // this.props.onOrderAdded();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded";
+
                 this.setState({ open: false, showUploader: false });
-            }else{
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured");
+            } else {
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured";
             }
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+
 
         } catch (err) {
             console.error(err)
@@ -346,14 +368,14 @@ class OrderListTable extends Component {
     }
 
     getActionButton(row) {
-        if (row &&  row["unsettled_amount_pltf"] > 0 ) {
+        if (row && row["unsettled_amount_pltf"] > 0) {
             return (<Fab
                 variant="extended"
                 size="small"
                 aria-label="PAYOUT"
-                disabled={ !getAccessAccordingToRole("payViaCredit")}
-                onClick={( event )=> this.setState({ showPayoutModal : true, payoutData : row })}
-                style={{ cursor:(getAccessAccordingToRole("payViaCredit")?"pointer":"no-drop"),textTransform: "none", background: (getAccessAccordingToRole("payViaCredit") ? "#108ad0" : "gray"), color: "#ffffff", padding: "0 8px" }}
+                disabled={!getAccessAccordingToRole("payViaCredit")}
+                onClick={(event) => this.setState({ showPayoutModal: true, payoutData: row })}
+                style={{ cursor: (getAccessAccordingToRole("payViaCredit") ? "pointer" : "no-drop"), textTransform: "none", background: (getAccessAccordingToRole("payViaCredit") ? "#108ad0" : "gray"), color: "#ffffff", padding: "0 8px" }}
             >
                 Pay via credit
     </Fab>);
@@ -363,40 +385,49 @@ class OrderListTable extends Component {
     }
 
     onUserInfoModalCancel(event) {
-        this.setState({ showUserInfo : false,  isInfo: false });
-        if(this.state.isLimitUpdate){
+        this.setState({ showUserInfo: false, isInfo: false });
+        if (this.state.isLimitUpdate) {
             this.props.onOrderAdded();
         }
     }
 
-    changeLimitSucces(event){
+    changeLimitSucces(event) {
         let obj = this.state.userInfoData;
         obj['bijak_credit_limit'] = event;
-        this.setState({ userInfoData:obj, isLimitUpdate:true });
+        this.setState({ userInfoData: obj, isLimitUpdate: true });
     }
 
     handleUserInfoClose(event) {
         this.setState({ showUserInfo: false, isInfo: false });
     }
 
-    onUserInfoClicked = ( info, type , event) => {
+    onUserInfoClicked = (info, type, event) => {
         let id = "";
-        if( type === "supplier_name"){
+        if (type === "supplier_name") {
             id = info["supplier_mobile"];
-        }else{
+        } else {
             id = info["buyer_mobile"];
         }
-        this.setState({ userId :id,  showUserInfo : true, userInfoData : JSON.parse(JSON.stringify(info)), isInfo: true });
+        this.setState({ userId: id, showUserInfo: true, userInfoData: JSON.parse(JSON.stringify(info)), isInfo: true });
+    }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onOrderAdded();
+            }
+        });
     }
 
     render() {
-        const { classes,showLoader } = this.props;
-        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData, totalDataCount, commodityList, isTableDataLoading } = this.state;
+        const { classes, showLoader } = this.props;
+        const { rowsPerPage, page, showAddOrderModal, showEditDataModal, editableData,
+            totalDataCount, commodityList, isTableDataLoading, showSweetAlert, sweetAlertData } = this.state;
         const leftAlignedIndexs = [2, 3];
         const rightAlignedIndexs = [3, 8];
         return (
             <MuiThemeProvider theme={theme}>
-                { !showLoader && <Paper className={classes.root} >
+                {!showLoader && <Paper className={classes.root} >
                     {this.state.tableBodyData ? <div> <div style={{ maxHeight: "65vh", overflowY: "scroll" }}>
                         <Table className='table-body' stickyHeader aria-label="sticky table">
                             <TableHead>
@@ -406,7 +437,7 @@ class OrderListTable extends Component {
                                             key={option}
                                             className={this.getTableCellClass(classes, i)}
                                             style={{
-                                                minWidth:( i === 0 || i === 1 || i === 4 || i === 5 || i === (this.state.tableHeadData.length -1 )) ? (i !== 1 ? "100px" : "66px" ) : '120px',
+                                                minWidth: (i === 0 || i === 1 || i === 4 || i === 5 || i === (this.state.tableHeadData.length - 1)) ? (i !== 1 ? "100px" : "66px") : '120px',
                                                 textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
                                             }}>{option}</TableCell>
                                     ))}
@@ -414,7 +445,7 @@ class OrderListTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                { !isTableDataLoading && this.state.tableBodyData &&
+                                {!isTableDataLoading && this.state.tableBodyData &&
 
                                     (rowsPerPage > 0
                                         ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -424,8 +455,8 @@ class OrderListTable extends Component {
 
                                             <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
-                                                {/* {row.is_added_by_platform ? <span><i className="fa fa-mobile" aria-hidden="true"></i> </span>: " "} */}
-                                                { !row.is_added_by_platform && <i style ={{fontSize:"24px",marginRight:"4px",color:"#50aa35"}} class="fa fa-mobile" aria-hidden="true"></i>}
+                                                    {/* {row.is_added_by_platform ? <span><i className="fa fa-mobile" aria-hidden="true"></i> </span>: " "} */}
+                                                    {!row.is_added_by_platform && <i style={{ fontSize: "24px", marginRight: "4px", color: "#50aa35" }} class="fa fa-mobile" aria-hidden="true"></i>}
                                                     <span
                                                         data-toggle="tooltip" data-placement="center" title="info"
                                                         onClick={this.onInfoClick.bind(this, row)}
@@ -437,25 +468,25 @@ class OrderListTable extends Component {
                                                         onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
                                                         className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
                                                     <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
-                                                    
+
                                                 </TableCell>
-                                                
+
                                                 <TableCell className={classes.tableCell}>
-                                                        {row.old_system_order_id ? row.old_system_order_id : "-"}
-                                                    </TableCell>
+                                                    {row.old_system_order_id ? row.old_system_order_id : "-"}
+                                                </TableCell>
 
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
-                                                    onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize", cursor: "pointer" }}
+                                                        onClick={this.onUserInfoClicked.bind(this, row, "buyer_name")}>
                                                         <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{row.buyer_businessname ? row.buyer_businessname :" "}</span>
+                                                        <span style={{ fontSize: "12px" }}>{row.buyer_businessname ? row.buyer_businessname : " "}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize" , cursor: "pointer"}}
-                                                    onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
+                                                    <div className=" name-span" style={{ display: "grid", textAlign: "left", textTransform: "capitalize", cursor: "pointer" }}
+                                                        onClick={this.onUserInfoClicked.bind(this, row, "supplier_name")}>
                                                         <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                                        <span style={{ fontSize: "12px" }}>{ row.supplier_businessname ? row.supplier_businessname :" "}</span>
+                                                        <span style={{ fontSize: "12px" }}>{row.supplier_businessname ? row.supplier_businessname : " "}</span>
                                                     </div>
                                                 </TableCell>
                                                 {/* <TableCell className={this.getTableCellClass(classes, 2)}>
@@ -471,27 +502,27 @@ class OrderListTable extends Component {
                                                 </TableCell> */}
 
                                                 <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "right" }}>
-                                                ₹ {row.unsettled_amount_pltf ? Utils.formatNumberWithComma(row.unsettled_amount_pltf) : 0}
+                                                    ₹ {row.unsettled_amount_pltf ? Utils.formatNumberWithComma(row.unsettled_amount_pltf) : 0}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 
                                                     {this.formatDateAndTime(row.createdtime)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 4)} >
-                                                
-                                                {/* {(row.source_location ? row.source_location : "-")+"/"+ (row.target_location ? row.target_location : "-")} */}
-                                                
-                                                <Tooltip title={(row.source_location ? row.source_location : "-")+"/\n"+ (row.target_location ? row.target_location : "-")} placement="top" classes={{ tooltip: classes.lightTooltip }}>
-                                                        <div className={classes.textEllpses}>{(row.source_location ? row.source_location : "-")+"/\n"+ (row.target_location ? row.target_location : "-")}</div>
+
+                                                    {/* {(row.source_location ? row.source_location : "-")+"/"+ (row.target_location ? row.target_location : "-")} */}
+
+                                                    <Tooltip title={(row.source_location ? row.source_location : "-") + "/\n" + (row.target_location ? row.target_location : "-")} placement="top" classes={{ tooltip: classes.lightTooltip }}>
+                                                        <div className={classes.textEllpses}>{(row.source_location ? row.source_location : "-") + "/\n" + (row.target_location ? row.target_location : "-")}</div>
                                                     </Tooltip>
-                                                    
+
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 6)}  >
                                                     <span style={{
                                                         color: "white",
                                                         background: row.commodity ? "rgb(58, 126, 63)" : "",
                                                         padding: "4px 8px",
-                                                        display:"inline-block",
+                                                        display: "inline-block",
                                                         textTransform: "capitalize",
                                                         borderRadius: "13px"
                                                     }}>{row.commodity}</span> </TableCell>
@@ -499,7 +530,7 @@ class OrderListTable extends Component {
                                                     {this.getActionButton(row)}
                                                 </TableCell>
                                                 <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right" }}>
-                                                <span style={{ fontWeight: ( row.invalidimg ? 600 : 400)}}> ₹ </span>{row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
+                                                    <span style={{ fontWeight: (row.invalidimg ? 600 : 400) }}> ₹ </span>{row.bijak_amt ? Utils.formatNumberWithComma(row.bijak_amt) : 0}
                                                     {getAccessAccordingToRole("editOrder") && <EditIcon
                                                         className="material-Icon"
                                                         onClick={() => this.handelEditModalOpen(row)}
@@ -507,10 +538,10 @@ class OrderListTable extends Component {
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    }) }
+                                    })}
                             </TableBody>
                         </Table>
-                        {isTableDataLoading && <div><Loader/> </div>}
+                        {isTableDataLoading && <div><Loader /> </div>}
                         {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
                             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
                                 <i className={classes.defaultIcon + " fa fa-frown-o"} aria-hidden="true"></i>
@@ -590,7 +621,7 @@ class OrderListTable extends Component {
                             onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
                             onAddModalCancel={(event) => this.setState({ showAddOrderModal: false })}
                         />}
-                    {showEditDataModal && 
+                    {showEditDataModal &&
                         <EditOrderDataModal
                             open={showEditDataModal}
                             commodityList={commodityList}
@@ -615,15 +646,24 @@ class OrderListTable extends Component {
                             })}
                             payoutData={this.state.payoutData} />}
 
-                    {this.state.showUserInfo ? 
-                        <BusinessInfoDialog 
+                    {this.state.showUserInfo ?
+                        <BusinessInfoDialog
                             openModal={this.state.showUserInfo}
                             onEditModalClosed={this.handleUserInfoClose.bind(this)}
                             data={this.state.userInfoData}
                             isInfo={true}
-                            userId={ this.state.userId}
-                            onLimitUpdate= {this.changeLimitSucces.bind(this)}
+                            userId={this.state.userId}
+                            onLimitUpdate={this.changeLimitSucces.bind(this)}
                             onEditModalCancel={this.onUserInfoModalCancel.bind(this)} /> : ""}
+
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
 
                 </Paper>}
             </MuiThemeProvider>

@@ -61,7 +61,9 @@ class WhatsAppNumberSelectionModal extends Component {
                 "title": "",
                 "text": ""
             },
-            showLoader: false
+            showLoader: false,
+            showErrorMsg: false,
+            errorMsg: ""
         }
     }
 
@@ -77,12 +79,13 @@ class WhatsAppNumberSelectionModal extends Component {
     onInputChanged(event) {
         let val = event.target.value;
         if (!isNaN(val)) {
-            this.setState({ otherNumber: event.target.value });
+            this.setState({ otherNumber: event.target.value, showErrorMsg : false, errorMsg : "" });
         }
 
     }
 
     async sendReceiptToWhatsapp(event) {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let whatsappNumber = "";
             if (this.state.selectedUser === "supplier") {
@@ -91,10 +94,18 @@ class WhatsAppNumberSelectionModal extends Component {
                 whatsappNumber = this.state.transactionInfoData["buyer_mobile"];
             } else if (this.state.selectedUser === "other") {
                 if (this.state.otherNumber === "") {
-                    alert("Please enter the number.");
+                    // alert("Please enter the number.");
+                    this.setState({
+                        showErrorMsg: true,
+                        errorMsg: "Please enter the number."
+                    })
                     return;
                 } else if (this.state.otherNumber.length < 10) {
-                    alert("Please enter a valid number.");
+                    // alert("Please enter a valid number.");
+                    this.setState({
+                        showErrorMsg: true,
+                        errorMsg: "Please enter a valid number."
+                    })
                     return;
                 }
                 whatsappNumber = this.state.otherNumber;
@@ -104,7 +115,7 @@ class WhatsAppNumberSelectionModal extends Component {
             this.setState({ showLoader: true });
             let resp = await commonService.sendinvoicefromwhatsapp(payload);
             // console.log(resp);
-            let sweetAlrtData = this.state.sweetAlertData;
+            
             if (resp.data.status === 1) {
                 // alert("Receipt sent to whatsapp number " + whatsappNumber);
                 sweetAlrtData["type"] = "success";
@@ -128,8 +139,17 @@ class WhatsAppNumberSelectionModal extends Component {
 
         } catch (err) {
             console.error(err)
-            this.setState({ open: false }, () =>
-                alert("Oops there was an error sending the receipt")
+            this.setState({ open: false }, () =>{
+                // alert("Oops there was an error sending the receipt")
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = "Oops there was an error sending the receipt";
+                this.setState({
+                    // showLoader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+            }
             );
         }
     }
@@ -219,11 +239,20 @@ class WhatsAppNumberSelectionModal extends Component {
                             sweetAlertClose={() => this.handelSweetAlertClosed()}
                         />}
                 </DialogContent>
-                {!showLoader && 
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>}
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red",
+                        textAlign: "right",
+                        paddingRight: "10px"
+                    }}
+                    > {this.state.errorMsg}</div>}
+                {!showLoader &&
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>}
             </Dialog>
         </div>
         );

@@ -146,7 +146,8 @@ class InfoDialog extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg: false
 
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
@@ -228,7 +229,7 @@ class InfoDialog extends Component {
         } else {
             data[id] = event.target.value;
         }
-        this.setState({ dataObj: data });
+        this.setState({ dataObj: data, showErrorMsg: false });
     }
 
     handelAutoCompleteChange = (event, values) => {
@@ -251,7 +252,15 @@ class InfoDialog extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -280,7 +289,7 @@ class InfoDialog extends Component {
             // alert("Successfully Added");
             sweetAlrtData["type"] = "success";
             sweetAlrtData["title"] = "Success";
-            sweetAlrtData["text"] = "Successfully Added";
+            sweetAlrtData["text"] = "User Details added successfully";
             // this.props.onEditModalClosed();
 
         } else {
@@ -305,9 +314,11 @@ class InfoDialog extends Component {
     }
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>
-            this.props.onEditModalClosed()
-        )
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData["type"] !== "error") {
+                this.props.onEditModalClosed()
+            }
+        })
     }
 
 
@@ -320,7 +331,8 @@ class InfoDialog extends Component {
         }
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
-                alert("Please check all required field");
+                // alert("Please check all required field");
+                this.setState({ showErrorMsg: true });
                 return;
             }
         }
@@ -689,6 +701,15 @@ class InfoDialog extends Component {
                         />Is Mobile Required</div>
 
                 </DialogContent>
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red",
+                        textAlign: "right",
+                        paddingRight: "10px"
+                    }}
+                    > Please check all required field</div>}
                 <DialogActions>
                     {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

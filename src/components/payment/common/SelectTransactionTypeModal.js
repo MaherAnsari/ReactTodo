@@ -107,16 +107,16 @@ class SelectTransactionTypeModal extends Component {
     }
 
     updatePaymentStatus = async (payload) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
-            this.setState({showLoader : true})
+            this.setState({ showLoader: true })
             let resp = await paymentService.updateStatusOfPayment(payload);
-            let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
                 // alert("Successfully updated ");
                 // this.props.onUpdateSuccessFull();
                 sweetAlrtData["type"] = "success";
                 sweetAlrtData["title"] = "Success";
-                sweetAlrtData["text"] = "Successfully Added";
+                sweetAlrtData["text"] = "Successfully updated";
             } else {
                 //   alert( "An error occured while updating the status")
                 // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while updating the status");
@@ -126,13 +126,21 @@ class SelectTransactionTypeModal extends Component {
             }
 
             this.setState({
-                showLoader : false,
+                showLoader: false,
                 showSweetAlert: true,
                 sweetAlertData: sweetAlrtData
             });
         } catch (err) {
             console.error(err);
-            alert("An error occured while updating the status")
+            // alert("An error occured while updating the status")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while updating the status";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -162,7 +170,7 @@ class SelectTransactionTypeModal extends Component {
                 </DialogTitle>
                 <DialogContent>
 
-                    { !showLoader ? <div >
+                    {!showLoader ? <div >
                         <TextField
                             select
                             id="status"
@@ -191,23 +199,23 @@ class SelectTransactionTypeModal extends Component {
                             onChange={this.handleInputChange.bind(this)}
                             fullWidth />
 
-                    </div>:
-                    <div style={{ textAlign: "center" }}>
-                        <i className="fa fa-spinner fa-spin"
-                            style={{ fontSize: "56px", color: "#000" }} aria-hidden="true" ></i>
-                        <p style={{
-                            fontSize: "14px",
-                            marginBottom: "0"
-                        }} >
-                            Please wait..
+                    </div> :
+                        <div style={{ textAlign: "center" }}>
+                            <i className="fa fa-spinner fa-spin"
+                                style={{ fontSize: "56px", color: "#000" }} aria-hidden="true" ></i>
+                            <p style={{
+                                fontSize: "14px",
+                                marginBottom: "0"
+                            }} >
+                                Please wait..
                     </p> </div>}
 
                 </DialogContent>
-                {!showLoader && 
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.onStatusUpdatedClicked.bind(this)} color="primary">Update</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>}
+                {!showLoader &&
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.onStatusUpdatedClicked.bind(this)} color="primary">Update</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>}
 
                 {showSweetAlert &&
                     <SweetAlertPage

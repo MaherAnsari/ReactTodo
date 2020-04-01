@@ -15,7 +15,8 @@ import AddOrderModal from '../orders/common/AddOrderModal';
 import orderService from '../../app/orderService/orderService';
 import Utils from '../../app/common/utils';
 import { getAccessAccordingToRole } from '../../config/appConfig';
-
+import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Loader from './Loader';
 var moment = require('moment');
 
 const styles = theme => ({
@@ -80,10 +81,18 @@ class OrderTable extends Component {
         this.state = {
             tableHeadData: ["order id", "buyer info", "broker name", "Date", "location", "commodity", "Amount  "],
 
-            open: this.props.openModal, tableBodyData: this.props.data,
+            open: this.props.openModal,
+            tableBodyData: this.props.data,
             rowsPerPage: 50,
             page: 0,
-            showAddOrderModal: this.props.showAddOrderModal || false
+            showAddOrderModal: this.props.showAddOrderModal || false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
 
     }
@@ -98,9 +107,12 @@ class OrderTable extends Component {
         this.setState({ tableHeadData: tableHeadData });
     }
 
-    componentWillReceiveProps( nextProps ){
-        if(nextProps.showAddOrderModal !== this.state.showAddOrderModal ){
-            this.setState({ showAddOrderModal : nextProps.showAddOrderModal });
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.showAddOrderModal !== this.state.showAddOrderModal) {
+            this.setState({ showAddOrderModal: nextProps.showAddOrderModal });
+        }
+        if (nextProps.data !== this.state.tableBodyData) {
+            this.setState({ tableBodyData: nextProps.data });
         }
     }
 
@@ -124,7 +136,15 @@ class OrderTable extends Component {
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
                 // alert("Oops an error occured while getting order data");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting order data");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting order data");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting order data";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
 
         } catch (err) {
@@ -163,7 +183,7 @@ class OrderTable extends Component {
             // console.log(param);
             if (Object.keys(param).length) {
                 this.getListData(param);
-                this.props.onOrderAdded( param );
+                this.props.onOrderAdded(param);
             }
         });
     }
@@ -171,157 +191,171 @@ class OrderTable extends Component {
     handleClickOpen() {
         this.setState({ showAddOrderModal: true });
     }
-    
+
     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
         return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
         // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
     }
 
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page } = this.state;
+        const { rowsPerPage, page, showSweetAlert, sweetAlertData } = this.state;
         const leftAlignedIndexs = [1, 2];
         const rightAlignedIndexs = [6];
-        return (<div style={{ marginTop: '50px' }}> <div style={{ maxHeight: "58vh", overflowY: "scroll" }}>
-            <Table className='table-body' stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow style={{ borderBottom: "2px solid #858792" }} >
-                        {this.state.tableHeadData.map((option, i) => (
-                            <TableCell
-                                key={option}
-                                className={this.getTableCellClass(classes, i)}
-                                style={{
-                                    textTransform: 'uppercase',
-                                    minWidth: i === 0 ? "85px" : '120px', paddingRight: i === 5 ? "10px" : '',
-                                    textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
-                                }}>{option}</TableCell>
-                        ))}
-                        {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {this.state.tableBodyData &&
+        return (
+        <div style={{ marginTop: '50px' }}>
+            {this.state.tableBodyData ?
+                <div>
+                    <div style={{ maxHeight: "58vh", overflowY: "scroll" }}>
+                        <Table className='table-body' stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow style={{ borderBottom: "2px solid #858792" }} >
+                                    {this.state.tableHeadData.map((option, i) => (
+                                        <TableCell
+                                            key={option}
+                                            className={this.getTableCellClass(classes, i)}
+                                            style={{
+                                                textTransform: 'uppercase',
+                                                minWidth: i === 0 ? "85px" : '120px', paddingRight: i === 5 ? "10px" : '',
+                                                textAlign: leftAlignedIndexs.indexOf(i) > -1 ? "left" : rightAlignedIndexs.indexOf(i) > -1 ? "right" : ""
+                                            }}>{option}</TableCell>
+                                    ))}
+                                    {/* <TableCell key="star" className={this.getTableCellClass(classes, 4)} style={{ minWidth: '50px', color: "goldenrod", textAlign: 'left' }}> Quantity </TableCell> */}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {this.state.tableBodyData &&
 
-                        (rowsPerPage > 0
-                            ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : this.state.tableBodyData
-                        ).map((row, i) => {
-                            return (
+                                    (rowsPerPage > 0
+                                        ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        : this.state.tableBodyData
+                                    ).map((row, i) => {
+                                        return (
 
-                                <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                                    <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
-                                        {!row.is_added_by_platform && <i style={{ fontSize: "24px", marginRight: "4px", color: "#50aa35" }} class="fa fa-mobile" aria-hidden="true"></i>}
-                                        <span
-                                            data-toggle="tooltip" data-placement="center" title="info"
-                                            // onClick={this.onInfoClick.bind(this, row)}
-                                            style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px" }}>
-                                            {row.id}
-                                        </span>
-                                        <i style={{ paddingTop: "11px" }}
-                                            data-toggle="tooltip" data-placement="right" title="Supporting images"
-                                            // onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
-                                            className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
-                                        <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
-                                    </TableCell>
-                                    {this.props.role !== "la" && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                        <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
-                                            <span>{row.supplier_name ? row.supplier_name : ""} </span>
-                                            <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.supplier_mobile) + " )"}</span>
-                                        </div>
-                                    </TableCell>}
+                                            <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                                                <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)} >
+                                                    {!row.is_added_by_platform && <i style={{ fontSize: "24px", marginRight: "4px", color: "#50aa35" }} class="fa fa-mobile" aria-hidden="true"></i>}
+                                                    <span
+                                                        data-toggle="tooltip" data-placement="center" title="info"
+                                                        // onClick={this.onInfoClick.bind(this, row)}
+                                                        style={{ color: "#3f51b5", borderBottom: "2px solid #3f51b5", padding: "0px 2px" }}>
+                                                        {row.id}
+                                                    </span>
+                                                    <i style={{ paddingTop: "11px" }}
+                                                        data-toggle="tooltip" data-placement="right" title="Supporting images"
+                                                        // onClick={this.onShowSupportinInvoiceModal.bind(this, row)}
+                                                        className={"fa fa-camera " + classes.info} aria-hidden="true"></i>
+                                                    <sup>{row.supporting_images ? row.supporting_images.length : 0}</sup>
+                                                </TableCell>
+                                                {this.props.role !== "la" && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                        <span>{row.supplier_name ? row.supplier_name : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.supplier_mobile) + " )"}</span>
+                                                    </div>
+                                                </TableCell>}
 
-                                    {(this.props.role === "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                                        <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
-                                            <span>{row.buyer_name ? row.buyer_name : ""} </span>
-                                            <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
-                                        </div>
-                                    </TableCell>}
-                                    {/* <TableCell className={this.getTableCellClass(classes, 2)}>
+                                                {(this.props.role === "la" || this.props.role === "broker") && <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                                                    <div style={{ display: "grid", textAlign: "left", textTransform: "capitalize" }}>
+                                                        <span>{row.buyer_name ? row.buyer_name : ""} </span>
+                                                        <span style={{ fontSize: "12px" }}>{"( " + Utils.maskMobileNumber(row.buyer_mobile) + " )"}</span>
+                                                    </div>
+                                                </TableCell>}
+                                                {/* <TableCell className={this.getTableCellClass(classes, 2)}>
                                     <Tooltip title={row.supplier_name ? row.supplier_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                         <div className="text-ellpses">{row.supplier_name}</div>
                                     </Tooltip>
 
                                 </TableCell> */}
-                                    {/* <TableCell className={this.getTableCellClass(classes, 3)}>
+                                                {/* <TableCell className={this.getTableCellClass(classes, 3)}>
                                     <Tooltip title={row.buyer_name ? row.buyer_name : ""} placement="top" classes={{ tooltip: classes.lightTooltip }}>
                                         <div className="text-ellpses">{row.buyer_name}</div>
                                     </Tooltip>
                                 </TableCell> */}
 
-                                    {this.props.role !== "broker" && <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
-                                        {row.broker_name}
-                                    </TableCell>}
-                                    <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
+                                                {this.props.role !== "broker" && <TableCell className={this.getTableCellClass(classes, 4)} style={{ textAlign: "left" }}>
+                                                    {row.broker_name}
+                                                </TableCell>}
+                                                <TableCell className={this.getTableCellClass(classes, 5)} style={{ padding: "0px", textAlign: 'center', borderBottom: 0 }} >
 
-                                        {this.formatDateAndTime(row.createdtime)}
-                                    </TableCell>
-                                    <TableCell className={this.getTableCellClass(classes, 4)} >
-                                        {row.source_location ? row.source_location : "-"}
-                                    </TableCell>
-                                    <TableCell className={this.getTableCellClass(classes, 6)}  >
-                                        <span style={{
-                                            color: "white",
-                                            background: "rgb(58, 126, 63)",
-                                            padding: "4px 8px",
-                                            display: "inline-block",
-                                            borderRadius: "13px"
-                                        }}>{row.commodity}</span> </TableCell>
-                                    <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right", paddingRight: '10px' }}>
-                                        ₹ {Utils.formatNumberWithComma(row.bijak_amt)}
+                                                    {this.formatDateAndTime(row.createdtime)}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 4)} >
+                                                    {row.source_location ? row.source_location : "-"}
+                                                </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 6)}  >
+                                                    <span style={{
+                                                        color: "white",
+                                                        background: "rgb(58, 126, 63)",
+                                                        padding: "4px 8px",
+                                                        display: "inline-block",
+                                                        borderRadius: "13px"
+                                                    }}>{row.commodity}</span> </TableCell>
+                                                <TableCell className={this.getTableCellClass(classes, 7)} style={{ textAlign: "right", paddingRight: '10px' }}>
+                                                    ₹ {Utils.formatNumberWithComma(row.bijak_amt)}
 
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                </TableBody>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                            </TableBody>
 
-            </Table>
+                        </Table>
 
 
-        </div>
-            {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>
-                <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
-                    <TableRow>
-                        <TablePagination
-                            rowsPerPageOptions={[25, 50, 100]}
-                            colSpan={6}
-                            count={this.state.tableBodyData.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            SelectProps={{
-                                inputProps: { 'aria-label': 'rows per page' },
-                                native: true,
-                            }}
-                            onChangePage={this.handleChangePage.bind(this)}
-                            onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-                        />
-                    </TableRow>
-                </TableFooter>
-            </Table>}
-            {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
-
+                    </div>
+                    {this.state.tableBodyData && this.state.tableBodyData.length > 0 && <Table>
+                        <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[25, 50, 100]}
+                                    colSpan={6}
+                                    count={this.state.tableBodyData.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={this.handleChangePage.bind(this)}
+                                    onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>}
+                    {!this.state.tableBodyData.length && < NoDataAvailable style={{ height: '25vh' }} />}
+                </div>: <Loader />}
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}
             {/* <Button style={{float:'right',marginRight:'28px'}} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button> */}
 
-            {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") && 
-            <div className="updateBtndef">
-                <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
-                    <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
-                    <p style={{
-                        fontSize: "14px",
-                        fontFamily: "lato",
-                        fontWeight: 600
-                    }}>Add Order</p></div>
-            </div>}
+            {getAccessAccordingToRole("addOrder") && this.props.userdata && (this.props.userdata.role === "la" || this.props.userdata.role === "ca" || this.props.userdata.role === "broker") &&
+                <div className="updateBtndef">
+                    <div className="updateBtnFixedModal" style={{ display: 'flex' }} onClick={this.handleClickOpen.bind(this)}>
+                        <i className="fa fa-plus-circle add-icon" aria-hidden="true"></i>
+                        <p style={{
+                            fontSize: "14px",
+                            fontFamily: "lato",
+                            fontWeight: 600
+                        }}>Add Order</p></div>
+                </div>}
             {this.state.showAddOrderModal &&
                 <AddOrderModal
                     open={this.state.showAddOrderModal}
                     userdata={this.props.userdata}
                     onOrderDataAdded={(event) => this.onOrderDataAdded(event)}
-                    onAddModalCancel={(event) =>{ 
+                    onAddModalCancel={(event) => {
                         this.setState({ showAddOrderModal: false });
-                        this.props.onAddOrderModalClosed() }}
+                        this.props.onAddOrderModalClosed()
+                    }}
                 />}
             {this.state.showConfirmDialog ?
                 <ConfirmDialog
@@ -330,6 +364,16 @@ class OrderTable extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
+
         </div>
         );
     }

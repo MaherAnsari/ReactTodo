@@ -76,9 +76,8 @@ class EditMandiDataModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
-
-
+            },
+            showErrorMsg : false
         }
 
     }
@@ -140,7 +139,7 @@ class EditMandiDataModal extends Component {
         let data = this.state.dataObj;
         let id = event.target.id;
         data[id] = event.target.value;
-        this.setState({ dataObj: data });
+        this.setState({ dataObj: data ,showErrorMsg : false });
     }
 
     onSubmitClick = () => {
@@ -148,7 +147,15 @@ class EditMandiDataModal extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -173,10 +180,10 @@ class EditMandiDataModal extends Component {
         if (resp.data.status === 1) {
             // alert("Succesfully submitted");
             // this.props.onEditModalClosed();
-            
+
             sweetAlrtData["type"] = "success";
             sweetAlrtData["title"] = "Success";
-            sweetAlrtData["text"] = "Successfully submitted";
+            sweetAlrtData["text"] = "Data updated Successfully";
         } else {
             // alert("Opps there was an error, while adding");
             // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
@@ -184,9 +191,11 @@ class EditMandiDataModal extends Component {
             sweetAlrtData["title"] = "Error";
             sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
         }
-        this.setState({ showConfirmDialog: false, alertData: {},
+        this.setState({
+            showConfirmDialog: false, alertData: {},
             showSweetAlert: true,
-            sweetAlertData: sweetAlrtData });
+            sweetAlertData: sweetAlrtData
+        });
     }
 
 
@@ -238,7 +247,8 @@ class EditMandiDataModal extends Component {
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("All fields are required");
+            // alert("All fields are required");
+            this.setState({ showErrorMsg : true});
         }
     }
 
@@ -264,15 +274,17 @@ class EditMandiDataModal extends Component {
     }
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>
-            this.props.onEditModalClosed()
-        )
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onEditModalClosed();
+            }
+        })
     }
 
 
     render() {
         const { classes } = this.props;
-        const { showLoader, isManuallyAdded, mandiGradeOptions, 
+        const { showLoader, isManuallyAdded, mandiGradeOptions,
             mandiGradeHindiOptions, timeoption, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
@@ -552,6 +564,15 @@ class EditMandiDataModal extends Component {
                             </div>
                         </div>
                     </DialogContent>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > All fields are required </div>}
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.handleUpdateClick.bind(this)} color="primary">Update</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

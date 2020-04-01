@@ -137,7 +137,8 @@ class EditOrderDataModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg: false
         }
 
     }
@@ -210,7 +211,8 @@ class EditOrderDataModal extends Component {
         }
         this.setState({
             orderPayload: orderPayloadVal,
-            errorFields: errors
+            errorFields: errors,
+            showErrorMsg: false
         })
         console.log(orderPayloadVal)
     }
@@ -312,7 +314,7 @@ class EditOrderDataModal extends Component {
 
                     sweetAlrtData["type"] = "success";
                     sweetAlrtData["title"] = "Success";
-                    sweetAlrtData["text"] = "Successfully updated this order";
+                    sweetAlrtData["text"] = "Order updated successfully";
                 } else {
                     // alert("There was an error while updating this order");
                     // alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
@@ -325,7 +327,8 @@ class EditOrderDataModal extends Component {
                     sweetAlertData: sweetAlrtData
                 });
             } else {
-                alert("please fill the mandatory fields highlighted");
+                // alert("please fill the mandatory fields highlighted");
+                this.setState({ showErrorMsg: true });
             }
         } catch (err) {
             console.log(err);
@@ -490,7 +493,7 @@ class EditOrderDataModal extends Component {
 
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData  } = this.state;
+        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -1099,6 +1102,15 @@ class EditOrderDataModal extends Component {
                         </div>
 
                     </DialogContent>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign: "right",
+                            paddingRight: "10px"
+                        }}
+                        > Please fill the mandatory fields highlighted</div>}
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>

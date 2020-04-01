@@ -21,6 +21,7 @@ import PaymentTable from './PaymentTable';
 import orderService from '../../app/orderService/orderService';
 import creditLimitService from '../../app/creditLimitService/creditLimitService';
 import paymentService from '../../app/paymentService/paymentService';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
     overrides: {
@@ -74,12 +75,19 @@ class BusinessInfoDialog extends Component {
             isInfo: false,
             currentView: "userInfo",
             userInfoData: {},
-            orderList: [],
-            paymentList: [],
+            orderList: undefined,
+            paymentList: undefined,
             orderLabel: "Orders (" + 0 + ")",
             paymentLabel: "Payments (" + 0 + ")",
             creditLimitData: "",
-            userRole: ""
+            userRole: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
         console.log(this.props.userInfoData)
         console.log(this.props.data)
@@ -92,6 +100,7 @@ class BusinessInfoDialog extends Component {
     }
 
     async getCreditLimit(mobileno) {
+        let sweetAlrtData = this.state.sweetAlertData;
         let param = {};
         if (mobileno) {
             param['mobile'] = mobileno;
@@ -101,11 +110,27 @@ class BusinessInfoDialog extends Component {
                 if (resp.data.status === 1 && resp.data.result) {
                     this.setState({ creditLimitData: resp.data.result });
                 } else {
-                    this.setState({ creditLimitData: "" });
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+                    // this.setState({ creditLimitData: "" });
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit";
+                    this.setState({
+                        creditLimitData: "",
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
                 }
+
             } catch (err) {
-                console.error(err)
+                console.error(err);
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = "Oops an error occured while getting the credit limit";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         }
     }
@@ -139,7 +164,15 @@ class BusinessInfoDialog extends Component {
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
                 // alert("Oops an error occured while getting the info");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
@@ -162,6 +195,9 @@ class BusinessInfoDialog extends Component {
                     showLoader: false
                 });
             } else {
+                this.setState({
+                    orderList: [] ,
+                    showLoader: false});
                 // this.setState({ tableBodyData: [] ,showLoader:false});
             }
         } catch (err) {
@@ -274,12 +310,19 @@ class BusinessInfoDialog extends Component {
                 showAddOrderModal: (data.btnName === "orders" ? true : false)
             });
         }
+    }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
     }
 
     render() {
         const { classes } = this.props;
-        const { showLoader } = this.state;
+        const { showLoader, showSweetAlert, sweetAlertData } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <div>
@@ -388,6 +431,15 @@ class BusinessInfoDialog extends Component {
 
 
                         </DialogContent>
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
 
                     </Dialog>
 

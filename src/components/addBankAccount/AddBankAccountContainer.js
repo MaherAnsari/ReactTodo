@@ -232,7 +232,7 @@ class AddBankAccountContainer extends React.Component {
                             // this.getBankDetails(this.state.currentSelectedUserDetails)
                             sweetAlrtData["type"] = "success";
                             sweetAlrtData["title"] = "Success";
-                            sweetAlrtData["text"] = "Successfully Added";
+                            sweetAlrtData["text"] = "Bank account Successfully";
                             this.setState({
                                 showSweetAlert: true,
                                 sweetAlertData: sweetAlrtData
@@ -304,6 +304,7 @@ class AddBankAccountContainer extends React.Component {
     }
 
     onForceUpdateBankDetail = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true, showConfirmDialog: false });
             let data = this.state.forceUpdateData;
@@ -316,16 +317,31 @@ class AddBankAccountContainer extends React.Component {
             let resp = await commonService.forceUpdateBankDetail(payload);
             this.setState({ showLoader: false });
             if (resp.data.status === 1) {
-                alert("Successfully updated");
-                this.getBankDetails(this.state.currentSelectedUserDetails)
+                // alert("Successfully updated");
+                // this.getBankDetails(this.state.currentSelectedUserDetails)
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully updated";
             } else {
                 // alert("Oops an error occured while validating your account details.");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.";
 
             }
-
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         } catch (err) {
-            console.log(err)
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = err;
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -338,6 +354,7 @@ class AddBankAccountContainer extends React.Component {
     }
 
     deleteBankAccountDetailApi = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true, showConfirmDialog: false });
             let data = this.state.deleteAccountObj;
@@ -351,13 +368,12 @@ class AddBankAccountContainer extends React.Component {
             // let resp = { data  :{ status : 1}}
             let resp = await commonService.deleteBankDetail(payload);
             this.setState({ showLoader: false });
-            let sweetAlrtData = this.state.sweetAlertData;
             if (resp.data.status === 1) {
                 // alert("Successfully deleted");
                 // this.getBankDetails(this.state.currentSelectedUserDetails)
                 sweetAlrtData["type"] = "success";
                 sweetAlrtData["title"] = "Success";
-                sweetAlrtData["text"] = "Successfully deleted";
+                sweetAlrtData["text"] = "Bank account deleted Successfully";
                 this.setState({
                     showSweetAlert: true,
                     sweetAlertData: sweetAlrtData
@@ -376,6 +392,13 @@ class AddBankAccountContainer extends React.Component {
 
         } catch (err) {
             console.log(err)
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = err
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 

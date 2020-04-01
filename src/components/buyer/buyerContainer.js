@@ -12,6 +12,7 @@ import userListService from './../../app/userListService/userListService';
 import FileUploader from '../common/fileUploader';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import Utils from '../../app/common/utils';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -56,7 +57,14 @@ class BuyerContainer extends React.Component {
             totalDataCount: 0,
             showLoader: false,
             isTableDataLoading: false,
-            resetPageNumber: false
+            resetPageNumber: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         };
     }
@@ -82,13 +90,19 @@ class BuyerContainer extends React.Component {
                 isTableDataLoading: false
             });
         } else {
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list";
             this.setState({
                 dataList: [],
                 totalDataCount: 0,
                 showLoader: false,
-                isTableDataLoading: false
+                isTableDataLoading: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
             });
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
         }
     }
 
@@ -108,15 +122,27 @@ class BuyerContainer extends React.Component {
 
     async handleFileUploader(event) {
         // console.log(event);
+        
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.handelGetData();
+                // alert("Data Successfuly Uploaded ");
+                // this.handelGetData();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded";
             } else {
                 // alert("Oops an error occured while uploading the data")
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading the data");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading the data");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while uploading the data";
             }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.error(err)
@@ -163,8 +189,17 @@ class BuyerContainer extends React.Component {
         })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
                 {this.state.showLoader && <Loader />}
@@ -175,7 +210,7 @@ class BuyerContainer extends React.Component {
                         role="ca"
                         downloadAbleFileName="buyer_list_data"
                         handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
-                        onClose={()=>this.handelGetData(this)}
+                        onClose={() => this.handelGetData(this)}
 
 
                         resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
@@ -238,12 +273,22 @@ class BuyerContainer extends React.Component {
                     ""}
 
 
-                {this.state.showUploader ? <FileUploader openModal={this.state.showUploader}
-                    onEditModalClosed={this.handleFileUploader.bind(this)}
-                    //  commodityList={ this.state.commodityList}
-                    onEditModalCancel={this.onModalCancel.bind(this)}
-                />
+                {this.state.showUploader ?
+                    <FileUploader openModal={this.state.showUploader}
+                        onEditModalClosed={this.handleFileUploader.bind(this)}
+                        //  commodityList={ this.state.commodityList}
+                        onEditModalCancel={this.onModalCancel.bind(this)}
+                    />
                     : ""}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
 
             </div>
         );

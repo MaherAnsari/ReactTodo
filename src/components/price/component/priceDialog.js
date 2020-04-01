@@ -83,7 +83,7 @@ class PriceDialog extends Component {
             commodityList: [],
             unitArr: ["kg", "quintal", "ton", "packet", "crate", "box", "pc"],
             showLoader: false,
-            
+
             showSweetAlert: false,
             sweetAlertData: {
                 "type": "",
@@ -142,11 +142,14 @@ class PriceDialog extends Component {
             // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
             sweetAlrtData["type"] = "error";
             sweetAlrtData["title"] = "Error";
-            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message :  "Oops there was an error, while adding";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
         }
-        this.setState({ showConfirmDialog: false, alertData: {},
+        this.setState({
+            showConfirmDialog: false,
+            alertData: {},
             showSweetAlert: true,
-            sweetAlertData: sweetAlrtData });
+            sweetAlertData: sweetAlrtData
+        });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -209,7 +212,15 @@ class PriceDialog extends Component {
         if (this.state.dataObj.brokerid && this.state.dataObj.brokerid !== "" && this.state.dataObj.buyerid && this.state.dataObj.buyerid !== "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Please check broker or buyer");
+            // alert("Please check broker or buyer");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Please check broker or buyer";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -229,14 +240,16 @@ class PriceDialog extends Component {
     }
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>
-            this.props.onEditModalClosed()
-        )
+        this.setState({ showSweetAlert: false }, () => {
+            if ( this.state.sweetAlertData["type"] !== "error") {
+                this.props.onEditModalClosed()
+            }
+        })
     }
 
     render() {
         const { classes } = this.props;
-        const { showLoader , showSweetAlert, sweetAlertData } = this.state;
+        const { showLoader, showSweetAlert, sweetAlertData } = this.state;
         return (<div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}

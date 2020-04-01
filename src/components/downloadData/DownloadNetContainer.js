@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import DateRangeSelector from './component/DateRangeSelector';
-
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,6 +11,7 @@ import commonService from '../../app/commonService/commonService';
 import EmailInputModal from './component/EmailInputModal';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -52,7 +52,13 @@ class DownloadNetContainer extends React.Component {
                 "payments": "Payments"
             },
             isEmailSentSuccess: "emailView",
-            isAlltimeChecked : false
+            isAlltimeChecked: false,
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
 
         }
     }
@@ -91,11 +97,11 @@ class DownloadNetContainer extends React.Component {
                 "email": email
             }
 
-            if( this.state.isAlltimeChecked ){
+            if (this.state.isAlltimeChecked) {
                 payload["startDate"] = this.formateDateForApi(new Date("01/01/2019"));
                 payload["endDate"] = this.formateDateForApi(new Date());
             }
-            
+
             let resp = "";
             if (this.state.type === "orders") {
                 resp = await commonService.getOrdersBulkDataForDownload(payload);
@@ -120,7 +126,15 @@ class DownloadNetContainer extends React.Component {
                 }
             } else {
                 this.setState({ isEmailSentSuccess: "failed" });
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                let sweetAlrtData = this.state.sweetAlertData;
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             this.setState({ isEmailSentSuccess: "failed" });
@@ -129,9 +143,9 @@ class DownloadNetContainer extends React.Component {
     }
 
     downLoadDataCAandLA = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true });
-
             let payload = {
                 "type": this.state.type,
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
@@ -143,10 +157,26 @@ class DownloadNetContainer extends React.Component {
                 if (resp.data.result !== "-" && resp.data.result.length !== 0) {
                     this.onDownLoadAPiSuccess(resp.data.result);
                 } else {
-                    alert("No data available")
+                    // alert("No data available")
+
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = "No data available";
+                    this.setState({
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
                 }
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.log(err)
@@ -186,14 +216,24 @@ class DownloadNetContainer extends React.Component {
         this.setState({ showConfirmDialog: false, forceUpdateData: undefined });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            // this.props.onPayoutSuccessfull()
+        })
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader, type, isDownlaodModalOpen, dropOptions, isAlltimeChecked } = this.state;
+        const { showLoader, type, isDownlaodModalOpen, dropOptions, isAlltimeChecked
+            , showSweetAlert, sweetAlertData
+        } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
+
                     <div style={{ paddingRight: '10%' }}>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                        {!this.state.isAlltimeChecked &&
+                            <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />}
                     </div>
                     <div>
 
@@ -202,7 +242,7 @@ class DownloadNetContainer extends React.Component {
                                 <FormControlLabel
                                     control={<Checkbox
                                         checked={isAlltimeChecked}
-                                        onChange={( event ) =>  this.setState({ isAlltimeChecked : event.target.checked })}
+                                        onChange={(event) => this.setState({ isAlltimeChecked: event.target.checked })}
                                         name="checkedA" />}
                                     label="All Time"
                                 />
@@ -250,6 +290,15 @@ class DownloadNetContainer extends React.Component {
                                     // , function(){
                                     this.downloadOtherData(emailId);
                                 }} />}
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
                     </div>
                 </Paper>
             </div>

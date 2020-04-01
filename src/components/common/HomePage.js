@@ -39,6 +39,7 @@ import RolePermissionContainer from '../role-permission/RolePermissionContainer'
 import { getStatusOfRole } from '../../config/appConfig';
 import PaymentDetailsContainer from '../paymentDetails/PaymentDetailsContainer';
 import DownloadNetContainer from '../downloadData/DownloadNetContainer';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const drawerWidth = 250;
 
@@ -209,9 +210,17 @@ class Home extends React.Component {
     let resp = await mandiDataService.getDistrictList();
     if (resp.data.status === 1 && resp.data.result) {
       Utils.setDistrictData(resp.data.result.data)
-    }else{
+    } else {
       // alert("Oops an error occured while getting the district list");
-      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the district list");
+      // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the district list");
+      let sweetAlrtData = this.state.sweetAlertData;
+      sweetAlrtData["type"] = "error";
+      sweetAlrtData["title"] = "Error";
+      sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the district list";
+      this.setState({
+        showSweetAlert: true,
+        sweetAlertData: sweetAlrtData
+      });
     }
   }
 
@@ -299,12 +308,19 @@ class Home extends React.Component {
     });
   }
 
+  handelSweetAlertClosed() {
+    this.setState({ showSweetAlert: false }, () => {
+      if (this.state.sweetAlertData.type !== "error") {
+        // this.handelGetData();
+      }
+    });
+  }
 
 
   render() {
 
     const { classes } = this.props;
-    const { anchorEl, showChangePasswordView } = this.state;
+    const { anchorEl, showChangePasswordView, showSweetAlert, sweetAlertData } = this.state;
     const open = Boolean(anchorEl);
     // const username = cookie.load('username');
 
@@ -347,8 +363,8 @@ class Home extends React.Component {
                     ? <div></div>
                     : <div style={{ textAlign: "right", display: "flex", float: "right" }}>
                       <div style={{ display: "grid" }}>
-                        <span  style={{ fontSize: "17px", fontWeight: 500, fontFamily: "lato" }} > {sessionStorage.getItem("userName") ? sessionStorage.getItem("userName") : ""}</span>
-                        <span  style={{ fontSize: "13px", fontWeight: 500, fontFamily: "lato" }}>  {sessionStorage.getItem("userMobile") ? sessionStorage.getItem("userMobile") : ""}</span>
+                        <span style={{ fontSize: "17px", fontWeight: 500, fontFamily: "lato" }} > {sessionStorage.getItem("userName") ? sessionStorage.getItem("userName") : ""}</span>
+                        <span style={{ fontSize: "13px", fontWeight: 500, fontFamily: "lato" }}>  {sessionStorage.getItem("userMobile") ? sessionStorage.getItem("userMobile") : ""}</span>
                       </div>
                       <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
@@ -431,6 +447,15 @@ class Home extends React.Component {
           <ChangePasswordPage
             openModal={this.state.showChangePasswordView}
             onModalClose={() => this.setState({ showChangePasswordView: false })} />}
+
+        {showSweetAlert &&
+          <SweetAlertPage
+            show={true}
+            type={sweetAlertData.type}
+            title={sweetAlertData.title}
+            text={sweetAlertData.text}
+            sweetAlertClose={() => this.handelSweetAlertClosed()}
+          />}
       </div>
     );
   }

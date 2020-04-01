@@ -346,7 +346,7 @@ class AddOrderModal extends Component {
                     // this.props.onOrderDataAdded();
                     sweetAlrtData["type"] = "success";
                     sweetAlrtData["title"] = "Success";
-                    sweetAlrtData["text"] = "Successfully added this order ";
+                    sweetAlrtData["text"] = "Order added successfully";
                 } else {
                     // alert("There was an error while adding this order");
                     // alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while adding this order");

@@ -13,11 +13,10 @@ import ConfirmDialog from '../../../app/common/ConfirmDialog';
 import commodityService from '../../../app/commodityService/commodityService';
 import EditIcon from '@material-ui/icons/Edit';
 import EditCommodityList from './EditCommodityList';
-
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
-
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
   overrides: {
@@ -38,8 +37,8 @@ const theme = createMuiTheme({
         fontFamily: 'lato !important',
       },
       MuiTablePagination: {
-        toolbar:{
-          paddingRight:'200px'
+        toolbar: {
+          paddingRight: '200px'
         }
       },
     },
@@ -92,7 +91,7 @@ class CommodityTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeadData: ["","name", "category", "weight","",""],
+      tableHeadData: ["", "name", "category", "weight", "", ""],
       tableBodyData: this.props.tableData,
       dataList: this.props.tableData,
       searchedText: "",
@@ -124,7 +123,7 @@ class CommodityTable extends Component {
     }
 
 
-    this.setState({ tableBodyData: updatedRow  , page: 0});
+    this.setState({ tableBodyData: updatedRow, page: 0 });
   }
 
   getTableCellClass(classes, index) {
@@ -138,6 +137,8 @@ class CommodityTable extends Component {
 
 
   handleChange(row, event) {
+
+    let sweetAlrtData = this.state.sweetAlertData;
     let obj = {
       "data": {
         "name": row.name,
@@ -149,19 +150,42 @@ class CommodityTable extends Component {
 
 
   async updateCommodity(payload) {
-    let resp = await commodityService.updateCommodity(payload);
-    if (resp.data.status === 1) {
-      alert("Successfully Update");
-      this.props.onClose();
-    } else {
-      // alert("Ooops! there was an error");
-      alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+
+    let sweetAlrtData = this.state.sweetAlertData;
+    try {
+      let resp = await commodityService.updateCommodity(payload);
+      if (resp.data.status === 1) {
+        // alert("Successfully Update");
+        // this.props.onClose();
+        sweetAlrtData["type"] = "success";
+        sweetAlrtData["title"] = "Success";
+        sweetAlrtData["text"] = "Commodity Successfuly updated";
+      } else {
+        // alert("Ooops! there was an error");
+        // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error");
+        sweetAlrtData["type"] = "error";
+        sweetAlrtData["title"] = "Error";
+        sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! There was an error";
+      }
+      this.setState({
+        showSweetAlert: true,
+        sweetAlertData: sweetAlrtData
+      });
+    } catch (err) {
+      console.log(err);
+      sweetAlrtData["type"] = "error";
+      sweetAlrtData["title"] = "Error";
+      sweetAlrtData["text"] = "Oops! There was an error";
+      this.setState({
+        showSweetAlert: true,
+        sweetAlertData: sweetAlrtData
+      });
     }
   }
 
   //edit option
   handelEditModalOpen(data) {
-    this.setState({ editableData: Object.assign({},data) , showEditDataModal: true });
+    this.setState({ editableData: Object.assign({}, data), showEditDataModal: true });
   }
 
   handelEditModalClose(event) {
@@ -182,9 +206,17 @@ class CommodityTable extends Component {
     this.setState({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
   };
 
+  handelSweetAlertClosed() {
+    this.setState({ showSweetAlert: false }, () => {
+      if (this.state.sweetAlertData.type !== "error") {
+        this.props.onClose();
+      }
+    });
+  }
+
   render() {
     const { classes } = this.props;
-    const { rowsPerPage, page } = this.state;
+    const { rowsPerPage, page, showSweetAlert, sweetAlertData } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <Paper className={classes.root} >
@@ -200,69 +232,69 @@ class CommodityTable extends Component {
             </div>
           </div>
           <div>
-          <div style={{maxHeight:"70vh",overflowY:"scroll"}}>
-            <Table  className='table-body' stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow  style={{borderBottom: "2px solid #858792"}} >
-                  {this.state.tableHeadData.map((option, i) => (
-                    <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i < 2 ? "left" : "center",minWidth: i === 0 ? '50px':'120px',padding: i < 2 ? 0:  "14px" }}>{option}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state.tableBodyData &&
-                 (rowsPerPage > 0
-                                    ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : this.state.tableBodyData
-                                  ).map((row, i) => {
-                  return (
-                    <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
-                       <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                       <img style={{width:'35px',height:'35px'}} alt={ row.image_url } src={row.image_url}></img> 
-                      </TableCell>
+            <div style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+              <Table className='table-body' stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow style={{ borderBottom: "2px solid #858792" }} >
+                    {this.state.tableHeadData.map((option, i) => (
+                      <TableCell key={option} className={this.getTableCellClass(classes, i)} style={{ textAlign: i < 2 ? "left" : "center", minWidth: i === 0 ? '50px' : '120px', padding: i < 2 ? 0 : "14px" }}>{option}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.tableBodyData &&
+                    (rowsPerPage > 0
+                      ? this.state.tableBodyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      : this.state.tableBodyData
+                    ).map((row, i) => {
+                      return (
+                        <TableRow key={'table_' + i} style={{ background: i % 2 !== 0 ? "#e8e8e8" : "#fff" }}>
+                          <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                            <img style={{ width: '35px', height: '35px' }} alt={row.image_url} src={row.image_url}></img>
+                          </TableCell>
 
-                      <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
-                      <div style={{ display: "grid", textAlign: "left" }}>
-                            <span style={{textTransform: "capitalize"}}>{row.name_en ? row.name_en : "" }</span>
-                            <span style={{ fontSize: "12px" }}>{"( " + row.expected_lang + " )"}</span>
-                          </div>
-                    
-                      </TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
-                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
-                      </TableCell>
-                      {/* <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
+                          <TableCell component="th" scope="row" className={this.getTableCellClass(classes, 0)}>
+                            <div style={{ display: "grid", textAlign: "left" }}>
+                              <span style={{ textTransform: "capitalize" }}>{row.name_en ? row.name_en : ""}</span>
+                              <span style={{ fontSize: "12px" }}>{"( " + row.expected_lang + " )"}</span>
+                            </div>
+
+                          </TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 2)}>{row.category}</TableCell>
+                          <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.weight}
+                          </TableCell>
+                          {/* <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >{row.expected_lang}
                       </TableCell> */}
-                      <TableCell style={{padding: "0px"}}>
-                        <Switch
-                          checked={row.active}
-                          onChange={this.handleChange.bind(this, row)}
-                          value={row.active}
-                          color="primary"
-                          
-                          inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        /><span className={classes.toggle}>Active</span></TableCell>
-                      {/* Edit option Added */}
-                      <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >
-                        {getAccessAccordingToRole("editCommodity") && 
-                        <EditIcon
-                          className="material-Icon"
-                          onClick={() => this.handelEditModalOpen(row)}
-                          style={{ color: "#e72e89", cursor: "pointer" , height: "18px", fontSize: "18px"}} />}
-                      </TableCell>
-                    </TableRow>
+                          <TableCell style={{ padding: "0px" }}>
+                            <Switch
+                              checked={row.active}
+                              onChange={this.handleChange.bind(this, row)}
+                              value={row.active}
+                              color="primary"
 
-                  );
-                })}
-              </TableBody>
-              
-            </Table>
-          </div>
-          {this.state.tableBodyData.length > 0  && <Table>
-          <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
+                              inputProps={{ 'aria-label': 'secondary checkbox' }}
+                            /><span className={classes.toggle}>Active</span></TableCell>
+                          {/* Edit option Added */}
+                          <TableCell className={this.getTableCellClass(classes, 3) + " market-val"} >
+                            {getAccessAccordingToRole("editCommodity") &&
+                              <EditIcon
+                                className="material-Icon"
+                                onClick={() => this.handelEditModalOpen(row)}
+                                style={{ color: "#e72e89", cursor: "pointer", height: "18px", fontSize: "18px" }} />}
+                          </TableCell>
+                        </TableRow>
+
+                      );
+                    })}
+                </TableBody>
+
+              </Table>
+            </div>
+            {this.state.tableBodyData.length > 0 && <Table>
+              <TableFooter style={{ borderTop: "2px solid #858792", background: "#fafafa" }}>
                 <TableRow>
                   <TablePagination
-                    rowsPerPageOptions={[ 25, 50, 100]}
+                    rowsPerPageOptions={[25, 50, 100]}
                     colSpan={6}
                     count={this.state.tableBodyData.length}
                     rowsPerPage={rowsPerPage}
@@ -276,7 +308,7 @@ class CommodityTable extends Component {
                   />
                 </TableRow>
               </TableFooter>
-          </Table>}
+            </Table>}
           </div>
           {this.state.tableBodyData.length > 0 ? "" : <div className={classes.defaultTemplate}>
             {this.state.searchedText.length > 0 ? <span className={classes.defaultSpan}>
@@ -300,6 +332,15 @@ class CommodityTable extends Component {
               show={this.state.showConfirmDialog}
               onConfirmed={this.handelConfirmUpdate}
               onCanceled={this.handelCancelUpdate} /> : ""}
+
+          {showSweetAlert &&
+            <SweetAlertPage
+              show={true}
+              type={sweetAlertData.type}
+              title={sweetAlertData.title}
+              text={sweetAlertData.text}
+              sweetAlertClose={() => this.handelSweetAlertClosed()}
+            />}
         </Paper>
       </MuiThemeProvider>
     );

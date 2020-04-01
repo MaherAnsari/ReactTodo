@@ -11,6 +11,7 @@ import commodityService from '../../app/commodityService/commodityService';
 import FileUploader from '../common/fileUploader';
 // import sampleFile from '../sampleDownloadFiles/bulk-add-user-data-sample.csv';
 import { getAccessAccordingToRole } from '../../config/appConfig';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -57,7 +58,14 @@ class UserDataContainer extends React.Component {
             totalDataCount: 0,
             showLoader: false,
             isTableDataLoading: false,
-            resetPageNumber: false
+            resetPageNumber: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
         };
     }
@@ -85,26 +93,37 @@ class UserDataContainer extends React.Component {
     // }
 
     async getData(params) {
-        this.setState({ showAddModal: false, showUploader: false });
-        let resp = await userListService.getUserList(params);
+        try {
+            let sweetAlrtData = this.state.sweetAlertData;
+            this.setState({ showAddModal: false, showUploader: false });
+            let resp = await userListService.getUserList(params);
 
-        if (resp.data.status === 1 && resp.data.result) {
-            let respData = resp.data.result;
-            console.log(respData);
-            this.setState({
-                dataList: this.state.dataList.concat(respData.data),
-                totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
-                showLoader: false,
-                isTableDataLoading: false
-            });
-        } else {
-            this.setState({
-                dataList: [],
-                totalDataCount: 0,
-                showLoader: false,
-                isTableDataLoading: false
-            });
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            if (resp.data.status === 1 && resp.data.result) {
+                let respData = resp.data.result;
+                console.log(respData);
+                this.setState({
+                    dataList: this.state.dataList.concat(respData.data),
+                    totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
+                    showLoader: false,
+                    isTableDataLoading: false
+                });
+            } else {
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data";
+
+                this.setState({
+                    dataList: [],
+                    totalDataCount: 0,
+                    showLoader: false,
+                    isTableDataLoading: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            }
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -140,8 +159,16 @@ class UserDataContainer extends React.Component {
         try {
             let resp = await userListService.uploadData(event);
             if (resp.data.status === 1 && resp.data.result) {
-                alert("Data Successfuly Uploaded ");
-                this.handelGetData();
+                // alert("Data Successfuly Uploaded ");
+                // this.handelGetData();
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Data Successfuly Uploaded";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
 
         } catch (err) {
@@ -173,8 +200,17 @@ class UserDataContainer extends React.Component {
         })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.handelGetData();
+            }
+        });
+    }
+
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
 
@@ -239,7 +275,7 @@ class UserDataContainer extends React.Component {
                         onEditModalClosed={this.handleClose.bind(this)}
                         commodityList={this.state.commodityList}
                         onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
-                        
+
                 {this.state.showUploader ?
                     <FileUploader
                         openModal={this.state.showUploader}
@@ -248,6 +284,14 @@ class UserDataContainer extends React.Component {
                         onEditModalCancel={this.onModalCancel.bind(this)}
                     />
                     : ""}
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </div>
         );
     }

@@ -104,7 +104,8 @@ class PayoutModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            showErrorMsg: false
         }
         console.log(this.props.payoutData)
     }
@@ -121,11 +122,29 @@ class PayoutModal extends Component {
                 this.setState({ acctDetails: resp.data.result })
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details";
+                this.setState({
+                    currentPayoutView: "defaultPayout",
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                currentPayoutView: "defaultPayout",
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -143,12 +162,28 @@ class PayoutModal extends Component {
                 }
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
-                this.setState({ currentPayoutView: "defaultPayout" });
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops! an error occured while getting the account details";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+
         }
     }
 
@@ -182,7 +217,8 @@ class PayoutModal extends Component {
         }
         this.setState({
             addAccountData: addAccountDataVal,
-            errorFields: errors
+            errorFields: errors,
+            showErrorMsg: false
         })
         // console.log(addAccountDataVal)
     }
@@ -199,7 +235,8 @@ class PayoutModal extends Component {
         }
         this.setState({
             skipRazorPayTransObj: skipRazorPayTransObjVal,
-            errorFieldsOfSkipTrans: errors
+            errorFieldsOfSkipTrans: errors,
+            showErrorMsg: false
         })
     }
 
@@ -235,7 +272,8 @@ class PayoutModal extends Component {
         if (this.checkForInvalidFields(this.state.addAccountData)) {
             this.setState({ currentPayoutView: "selectAccount" });
         } else {
-            alert("Please fill the reqd. fields")
+            // alert("Please fill the reqd. fields");
+            this.setState({ showErrorMsg: true });
         }
     }
 
@@ -276,7 +314,8 @@ class PayoutModal extends Component {
                     payload["utr"] = this.state.skipRazorPayTransObj["utr"];
                     payload["remarks"] = this.state.skipRazorPayTransObj["remarks"];
                 } else {
-                    alert("Please enter the reqd. fields.")
+                    // alert("Please enter the reqd. fields.")
+                    this.setState({ showErrorMsg: true });
                     return;
                 }
             } else {
@@ -320,8 +359,17 @@ class PayoutModal extends Component {
             });
         } catch (err) {
             console.error(err);
-            this.setState({ currentPayoutView: "defaultPayout" });
-            alert("Oops an error occured while payout");
+            // this.setState({ currentPayoutView: "defaultPayout" });
+            // alert("Oops an error occured while payout");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Oops an error occured while payout";
+            this.setState({
+                currentPayoutView: "defaultPayout",
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -588,6 +636,15 @@ class PayoutModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                         </div>
+                        {this.state.showErrorMsg &&
+                            <div style={{
+                                fontFamily: 'Montserrat, sans-serif',
+                                fontSize: "12px",
+                                color: "red",
+                                textAlign: "right",
+                                paddingRight: "10px"
+                            }}
+                            > Please fill the reqd. fields</div>}
                         <Button variant="contained" onClick={(event) => this.onNewAccountSaveClicked(event)}
                             style={{ background: "blue", color: "#fff" }}>Save </Button>
                     </React.Fragment>}

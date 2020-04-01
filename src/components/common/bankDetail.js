@@ -74,6 +74,7 @@ class BankDetail extends React.Component {
         this.getBankDetails(this.props.userdata);
     }
     getBankDetails = async (userData) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true, currentSelectedUserDetails: userData });
             let param = { "mobile": userData["mobile"] };
@@ -86,12 +87,29 @@ class BankDetail extends React.Component {
                 }
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
-                this.setState({ showLoader: false });
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details";
+                this.setState({
+                    showLoader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                })
+
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
+                // this.setState({ showLoader: false });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
         }
     }
 
@@ -190,6 +208,7 @@ class BankDetail extends React.Component {
 
 
     onNewAccountAddClicked = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             if (this.checkIfAccountInputDetaisAreValid()) {
                 this.setState({ showLoader: true });
@@ -208,13 +227,13 @@ class BankDetail extends React.Component {
                 }
                 // let resp = { data: { status: 1, message: "custom msg", result:[] } };
                 let resp = await commonService.addbankDetail(payload);
-                let sweetAlrtData = this.state.sweetAlertData;
+
                 if (resp.data.status === 1) {
                     if (resp.data.result) {
 
                         sweetAlrtData["type"] = "success";
                         sweetAlrtData["title"] = "Success";
-                        sweetAlrtData["text"] = "Successfully Added";
+                        sweetAlrtData["text"] = "Bank details added Successfully";
                         this.setState({
                             showLoader: false,
                             currentPayoutView: "selectAccount",
@@ -251,8 +270,16 @@ class BankDetail extends React.Component {
             }
         } catch (err) {
             console.error(err);
-            this.setState({ showLoader: false })
-            alert("An error occured while adding the account details")
+            // this.setState({ showLoader: false })
+            // alert("An error occured while adding the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while adding the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
         }
     }
 
@@ -344,7 +371,7 @@ class BankDetail extends React.Component {
             if (resp.data.status === 1) {
                 sweetAlrtData["type"] = "success";
                 sweetAlrtData["title"] = "Success";
-                sweetAlrtData["text"] = "Successfully deleted";
+                sweetAlrtData["text"] = "Bank account deleted Successfully";
                 // alert("Successfully deleted");
                 // this.getBankDetails(this.state.currentSelectedUserDetails)
             } else {

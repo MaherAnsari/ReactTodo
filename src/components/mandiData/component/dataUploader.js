@@ -11,18 +11,18 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../../app/common/utils';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const CustomCheckbox = withStyles({
     root: {
-      color: "#fff",
-      '&$checked': {
-        color: "yellow",
-      },
+        color: "#fff",
+        '&$checked': {
+            color: "yellow",
+        },
     },
     checked: {},
-  })(props => <Checkbox color="default" {...props} />);
-  
+})(props => <Checkbox color="default" {...props} />);
+
 
 const styles = theme => ({
 
@@ -69,14 +69,14 @@ class DataUploader extends Component {
                 "remarks": "additional place",
                 "mandi_off_date": [],
                 "type": "l",
-                "openingHour":"00",
-                "openingMin":"00",
-                "time":"am",
-                "opening_time":"00:00 am"
+                "openingHour": "00",
+                "openingMin": "00",
+                "time": "am",
+                "opening_time": "00:00 am"
 
             },
             mandiGradeOptions: ["A", "B", "C", "D", "E", "F"],
-            timeoption:["am","pm"],
+            timeoption: ["am", "pm"],
             mandiGradeHindiOptions: ['क', 'ख', 'ग', 'घ', 'ङ', 'च'],
             "stateList": Utils.getStateData(),
             "districtMap": Utils.getDistrictData(),
@@ -84,9 +84,15 @@ class DataUploader extends Component {
             dayArr: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
             dayType: ['first', "second", "third", "fourth", "last"],
             typeArr: ["dates", "every", 'all'],
-            offDayArr: []
+            offDayArr: [],
             // dateArr:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
-
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            showErrorMsg : false
 
         }
 
@@ -103,7 +109,7 @@ class DataUploader extends Component {
         let data = this.state.dataObj;
         let id = event.target.id;
         data[id] = event.target.value;
-        this.setState({ dataObj: data });
+        this.setState({ dataObj: data ,showErrorMsg : false });
     }
 
     onSubmitClick = () => {
@@ -111,21 +117,40 @@ class DataUploader extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Opps there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Oops there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
     handelConfirmUpdate = async () => {
-
+        let sweetAlrtData = this.state.sweetAlertData;
         let resp = await mandiDataService.addMandiData(this.state.dataObj);
         if (resp.data.status === 1) {
-            alert("Succesfully submitted");
-            this.props.onEditModalClosed();
+            // alert("Succesfully submitted");
+            // this.props.onEditModalClosed();
+            sweetAlrtData["type"] = "success";
+            sweetAlrtData["title"] = "Success";
+            sweetAlrtData["text"] = "Succesfully submitted";
         } else {
             // alert("Opps there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
         }
-        this.setState({ showConfirmDialog: false, alertData: {} });
+        this.setState({
+            showConfirmDialog: false,
+            alertData: {},
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData
+        });
     }
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
@@ -168,13 +193,14 @@ class DataUploader extends Component {
             offDayArr.push(str);
         }
         this.state.dataObj.mandi_off_date = offDayArr;
-        this.state.dataObj.opening_time = this.state.dataObj.openingHour+":"+this.state.dataObj.openingMin+" "+this.state.dataObj.time;
+        this.state.dataObj.opening_time = this.state.dataObj.openingHour + ":" + this.state.dataObj.openingMin + " " + this.state.dataObj.time;
         let dialogText = "Are you sure to add ?"
         if (this.state.dataObj.state && this.state.dataObj.state !== "" && this.state.dataObj.market && this.state.dataObj.market !== "" && this.state.dataObj.district && this.state.dataObj.district !== ""
             && this.state.dataObj.market_hindi && this.state.dataObj.market_hindi !== "" && this.state.dataObj.district_hindi && this.state.dataObj.district_hindi !== "") {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Please check  required fields");
+            // alert("Please check  required fields");
+            this.setState({showErrorMsg : true });
         }
     }
 
@@ -199,16 +225,24 @@ class DataUploader extends Component {
         this.setState({ offDayArr: data });
     }
 
-    handleCheckbokChange( event ){
+    handleCheckbokChange(event) {
         var dataObjVal = this.state.dataObj;
         dataObjVal["type"] = event.target.checked ? "m" : "l";
         this.setState({ dataObj: dataObjVal });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onEditModalClosed();
+            }
+        });
+    }
+
     // type ="m"/ "l"
     render() {
         const { classes } = this.props;
-        const { mandiGradeOptions, mandiGradeHindiOptions ,timeoption} = this.state;
+        const { mandiGradeOptions, mandiGradeHindiOptions, timeoption, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -218,25 +252,25 @@ class DataUploader extends Component {
                 <div
                     style={{ background: '#05073a', textAlign: 'center', height: '60px' }}
                     id="form-dialog-title">
-                    <div style={{ color: '#fff',lineHeight: "48px", verticalAlign: "middle", paddingLeft:"42%",fontFamily: 'Lato', fontSize: '18px', width: "100%", display: "flex" }}>
+                    <div style={{ color: '#fff', lineHeight: "48px", verticalAlign: "middle", paddingLeft: "42%", fontFamily: 'Lato', fontSize: '18px', width: "100%", display: "flex" }}>
                         Mandi Data
-                        
-                        <div style={{right: "0px", position: "absolute",fontSize: "15px",color: "cyan"}}>
-                            Valid Mandi 
-                            
+
+                        <div style={{ right: "0px", position: "absolute", fontSize: "15px", color: "cyan" }}>
+                            Valid Mandi
+
                             <CustomCheckbox
                                 checked={this.state.dataObj.type === "m"}
-                                onChange={this.handleCheckbokChange.bind( this )}
+                                onChange={this.handleCheckbokChange.bind(this)}
                                 value={this.state.dataObj.type === "m"}
                                 inputProps={{
-                                'aria-label': 'primary checkbox',
+                                    'aria-label': 'primary checkbox',
                                 }}
                             />
-                            </div>
                         </div>
-                        
-                           
-        
+                    </div>
+
+
+
                 </div>
                 <DialogContent>
                     <div style={{ display: 'flex' }}>
@@ -383,34 +417,34 @@ class DataUploader extends Component {
                                     fullWidth
                                 />
                             </div>
-                            <div style={{marginTop:'5px',fontSize:'16px'}}>Mandi Opening Time :</div>                
-                            <div style={{display:'flex'}}>
+                            <div style={{ marginTop: '5px', fontSize: '16px' }}>Mandi Opening Time :</div>
+                            <div style={{ display: 'flex' }}>
                                 <TextField
                                     margin="dense"
                                     id="openingHour"
                                     label="Hour"
                                     type="text"
-                                    style={{ marginRight: '2%',width:'30%' }}
+                                    style={{ marginRight: '2%', width: '30%' }}
                                     value={this.state.dataObj.openingHour}
                                     onChange={this.handleChange.bind(this)}
                                     fullWidth
                                 />
-                                 <TextField
+                                <TextField
                                     margin="dense"
                                     id="openingMin"
                                     label="Minute"
                                     type="text"
-                                    style={{ marginRight: '2%',width:'30%' }}
+                                    style={{ marginRight: '2%', width: '30%' }}
                                     value={this.state.dataObj.openingMin}
                                     onChange={this.handleChange.bind(this)}
                                     fullWidth
                                 />
-                                  <TextField
+                                <TextField
                                     select
                                     id="time"
                                     label="Time"
                                     type="text"
-                                    style={{ marginRight: '2%', width: '30%' ,paddingTop:'20px'}}
+                                    style={{ marginRight: '2%', width: '30%', paddingTop: '20px' }}
                                     value={this.state.dataObj.time}
                                     onChange={this.handleStateChange.bind(this, 'time')}>
                                     {timeoption.map((option, i) => (
@@ -493,6 +527,15 @@ class DataUploader extends Component {
                         </div>
                     </div>
                 </DialogContent>
+                {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > Please check the required fields</div>}
                 <DialogActions>
                     <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Add</Button>
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
@@ -505,6 +548,15 @@ class DataUploader extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
+
         </div>
         );
     }
