@@ -438,7 +438,7 @@ class EditTransactionModal extends Component {
     handelSweetAlertClosed() {
         this.setState({ showSweetAlert: false }, () => {
             if (this.state.sweetAlertData.type !== "error") {
-                // this.handelGetData();
+                this.props.onTransactionUpdated();
             }
         });
     }
@@ -482,7 +482,7 @@ class EditTransactionModal extends Component {
                                         id="transaction_date"
                                         label="Transaction date"
                                         format="dd-MMM-yyyy"
-                                        style={{ width: '100%' }}
+                                        style={{ width: '100%', zIndex: '999999' }}
                                         value={editTransactionPayload.transaction_date}
                                         onChange={(dateval) => {
                                             this.handelDateChange(dateval);

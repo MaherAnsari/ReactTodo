@@ -304,7 +304,7 @@ class UserListTable extends Component {
                 sweetAlrtData["title"] = "Success";
                 sweetAlrtData["text"] = "Successfully submitted";
             } else {
-                // alert("Opps there was an error, while adding");
+                // alert("Oops there was an error, while adding");
                 // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
                 sweetAlrtData["type"] = "error";
                 sweetAlrtData["title"] = "Error";

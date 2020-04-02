@@ -117,7 +117,7 @@ class DataUploader extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            // alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
             let sweetAlrtData = this.state.sweetAlertData;
             sweetAlrtData["type"] = "error";
             sweetAlrtData["title"] = "Error";
@@ -139,7 +139,7 @@ class DataUploader extends Component {
             sweetAlrtData["title"] = "Success";
             sweetAlrtData["text"] = "Succesfully submitted";
         } else {
-            // alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
             // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
             sweetAlrtData["type"] = "error";
             sweetAlrtData["title"] = "Error";

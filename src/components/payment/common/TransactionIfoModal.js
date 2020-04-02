@@ -148,8 +148,6 @@ class TransactionIfoModal extends Component {
                                             <div style={{ padding: "14px" }} className={classes.actcardtext}>
                                                 Oops no bank account available.
                                     </div>}
-
-
                                     </div>
                                     <form noValidate autoComplete="off">
                                         <div style={{ display: "flex" }} >

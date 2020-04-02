@@ -150,11 +150,11 @@ class FileUploader extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            // alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
             let sweetAlrtData = this.state.sweetAlertData;
             sweetAlrtData["type"] = "error";
             sweetAlrtData["title"] = "Error";
-            sweetAlrtData["text"] = "Opps there was an error, while adding";
+            sweetAlrtData["text"] = "Oops there was an error, while adding";
             this.setState({
                 showSweetAlert: true,
                 sweetAlertData: sweetAlrtData

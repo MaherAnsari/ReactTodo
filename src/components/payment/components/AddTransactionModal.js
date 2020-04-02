@@ -215,7 +215,9 @@ class AddTransactionModal extends Component {
             }
             this.setState({
                 bank_detail: bankData,
-                errorFields: errors
+                errorFields: errors,
+                showErrorMsg: false,
+                errorMsg: ""
             })
         } catch (err) {
             console.log(err)

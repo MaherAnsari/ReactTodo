@@ -211,7 +211,7 @@ class EmailInputModal extends React.Component {
                                 <p style={{
                                     fontSize: "12px",
                                     marginBottom: "0"
-                                }} > {this.state.isEmailSentSuccess === "success" ? "Your request has been Successfully processed. You will receive the email within 15 min." : "Opps an error occured. Please try again later"}  </p>
+                                }} > {this.state.isEmailSentSuccess === "success" ? "Your request has been Successfully processed. You will receive the email within 15 min." : "Oops an error occured. Please try again later"}  </p>
                             </DialogContent>}
 
                         {this.state.isEmailSentSuccess === "emailView" &&
