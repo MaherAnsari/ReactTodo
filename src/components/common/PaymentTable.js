@@ -74,7 +74,7 @@ class PaymentTable extends Component {
         this.state = {
             tableHeadData: ["Supplier Name", "Supplier Bussiness Name", "Created Time", "Payment mode", "Amount"],
             open: this.props.openModal,
-            // data: this.props.data,
+            tableData: this.props.data,
             showAddTransactionModal: this.props.showAddTransactionModal || false,
             rowsPerPage: 50,
             page: 0
@@ -93,6 +93,9 @@ class PaymentTable extends Component {
         if (nextProps.showAddTransactionModal !== this.state.showAddTransactionModal) {
             this.setState({ showAddTransactionModal: nextProps.showAddTransactionModal });
         }
+        if (nextProps.data && nextProps.data !== this.state.tableData) {
+            this.setState({ tableData: nextProps.data });
+        }
     }
 
 
@@ -104,32 +107,22 @@ class PaymentTable extends Component {
         this.props.onEditModalCancel();
     }
 
-
-    handleAddClick(event) {
-
-    }
     onTransactionDataAdded(event) {
         this.setState({ showAddTransactionModal: false }, function () {
             this.getTransactionList();
+            this.props.onPaymentAdded();
         })
     }
 
     getTransactionList = async () => {
         try {
-            let param = { "limit": 10, "role": this.props.role, userInfo: true }
+            let param = { "limit": 1000, "role": this.props.role, userInfo: true }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userdata.mobile, param);
-            // console.log( resp.data )
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
-
-                this.setState({
-
-                    data: respData["allTransactions"]
-                });
+                this.setState({ tableData: respData["allTransactions"] });
             } else {
-                this.setState({
-                    data: []
-                });
+                this.setState({ tableData: [] });
             }
         } catch (err) {
             console.error(err);
@@ -139,10 +132,8 @@ class PaymentTable extends Component {
     getTransactionTypeColor(transaction_type) {
         if (transaction_type === "b_out") {
             return "rgb(212, 58, 58)"; // red
-
         } else if (transaction_type === "b_in") {
             return "rgb(56, 122, 57)"; // green
-
         } else {
             return "rgba(0, 0, 0, 0.87)" // default black color
         }
@@ -156,8 +147,8 @@ class PaymentTable extends Component {
         } else {
             return "#757575";
         }
-
     }
+
     handleChangePage = (event, newPage) => {
         this.setState({ page: newPage });
     };
@@ -352,12 +343,12 @@ class PaymentTable extends Component {
 
     render() {
         const { classes } = this.props;
-        const { rowsPerPage, page } = this.state;
+        const { rowsPerPage, page, tableData } = this.state;
         const leftAlignedIndexs = [0, 1];
         const rightAlignedIndexs = [4];
         // console.log(this.props.data);
         return (<div style={{ marginTop: '50px' }}>
-            {this.props.data ?
+            {this.state.tableData ?
                 <div>
                     <div style={{ width: '100%', marginTop: '50px', maxHeight: "58vh", overflowY: "scroll" }}>
                         <Table stickyHeader aria-label="sticky table" className='table-body'>
@@ -373,7 +364,7 @@ class PaymentTable extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.props.data && this.props.data.length > 0 && this.props.data.map((row, i) => {
+                                {this.state.tableData && this.state.tableData.length > 0 && this.state.tableData.map((row, i) => {
                                     return (
 
                                         <TableRow key={'table_' + i} style={i % 2 !== 0 ? { background: "#e5e8ec" } : { background: "#fff" }}>
@@ -424,12 +415,12 @@ class PaymentTable extends Component {
                             </TableBody>
                         </Table>
                     </div>
-                    {this.props.data && this.props.data.length > 0 && <Table><TableFooter style={{ borderTop: "2px solid #858792" }}>
+                    {this.state.tableData && this.state.tableData.length > 0 && <Table><TableFooter style={{ borderTop: "2px solid #858792" }}>
                         <TableRow>
                             <TablePagination
                                 rowsPerPageOptions={[25, 50, 100]}
                                 colSpan={6}
-                                count={this.props.data.length}
+                                count={this.state.tableData.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{
@@ -442,7 +433,7 @@ class PaymentTable extends Component {
                         </TableRow>
                     </TableFooter></Table>}
 
-                    {this.props.data && this.props.data.length === 0 && < NoDataAvailable style={{ height: '25vh' }} />}
+                    {this.state.tableData && this.state.tableData.length === 0 && < NoDataAvailable style={{ height: '25vh' }} />}
                 </div> : <Loader />}
 
             {/* <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button> */}

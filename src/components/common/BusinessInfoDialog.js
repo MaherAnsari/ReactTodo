@@ -81,7 +81,7 @@ class BusinessInfoDialog extends Component {
             paymentLabel: "Payments (" + 0 + ")",
             creditLimitData: "",
             userRole: "",
-
+            transNumber : "",
             showSweetAlert: false,
             sweetAlertData: {
                 "type": "",
@@ -142,7 +142,8 @@ class BusinessInfoDialog extends Component {
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({
                     userInfoData: resp.data.result,
-                    userRole: resp.data.result.role
+                    userRole: resp.data.result.role,
+                    transNumber :   resp.data.result.mobile
                 });
 
                 let param = { "limit": 10000 };
@@ -391,6 +392,7 @@ class BusinessInfoDialog extends Component {
                                         showAddTransactionModal={this.state.showAddTransactionModal}
                                         onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
                                         data={this.state.paymentList}
+                                        onPaymentAdded={() => this.getTransactionList( this.state.userRole, this.state.transNumber )}
                                         userdata={this.state.userInfoData}
                                         role={this.state.userRole}
                                     /> : ""}

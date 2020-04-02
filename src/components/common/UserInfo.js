@@ -327,6 +327,7 @@ class UserInfo extends Component {
                             onEditModalClosed={this.handleDialogCancel.bind(this)}
                             onEditModalCancel={this.handleDialogCancel.bind(this)}
                             showAddTransactionModal={this.state.showAddTransactionModal}
+                            onPaymentAdded={() => this.getTransactionList()}
                             onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
                             data={this.state.paymentList}
                             userdata={this.props.data}
