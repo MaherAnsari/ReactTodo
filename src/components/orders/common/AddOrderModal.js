@@ -124,7 +124,7 @@ class AddOrderModal extends Component {
             tempVar: {},
             errorFields: {},
             attachmentArray: [],
-            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
+            commodityList: { options: [], optionN_E: {}, optionE_N: {} },
             showLoader: false,
             subId: "",
 
@@ -193,11 +193,11 @@ class AddOrderModal extends Component {
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList:{ options:[], optionN_E :{}, optionE_N:{}} });
+                this.setState({ commodityList: { options: [], optionN_E: {}, optionE_N: {} } });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
+            this.setState({ commodityList: { options: [], optionN_E: {}, optionE_N: {} } });
         }
     }
 
@@ -217,6 +217,8 @@ class AddOrderModal extends Component {
             return [];
         }
     }
+
+
 
     handleInputChange(event) {
         var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate", "bijak_total_amount", "pkt", "brokerage"]; // this values need to be float
@@ -355,6 +357,14 @@ class AddOrderModal extends Component {
         }
     }
 
+    getCommodityMappedName(data) {
+        console.log(data)
+        if (data) {
+            return this.state.commodityList["optionE_N"][data]
+        }
+        return data;
+    }
+
     async addOrder(event) {
         try {
             var payloadData = { "data": [] };
@@ -364,7 +374,9 @@ class AddOrderModal extends Component {
                 this.setState({ showLoader: true });
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
+                payload["commodity"] = this.getCommodityMappedName(payload["commodity"]);
                 payloadData["data"].push(this.removeBlankNonMandatoryFields(payload));
+
                 // let resp = { data: { status: 1, message: "custom Mas" ,result:[]} }
                 var resp = await orderService.addNewOrder(this.state.subId, payloadData);
                 let sweetAlrtData = this.state.sweetAlertData;
@@ -532,21 +544,11 @@ class AddOrderModal extends Component {
         this.setState({ addOrderPayload: addOrderPayloadVal });
     }
 
-    getCommodityArray(data) {
-        let cList = [];
-        for (let i = 0; i < data.length; i++) {
-            if (this.state.commodityList["optionN_E"].hasOwnProperty(data[i])) {
-                cList.push(this.state.commodityList["optionN_E"][data[i]]);
-            }
-        }
-        return cList;
-    }
-
 
     render() {
         const { classes } = this.props;
         const { showLoader, addOrderPayload, supplierid, buyerid,
-            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData, showFormError, 
+            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData, showFormError,
             tagsOptions } = this.state;
 
         return (<div>
@@ -700,7 +702,7 @@ class AddOrderModal extends Component {
                             </TextField>
                             &nbsp;
                             &nbsp;
-                            <Autocomplete
+                            {/* <Autocomplete
                                 // multiple
                                 id="commodity"
                                 error={errorFields["commodity"] ? true : undefined}
@@ -724,7 +726,24 @@ class AddOrderModal extends Component {
                                         fullWidth
                                     />
                                 )}
-                            />
+                            /> */}
+
+                            <TextField
+                                select
+                                id="commodity"
+                                error={errorFields["commodity"] ? true : false}
+                                name="commodity"
+                                label="Commodity"
+                                type="text"
+                                style={{ width: '49%', marginTop: '1%' }}
+                                value={addOrderPayload.commodity &&addOrderPayload.commodity !== null ? [addOrderPayload.commodity ] : []}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {commodityList["options"].map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
 
                         </div>
                         <div style={{ display: "flex" }} >
@@ -970,7 +989,7 @@ class AddOrderModal extends Component {
                                 multiple
                                 id="fixed-demo"
                                 options={tagsOptions}
-                                value={addOrderPayload.tags}
+                                value={addOrderPayload.tags && addOrderPayload.tags !== null ? addOrderPayload.tags  : ""}
                                 getOptionLabel={e => e}
                                 onChange={this.handelTagsChanges}
                                 renderTags={(value, getTagProps) =>

@@ -106,24 +106,6 @@ class EditUser extends Component {
     //     }
     // }
 
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
-
 
     handleChange = event => {
         let data = this.state.dataObj;
@@ -290,8 +272,11 @@ class EditUser extends Component {
         for (let i = 0; i < data.length; i++) {
             if (this.props.commodityList["optionN_E"].hasOwnProperty(data[i])) {
                 cList.push(this.props.commodityList["optionN_E"][data[i]]);
+            }else{
+                cList.push( data[i] )
             }
         }
+        console.log( cList )
         return cList;
     }
 
@@ -433,7 +418,7 @@ class EditUser extends Component {
                             renderInput={params => (
                                 <TextField
                                     {...params}
-                                    label="Default Commodity-"
+                                    label="Default Commodity"
                                     placeholder="Search"
                                     fullWidth
                                 />

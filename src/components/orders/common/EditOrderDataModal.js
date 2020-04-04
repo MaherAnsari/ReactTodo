@@ -123,7 +123,7 @@ class EditOrderDataModal extends Component {
                 "pkt": "",
                 "brokerage": "",
                 "unsettled_amount_pltf": "",
-                "tags":[]
+                "tags": []
             },
 
             buyerid: "",
@@ -315,6 +315,14 @@ class EditOrderDataModal extends Component {
         }
     }
 
+    getCommodityMappedName( data ){
+        console.log( data )
+        if( data ){
+            return this.state.commodityList["optionE_N"][data]
+        }
+        return data;
+    }
+
     async updateOrder(event) {
         try {
             var payload = this.state.orderPayload;
@@ -324,6 +332,7 @@ class EditOrderDataModal extends Component {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
+                payload["commodity"] = this.getCommodityMappedName(payload["commodity"]);
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(this.state.subId, id, payload);
                 this.setState({ showLoader: false });
@@ -378,9 +387,6 @@ class EditOrderDataModal extends Component {
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
-
-
-
         }
         return formateddata;
     }
@@ -518,9 +524,11 @@ class EditOrderDataModal extends Component {
     }
 
 
+
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData , tagsOptions} = this.state;
+        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData, tagsOptions } = this.state;
+        console.log(orderPayload.commodity);
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -632,7 +640,7 @@ class EditOrderDataModal extends Component {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                           
+
                             <TextField
                                 select
                                 id="creator_role"
@@ -659,11 +667,11 @@ class EditOrderDataModal extends Component {
                                 label="Commodity"
                                 type="text"
                                 style={{ width: '49%', marginTop: '1%' }}
-                                value={[orderPayload.commodity]}
+                                value={orderPayload.commodity && orderPayload.commodity !== null ? [orderPayload.commodity] : []} // sql
                                 onChange={this.handleInputChange.bind(this)}>
-                                {Object.keys(commodityList["optionN_E"]).map((key, i) => (
+                                {commodityList["options"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
-                                        {commodityList["optionN_E"][key]}
+                                        {key}
                                     </MenuItem>
                                 ))}
                             </TextField>
@@ -920,7 +928,7 @@ class EditOrderDataModal extends Component {
                                 multiple
                                 id="fixed-demo"
                                 options={tagsOptions}
-                                value={orderPayload.tags}
+                                value={orderPayload.tags && orderPayload.tags !== null? orderPayload.tags : []}
                                 getOptionLabel={e => e}
                                 onChange={this.handelTagsChanges}
                                 renderTags={(value, getTagProps) =>

@@ -401,7 +401,7 @@ class UserListTable extends Component {
             return (
                 <p className={classes.commodityDataClass} style={{ fontSize: isTooltip ? "15px" : "12px" }}>
                     {commoditCellList.map((commodity, i) =>
-                        (<span key={i + "_commodity"} style={{ fontSize: isTooltip ? "15px" : "12px", fontFamily: "lato" }}>
+                        (commodity && commodity !== null && <span key={i + "_commodity"} style={{ fontSize: isTooltip ? "15px" : "12px", fontFamily: "lato" }}>
                             <strong style={{ fontSize: isTooltip ? "14px" : "13px", fontFamily: "lato", color: isTooltip ? "#ff" : (colorArray[i < colorArray.length ? i : i % colorArray.length]) }}>
                                 {commodity.charAt(0).toUpperCase()}</strong>{commodity.slice(1) + (i !== commoditCellList.length - 1 ? ", " : "")}
                         </span>)
