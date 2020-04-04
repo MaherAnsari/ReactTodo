@@ -32,6 +32,9 @@ import IconButton from '@material-ui/core/IconButton';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import Utils from '../../../app/common/utils';
 import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -109,6 +112,7 @@ class AddTransactionModal extends Component {
                 "transaction_date": new Date(),
                 "cashback_value": "",
                 "cashback_allotted_to": "",
+                "tags": []
                 // "status":""
             },
 
@@ -134,7 +138,9 @@ class AddTransactionModal extends Component {
                 "text": ""
             },
             showErrorMsg: false,
-            errorMsg: ""
+            errorMsg: "",
+            tagsOptions : []
+
 
         }
 
@@ -149,11 +155,28 @@ class AddTransactionModal extends Component {
             this.state.addTransactionPayload['supplierid'] = this.props.userdata.id;
             this.state.addTransactionPayload['supplier_mobile'] = this.props.userdata.mobile;
         }
+        this.getTagsData();
     }
 
     componentWillReceiveProps() {
         if (this.props !== this.state) {
             this.setState({ open: this.props.open });
+        }
+    }
+
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("payments");
+            console.log( resp )
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions : tagsData });
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -545,11 +568,17 @@ class AddTransactionModal extends Component {
         })
     }
 
+    handelTagsChanges = (event, values) => {
+        let addTransactionPayloadVal = this.state.addTransactionPayload;
+        addTransactionPayloadVal["tags"] = values;
+        this.setState({ addTransactionPayload: addTransactionPayloadVal });
+    }
+
     render() {
         const { classes } = this.props;
         const { bank_detail, currentAddTransactionView, showLoader, addTransactionPayload,
             supplierid, buyerid, tempVar, errorFields, acctDataArray,
-            selectedAcctInfoIndex, showSweetAlert, sweetAlertData } = this.state;
+            selectedAcctInfoIndex, showSweetAlert, sweetAlertData, tagsOptions } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -791,6 +820,32 @@ class AddTransactionModal extends Component {
                                         value={addTransactionPayload.remarks}
                                         onChange={this.handleInputChange.bind(this)}
                                         fullWidth />
+                                </div>
+
+                                {/* Tags here */}
+                                <div style={{ display: "flex" }} >
+                                    <Autocomplete
+                                        multiple
+                                        id="fixed-demo"
+                                        options={tagsOptions}
+                                        value={addTransactionPayload.tags}
+                                        getOptionLabel={e => e}
+                                        onChange={this.handelTagsChanges}
+                                        renderTags={(value, getTagProps) =>
+                                            value.map((option, index) => (
+                                                <Chip label={option} {...getTagProps({ index })} />
+                                            ))
+                                        }
+                                        style={{ width: "98%" }}
+                                        renderInput={params => (
+                                            <TextField
+                                                {...params}
+                                                label="Select Tags"
+                                                placeholder="Search"
+                                                fullWidth
+                                            />
+                                        )}
+                                    />
                                 </div>
 
                                 <div style={{ display: "flex" }} >

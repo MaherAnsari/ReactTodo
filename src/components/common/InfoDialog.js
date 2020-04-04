@@ -73,7 +73,7 @@ class InfoDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList:  { options:[], optionN_E :{}, optionE_N:{}},
             open: this.props.openModal,
             dataObj: {
                 "mobile": "",
@@ -190,30 +190,13 @@ class InfoDialog extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
-        }
-    }
-
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
+            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
         }
     }
 
@@ -233,15 +216,14 @@ class InfoDialog extends Component {
     }
 
     handelAutoCompleteChange = (event, values) => {
-        // var commoditylist = [];
-        console.log(values);
+        let commoditylist = [];
         let data = this.state.dataObj;
-        // if (values.length > 0) {
-        //     for (var i = 0; i < values.length; i++) {
-        //         commoditylist.push(values[i].name);
-        //     }
-        // }
-        data["default_commodity"] = values;
+        if (values && values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                commoditylist.push(this.state.commodityList["optionE_N"][values[i]]);
+            }
+        }
+        data["default_commodity"] = commoditylist;
         this.setState({ dataObj: data })
     }
 
@@ -384,6 +366,17 @@ class InfoDialog extends Component {
         let status = this.state.isMobileRequired;
         this.setState({ isMobileRequired: !status });
     }
+
+    getCommodityArray(data) {
+        let cList = [];
+        for (let i = 0; i < data.length; i++) {
+            if (this.state.commodityList["optionN_E"].hasOwnProperty(data[i])) {
+                cList.push(this.state.commodityList["optionN_E"][data[i]]);
+            }
+        }
+        return cList;
+    }
+
     render() {
         const { classes } = this.props;
         const { showLoader, showSweetAlert, sweetAlertData } = this.state;
@@ -519,9 +512,9 @@ class InfoDialog extends Component {
                             multiple
                             id="fixed-tags-demo"
                             disabled={this.state.isInfo}
-                            options={this.state.commodityList}
+                            options={this.state.commodityList["options"]}
                             getOptionLabel={e => e}
-                            defaultValue={this.state.dataObj.default_commodity}
+                            defaultValue={this.getCommodityArray(this.state.dataObj.default_commodity)}
                             onChange={this.handelAutoCompleteChange}
                             renderTags={(value, getTagProps) =>
                                 value.map((option, index) => (

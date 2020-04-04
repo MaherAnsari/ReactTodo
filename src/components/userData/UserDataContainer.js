@@ -70,27 +70,9 @@ class UserDataContainer extends React.Component {
         };
     }
 
-
-
     async componentDidMount() {
         this.handelGetData();
-        //    this.getCommodityNames(); 
-
     }
-
-    // async getCommodityNames() {
-    //     try {
-    //         let resp = await commodityService.getCommodityTable();
-    //         if (resp.data.status === 1 && resp.data.result) {
-    //             this.setState({ commodityList: resp.data.result.data });
-    //         } else {
-    //             this.setState({ commodityList: [] });
-    //         }
-    //     } catch (err) {
-    //         console.error(err)
-    //         this.setState({ commodityList: [] });
-    //     }
-    // }
 
     async getData(params) {
         try {
@@ -138,20 +120,6 @@ class UserDataContainer extends React.Component {
 
     handleClickOpen(event) {
         this.setState({ showAddModal: true, open: true });
-    }
-
-    async getCommodityNames(txt) {
-        try {
-            let resp = await commodityService.getCommodityTable();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: resp.data.result.data });
-            } else {
-                this.setState({ commodityList: [] });
-            }
-        } catch (err) {
-            console.error(err)
-            this.setState({ commodityList: [] });
-        }
     }
 
     async handleFileUploader(event) {

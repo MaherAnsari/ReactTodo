@@ -8,7 +8,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Utils from '../../../app/common/utils';
-
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
 
 const styles = theme => ({
     heading: {
@@ -649,6 +650,33 @@ class InfoDialog extends Component {
 
 
                 {/*--------------- newly Added ends---------------- */}
+
+                <div style={{ display: "flex" }} >
+                            <Autocomplete
+                                multiple
+                                id="fixed-demo"
+                                disabled={true}
+                                options={[]}
+                                value={this.state.dataObj.tags}
+                                getOptionLabel={e => e}
+                                // onChange={this.handelTagsChanges}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: "98%" }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Tags"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </div>
+
                 <div style={{ padding: "12px 0px", color: "#9e9e9e" }}>
                     {(this.state.dataObj["supporting_images"] &&
                         this.state.dataObj["supporting_images"] !== null &&

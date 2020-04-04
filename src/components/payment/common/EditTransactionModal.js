@@ -24,6 +24,9 @@ import Switch from '@material-ui/core/Switch';
 import Loader from '../../common/Loader';
 import Utils from '../../../app/common/utils';
 import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -104,7 +107,8 @@ class EditTransactionModal extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+            tagsOptions: []
 
 
         }
@@ -130,14 +134,35 @@ class EditTransactionModal extends Component {
                 attachmentArrayVal.push(imgObj)
             }
         }
+        if (this.state.editTransactionPayload && !this.state.editTransactionPayload["tags"]) {
+            let editTransactionPayloadVal = this.state.editTransactionPayload;
+            editTransactionPayloadVal["tags"] = [];
+            this.setState({ editTransactionPayload: editTransactionPayloadVal })
+        }
         this.setState({ supplierid: suppId, attachmentArray: attachmentArrayVal })
-
+        this.getTagsData();
     }
 
 
     componentWillReceiveProps() {
         if (this.props !== this.state) {
             this.setState({ open: this.props.open });
+        }
+    }
+
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("payments");
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions: tagsData });
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -288,7 +313,7 @@ class EditTransactionModal extends Component {
         var keysWithValidUpdateData = {};
         var mandotaryFields = ["active", "amount", "amount_bank_entry", "bank_id", "bank_trxn_id", "cashback_allotted_to",
             "cashback_value", "creator_role", "images", "payment_mode", "reason", "remarks", "supplier_mobile",
-            "supplierid", "transaction_date", "transaction_type"];
+            "supplierid", "transaction_date", "transaction_type", "tags"];
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
@@ -443,9 +468,19 @@ class EditTransactionModal extends Component {
         });
     }
 
+    handelTagsChanges = (event, values) => {
+        let editTransactionPayloadVal = this.state.editTransactionPayload;
+        editTransactionPayloadVal["tags"] = values;
+        this.setState({ editTransactionPayload: editTransactionPayloadVal });
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader, editTransactionPayload, supplierid, tempVar, errorFields, showSweetAlert, sweetAlertData } = this.state;
+        const { showLoader, editTransactionPayload, supplierid, tempVar, errorFields,
+            showSweetAlert, sweetAlertData, tagsOptions } = this.state;
+        console.log(editTransactionPayload)
+        console.log(tagsOptions)
+
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
@@ -513,6 +548,7 @@ class EditTransactionModal extends Component {
                                 ))}
                             </TextField>
                         </div>
+
                         <div style={{ display: "flex" }}>
                             <TextField
                                 margin="dense"
@@ -650,6 +686,32 @@ class EditTransactionModal extends Component {
                                 onChange={this.handleInputChange.bind(this)}
                                 fullWidth />
                         </div>
+                        <React.Fragment>
+                            <div style={{ display: "flex" }} >
+                                <Autocomplete
+                                    multiple
+                                    id="fixed-demo"
+                                    options={tagsOptions}
+                                    value={editTransactionPayload.tags}
+                                    getOptionLabel={e => e}
+                                    onChange={this.handelTagsChanges}
+                                    renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip label={option} {...getTagProps({ index })} />
+                                        ))
+                                    }
+                                    style={{ width: "98%" }}
+                                    renderInput={params => (
+                                        <TextField
+                                            {...params}
+                                            label="Select Tags"
+                                            placeholder="Search"
+                                            fullWidth
+                                        />
+                                    )}
+                                />
+                            </div>
+                        </React.Fragment>
 
                         {/* <div style={{ display: "flex" }} >
 

@@ -43,7 +43,7 @@ class EditUser extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList:  { options:[], optionN_E :{}, optionE_N:{}} ,
             open: this.props.openModal,
             dataObj: this.props.data,
             requiredKey: ['fullname', 'mobile', 'role'],
@@ -63,12 +63,11 @@ class EditUser extends Component {
                 "title": "",
                 "text": ""
             },
-            showErrorMsg : false
+            showErrorMsg: false
         }
         this.handelAutoCompleteChange = this.handelAutoCompleteChange.bind(this);
     }
     componentDidMount() {
-        //  this.getCommodityNames();
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
         }).then(user => this.setState({ subId: user.attributes.sub }))
@@ -107,20 +106,6 @@ class EditUser extends Component {
     //     }
     // }
 
-    async getCommodityNames(txt) {
-        try {
-            let resp = await commodityService.getCommodityTable();
-            if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
-            } else {
-                this.setState({ commodityList: [] });
-            }
-        } catch (err) {
-            console.error(err)
-            this.setState({ commodityList: [] });
-        }
-    }
-
     getCommodityNamesArray(data) {
         try {
             var listData = [];
@@ -152,18 +137,18 @@ class EditUser extends Component {
         } else {
             data[id] = event.target.value;
         }
-        this.setState({ dataObj: data, showErrorMsg : false});
+        this.setState({ dataObj: data, showErrorMsg: false });
     }
 
     handelAutoCompleteChange = (event, values) => {
         var commoditylist = [];
         let data = this.state.dataObj;
-        if (values.length > 0) {
+        if (values && values.length > 0) {
             for (var i = 0; i < values.length; i++) {
-                commoditylist.push(values[i]);
+                commoditylist.push(this.props.commodityList["optionE_N"][values[i]]);
             }
         }
-        data["default_commodity"] = values;
+        data["default_commodity"] = commoditylist;
         this.setState({ dataObj: data })
     }
 
@@ -178,7 +163,7 @@ class EditUser extends Component {
             let sweetAlrtData = this.state.sweetAlertData;
             sweetAlrtData["type"] = "error";
             sweetAlrtData["title"] = "Error";
-            sweetAlrtData["text"] =  "Oops there was an error, while adding";
+            sweetAlrtData["text"] = "Oops there was an error, while adding";
             this.setState({
                 showSweetAlert: true,
                 sweetAlertData: sweetAlrtData
@@ -242,7 +227,7 @@ class EditUser extends Component {
         for (let i = 0; i < reqArr.length; i++) {
             if (!data[reqArr[i]] && data[reqArr[i]] === "") {
                 // alert("Please check all required field");
-                this.setState({ showErrorMsg : true});
+                this.setState({ showErrorMsg: true });
                 return;
             }
         }
@@ -293,12 +278,21 @@ class EditUser extends Component {
     }
 
     handelSweetAlertClosed() {
-        this.setState({ showSweetAlert: false }, () =>{
-            if(this.state.sweetAlertData["type"] !== "error"){
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData["type"] !== "error") {
                 // this.props.onEditModalClosed();
             }
+        })
     }
-        )
+
+    getCommodityArray(data) {
+        let cList = [];
+        for (let i = 0; i < data.length; i++) {
+            if (this.props.commodityList["optionN_E"].hasOwnProperty(data[i])) {
+                cList.push(this.props.commodityList["optionN_E"][data[i]]);
+            }
+        }
+        return cList;
     }
 
     render() {
@@ -426,9 +420,9 @@ class EditUser extends Component {
                             multiple
                             id="fixed-tags-demo"
                             disabled={this.state.isInfo}
-                            options={this.props.commodityList}
+                            options={this.props.commodityList["options"]}
                             getOptionLabel={e => e}
-                            defaultValue={this.state.dataObj.default_commodity}
+                            defaultValue={this.getCommodityArray(this.state.dataObj.default_commodity)}
                             onChange={this.handelAutoCompleteChange}
                             renderTags={(value, getTagProps) =>
                                 value.map((option, index) => (
@@ -439,7 +433,7 @@ class EditUser extends Component {
                             renderInput={params => (
                                 <TextField
                                     {...params}
-                                    label="Default Commodity"
+                                    label="Default Commodity-"
                                     placeholder="Search"
                                     fullWidth
                                 />
@@ -602,14 +596,14 @@ class EditUser extends Component {
                             fontFamily: 'Montserrat, sans-serif',
                             fontSize: "12px",
                             color: "red",
-                            textAlign:"right",
+                            textAlign: "right",
                             paddingRight: "10px"
                         }}
                         > Please check all required field</div>}
                     <div style={{ textAlign: 'end', marginRight: '4%', marginTop: '2%' }}>
-                        
+
                         {getAccessAccordingToRole("editUser") &&
-                        <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
+                            <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                     </div>
                 </div> :

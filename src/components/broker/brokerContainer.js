@@ -12,6 +12,7 @@ import FileUploader from '../common/fileUploader';
 import userListService from './../../app/userListService/userListService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Utils from '../../app/common/utils';
 
 const styles = theme => ({
     root: {
@@ -43,7 +44,7 @@ class BrokerContainer extends React.Component {
             open: false,
             showAddModal: false,
             dataList: [],
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
             showUploader: false,
 
             params: {
@@ -104,13 +105,13 @@ class BrokerContainer extends React.Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: resp.data.result.data });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:{ options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
         }
     }
 

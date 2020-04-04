@@ -271,6 +271,28 @@ function decryptResponse(input) {
     return JSON.parse(inflated);
 }
 
+
+// to get the key value mapping
+function getCommodityNamesArrayKeysMap(data) {
+        
+    var listObj = { options:[], optionN_E :{}, optionE_N:{}}
+    try {
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i]["name"] && data[i]["name_en"]) {
+                    listObj["options"].push(data[i]["name_en"]);
+                    listObj["optionN_E"][data[i]["name"]] = data[i]["name_en"];
+                    listObj["optionE_N"][data[i]["name_en"]] = data[i]["name"];
+                }
+            }
+        }
+        return listObj;
+    } catch (err) {
+        console.log(err);
+        return listObj;
+    }
+}
+
 const Utils = {
 
     getToken,
@@ -287,7 +309,8 @@ const Utils = {
     getImageName,
     maskMobileNumber,
     decryptResponse,
-    formatDownloadDataInCSVThroughApi
+    formatDownloadDataInCSVThroughApi,
+    getCommodityNamesArrayKeysMap 
 
 }
 

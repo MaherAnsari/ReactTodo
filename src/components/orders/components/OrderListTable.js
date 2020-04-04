@@ -137,7 +137,7 @@ class OrderListTable extends Component {
             showAddOrderModal: false,
 
             showEditDataModal: false,
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}} ,
             showUploader: false,
 
             showPayoutModal: false,
@@ -163,13 +163,13 @@ class OrderListTable extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:{ options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
         }
     }
 

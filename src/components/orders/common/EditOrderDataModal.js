@@ -25,6 +25,9 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -119,7 +122,8 @@ class EditOrderDataModal extends Component {
                 "old_system_order_id": "",
                 "pkt": "",
                 "brokerage": "",
-                "unsettled_amount_pltf": ""
+                "unsettled_amount_pltf": "",
+                "tags":[]
             },
 
             buyerid: "",
@@ -138,14 +142,16 @@ class EditOrderDataModal extends Component {
                 "title": "",
                 "text": ""
             },
-            showErrorMsg: false
+            showErrorMsg: false,
+
+            tagsOptions: []
         }
 
     }
 
     componentDidMount() {
 
-
+        this.getTagsData();
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
         }).then(user => this.setState({ subId: user.attributes.sub }))
@@ -183,7 +189,21 @@ class EditOrderDataModal extends Component {
         }
     }
 
-
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("orders");
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions: tagsData });
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
 
 
@@ -491,9 +511,16 @@ class EditOrderDataModal extends Component {
         )
     }
 
+    handelTagsChanges = (event, values) => {
+        let orderPayloadVal = this.state.orderPayload;
+        orderPayloadVal["tags"] = values;
+        this.setState({ orderPayload: orderPayloadVal });
+    }
+
+
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData } = this.state;
+        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData , tagsOptions} = this.state;
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -592,36 +619,6 @@ class EditOrderDataModal extends Component {
 
                             &nbsp;
                             &nbsp;
-                    {/* <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-
-                            <AsyncSelect
-                                cacheOptions
-                                value={supplierid}
-                                id={"reactSelectCustom"}
-                                name={"supplierid"}
-                                onChange={(item) => {
-                                    this.setState({ supplierid: item }, function () {
-                                        if (errorFields["supplierid"]) {
-                                            delete errorFields["supplierid"];
-                                        }
-                                        var data = orderPayload;
-                                        if (item && item !== null) {
-                                            data["supplierid"] = tempVar[item["label"]]["id"];
-                                            data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["supplierid"] = "";
-                                            data["supplier_mobile"] = "";
-                                        }
-                                        this.setState({ orderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select supplier..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "supplierid")}
-                            />
-                        </div> */}
                             <TextField
                                 margin="dense"
                                 id="supplier_name"
@@ -635,36 +632,7 @@ class EditOrderDataModal extends Component {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            {/* <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                            <AsyncSelect
-                                cacheOptions
-                                value={brokerid}
-                                id={"reactSelectCustom"}
-                                name={"brokerid"}
-                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                onChange={(item) => {
-                                    this.setState({ brokerid: item }, function () {
-                                        var data = orderPayload;
-                                        if (errorFields["brokerid"]) {
-                                            delete errorFields["brokerid"];
-                                        }
-                                        if (item && item !== null) {
-                                            data["brokerid"] = tempVar[item["value"]]["id"];
-                                            // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["brokerid"] = "";
-                                            // data["buyer_mobile"] = "";
-                                        }
-                                        this.setState({ orderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select broker..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "brokerid")}
-                            />
-                        </div> */}
+                           
                             <TextField
                                 select
                                 id="creator_role"
@@ -691,11 +659,11 @@ class EditOrderDataModal extends Component {
                                 label="Commodity"
                                 type="text"
                                 style={{ width: '49%', marginTop: '1%' }}
-                                value={orderPayload.commodity}
+                                value={[orderPayload.commodity]}
                                 onChange={this.handleInputChange.bind(this)}>
-                                {commodityList.map((key, i) => (
+                                {Object.keys(commodityList["optionN_E"]).map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
-                                        {key}
+                                        {commodityList["optionN_E"][key]}
                                     </MenuItem>
                                 ))}
                             </TextField>
@@ -947,7 +915,30 @@ class EditOrderDataModal extends Component {
 
 
                         {/*--------------- newly Added ends---------------- */}
-
+                        <div style={{ display: "flex" }} >
+                            <Autocomplete
+                                multiple
+                                id="fixed-demo"
+                                options={tagsOptions}
+                                value={orderPayload.tags}
+                                getOptionLabel={e => e}
+                                onChange={this.handelTagsChanges}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: "98%" }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Tags"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </div>
 
                         {/* 
                         <div style={{ display: "flex" }} >

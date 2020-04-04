@@ -22,6 +22,7 @@ import orderService from '../../app/orderService/orderService';
 import creditLimitService from '../../app/creditLimitService/creditLimitService';
 import paymentService from '../../app/paymentService/paymentService';
 import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Utils from '../../app/common/utils';
 
 const theme = createMuiTheme({
     overrides: {
@@ -69,7 +70,7 @@ class BusinessInfoDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
@@ -213,33 +214,15 @@ class BusinessInfoDialog extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}}  });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}}  });
         }
     }
-
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
 
     getHeader() {
         if (this.props.isInfo) {

@@ -20,6 +20,7 @@ import BankDetail from './bankDetail';
 import UserDetailsFooter from './UserDetailsFooter';
 import creditLimitService from '../../app/creditLimitService/creditLimitService';
 import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Utils from '../../app/common/utils';
 
 const theme = createMuiTheme({
     overrides: {
@@ -67,7 +68,7 @@ class UserInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList:  { options:[], optionN_E :{}, optionE_N:{}},
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
@@ -158,33 +159,14 @@ class UserInfo extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
         }
     }
-
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
 
     getHeader() {
         if (this.props.isInfo) {
@@ -307,12 +289,13 @@ class UserInfo extends Component {
                             role={this.props.data.role}
                         /> : ""}
 
-                    {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
-                        onEditModalClosed={this.handleClose.bind(this)}
-                        data={this.props.data}
-                        commodityList={this.state.commodityList}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    /> : ""}
+                    {this.state.currentView === 'editUser' ?
+                        <EditUser openModal={this.state.open}
+                            onEditModalClosed={this.handleClose.bind(this)}
+                            data={this.props.data}
+                            commodityList={this.state.commodityList}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        /> : ""}
 
                     {this.state.currentView === 'userInfo' ?
                         <UserDetail openModal={this.state.open}

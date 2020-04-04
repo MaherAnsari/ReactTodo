@@ -1243,3 +1243,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .swal2-shown{
   z-index: 999999 !important;
 }
+
+.MuiAutocomplete-popper{
+z-index: 999999 !important;
+}

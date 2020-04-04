@@ -27,6 +27,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import { Auth } from 'aws-amplify';
 import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -113,8 +114,8 @@ class AddOrderModal extends Component {
                 "invoice_no": "",
                 "old_system_order_id": "",
                 "pkt": "",
-                "brokerage": ""
-
+                "brokerage": "",
+                "tags": []
             },
 
             buyerid: "",
@@ -123,7 +124,7 @@ class AddOrderModal extends Component {
             tempVar: {},
             errorFields: {},
             attachmentArray: [],
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
             showLoader: false,
             subId: "",
 
@@ -133,7 +134,9 @@ class AddOrderModal extends Component {
                 "title": "",
                 "text": ""
             },
-            showFormError: false
+            showFormError: false,
+
+            tagsOptions: []
 
         }
         this.getCommodityNames();
@@ -142,7 +145,7 @@ class AddOrderModal extends Component {
 
 
     componentDidMount() {
-
+        this.getTagsData();
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
         }).then(user => this.setState({ subId: user.attributes.sub }))
@@ -166,18 +169,35 @@ class AddOrderModal extends Component {
         }
     }
 
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("orders");
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions: tagsData });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+
     async getCommodityNames() {
         try {
             let resp = await commodityService.getCommodityTable();
             console.error(resp)
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:{ options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
         }
     }
 
@@ -222,7 +242,7 @@ class AddOrderModal extends Component {
         this.setState({
             addOrderPayload: addOrderPayloadVal,
             errorFields: errors,
-            showFormError : false
+            showFormError: false
         })
         console.log(addOrderPayloadVal)
     }
@@ -231,10 +251,18 @@ class AddOrderModal extends Component {
 
         var errors = this.state.errorFields;
         var id = "commodity";
-
         var addOrderPayloadVal = this.state.addOrderPayload;
+
+        let commoditylist = [];
+        let data = this.state.dataObj;
+        if (values && values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                commoditylist.push(this.state.commodityList["optionE_N"][values[i]]);
+            }
+        }
+
         if (values && values !== null) {
-            addOrderPayloadVal[id] = values.toString();
+            addOrderPayloadVal[id] = commoditylist.toString();
         } else {
             addOrderPayloadVal[id] = "";
         }
@@ -374,21 +402,15 @@ class AddOrderModal extends Component {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
-
             if (formateddata[key] && floatIds.indexOf(key) > -1) {
                 formateddata[key] = parseFloat(data[key]);
             }
-
             if (key === "cashback_value" && data[key] === "") {
                 formateddata[key] = 0;
             }
-
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
-
-
-
         }
         console.log(formateddata);
         return formateddata;
@@ -504,11 +526,28 @@ class AddOrderModal extends Component {
         )
     }
 
+    handelTagsChanges = (event, values) => {
+        let addOrderPayloadVal = this.state.addOrderPayload;
+        addOrderPayloadVal["tags"] = values;
+        this.setState({ addOrderPayload: addOrderPayloadVal });
+    }
+
+    getCommodityArray(data) {
+        let cList = [];
+        for (let i = 0; i < data.length; i++) {
+            if (this.state.commodityList["optionN_E"].hasOwnProperty(data[i])) {
+                cList.push(this.state.commodityList["optionN_E"][data[i]]);
+            }
+        }
+        return cList;
+    }
+
 
     render() {
         const { classes } = this.props;
         const { showLoader, addOrderPayload, supplierid, buyerid,
-            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData, showFormError } = this.state;
+            commodityList, tempVar, errorFields, showSweetAlert, sweetAlertData, showFormError, 
+            tagsOptions } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '1' }}
@@ -641,46 +680,7 @@ class AddOrderModal extends Component {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            {/* {this.props.userdata && this.props.userdata.role === "broker" ? <TextField
-                            margin="dense"
-                            id="brokerid"
-                            label="Broker"
-                            disabled={true}
-                            // error={errorFields["amount"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={this.props.userdata.fullname}
-                            // onChange={this.handleInputChange.bind(this)}
-                            fullWidth /> : <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                                <AsyncSelect
-                                    cacheOptions
-                                    value={brokerid}
-                                    id={"reactSelectCustom"}
-                                    name={"brokerid"}
-                                    // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                    onChange={(item) => {
-                                        this.setState({ brokerid: item }, function () {
-                                            var data = addOrderPayload;
-                                            if (errorFields["brokerid"]) {
-                                                delete errorFields["brokerid"];
-                                            }
-                                            if (item && item !== null) {
-                                                data["brokerid"] = tempVar[item["value"]]["id"];
-                                                // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                            } else {
-                                                data["brokerid"] = "";
-                                                // data["buyer_mobile"] = "";
-                                            }
-                                            this.setState({ addOrderPayload: data, errorFields: errorFields })
-                                        })
-                                    }}
-                                    isSearchable={true}
-                                    isClearable={true}
-                                    placeholder={`Select broker..`}
-                                    defaultOptions={[]}
-                                    loadOptions={this.getOptions.bind(this, "brokerid")}
-                                />
-                            </div>} */}
+
 
                             <TextField
                                 select
@@ -706,9 +706,9 @@ class AddOrderModal extends Component {
                                 error={errorFields["commodity"] ? true : undefined}
                                 name="commodity"
                                 label="Commodity"
-                                options={commodityList}
+                                options={commodityList["options"]}
                                 getOptionLabel={e => e}
-                                value={addOrderPayload.commodity}
+                                value={this.getCommodityArray(addOrderPayload.commodity)}
                                 onChange={this.handelAutoCompleteChange}
                                 renderTags={(value, getTagProps) =>
                                     value.map((option, index) => (
@@ -725,22 +725,7 @@ class AddOrderModal extends Component {
                                     />
                                 )}
                             />
-                            {/* <TextField
-                                select
-                                id="commodity"
-                                error={errorFields["commodity"] ? true : false}
-                                name="commodity"
-                                label="Commodity"
-                                type="text"
-                                style={{ width: '49%', marginTop: '1%' }}
-                                value={addOrderPayload.commodity}
-                                onChange={this.handleInputChange.bind(this)}>
-                                {commodityList.map((key, i) => (
-                                    <MenuItem key={i} value={key} selected={true}>
-                                        {key}
-                                    </MenuItem>
-                                ))}
-                            </TextField> */}
+
                         </div>
                         <div style={{ display: "flex" }} >
 
@@ -869,67 +854,9 @@ class AddOrderModal extends Component {
 
 
 
-                            {/* <TextField
-                                margin="dense"
-                                id="author_name"
-                                label="Author name"
-                                error={errorFields["author_name"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={addOrderPayload.author_name}
-                                onChange={this.handleInputChange.bind(this)}
-                                fullWidth /> */}
                         </div>
 
-                        {/* <div style={{ display: "flex" }} > */}
-                        {/* <TextField
-                            margin="dense"
-                            id="author_mobile"
-                            label="Author mobile number"
-                            type="text"
-                            error={errorFields["author_mobile"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.author_mobile}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth /> */}
 
-                        {/* <TextField
-                            select
-                            id="creator_role"
-                            name="creator_role"
-                            label="Creater Role"
-                            error={errorFields["creator_role"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={addOrderPayload.creator_role}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {["la", "ca"].map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-
-                        &nbsp;
-                        &nbsp;
-                        <TextField
-                            select
-                            id="status"
-                            name="status"
-                            label="Status"
-                            error={errorFields["status"] ? true : false}
-                            type="text"
-                            defaultValue={"pending"}
-                            style={{ width: '49%', marginTop: "1%" }}
-                            value={addOrderPayload.status}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {statusOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div> */}
                         <div style={{ display: "flex" }} >
                             <TextField
                                 margin="dense"
@@ -1038,50 +965,30 @@ class AddOrderModal extends Component {
 
                         {/*--------------- newly Added ends---------------- */}
 
-                        {/* <div style={{ display: "flex" }} >
-                            <TextField
-                                margin="dense"
-                                id="commission_rate"
-                                label="Commision rate"
-                                error={errorFields["commission_rate"] ? true : false}
-                                type="text"
-                                style={{ width: '49%' }}
-                                value={addOrderPayload.commission_rate}
-                                onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
-                            &nbsp;
-                        &nbsp;
-                        <TextField
-                                select
-                                id="commission_unit"
-                                name="commission_unit"
-                                label="Commission unit"
-                                error={errorFields["commission_unit"] ? true : false}
-                                type="text"
-                                style={{ width: '49%', marginTop: "1%" }}
-                                value={addOrderPayload.commission_unit}
-                                onChange={this.handleInputChange.bind(this)}>
-                                {["quintal", "ton"].map((key, i) => (
-                                    <MenuItem key={i} value={key} selected={true}>
-                                        {key}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </div> */}
-
-
-                        {/* <div style={{ display: "flex" }} >
-                            <TextField
-                                margin="dense"
-                                id="transport_info"
-                                label="Transport info"
-                                error={errorFields["transport_info"] ? true : false}
-                                type="text"
-                                style={{ width: '100%' }}
-                                value={addOrderPayload.transport_info}
-                                onChange={this.handleInputChange.bind(this)}
-                                fullWidth />
-                        </div> */}
+                        <div style={{ display: "flex" }} >
+                            <Autocomplete
+                                multiple
+                                id="fixed-demo"
+                                options={tagsOptions}
+                                value={addOrderPayload.tags}
+                                getOptionLabel={e => e}
+                                onChange={this.handelTagsChanges}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: "98%" }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Tags"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </div>
 
                         {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
                             <div style={{ fontFamily: "lato", padding: "10px" }}>

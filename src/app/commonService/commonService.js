@@ -163,6 +163,16 @@ let commonService = {
             data :param
         },4);
     },
+    getTagsData: async function ( type ) {
+        // https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/metadata/orders
+        return Api({
+            method: 'get',
+            headers: {
+                "Authorization": Utils.getToken()
+            },
+            url: '/metadata/'+type
+        },4);
+    },
 }
 
 export default commonService;

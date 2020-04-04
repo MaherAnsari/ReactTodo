@@ -8,14 +8,14 @@ import Utils from '../app/common/utils';
 // let baseUrl =  'https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/';
 
 var hostName = window.location.hostname;
-const baseUrl = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
+const baseUrl = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('dev') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
   `https://1ueogcah0b.execute-api.ap-south-1.amazonaws.com/dev/` :
   `https://lwjh5tmr5k.execute-api.ap-south-1.amazonaws.com/prod/`;
 
 
 
 
-const baseUrl1 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
+const baseUrl1 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('dev') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
   `https://f51qgytp3d.execute-api.ap-south-1.amazonaws.com/dev/` :
   `https://mh53vat5i6.execute-api.ap-south-1.amazonaws.com/prod/`;
 
@@ -27,7 +27,7 @@ const client1 = axios.create({
   baseURL: baseUrl1
 });
 
-const baseUrl3 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
+const baseUrl3 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 ||  hostName.indexOf('dev') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
   `https://yh0y6bihj9.execute-api.ap-south-1.amazonaws.com/dev/` :
   `https://9yuezfm6k2.execute-api.ap-south-1.amazonaws.com/prod/`;
 
@@ -35,7 +35,7 @@ const client3 = axios.create({
   baseURL: baseUrl3
 });
 
-const baseUrl4 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
+const baseUrl4 = (hostName.indexOf('localhost') > -1 || hostName.indexOf('staging') > -1 || hostName.indexOf('dev') > -1 || hostName.indexOf('d3p3xvthu08yeb') > -1) ?
   `https://f9ol52l7gl.execute-api.ap-south-1.amazonaws.com/dev/` :
   `https://z8ez4q59j2.execute-api.ap-south-1.amazonaws.com/prod/`;
 
