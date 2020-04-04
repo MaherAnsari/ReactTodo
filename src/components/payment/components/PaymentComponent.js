@@ -322,9 +322,13 @@ class PaymentComponent extends Component {
     }
 
     changeLimitSucces(event) {
-        let obj = this.state.userInfoData;
-        obj['bijak_credit_limit'] = event;
-        this.setState({ userInfoData: obj, isLimitUpdate: true });
+        if( event ){
+            let obj = this.state.userInfoData;
+            obj['bijak_credit_limit'] = event;
+            this.setState({ userInfoData: obj, isLimitUpdate: true });
+        }else{
+            this.setState({ isLimitUpdate: true });
+        }
     }
 
     handleUserInfoClose(event) {
