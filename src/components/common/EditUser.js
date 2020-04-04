@@ -176,7 +176,7 @@ class EditUser extends Component {
         if (resp.data.status === 1) {
             // alert("Successfully Updated");
             // this.props.onEditModalClosed();
-
+            this.props.onDataEdited();
             sweetAlrtData["type"] = "success";
             sweetAlrtData["title"] = "Success";
             sweetAlrtData["text"] = "User Details updated successfully";

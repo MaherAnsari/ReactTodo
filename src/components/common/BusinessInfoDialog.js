@@ -362,7 +362,10 @@ class BusinessInfoDialog extends Component {
                                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                                         showAddOrderModal={this.state.showAddOrderModal}
                                         onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
-                                        onOrderAdded={(data) => this.getListData(data)}
+                                        onOrderAdded={(data) =>{ 
+                                            this.getListData(data);
+                                            this.onLimitChange();
+                                        }}
                                         data={this.state.orderList}
                                         userdata={this.state.userInfoData}
                                         role={this.state.userRole}
@@ -375,7 +378,10 @@ class BusinessInfoDialog extends Component {
                                         showAddTransactionModal={this.state.showAddTransactionModal}
                                         onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
                                         data={this.state.paymentList}
-                                        onPaymentAdded={() => this.getTransactionList( this.state.userRole, this.state.transNumber )}
+                                        onPaymentAdded={() => {
+                                            this.getTransactionList( this.state.userRole, this.state.transNumber );
+                                            this.onLimitChange();
+                                        }}
                                         userdata={this.state.userInfoData}
                                         role={this.state.userRole}
                                     /> : ""}
@@ -386,6 +392,7 @@ class BusinessInfoDialog extends Component {
                                         onEditModalClosed={this.handleClose.bind(this)}
                                         data={this.state.userInfoData}
                                         commodityList={this.state.commodityList}
+                                        onDataEdited={()=> this.onLimitChange()}
                                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                                     /> : ""}
                                 {this.state.currentView === 'creditLimit' ?

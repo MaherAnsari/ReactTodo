@@ -415,9 +415,13 @@ class UserListTable extends Component {
 
     changeLimitSucces(event) {
         // alert(event);
-        let obj = this.state.userData;
-        obj['bijak_credit_limit'] = event;
-        this.setState({ userData: obj, isLimitUpdate: true });
+        if (event) {
+            let obj = this.state.userData;
+            obj['bijak_credit_limit'] = event;
+            this.setState({ userData: obj, isLimitUpdate: true });
+        } else {
+            this.setState({ isLimitUpdate: true });
+        }
     }
 
     handelSweetAlertClosed() {
@@ -578,13 +582,15 @@ class UserListTable extends Component {
                         </div>}
 
                     </div>}
-                    {this.state.showUserModal ? <UserDialog openModal={this.state.open}
-                        onEditModalClosed={this.handleClose.bind(this)}
-                        data={this.state.userData}
-                        isInfo={this.state.isInfo}
-                        onLimitUpdate={this.changeLimitSucces.bind(this)}
-                        commodityList={this.props.commodityList}
-                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                    {this.state.showUserModal ?
+                        <UserDialog openModal={this.state.open}
+                            onEditModalClosed={this.handleClose.bind(this)}
+                            data={this.state.userData}
+                            isInfo={this.state.isInfo}
+                            onLimitUpdate={this.changeLimitSucces.bind(this)}
+                            commodityList={this.props.commodityList}
+                            onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
                             dialogText={this.state.dialogText}
