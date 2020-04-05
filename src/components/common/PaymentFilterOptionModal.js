@@ -194,7 +194,7 @@ class PaymentFilterOptionModal extends Component {
         if (fObj.hasOwnProperty("amount") && fObj["amount"] !== "") {
             if (this.state.slectedCondition === "") {
                 this.setState({ showCodnError: true })
-                return {};
+                // return {};
             } else {
                 uObj["amount"] = this.state.slectedCondition + "_" + fObj["amount"];
             }
@@ -305,7 +305,7 @@ class PaymentFilterOptionModal extends Component {
                                 fontWeight: "500",
                                 fontSize: "18px"
                             }}>
-                                Linked Payment Id &nbsp; :
+                                Linked Order Id &nbsp; :
                             </div> &nbsp;
                             <TextField
                                 id="linked_order_id"
