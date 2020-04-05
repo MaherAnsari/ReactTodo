@@ -15,6 +15,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import Loader from './Loader';
 import List from '@material-ui/core/List';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     heading: {
@@ -72,9 +73,11 @@ class RoleDialog extends Component {
         this.state = {
             commodityList: [],
             open: this.props.openModal,
-            data:{"mobile": "",
-            "name": "",
-            "permissions": []},
+            data: {
+                "mobile": "",
+                "name": "",
+                "permissions": []
+            },
             // roleList: ['user-creation', 'add-bank','order-creation','payviaCreditption','payment-request','manage-credit','manange-supporting-data'
             //             ,'payment-tab-entry-rule','super-admin','mandi-data-update','mandi-rates-update','commodityList-update'],
             // roleList : [
@@ -89,7 +92,7 @@ class RoleDialog extends Component {
             //     "super-admin",
             //     "supporting-data-role"
             // ],
-            roleList:[
+            roleList: [
                 "BasicUser",
                 "UserManagement",
                 "OrderManagement",
@@ -103,24 +106,31 @@ class RoleDialog extends Component {
                 // "RazorpayX"
             ],
 
-            showLoader: false
+            showLoader: false,
 
-
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            showErrorMsg : false
         }
-
     }
+
+
     componentDidMount() {
 
-        if(this.props.isupdate){
-            let arr = typeof(this.props.editdata['permissions']) === "string" ? this.props.editdata['permissions'].split(',') :  this.props.editdata['permissions'];
+        if (this.props.isupdate) {
+            let arr = typeof (this.props.editdata['permissions']) === "string" ? this.props.editdata['permissions'].split(',') : this.props.editdata['permissions'];
             let obj = this.props.editdata;
             obj['permissions'] = arr;
-            this.setState({data:obj})
+            this.setState({ data: obj })
         }
     }
 
     componentWillReceiveProps(nextProps) {
-       
+
     }
 
 
@@ -128,17 +138,17 @@ class RoleDialog extends Component {
     handleChange = event => {
         let dataObj = this.state.data;
         let id = event.target.id;
-        if (id === "mobile" ) {
+        if (id === "mobile") {
             if (event.target.value.length <= 10) {
                 dataObj[id] = event.target.value;
             }
         } else {
             dataObj[id] = event.target.value;
         }
-        this.setState({ data:dataObj });
+        this.setState({ data: dataObj, showErrorMsg : false });
     }
 
-  
+
 
 
 
@@ -147,35 +157,58 @@ class RoleDialog extends Component {
         if (this.state.dataArr && this.state.dataArr.length > 0) {
             this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
         } else {
-            alert("Opps there was an error, while adding");
+            // alert("Oops there was an error, while adding");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Oops there was an error, while adding";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+
         }
     }
 
     handelConfirmUpdate = async () => {
-        
-        this.setState({ showLoader: true, showConfirmDialog: false });
-        let resp;
-        if(this.props.isupdate){
-             resp = await roleService.updateUser(this.state.data);
-        }else{
-             resp = await roleService.addUser(this.state.data);
+        try {
+            this.setState({ showLoader: true, showConfirmDialog: false });
+            let resp;
+            if (this.props.isupdate) {
+                resp = await roleService.updateUser(this.state.data);
+            } else {
+                resp = await roleService.addUser(this.state.data);
+            }
+            this.setState({ showLoader: false });
+            let sweetAlrtData = this.state.sweetAlertData;
+            console.log(resp)
+            if (resp.data.status === 1) {
+                // this.props.onEditModalClosed();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully Added";
+            } else {
+                // alert("Oops there was an error, while adding");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
+            }
+            this.setState({
+                showConfirmDialog: false,
+                alertData: {},
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+        } catch (err) {
+            console.log(err);
         }
-       
-        this.setState({ showLoader: false });
-        console.log(resp)
-        if (resp.data.status === 1) {
-
-            this.props.onEditModalClosed();
-
-        } else {
-            // alert("Opps there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
-        }
-        this.setState({ showConfirmDialog: false, alertData: {} });
     }
+
     handelCancelUpdate = () => {
         this.setState({ showConfirmDialog: false, alertData: {} });
     }
+
     handleDialogCancel(event) {
         this.props.onEditModalCancel();
     }
@@ -185,13 +218,14 @@ class RoleDialog extends Component {
     handleAddClick(event) {
         let data = this.state.data;
 
-        if (!data['name'] && data['name'] === "" && !data['mobile'] && data['mobile'] === ""  ) {
-            alert("Please check all required field");
+        if (!data['name'] && data['name'] === "" && !data['mobile'] && data['mobile'] === "") {
+            // alert("Please check all required field");
+            this.setState({ showErrorMsg : true});
             return;
         }
         let dialogText = this.props.isupdate ? "Are you sure  to update ?" : "Are you sure to add ?";
 
-        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true});
+        this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
 
     }
     handleCheckbox(id, event) {
@@ -199,25 +233,32 @@ class RoleDialog extends Component {
         obj[id] = !obj[id];
         this.setState({ QueryObj: obj });
     }
-    handleToggle = (event,value) => {
+    handleToggle = (event, value) => {
         // console.log(value,event);
         let dataObj = this.state.data;
         let arr = this.state.data.permissions;
-        if(arr.indexOf(event) > -1){
+        if (arr.indexOf(event) > -1) {
             let index = arr.indexOf(event);
-            arr.splice(index,1)
-        }else{
+            arr.splice(index, 1)
+        } else {
             arr.push(event);
         }
-        dataObj.permissions =arr;
-        this.setState({ });
+        dataObj.permissions = arr;
+        this.setState({});
     };
 
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>{
+            if( this.state.sweetAlertData["type"] !== "error"){
+                this.props.onEditModalClosed()
+            }
+        })
+    }
 
     render() {
         const { classes } = this.props;
-        const { showLoader } = this.state;
+        const { showLoader, showSweetAlert, sweetAlertData } = this.state;
         return (<div> <Dialog style={{ zIndex: '1' }}
             open={this.state.open}
             classes={{ paper: classes.dialogPaper }}
@@ -257,28 +298,28 @@ class RoleDialog extends Component {
                     </div>
 
                     <div>
-                        <div style={{fontSize:'16px',marginTop:'10px',fontWeight:'500'}}>Roles:</div>
-                        <div style={{height:'50vh',overflow:'auto'}}>
-                        <List className={classes.list} dense component="div" role="list">
-                            {this.state.roleList.map(value => {
-                                const labelId = `transfer-list-all-item-${value}-label`;
+                        <div style={{ fontSize: '16px', marginTop: '10px', fontWeight: '500' }}>Roles:</div>
+                        <div style={{ height: '50vh', overflow: 'auto' }}>
+                            <List className={classes.list} dense component="div" role="list">
+                                {this.state.roleList.map(value => {
+                                    const labelId = `transfer-list-all-item-${value}-label`;
 
-                                return (
-                                    <ListItem key={value} role="listitem" button onClick={this.handleToggle.bind(this,value)}>
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                checked={this.state.data.permissions.indexOf(value) !== -1}
-                                                tabIndex={-1}
-                                                disableRipple
-                                                inputProps={{ 'aria-labelledby': labelId }}
-                                            />
-                                        </ListItemIcon>
-                                        <ListItemText id={labelId} primary={value} />
-                                    </ListItem>
-                                );
-                            })}
-                            <ListItem />
-                        </List>
+                                    return (
+                                        <ListItem key={value} role="listitem" button onClick={this.handleToggle.bind(this, value)}>
+                                            <ListItemIcon>
+                                                <Checkbox
+                                                    checked={this.state.data.permissions.indexOf(value) !== -1}
+                                                    tabIndex={-1}
+                                                    disableRipple
+                                                    inputProps={{ 'aria-labelledby': labelId }}
+                                                />
+                                            </ListItemIcon>
+                                            <ListItemText id={labelId} primary={value} />
+                                        </ListItem>
+                                    );
+                                })}
+                                <ListItem />
+                            </List>
                         </div>
                     </div>
 
@@ -286,6 +327,15 @@ class RoleDialog extends Component {
 
 
                 </DialogContent>
+                {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign:"right",
+                            paddingRight: "10px"
+                        }}
+                        > Please check all required fields</div>}
                 <DialogActions>
                     {!this.state.isInfo && <Button className={classes.formCancelBtn} onClick={this.handleAddClick.bind(this)} color="primary">Sumbit</Button>}
                     <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
@@ -300,6 +350,14 @@ class RoleDialog extends Component {
                     show={this.state.showConfirmDialog}
                     onConfirmed={this.handelConfirmUpdate}
                     onCanceled={this.handelCancelUpdate} /> : ""}
+            {showSweetAlert &&
+                <SweetAlertPage
+                    show={true}
+                    type={sweetAlertData.type}
+                    title={sweetAlertData.title}
+                    text={sweetAlertData.text}
+                    sweetAlertClose={() => this.handelSweetAlertClosed()}
+                />}
         </div>
         );
     }

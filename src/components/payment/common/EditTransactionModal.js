@@ -23,6 +23,10 @@ import { Storage } from 'aws-amplify';
 import Switch from '@material-ui/core/Switch';
 import Loader from '../../common/Loader';
 import Utils from '../../../app/common/utils';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -76,12 +80,12 @@ const styles = theme => ({
 });
 
 const transactionType = {
-    "b_in": "bijak-in", 
+    "b_in": "bijak-in",
     // "b_out": "bijak-out",
     "b_hist": "historical"
 };
 const payment_modeOption = ["bank", "cash", "bijak"];
-const cashback_allotted_toOption = ["none", "la", "ca"];
+// const cashback_allotted_toOption = ["none", "la", "ca"];
 const creator_roleOption = ["la", "ca"];
 
 class EditTransactionModal extends Component {
@@ -96,7 +100,16 @@ class EditTransactionModal extends Component {
             tempVar: {},
             errorFields: {},
             attachmentArray: [],
-            showLoader: false
+            showLoader: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            tagsOptions: []
+
 
         }
         console.log(this.props.editableTransactionData)
@@ -121,14 +134,35 @@ class EditTransactionModal extends Component {
                 attachmentArrayVal.push(imgObj)
             }
         }
-        this.setState({ supplierid: suppId, attachmentArray : attachmentArrayVal })
-
+        if (this.state.editTransactionPayload && !this.state.editTransactionPayload["tags"]) {
+            let editTransactionPayloadVal = this.state.editTransactionPayload;
+            editTransactionPayloadVal["tags"] = [];
+            this.setState({ editTransactionPayload: editTransactionPayloadVal })
+        }
+        this.setState({ supplierid: suppId, attachmentArray: attachmentArrayVal })
+        this.getTagsData();
     }
 
 
     componentWillReceiveProps() {
         if (this.props !== this.state) {
             this.setState({ open: this.props.open });
+        }
+    }
+
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("payments");
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions: tagsData });
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -219,34 +253,54 @@ class EditTransactionModal extends Component {
         if (data) {
             for (var i = 0; i < data.length; i++) {
                 // optionsData.push({ label: data[i][labelKey]+ " ("+data[i][valuekey]+")", value: data[i][valuekey] });
-                optionsData.push({ label: data[i]["fullname"] +",  "+data[i]["business_name"] +" \n  ("+data[i]["locality"] +" , "+data[i][valuekey]+" )", value: data[i][valuekey] });
+                optionsData.push({ label: data[i]["fullname"] + ",  " + data[i]["business_name"] + " \n  (" + data[i]["locality"] + " , " + data[i][valuekey] + " )", value: data[i][valuekey] });
             }
         }
         return optionsData;
     }
 
     async updateTransaction(event) {
+        let sweetAlrtData = this.state.sweetAlertData;
+
         try {
             var payloadData = { "data": {} };
             var payload = this.state.editTransactionPayload;
             var id = this.state.editTransactionPayload["id"];
 
             if (this.checkForInvalidFields(payload)) {
-                this.setState({ showLoader : true });
+                this.setState({ showLoader: true });
                 payload["images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload["transaction_date"] = this.formateDateForApi(payload["transaction_date"]);
                 payload["cashback_allotted_to"] = payload["cashback_allotted_to"] !== "none" ? payload["cashback_allotted_to"] : null;
                 payloadData["data"] = this.removeBlankNonMandatoryFields(payload);
                 var resp = await paymentService.updatePayementInfo(id, payloadData);
-                this.setState({ showLoader : false });
+                this.setState({ showLoader: false });
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully updated this transaction ");
-                    this.props.onTransactionUpdated();
+                    // alert("Successfully updated this transaction ");
+                    // this.props.onTransactionUpdated();
+                    sweetAlrtData["type"] = "success";
+                    sweetAlrtData["title"] = "Success";
+                    sweetAlrtData["text"] = "Payment updated successfully";
                 } else {
-                    alert("There was an error while updating this transaction");
+                    // alert("There was an error while updating this transaction");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this transaction";
+
                 }
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             } else {
-                alert("please fill the mandatory fields highlighted");
+                // alert("please fill the mandatory fields highlighted");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = "please fill the mandatory fields highlighted";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.log(err);
@@ -255,18 +309,18 @@ class EditTransactionModal extends Component {
 
     removeBlankNonMandatoryFields(data) {
         var formateddata = {};
-        var floatIds = ["amount", "amount_bank_entry", "cashback_value"]; 
+        var floatIds = ["amount", "amount_bank_entry", "cashback_value"];
         var keysWithValidUpdateData = {};
         var mandotaryFields = ["active", "amount", "amount_bank_entry", "bank_id", "bank_trxn_id", "cashback_allotted_to",
             "cashback_value", "creator_role", "images", "payment_mode", "reason", "remarks", "supplier_mobile",
-            "supplierid", "transaction_date", "transaction_type"];
+            "supplierid", "transaction_date", "transaction_type", "tags"];
         for (var key in data) {
             if (data[key] !== "") {
                 formateddata[key] = data[key];
             }
-            
-            if(formateddata[key] && floatIds.indexOf( key ) > -1 ){
-                formateddata[key] = parseFloat( data[key] );
+
+            if (formateddata[key] && floatIds.indexOf(key) > -1) {
+                formateddata[key] = parseFloat(data[key]);
             }
 
             if (key === "cashback_value" && data[key] === "") {
@@ -302,8 +356,8 @@ class EditTransactionModal extends Component {
     checkForInvalidFields(data) {
         var isValid = true;
         var error = {};
-        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id", 
-        "cashback_value", "cashback_allotted_to", "remarks", "reason","buyer_business_name","supplier_business_name","supplier_locality"]
+        var nonMandatoryFields = ["bankid", "amount_bank_entry", "bank_trxn_id",
+            "cashback_value", "cashback_allotted_to", "remarks", "reason", "buyer_business_name", "supplier_business_name", "supplier_locality"]
         for (var key in data) {
             if (nonMandatoryFields.indexOf(key) === -1 && data[key] === "") {
                 error[key] = true;
@@ -317,7 +371,7 @@ class EditTransactionModal extends Component {
     formateDateForApi(data) {
         if (data && data !== "") {
             var dateVal = new Date(data);
-            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" +( dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
+            dateVal = dateVal.getFullYear() + "-" + ((dateVal.getMonth() + 1) < 10 ? "0" + (dateVal.getMonth() + 1) : dateVal.getMonth() + 1) + "-" + (dateVal.getDate() < 10 ? "0" + dateVal.getDate() : dateVal.getDate());
             return dateVal;
         } else {
             return "";
@@ -364,7 +418,7 @@ class EditTransactionModal extends Component {
             // key: "UBIL-Register-Online.png"
             contentType: 'image/png'
         }).then(result => {
-        
+
             let attachmentObj = {
                 bucket: 'bijakteaminternal-userfiles-mobilehub-429986086',
                 filename: updatedFileName,
@@ -406,10 +460,27 @@ class EditTransactionModal extends Component {
         this.setState({ editableDataObj: data });
     };
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onTransactionUpdated();
+            }
+        });
+    }
+
+    handelTagsChanges = (event, values) => {
+        let editTransactionPayloadVal = this.state.editTransactionPayload;
+        editTransactionPayloadVal["tags"] = values;
+        this.setState({ editTransactionPayload: editTransactionPayloadVal });
+    }
 
     render() {
         const { classes } = this.props;
-        const { showLoader, editTransactionPayload, supplierid, tempVar, errorFields } = this.state;
+        const { showLoader, editTransactionPayload, supplierid, tempVar, errorFields,
+            showSweetAlert, sweetAlertData, tagsOptions } = this.state;
+        console.log(editTransactionPayload)
+        console.log(tagsOptions)
+
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
                 open={this.state.open}
@@ -417,205 +488,232 @@ class EditTransactionModal extends Component {
                 disableBackdropClick={true}
                 onClose={this.handleDialogCancel.bind(this)}
                 aria-labelledby="form-dialog-title"                >
-                { !showLoader ? <div>
-                <DialogTitle
-                    style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
-                    id="form-dialog-title">
-                    <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
-                        Edit Payment</p>
-                </DialogTitle>
-                <DialogContent>
+                {!showLoader ? <div>
+                    <DialogTitle
+                        style={{ background: '#05073a', textAlign: 'center', height: '50px' }}
+                        id="form-dialog-title">
+                        <p style={{ color: '#fff', marginTop: '-10px', fontFamily: 'Lato', fontSize: '18px' }}>
+                            Edit Payment</p>
+                    </DialogTitle>
+                    <DialogContent>
 
-                    <div >
-                        <span style={{ lineHeight: "40px" }}>Enable / disable transaction</span>
-                        <Switch
-                            classes={{ root: classes.muiSwitchroot }}
-                            checked={editTransactionPayload.active}
-                            onChange={this.handleStateChange.bind(this, "active")}
-                            value={editTransactionPayload.active}
-                            color="primary"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
+                        <div >
+                            <span style={{ lineHeight: "40px" }}>Enable / disable transaction</span>
+                            <Switch
+                                classes={{ root: classes.muiSwitchroot }}
+                                checked={editTransactionPayload.active}
+                                onChange={this.handleStateChange.bind(this, "active")}
+                                value={editTransactionPayload.active}
+                                color="primary"
+                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                            />
 
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
-                            <Grid container style={{ width: "49%" }} >
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="transaction_date"
-                                    label="Transaction date"
-                                    format="dd-MMM-yyyy"
-                                    style={{ width: '100%' }}
-                                    value={editTransactionPayload.transaction_date}
-                                    onChange={(dateval) => {
-                                        this.handelDateChange(dateval);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </Grid>
-                        </MuiPickersUtilsProvider>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} style={{ width: "49%" }} >
+                                <Grid container style={{ width: "49%" }} >
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="transaction_date"
+                                        label="Transaction date"
+                                        format="dd-MMM-yyyy"
+                                        style={{ width: '100%', zIndex: '999999' }}
+                                        value={editTransactionPayload.transaction_date}
+                                        onChange={(dateval) => {
+                                            this.handelDateChange(dateval);
+                                        }}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </Grid>
+                            </MuiPickersUtilsProvider>
 
-                        &nbsp;
-                      &nbsp;
+                            &nbsp;
+                          &nbsp;
                          <TextField
-                            select
-                            id="transaction_type"
-                            name="transaction_type"
-                            label="Transaction Type"
-                            type="text"
-                            error={errorFields["transaction_type"] ? true : false}
-                            style={{ marginTop: "15px", width: '49%' }}
-                            value={editTransactionPayload.transaction_type}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {Object.keys(transactionType).map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true} >
-                                    {transactionType[key]}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        <TextField
-                            margin="dense"
-                            id="Buyer_name"
-                            label="Buyer name"
-                            type="text"
-                            disabled={true}
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.buyer_fullname}
-                            onChange={() => { }}
-                            fullWidth />
+                                select
+                                id="transaction_type"
+                                name="transaction_type"
+                                label="Transaction Type"
+                                type="text"
+                                error={errorFields["transaction_type"] ? true : false}
+                                style={{ marginTop: "15px", width: '49%' }}
+                                value={editTransactionPayload.transaction_type}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {Object.keys(transactionType).map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true} >
+                                        {transactionType[key]}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
 
-                        &nbsp;
-                        &nbsp;
+                        <div style={{ display: "flex" }}>
+                            <TextField
+                                margin="dense"
+                                id="Buyer_name"
+                                label="Buyer name"
+                                type="text"
+                                disabled={true}
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.buyer_fullname}
+                                onChange={() => { }}
+                                fullWidth />
+
+                            &nbsp;
+                            &nbsp;
                     <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
 
-                            <AsyncSelect
-                                cacheOptions
-                                value={supplierid}
-                                id={"reactSelectCustom"}
-                                name={"supplierid"}
-                                onChange={(item) => {
-                                    this.setState({ supplierid: item }, function () {
-                                        if (errorFields["supplierid"]) {
-                                            delete errorFields["supplierid"];
-                                        }
-                                        var data = editTransactionPayload;
-                                        if (item && item !== null) {
-                                            data["supplierid"] = tempVar[item["value"]]["id"];
-                                            data["supplier_mobile"] = tempVar[item["value"]]["mobile"];
-                                        } else {
-                                            data["supplierid"] = "";
-                                            data["supplier_mobile"] = "";
-                                        }
-                                        this.setState({ editTransactionPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select supplier..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "supplierid")}
-                            />
+                                <AsyncSelect
+                                    cacheOptions
+                                    value={supplierid}
+                                    id={"reactSelectCustom"}
+                                    name={"supplierid"}
+                                    onChange={(item) => {
+                                        this.setState({ supplierid: item }, function () {
+                                            if (errorFields["supplierid"]) {
+                                                delete errorFields["supplierid"];
+                                            }
+                                            var data = editTransactionPayload;
+                                            if (item && item !== null) {
+                                                data["supplierid"] = tempVar[item["value"]]["id"];
+                                                data["supplier_mobile"] = tempVar[item["value"]]["mobile"];
+                                            } else {
+                                                data["supplierid"] = "";
+                                                data["supplier_mobile"] = "";
+                                            }
+                                            this.setState({ editTransactionPayload: data, errorFields: errorFields })
+                                        })
+                                    }}
+                                    isSearchable={true}
+                                    isClearable={true}
+                                    placeholder={`Select supplier..`}
+                                    defaultOptions={[]}
+                                    loadOptions={this.getOptions.bind(this, "supplierid")}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div style={{ display: "flex", marginTop: 4 }} >
+                        <div style={{ display: "flex", marginTop: 4 }} >
 
+                            <TextField
+                                select
+                                id="creator_role"
+                                error={errorFields["creator_role"] ? true : false}
+                                name="creator_role"
+                                label="Creater Role"
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.creator_role}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {creator_roleOption.map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            &nbsp;
+                            &nbsp;
                         <TextField
-                            select
-                            id="creator_role"
-                            error={errorFields["creator_role"] ? true : false}
-                            name="creator_role"
-                            label="Creater Role"
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.creator_role}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {creator_roleOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        &nbsp;
-                        &nbsp;
+                                select
+                                id="payment_mode"
+                                name="payment_mode"
+                                label="Payment mode"
+                                error={errorFields["payment_mode"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.payment_mode}
+                                onChange={this.handleInputChange.bind(this)}>
+                                {payment_modeOption.map((key, i) => (
+                                    <MenuItem key={i} value={key} selected={true}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div style={{ display: "flex" }} >
+
+                            <TextField
+                                margin="dense"
+                                id="bank_id"
+                                label="Bank Id"
+                                type="text"
+                                error={errorFields["bank_id"] ? true : false}
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.bank_id}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                            &nbsp;
+                          &nbsp;
                         <TextField
-                            select
-                            id="payment_mode"
-                            name="payment_mode"
-                            label="Payment mode"
-                            error={errorFields["payment_mode"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.payment_mode}
-                            onChange={this.handleInputChange.bind(this)}>
-                            {payment_modeOption.map((key, i) => (
-                                <MenuItem key={i} value={key} selected={true}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
-                    <div style={{ display: "flex" }} >
+                                margin="dense"
+                                id="amount"
+                                label="Amount"
+                                error={errorFields["amount"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.amount}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
 
+                        <div style={{ display: "flex" }} >
+                            <TextField
+                                margin="dense"
+                                id="bank_trxn_id"
+                                label="Bank transaction id"
+                                error={errorFields["bank_trxn_id"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.bank_trxn_id}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+
+
+
+
+                            &nbsp;
+                                                &nbsp;
                         <TextField
-                            margin="dense"
-                            id="bank_id"
-                            label="Bank Id"
-                            type="text"
-                            error={errorFields["bank_id"] ? true : false}
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.bank_id}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        &nbsp;
-                      &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="amount"
-                            label="Amount"
-                            error={errorFields["amount"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.amount}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
+                                margin="dense"
+                                id="remarks"
+                                label="Remarks"
+                                error={errorFields["remarks"] ? true : false}
+                                type="text"
+                                style={{ width: '49%' }}
+                                value={editTransactionPayload.remarks}
+                                onChange={this.handleInputChange.bind(this)}
+                                fullWidth />
+                        </div>
+                        <React.Fragment>
+                            <div style={{ display: "flex" }} >
+                                <Autocomplete
+                                    multiple
+                                    id="fixed-demo"
+                                    options={tagsOptions}
+                                    value={editTransactionPayload.tags}
+                                    getOptionLabel={e => e}
+                                    onChange={this.handelTagsChanges}
+                                    renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip label={option} {...getTagProps({ index })} />
+                                        ))
+                                    }
+                                    style={{ width: "98%" }}
+                                    renderInput={params => (
+                                        <TextField
+                                            {...params}
+                                            label="Select Tags"
+                                            placeholder="Search"
+                                            fullWidth
+                                        />
+                                    )}
+                                />
+                            </div>
+                        </React.Fragment>
 
-                    <div style={{ display: "flex" }} >
-                    <TextField
-                            margin="dense"
-                            id="bank_trxn_id"
-                            label="Bank transaction id"
-                            error={errorFields["bank_trxn_id"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.bank_trxn_id}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                        
-                      
-
-
-&nbsp;
-                    &nbsp;
-                        <TextField
-                            margin="dense"
-                            id="remarks"
-                            label="Remarks"
-                            error={errorFields["remarks"] ? true : false}
-                            type="text"
-                            style={{ width: '49%' }}
-                            value={editTransactionPayload.remarks}
-                            onChange={this.handleInputChange.bind(this)}
-                            fullWidth />
-                    </div>
-
-                    {/* <div style={{ display: "flex" }} >
+                        {/* <div style={{ display: "flex" }} >
 
                         <TextField
                             margin="dense"
@@ -643,7 +741,7 @@ class EditTransactionModal extends Component {
                     </div> */}
 
 
-                    {/* <div style={{ display: "flex" }} >
+                        {/* <div style={{ display: "flex" }} >
                         <TextField
                             margin="dense"
                             id="cashback_value"
@@ -674,58 +772,66 @@ class EditTransactionModal extends Component {
                             ))}
                         </TextField>
                     </div> */}
-                    {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
-                        <div style={{ fontFamily: "lato", padding: "10px" }}>
-                            Uploaded Images
+                        {this.state.attachmentArray && this.state.attachmentArray.length !== 0 &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                Uploaded Images
                         </div>}
-                    <div style={{ display: "flex" }}>
-                        {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
-                            // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
-                            //     <img src={key} alt={key} height="150px" />
-                            // </div>
-                            <div key={"imhs_" + i} className="transaction-supporting-image">
-                                <img src={keyObj["image_url"]} style={{cursor: "zoom-in"}} 
-                                onError={(e)=>{e.target.onerror = null; e.target.src="https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
-                                onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px"  width="150px" />
-                                <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
-                                    <i className="fa fa-trash fa-lg"></i>
+                        <div style={{ display: "flex" }}>
+                            {(this.state.attachmentArray && this.state.attachmentArray.length !== 0) && this.state.attachmentArray.map((keyObj, i) => (
+                                // <div key={"imhs_" + i} style={{ width: "150px", marginLeft: "5px", boxShadow: " 0px 0px 10px 0px rgba(0,0,0,0.75)" }} >
+                                //     <img src={key} alt={key} height="150px" />
+                                // </div>
+                                <div key={"imhs_" + i} className="transaction-supporting-image">
+                                    <img src={keyObj["image_url"]} style={{ cursor: "zoom-in" }}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = "https://bijakteaminternal-userfiles-mobilehub-429986086.s3.ap-south-1.amazonaws.com/public/no_data_found.png" }}
+                                        onClick={() => window.open(keyObj["image_url"], "_blank")} alt={keyObj["image_url"]} height="150px" width="150px" />
+                                    <div className="transaction-delete-icon" onClick={this.deleteItem.bind(this, keyObj.key)}>
+                                        <i className="fa fa-trash fa-lg"></i>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    {(this.state.attachmentArray && this.state.attachmentArray.length === 0) &&
-                        <div style={{ fontFamily: "lato", padding: "10px" }}>
-                            No supporting images uploaded yet. you can add by clicking below
+                            ))}
+                        </div>
+                        {(this.state.attachmentArray && this.state.attachmentArray.length === 0) &&
+                            <div style={{ fontFamily: "lato", padding: "10px" }}>
+                                No supporting images uploaded yet. you can add by clicking below
                         </div>}
-                    <div >
-                        <Grid container direction="row" alignItems="stretch">
-                            <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
-                                <input
-                                    className={classes.input}
-                                    id="flat-button2-file"
-                                    type="file"
-                                    style={{ width: "50% !important" }}
-                                    onClick={(event) => {
-                                        event.target.value = null
-                                    }}
-                                    onChange={this.fileChangedHandler.bind(this)}
-                                />
-                                <label htmlFor="flat-button2-file">
-                                    <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
-                                        change/add supporting images
+                        <div >
+                            <Grid container direction="row" alignItems="stretch">
+                                <Grid item xs={12} sm={12} md={12} style={{ textAlign: 'left', margin: "11px 0px 5px 0px", marginBottom: 5 }}>
+                                    <input
+                                        className={classes.input}
+                                        id="flat-button2-file"
+                                        type="file"
+                                        style={{ width: "50% !important" }}
+                                        onClick={(event) => {
+                                            event.target.value = null
+                                        }}
+                                        onChange={this.fileChangedHandler.bind(this)}
+                                    />
+                                    <label htmlFor="flat-button2-file">
+                                        <Button component="span" style={{ border: '1px solid #d5d2d2', padding: '5px 10px', fontSize: 12, backgroundColor: '#dbdbdb' }}  >
+                                            change/add supporting images
                             </Button>
-                                </label>
+                                    </label>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </div>
+                        </div>
 
-                </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={this.updateTransaction.bind(this)} color="primary">Update</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
-                </div>:
-                 <Loader primaryText="Please wait.."/>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={this.updateTransaction.bind(this)} color="primary">Update</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>
+                </div> :
+                    <Loader primaryText="Please wait.." />}
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
             </Dialog>
         </div>
         );

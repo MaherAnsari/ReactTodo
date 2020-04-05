@@ -14,6 +14,7 @@ import { getAccessAccordingToRole } from '../../config/appConfig';
 import Fab from '@material-ui/core/Fab';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
 import NoDataAvailable from './NoDataAvailable';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -58,7 +59,14 @@ class BankDetail extends React.Component {
             forceUpdateData: undefined,
 
             deleteAccountObj: undefined,
-            isActDeleteClicked: false
+            isActDeleteClicked: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
@@ -66,6 +74,7 @@ class BankDetail extends React.Component {
         this.getBankDetails(this.props.userdata);
     }
     getBankDetails = async (userData) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true, currentSelectedUserDetails: userData });
             let param = { "mobile": userData["mobile"] };
@@ -78,12 +87,29 @@ class BankDetail extends React.Component {
                 }
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
-                this.setState({ showLoader: false });
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details";
+                this.setState({
+                    showLoader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                })
+
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
+                // this.setState({ showLoader: false });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
         }
     }
 
@@ -182,6 +208,7 @@ class BankDetail extends React.Component {
 
 
     onNewAccountAddClicked = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             if (this.checkIfAccountInputDetaisAreValid()) {
                 this.setState({ showLoader: true });
@@ -198,27 +225,61 @@ class BankDetail extends React.Component {
                         bank_name: "-"
                     }
                 }
+                // let resp = { data: { status: 1, message: "custom msg", result:[] } };
                 let resp = await commonService.addbankDetail(payload);
+
                 if (resp.data.status === 1) {
                     if (resp.data.result) {
-                        this.setState({ showLoader: false, currentPayoutView: "selectAccount" }, function () {
-                            alert("Successfully Added");
-                            this.getBankDetails(this.state.currentSelectedUserDetails)
+
+                        sweetAlrtData["type"] = "success";
+                        sweetAlrtData["title"] = "Success";
+                        sweetAlrtData["text"] = "Bank details added Successfully";
+                        this.setState({
+                            showLoader: false,
+                            currentPayoutView: "selectAccount",
+                            showSweetAlert: true,
+                            sweetAlertData: sweetAlrtData
+                        }, function () {
+                            // alert("Successfully Added");
+                            // this.getBankDetails(this.state.currentSelectedUserDetails)
                         });
                     } else {
-                        this.setState({ showLoader: false })
+
+                        sweetAlrtData["type"] = "error";
+                        sweetAlrtData["title"] = "Error";
+                        sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details";
+                        this.setState({
+                            showLoader: false,
+                            showSweetAlert: true,
+                            sweetAlertData: sweetAlrtData
+                        })
                         // alert("An error occured while adding the account details");
-                        alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details");
+                        // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details");
                     }
                 } else {
-                    this.setState({ showLoader: false })
-                    alert("An error occured while adding the account details. Please check the details and try again");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details. Please check the details and try again";
+                    this.setState({
+                        showLoader: false,
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    })
+                    // alert("An error occured while adding the account details. Please check the details and try again");
                 }
             }
         } catch (err) {
             console.error(err);
-            this.setState({ showLoader: false })
-            alert("An error occured while adding the account details")
+            // this.setState({ showLoader: false })
+            // alert("An error occured while adding the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while adding the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            })
         }
     }
 
@@ -256,14 +317,28 @@ class BankDetail extends React.Component {
                 name: data["name"],
             }
             let resp = await commonService.forceUpdateBankDetail(payload);
+            let sweetAlrtData = this.state.sweetAlertData;
             this.setState({ showLoader: false });
             if (resp.data.status === 1) {
-                alert("Successfully updated");
-                this.getBankDetails(this.state.currentSelectedUserDetails)
+
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully updated";
+
+                // alert("Successfully updated");
+                // this.getBankDetails(this.state.currentSelectedUserDetails)
             } else {
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.";
                 // alert("Oops an error occured while validating your account details.");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
             }
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.log(err)
@@ -291,14 +366,26 @@ class BankDetail extends React.Component {
             }
             // let resp = { data: { status: 1 } }
             let resp = await commonService.deleteBankDetail(payload);
+            let sweetAlrtData = this.state.sweetAlertData;
             this.setState({ showLoader: false });
             if (resp.data.status === 1) {
-                alert("Successfully deleted");
-                this.getBankDetails(this.state.currentSelectedUserDetails)
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Bank account deleted Successfully";
+                // alert("Successfully deleted");
+                // this.getBankDetails(this.state.currentSelectedUserDetails)
             } else {
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.";
                 // alert("Oops an error occured while deleting the account details.");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.");
             }
+
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.log(err)
@@ -321,10 +408,18 @@ class BankDetail extends React.Component {
         });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData["type"] !== "error") {
+                this.getBankDetails(this.state.currentSelectedUserDetails)
+            }
+        })
+    }
 
     render() {
         const { classes } = this.props;
-        const { showLoader, acctData, currentPayoutView, addAccountData, errorFields } = this.state;
+        const { showLoader, acctData, currentPayoutView, addAccountData,
+            errorFields, showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -362,8 +457,8 @@ class BankDetail extends React.Component {
                                         })}
                                     </List>
 
-                                    {acctData && acctData.length === 0 && 
-                                    < NoDataAvailable style={{ height: '25vh' }} />
+                                    {acctData && acctData.length === 0 &&
+                                        < NoDataAvailable style={{ height: '25vh' }} />
                                     }
                                     {getAccessAccordingToRole("addBankAccount") && <div className="updateBtnFixedModal" style={{ right: '7px', bottom: '90px' }}>
                                         <Button variant="contained"
@@ -468,6 +563,15 @@ class BankDetail extends React.Component {
                                 show={this.state.showConfirmDialog}
                                 onConfirmed={() => this.handelConfirmBtnClicked()}
                                 onCanceled={() => this.handelCancelUpdate()} /> : ""}
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
 
                     </div>
                 </Paper>

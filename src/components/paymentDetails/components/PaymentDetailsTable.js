@@ -305,7 +305,7 @@ class PaymentDetailsTable extends Component {
                 >
                    PAYOUT
             </Fab>);
-            }else if( row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1  ){
+            }else if(row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1){
                 return( <Fab
                     variant="extended"
                     size="small"
@@ -457,9 +457,13 @@ class PaymentDetailsTable extends Component {
     }
 
     changeLimitSucces(event){
-        let obj = this.state.userInfoData;
-        obj['bijak_credit_limit'] = event;
-        this.setState({ userInfoData:obj, isLimitUpdate:true });
+        if( event ){
+            let obj = this.state.userInfoData;
+            obj['bijak_credit_limit'] = event;
+            this.setState({ userInfoData:obj, isLimitUpdate:true });
+        }else{
+            this.setState({ isLimitUpdate: true });
+        }
     }
 
     handleUserInfoClose(event) {
@@ -503,9 +507,10 @@ class PaymentDetailsTable extends Component {
     }
       }
 
-      formatDateAndTime = (dateval) => {
+     formatDateAndTime = (dateval) => {
         var fdate = moment.utc(new Date(dateval)).format('DD-MMM-YYYY HH:mm A')
-        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
+        // return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0]}</div>
+        return <div style={{ width: "95px", display: "inline-block" }}> {fdate.split(" ")[0] + " \n" + fdate.split(" ")[1] + " " + fdate.split(" ")[2]}</div>
     }
 
     // handelDownloadClicked = () => {

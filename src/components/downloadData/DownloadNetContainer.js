@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import DateRangeSelector from './component/DateRangeSelector';
-
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Utils from '../../app/common/utils';
 import commonService from '../../app/commonService/commonService';
 import EmailInputModal from './component/EmailInputModal';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const styles = theme => ({
     root: {
@@ -49,14 +51,21 @@ class DownloadNetContainer extends React.Component {
                 "orders": "Orders",
                 "payments": "Payments"
             },
-            isEmailSentSuccess :"emailView"
+            isEmailSentSuccess: "emailView",
+            isAlltimeChecked: false,
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
 
         }
     }
 
     componentDidMount() {
         var datePayloadsVal = this.state.datePayloads;
-        datePayloadsVal["startDate"] = this.formateDateForApi(new Date("01/01/2019" ));
+        datePayloadsVal["startDate"] = this.formateDateForApi(new Date("01/01/2019"));
         datePayloadsVal["endDate"] = this.formateDateForApi(new Date());
         this.setState({ datePayloads: datePayloadsVal })
 
@@ -72,7 +81,7 @@ class DownloadNetContainer extends React.Component {
             // if (this.state.type === "lanet" || this.state.type === "canet") {
             //     this.downLoadDataCAandLA();
             // } else {
-                this.setState({ isDownlaodModalOpen: true });
+            this.setState({ isDownlaodModalOpen: true });
             // }
         } catch (err) {
             console.log(err)
@@ -81,27 +90,33 @@ class DownloadNetContainer extends React.Component {
 
     downloadOtherData = async (email) => {
         try {
-            this.setState({ showLoader: true , isEmailSentSuccess : "loading"});
+            this.setState({ showLoader: true, isEmailSentSuccess: "loading" });
             let payload = {
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
                 "endDate": this.formateDateForApi(this.state.datePayloads["endDate"]),
                 "email": email
             }
+
+            if (this.state.isAlltimeChecked) {
+                payload["startDate"] = this.formateDateForApi(new Date("01/01/2019"));
+                payload["endDate"] = this.formateDateForApi(new Date());
+            }
+
             let resp = "";
             if (this.state.type === "orders") {
                 resp = await commonService.getOrdersBulkDataForDownload(payload);
             } else if (this.state.type === "payments") {
                 resp = await commonService.getPaymentBulkDataForDownload(payload);
-            }else if (this.state.type === "lanet" || this.state.type === "canet" ) {
-                payload["type"] = this.state.type ;
+            } else if (this.state.type === "lanet" || this.state.type === "canet") {
+                payload["type"] = this.state.type;
                 resp = await commonService.getCAnetAndLAnetDataForDownload(payload);
-            }else if (this.state.type === "la" || this.state.type === "ca" ) {
-                payload["role"] = this.state.type ;
+            } else if (this.state.type === "la" || this.state.type === "ca") {
+                payload["role"] = this.state.type;
                 resp = await commonService.getUserDataForDownload(payload);
-            }else if (this.state.type === "alluser" ){
+            } else if (this.state.type === "alluser") {
                 resp = await commonService.getUserDataForDownload(payload);
             }
-            
+
             this.setState({ showLoader: false });
             if (resp.data.status === 1) {
                 if (resp.data.result !== "-" && resp.data.result.length !== 0) {
@@ -111,7 +126,15 @@ class DownloadNetContainer extends React.Component {
                 }
             } else {
                 this.setState({ isEmailSentSuccess: "failed" });
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                let sweetAlrtData = this.state.sweetAlertData;
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             this.setState({ isEmailSentSuccess: "failed" });
@@ -120,9 +143,9 @@ class DownloadNetContainer extends React.Component {
     }
 
     downLoadDataCAandLA = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true });
-
             let payload = {
                 "type": this.state.type,
                 "startDate": this.formateDateForApi(this.state.datePayloads["startDate"]),
@@ -134,10 +157,26 @@ class DownloadNetContainer extends React.Component {
                 if (resp.data.result !== "-" && resp.data.result.length !== 0) {
                     this.onDownLoadAPiSuccess(resp.data.result);
                 } else {
-                    alert("No data available")
+                    // alert("No data available")
+
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = "No data available";
+                    this.setState({
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
                 }
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while downloading the data.";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.log(err)
@@ -177,18 +216,37 @@ class DownloadNetContainer extends React.Component {
         this.setState({ showConfirmDialog: false, forceUpdateData: undefined });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            // this.props.onPayoutSuccessfull()
+        })
+    }
+
     render() {
         const { classes } = this.props;
-        const { showLoader, type, isDownlaodModalOpen, dropOptions } = this.state;
+        const { showLoader, type, isDownlaodModalOpen, dropOptions, isAlltimeChecked
+            , showSweetAlert, sweetAlertData
+        } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
+
                     <div style={{ paddingRight: '10%' }}>
-                        <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />
+                        {!this.state.isAlltimeChecked &&
+                            <DateRangeSelector onDateChanged={this.onDateChaged.bind(this)} />}
                     </div>
                     <div>
 
                         <React.Fragment>
+                            <div>
+                                <FormControlLabel
+                                    control={<Checkbox
+                                        checked={isAlltimeChecked}
+                                        onChange={(event) => this.setState({ isAlltimeChecked: event.target.checked })}
+                                        name="checkedA" />}
+                                    label="All Time"
+                                />
+                            </div>
                             <div >
                                 <TextField
                                     select
@@ -232,6 +290,15 @@ class DownloadNetContainer extends React.Component {
                                     // , function(){
                                     this.downloadOtherData(emailId);
                                 }} />}
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
                     </div>
                 </Paper>
             </div>

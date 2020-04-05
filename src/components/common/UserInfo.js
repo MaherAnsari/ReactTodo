@@ -18,6 +18,10 @@ import paymentService from '../../app/paymentService/paymentService';
 import CreditLimitDialog from './CreditLimitDialog';
 import BankDetail from './bankDetail';
 import UserDetailsFooter from './UserDetailsFooter';
+import creditLimitService from '../../app/creditLimitService/creditLimitService';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Utils from '../../app/common/utils';
+
 const theme = createMuiTheme({
     overrides: {
         head: {
@@ -64,18 +68,19 @@ class UserInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList: { options: [], optionN_E: {}, optionE_N: {} },
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
             currentView: "userInfo",
-            orderList: [],
-            paymentList: [],
+            orderList: undefined,
+            paymentList: undefined,
             orderLabel: "Orders (" + this.props.data.ordercount + ")",
             paymentLabel: "Payments (" + this.props.data.paymentcount + ")",
 
-            showAddTransactionModal : false,
-            showAddOrderModal : false
+            showAddTransactionModal: false,
+            showAddOrderModal: false,
+            creditLimitData: ""
 
 
 
@@ -97,21 +102,52 @@ class UserInfo extends Component {
             this.getListData(param);
         }
         this.getTransactionList();
+        this.getCreditLimit();
+    }
+
+
+
+    async getCreditLimit() {
+        let param = {};
+        if (this.props.data.mobile) {
+            param['mobile'] = this.props.data.mobile;
+            try {
+                let resp = await creditLimitService.getCreditLimit(this.props.data.mobile);
+                console.log(resp);
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ creditLimitData: resp.data.result });
+                } else {
+                    // this.setState({ creditLimitData: "-" });
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+
+                    let sweetAlrtData = this.state.sweetAlertData;
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit";
+                    this.setState({
+                        creditLimitData: "-",
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
+                }
+            } catch (err) {
+                console.error(err)
+            }
+        }
     }
 
 
     async getListData(params) {
         this.setState({ showLoader: true });
-
+        
         try {
+            params["userInfo"] = true;
             let resp = await orderService.getOrderListData(params);
-
             if (resp.data.status === 1 && resp.data.result) {
                 this.setState({ orderList: resp.data.result.data, showLoader: false });
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
             }
-
         } catch (err) {
             console.error(err);
             if (this.ismounted) {
@@ -124,33 +160,14 @@ class UserInfo extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList: { options: [], optionN_E: {}, optionE_N: {} } });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
         }
     }
-
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
 
     getHeader() {
         if (this.props.isInfo) {
@@ -185,7 +202,7 @@ class UserInfo extends Component {
     }
     getTransactionList = async () => {
         try {
-            let param = { "limit": 10000, "role": this.props.data.role }
+            let param = { "limit": 10000, "role": this.props.data.role, userInfo: true }
             let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.data.mobile, param);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
@@ -209,22 +226,31 @@ class UserInfo extends Component {
         this.props.onLimitUpdate(event);
     }
 
-    onFooterButtonClickedAction( data ){
+    onFooterButtonClickedAction(data) {
         // console.log( data );
-        if( data.type === "redirect" ){
-            this.setState({ currentView  : data.btnName  })
-        }else{
-            this.setState({ 
-                currentView  : data.btnName, 
-                showAddTransactionModal : (data.btnName === "payment" ? true : false ),
-                showAddOrderModal : (data.btnName === "orders"  ? true : false )
-                });
+        if (data.type === "redirect") {
+            this.setState({ currentView: data.btnName })
+        } else {
+            this.setState({
+                currentView: data.btnName,
+                showAddTransactionModal: (data.btnName === "payment" ? true : false),
+                showAddOrderModal: (data.btnName === "orders" ? true : false)
+            });
         }
+    }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
     }
 
     render() {
         const { classes } = this.props;
+        const { showSweetAlert, sweetAlertData } = this.state;
+
         return (<MuiThemeProvider theme={theme}>
             <div> <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -252,46 +278,60 @@ class UserInfo extends Component {
                         </Tabs>
                     </Paper></div>
 
-                    {this.state.currentView === 'orders' ? 
-                    <OrderTable openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        showAddOrderModal={ this.state.showAddOrderModal }
-                        onAddOrderModalClosed={()=> this.setState({showAddOrderModal : false })}
-                        data={this.state.orderList}
-                        userdata={this.props.data}
-                        role={this.props.data.role}
-                    /> : ""}
+                    {this.state.currentView === 'orders' ?
+                        <OrderTable openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            showAddOrderModal={this.state.showAddOrderModal}
+                            onOrderAdded={(data) => {
+                                this.getListData(data);
+                                this.onLimitChange();
+                            }}
+                            onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
+                            data={this.state.orderList}
+                            userdata={this.props.data}
+                            role={this.props.data.role}
+                        /> : ""}
 
-                    {this.state.currentView === 'editUser' ? <EditUser openModal={this.state.open}
-                        onEditModalClosed={this.handleClose.bind(this)}
-                        data={this.props.data}
-                        commodityList={this.state.commodityList}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                    /> : ""}
+                    {this.state.currentView === 'editUser' ?
+                        <EditUser openModal={this.state.open}
+                            onEditModalClosed={this.handleClose.bind(this)}
+                            data={this.props.data}
+                            commodityList={this.state.commodityList}
+                            onDataEdited={()=> this.onLimitChange()}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                        /> : ""}
 
-                    {this.state.currentView === 'userInfo' ? <UserDetail openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        data={this.props.data}
-                    /> : ""}
+                    {this.state.currentView === 'userInfo' ?
+                        <UserDetail openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            creditLimitData={this.state.creditLimitData}
+                            data={this.props.data}
+                        /> : ""}
 
-                    {this.state.currentView === 'payment' ? 
-                    <PaymentTable openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        showAddTransactionModal = {this.state.showAddTransactionModal}
-                        onTransactionModalClosed={()=> this.setState({showAddTransactionModal : false })}
-                        data={this.state.paymentList}
-                        userdata={this.props.data}
-                        role={this.props.data.role}
-                    /> : ""}
-                    {this.state.currentView === 'creditLimit' ? <CreditLimitDialog openModal={this.state.open}
-                        onEditModalClosed={this.handleDialogCancel.bind(this)}
-                        onEditModalCancel={this.handleDialogCancel.bind(this)}
-                        userdata={this.props.data}
-                        onLimitChange={this.onLimitChange.bind(this)}
-                    /> : ""}
+                    {this.state.currentView === 'payment' ?
+                        <PaymentTable openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            showAddTransactionModal={this.state.showAddTransactionModal}
+                            onPaymentAdded={() => {
+                                this.getTransactionList();
+                                this.onLimitChange();
+                            }}
+                            onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
+                            data={this.state.paymentList}
+                            userdata={this.props.data}
+                            role={this.props.data.role}
+                        /> : ""}
+                    {this.state.currentView === 'creditLimit' ?
+                        <CreditLimitDialog
+                            openModal={this.state.open}
+                            onEditModalClosed={this.handleDialogCancel.bind(this)}
+                            onEditModalCancel={this.handleDialogCancel.bind(this)}
+                            userdata={this.props.data}
+                            onLimitChange={this.onLimitChange.bind(this)}
+                        /> : ""}
 
                     {this.state.currentView === 'accountDetail' ? <BankDetail openModal={this.state.open}
                         onEditModalClosed={this.handleDialogCancel.bind(this)}
@@ -299,11 +339,20 @@ class UserInfo extends Component {
                         userdata={this.props.data}
                     /> : ""}
 
-                {this.state.currentView === 'userInfo' && 
-                 <UserDetailsFooter
-                    onFooterButtonClicked ={( data )=> this.onFooterButtonClickedAction( data ) }/>}
+                    {this.state.currentView === 'userInfo' &&
+                        <UserDetailsFooter
+                            onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
 
                 </DialogContent>
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
 
             </Dialog>
 

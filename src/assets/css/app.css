@@ -1239,3 +1239,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
 }
+
+.swal2-shown{
+  z-index: 999999 !important;
+}
+
+.MuiAutocomplete-popper{
+z-index: 999999 !important;
+}

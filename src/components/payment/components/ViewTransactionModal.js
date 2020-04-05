@@ -351,7 +351,7 @@ class ViewTransactionModal extends Component {
                     title={row["status"] }>
                     <img src={ hourglassIcon } alt={row["status"]} style={{ height: "22px",width: "22px"}}/>
                 </span> );
-            } else if(row["transaction_type"] === "b_out" && row["status"] === "approved" ){
+            } else if(row["transaction_type"] === "b_out" && row["status"] === "approved"){
                 return( <Fab
                     variant="extended"
                     size="small"
@@ -361,8 +361,7 @@ class ViewTransactionModal extends Component {
                 >
                    PAYOUT
             </Fab>);
-            }
-            else if(row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1 ){
+            }else if(row["transaction_type"] === "b_in" && row["status"].indexOf("validated") > -1 ){
                 return( <Fab
                     variant="extended"
                     size="small"

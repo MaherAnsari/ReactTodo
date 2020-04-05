@@ -4,7 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Auth } from "aws-amplify";
 // import Auth from '@aws-amplify/auth'
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import cookie from 'react-cookies';
 import '../../assets/css/login.css';
 import $ from 'jquery';
@@ -67,7 +67,9 @@ class SignIn extends React.Component {
                 otp_forgot: "",
                 newPassword_forgot: ""
             },
-            disabledForgotBtn: false
+            disabledForgotBtn: false,
+            showErrorMsg: false,
+            errorMsg: ""
         }
 
         this.getViewContent = this.getViewContent.bind(this);
@@ -115,7 +117,7 @@ class SignIn extends React.Component {
     handleValueChange = event => {
         const user = this.state.user;
         user[event.target.name] = event.target.value;
-        this.setState({ user: user });
+        this.setState({ user: user, showErrorMsg: false, errorMsg: "" });
     }
 
 
@@ -152,6 +154,13 @@ class SignIn extends React.Component {
                 <div className="flex-sb-m w-full p-t-3 p-b-32">
                 </div>
 
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red"
+                    }}
+                    > {this.state.errorMsg}</div>}
                 <div className="container-login100-form-btn">
                     <button className="login100-form-btn"
                         disabled={this.state.disabledLoginBtn}
@@ -167,7 +176,10 @@ class SignIn extends React.Component {
                         fontSize: "14px",
                         cursor: "pointer"
                     }} onClick={() => this.setState({
-                        action: "Forgot_password", forgotPasswordViewStep: 1, user: {
+                        action: "Forgot_password",
+                        showErrorMsg: false,
+                        errorMsg: "",
+                        forgotPasswordViewStep: 1, user: {
                             username: '',
                             password: '',
                             loading: false,
@@ -209,7 +221,13 @@ class SignIn extends React.Component {
                 </div>
                 <div className="flex-sb-m w-full p-t-3 p-b-32">
                 </div>
-
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red"
+                    }}
+                    > {this.state.errorMsg}</div>}
                 <div className="container-login100-form-btn">
                     <button className="login100-form-btn" onClick={this.handleNewPassword}>
                         Login
@@ -244,6 +262,13 @@ class SignIn extends React.Component {
 
                 <div className="flex-sb-m w-full p-t-3 p-b-32">
                 </div>
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red"
+                    }}
+                    > {this.state.errorMsg}</div>}
                 <div className="container-login100-form-btn">
                     <button className="login100-form-btn" onClick={this.handleVerifyOtp}>
                         Continue
@@ -285,12 +310,21 @@ class SignIn extends React.Component {
                 })
 
             } else if (response.message) {
-                alert(response.message);
+                // alert(response.message);
+                this.setState({
+                    showErrorMsg: true,
+                    errorMsg: response.message
+                });
             }
             this.setState({ disabledForgotBtn: false })
         } catch (e) {
-            alert('Error. try again...' + e);
-            this.setState({ disabledForgotBtn: false })
+            // alert('Error. try again...' + e);
+            this.setState({
+                disabledForgotBtn: false,
+                showErrorMsg: true,
+                errorMsg: e.message
+            });
+
         }
     }
 
@@ -300,14 +334,27 @@ class SignIn extends React.Component {
         try {
             var response = await Auth.forgotPasswordSubmit(this.state.forgotPasswordData.username_forgot, this.state.forgotPasswordData.otp_forgot, this.state.forgotPasswordData.newPassword_forgot);
             if (!response) {
-                this.setState({ action: "sigin", forgotPasswordViewStep: 1 });
+                this.setState({
+                    action: "sigin",
+                    showErrorMsg: false,
+                    errorMsg: "",
+                    forgotPasswordViewStep: 1
+                });
             } else {
-                alert('Error. try again...');
+                // alert('Error. try again...');
+                this.setState({
+                    showErrorMsg: true,
+                    errorMsg: 'Error. try again...'
+                });
             }
             this.setState({ disabledForgotBtn: false })
         } catch (e) {
-            alert('Error. try again...');
-            this.setState({ disabledForgotBtn: false })
+            // alert('Error. try again...');
+            this.setState({
+                disabledForgotBtn: false,
+                showErrorMsg: true,
+                errorMsg: 'Error. try again...'
+            })
         }
     }
 
@@ -333,6 +380,13 @@ class SignIn extends React.Component {
 
                     <div className="flex-sb-m w-full p-t-3 p-b-32">
                     </div>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red"
+                        }}
+                        > {this.state.errorMsg}</div>}
                     <div className="container-login100-form-btn">
                         <button className="login100-form-btn"
                             disabled={this.state.disabledForgotBtn}
@@ -348,7 +402,10 @@ class SignIn extends React.Component {
                             fontSize: "14px",
                             cursor: "pointer"
                         }} onClick={() => this.setState({
-                            action: "sigin", forgotPasswordViewStep: 1
+                            action: "sigin",
+                            showErrorMsg: false,
+                            errorMsg: "",
+                            forgotPasswordViewStep: 1
                         })}>
                         <i className="fa fa-arrow-left" aria-hidden="true"></i> &nbsp;  Back to login
                 </div>
@@ -389,6 +446,13 @@ class SignIn extends React.Component {
 
                     <div className="flex-sb-m w-full p-t-3 p-b-32">
                     </div>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red"
+                        }}
+                        > {this.state.errorMsg}</div>}
                     <div className="container-login100-form-btn">
                         <button className="login100-form-btn"
                             disabled={this.state.disabledForgotBtn}
@@ -438,12 +502,20 @@ class SignIn extends React.Component {
                 })
                 if (data && data.challengeName === "NEW_PASSWORD_REQUIRED") {
                     let action = data.challengeName;
-                    this.setState({ action: action });
+                    this.setState({
+                        action: action,
+                        showErrorMsg: false,
+                        errorMsg: "",
+                    });
                     return;
                 }
                 if (data && data.challengeName === 'SMS_MFA') {
                     let action = data.challengeName;
-                    this.setState({ action: action });
+                    this.setState({
+                        action: action,
+                        showErrorMsg: false,
+                        errorMsg: "",
+                    });
                     return;
                 }
                 // console.log(data);
@@ -463,7 +535,11 @@ class SignIn extends React.Component {
 
             }
         } catch (e) {
-            alert(e.message);
+            // alert(e.message);
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: e.message,
+            })
         }
         this.setState({ disabledLoginBtn: false });
     }
@@ -521,7 +597,11 @@ class SignIn extends React.Component {
 
 
         } catch (e) {
-            alert(e.message);
+            // alert(e.message);
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: e.message,
+            })
         }
     }
 
@@ -563,12 +643,6 @@ class SignIn extends React.Component {
                 this.setState({
                     userdata: data
                 })
-                // Auth.currentAuthenticatedUser({
-                // }).then(user => {
-                //     console.log(user);
-                //     localStorage.setItem('name',user.attributes.name);
-                // }).catch(err => console.log("_^_" + JSON.stringify(err)))
-
                 var authk = data.signInUserSession.idToken.jwtToken;
                 var username = data.signInUserSession.idToken.payload.name;
                 cookie.save('bijak_token', authk, { path: '/' })
@@ -576,15 +650,21 @@ class SignIn extends React.Component {
                 cookie.save('username', username, { path: '/' });
                 var userId = data.username;
                 cookie.save('userId', userId, { path: '/' });
-                // this.props.history.push("/" + Utils.getDbName() + "/home/buyer-list");
                 this.getUserRole();
-                // this.props.history.push("/home/buyer-list");
-
             } else {
-                alert("failed in login");
+                // alert("failed in login");
+                this.setState({
+                    showErrorMsg: true,
+                    errorMsg: "failed in login",
+                });
             }
         } catch (e) {
-            alert(e.message);
+            // alert(e.message);
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: e.message,
+            });
+
         }
     }
 
@@ -616,10 +696,18 @@ class SignIn extends React.Component {
                 // this.props.history.push("/home/buyer-list");
 
             } else {
-                alert("failed in login");
+                // alert("failed in login");
+                this.setState({
+                    showErrorMsg: true,
+                    errorMsg: "failed in login",
+                });
             }
         } catch (e) {
-            alert(e.message);
+            // alert(e.message);
+            this.setState({
+                showErrorMsg: true,
+                errorMsg: e.message
+            });
         }
     }
 

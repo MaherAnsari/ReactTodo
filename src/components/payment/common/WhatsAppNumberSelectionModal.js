@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import TextField from '@material-ui/core/TextField';
 import commonService from '../../../app/commonService/commonService';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -52,7 +53,17 @@ class WhatsAppNumberSelectionModal extends Component {
             open: this.props.open,
             transactionInfoData: this.props.transactionInfoData,
             selectedUser: "supplier",
-            otherNumber: ""
+            otherNumber: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            showLoader: false,
+            showErrorMsg: false,
+            errorMsg: ""
         }
     }
 
@@ -68,12 +79,13 @@ class WhatsAppNumberSelectionModal extends Component {
     onInputChanged(event) {
         let val = event.target.value;
         if (!isNaN(val)) {
-            this.setState({ otherNumber: event.target.value });
+            this.setState({ otherNumber: event.target.value, showErrorMsg : false, errorMsg : "" });
         }
 
     }
 
     async sendReceiptToWhatsapp(event) {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let whatsappNumber = "";
             if (this.state.selectedUser === "supplier") {
@@ -82,37 +94,76 @@ class WhatsAppNumberSelectionModal extends Component {
                 whatsappNumber = this.state.transactionInfoData["buyer_mobile"];
             } else if (this.state.selectedUser === "other") {
                 if (this.state.otherNumber === "") {
-                    alert("Please enter the number.");
+                    // alert("Please enter the number.");
+                    this.setState({
+                        showErrorMsg: true,
+                        errorMsg: "Please enter the number."
+                    })
                     return;
                 } else if (this.state.otherNumber.length < 10) {
-                    alert("Please enter a valid number.");
+                    // alert("Please enter a valid number.");
+                    this.setState({
+                        showErrorMsg: true,
+                        errorMsg: "Please enter a valid number."
+                    })
                     return;
                 }
                 whatsappNumber = this.state.otherNumber;
             }
             let payload = { "mobile": whatsappNumber, "id": this.state.transactionInfoData["id"] }
+            // let resp = { data:{ status : 0}}
+            this.setState({ showLoader: true });
             let resp = await commonService.sendinvoicefromwhatsapp(payload);
-            console.log(resp);
+            // console.log(resp);
+            
             if (resp.data.status === 1) {
-                alert("Receipt sent to whatsapp number " + whatsappNumber);
+                // alert("Receipt sent to whatsapp number " + whatsappNumber);
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Receipt sent to whatsapp number " + whatsappNumber;
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt");
                 // alert("Oops there was an error sending the watsapp receipt");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error sending the watsapp receipt";
             }
-            this.handleDialogCancel();
+            // this.handleDialogCancel();
+
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
         } catch (err) {
             console.error(err)
-            this.setState({ open: false }, () =>
-                alert("Oops there was an error sending the receipt")
+            this.setState({ open: false }, () =>{
+                // alert("Oops there was an error sending the receipt")
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = "Oops there was an error sending the receipt";
+                this.setState({
+                    // showLoader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+            }
             );
         }
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.handleDialogCancel()
+        )
+    }
 
     render() {
         const { classes } = this.props;
-        const { transactionInfoData, selectedUser, otherNumber } = this.state;
+        const { transactionInfoData, selectedUser, otherNumber,
+            showSweetAlert, sweetAlertData, showLoader } = this.state;
 
         return (<div>
             <Dialog style={{ zIndex: '99999' }}
@@ -128,7 +179,7 @@ class WhatsAppNumberSelectionModal extends Component {
                         Confirm Number For Whatsapp </p>
                 </DialogTitle>
                 <DialogContent>
-                    <React.Fragment>
+                    {!showLoader ? <React.Fragment>
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Select Whom to send the receipt</FormLabel>
                             <RadioGroup aria-label="position" name="position" value={selectedUser}
@@ -164,12 +215,44 @@ class WhatsAppNumberSelectionModal extends Component {
                                 onChange={this.onInputChanged.bind(this)}
                                 label="Enter Mobile Number" />
                         </div>}
-                    </React.Fragment>
+                    </React.Fragment> :
+                        <>
+                            <div style={{ textAlign: "center" }}>
+                                <i className="fa fa-spinner fa-spin"
+                                    style={{ fontSize: "56px", color: "#000" }} aria-hidden="true" ></i>
+                                <p style={{
+                                    fontSize: "14px",
+                                    marginBottom: "0"
+                                }} >
+                                    Please wait..
+                                </p>
+                            </div>
+                        </>}
+
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            style={{ zIndex: 999999 }}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
                 </DialogContent>
-                <DialogActions>
-                    <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
-                    <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
-                </DialogActions>
+                {this.state.showErrorMsg &&
+                    <div style={{
+                        fontFamily: 'Montserrat, sans-serif',
+                        fontSize: "12px",
+                        color: "red",
+                        textAlign: "right",
+                        paddingRight: "10px"
+                    }}
+                    > {this.state.errorMsg}</div>}
+                {!showLoader &&
+                    <DialogActions>
+                        <Button className={classes.formCancelBtn} onClick={(event) => this.sendReceiptToWhatsapp(event)} color="primary">Send</Button>
+                        <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
+                    </DialogActions>}
             </Dialog>
         </div>
         );

@@ -61,6 +61,7 @@ class PaymentDetailsContainer extends React.Component {
             showPaymentFilterOption: false,
             filterDataArray: [],
             transactionTypeArray: [],
+            additionalFilter: {},
 
 
             showAddTransactionModal: false,
@@ -138,19 +139,20 @@ class PaymentDetailsContainer extends React.Component {
 
         if (this.state.filterDataArray.length > 0) {
             params["filter_status"] = this.state.filterDataArray.toString();
-        }else{
-            if(params.hasOwnProperty("filter_status") ){
+        } else {
+            if (params.hasOwnProperty("filter_status")) {
                 delete params["filter_status"];
             }
         }
 
         if (this.state.transactionTypeArray.length > 0) {
             params["filter_transaction_type"] = this.state.transactionTypeArray.toString();
-        }else{
-            if(params.hasOwnProperty("filter_transaction_type") ){
+        } else {
+            if (params.hasOwnProperty("filter_transaction_type")) {
                 delete params["filter_transaction_type"];
             }
         }
+
 
         this.setState({ params: params });
         // { "startDate": "", "endDate": "" }
@@ -161,9 +163,9 @@ class PaymentDetailsContainer extends React.Component {
             params["endDate"] = this.state.datePayloads["endDate"];
         }
         // params["supplierid"] = "9953368723";
-
+        let updatedParams = { ...params, ...this.state.additionalFilter };
         try {
-            let resp = await paymentDetailsService.getPaymentDetails(params);
+            let resp = await paymentDetailsService.getPaymentDetails(updatedParams);
             if (resp.data.status === 1 && resp.data.result) {
                 var respData = resp.data.result;
                 console.log(respData)
@@ -237,7 +239,7 @@ class PaymentDetailsContainer extends React.Component {
     render() {
         const { classes } = this.props;
         const { allTransactionsData, paymentMetaInfo, showPaymentFilterOption, filterDataArray,
-            transactionTypeArray, showAddTransactionModal } = this.state;
+            transactionTypeArray,additionalFilter, showAddTransactionModal } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -245,7 +247,8 @@ class PaymentDetailsContainer extends React.Component {
                         <i onClick={(event) => {
                             this.setState({
                                 filterDataArray: [],
-                                transactionTypeArray: []
+                                transactionTypeArray: [],
+                                additionalFilter:{}
                             }, () => this.handelRefreshData(event))
                         }} style={{ padding: "18px", fontSize: "18px", color: "#50a1cf", cursor: "pointer" }} data-toggle="tooltip" data-html="true" title="Refresh" className="fa fa-refresh" aria-hidden="true"></i>
                         <DateRangeSelector
@@ -255,7 +258,7 @@ class PaymentDetailsContainer extends React.Component {
                         <div style={{ padding: "15px 15px 15px 0px" }}>
                             <Badge
                                 className={classes.margin} style={{ height: '25px' }}
-                                badgeContent={filterDataArray.length + transactionTypeArray.length} color="primary">
+                                badgeContent={filterDataArray.length + transactionTypeArray.length + Object.keys(additionalFilter).length} color="primary">
                                 <Button
                                     component="span"
                                     style={{ padding: '5px 10px', fontSize: 12, color: '#b1b1b1', margin: '0px 5px' }}
@@ -297,10 +300,12 @@ class PaymentDetailsContainer extends React.Component {
                             openModal={showPaymentFilterOption}
                             filterDataArr={filterDataArray}
                             transactionTypeArray={transactionTypeArray}
+                            additionalFilter={additionalFilter}
                             onEditModalCancel={(event) => this.setState({ showPaymentFilterOption: false })}
                             onFilterAdded={(data) => this.setState({
                                 filterDataArray: data["paymentType"],
                                 transactionTypeArray: data["transactionType"],
+                                additionalFilter: data["additionalFilter"],
                                 showPaymentFilterOption: false
                             })} />}
 

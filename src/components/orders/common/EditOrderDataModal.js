@@ -24,6 +24,10 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Chip from '@material-ui/core/Chip';
+import commonService from '../../../app/commonService/commonService';
 
 const styles = theme => ({
     heading: {
@@ -118,7 +122,8 @@ class EditOrderDataModal extends Component {
                 "old_system_order_id": "",
                 "pkt": "",
                 "brokerage": "",
-                "unsettled_amount_pltf" : ""
+                "unsettled_amount_pltf": "",
+                "tags": []
             },
 
             buyerid: "",
@@ -129,18 +134,28 @@ class EditOrderDataModal extends Component {
             attachmentArray: [],
             commodityList: this.props.commodityList,
             showLoader: false,
-            subId:""
+            subId: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            showErrorMsg: false,
+
+            tagsOptions: []
         }
 
     }
 
     componentDidMount() {
-        
 
+        this.getTagsData();
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        }).then(user => this.setState({ subId : user.attributes.sub}))
-        .catch(err => console.log(err));
+        }).then(user => this.setState({ subId: user.attributes.sub }))
+            .catch(err => console.log(err));
 
         console.log(this.state.orderPayload)
         if (this.state.orderPayload) {
@@ -168,13 +183,27 @@ class EditOrderDataModal extends Component {
     }
 
 
-    componentWillReceiveProps( nextProps) {
-        if ( nextProps.open !== this.state.open) {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.open !== this.state.open) {
             this.setState({ open: this.props.open });
         }
     }
 
-
+    async getTagsData() {
+        try {
+            let tagsData = [];
+            let resp = await commonService.getTagsData("orders");
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                tagsData = resp.data.result;
+            } else {
+                tagsData = [];
+            }
+            this.setState({ tagsOptions: tagsData });
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
 
 
@@ -202,7 +231,8 @@ class EditOrderDataModal extends Component {
         }
         this.setState({
             orderPayload: orderPayloadVal,
-            errorFields: errors
+            errorFields: errors,
+            showErrorMsg: false
         })
         console.log(orderPayloadVal)
     }
@@ -285,6 +315,14 @@ class EditOrderDataModal extends Component {
         }
     }
 
+    getCommodityMappedName( data ){
+        console.log( data )
+        if( data ){
+            return this.state.commodityList["optionE_N"][data]
+        }
+        return data;
+    }
+
     async updateOrder(event) {
         try {
             var payload = this.state.orderPayload;
@@ -294,18 +332,32 @@ class EditOrderDataModal extends Component {
                 payload["supporting_images"] = this.prepareSupportingUrlArray(this.state.attachmentArray);
                 payload = this.removeBlankNonMandatoryFields(payload);
                 payload["actual_dispatch_date"] = this.formateDateForApi(payload["actual_dispatch_date"]);
+                payload["commodity"] = this.getCommodityMappedName(payload["commodity"]);
                 // var resp= { data:{ status : 1, result:{} }}
                 var resp = await orderService.updateExistingOrder(this.state.subId, id, payload);
                 this.setState({ showLoader: false });
+                let sweetAlrtData = this.state.sweetAlertData;
                 if (resp.data.status === 1 && resp.data.result) {
-                    alert("Successfully updated this order ");
-                    this.props.onOrderDataUpdated();
+                    // alert("Successfully updated this order ");
+                    // this.props.onOrderDataUpdated();
+
+                    sweetAlrtData["type"] = "success";
+                    sweetAlrtData["title"] = "Success";
+                    sweetAlrtData["text"] = "Order updated successfully";
                 } else {
                     // alert("There was an error while updating this order");
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "There was an error while updating this order";
                 }
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             } else {
-                alert("please fill the mandatory fields highlighted");
+                // alert("please fill the mandatory fields highlighted");
+                this.setState({ showErrorMsg: true });
             }
         } catch (err) {
             console.log(err);
@@ -313,7 +365,7 @@ class EditOrderDataModal extends Component {
     }
 
     removeBlankNonMandatoryFields(data) {
-        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate","unsettled_amount_pltf"]
+        var floatIds = ["rate", "qnt", "bijak_amt", "commission_rate", "unsettled_amount_pltf"]
         var formateddata = {};
         for (var key in this.state.orderPayloadToUpdate) {
             if (data[key] && data[key] !== "") {
@@ -335,9 +387,6 @@ class EditOrderDataModal extends Component {
             if (key === "cashback_allotted_to" && data[key] === "") {
                 formateddata[key] = null;
             }
-
-
-
         }
         return formateddata;
     }
@@ -462,9 +511,24 @@ class EditOrderDataModal extends Component {
         this.setState({ orderPayload: orderPayloadVal })
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onOrderDataUpdated()
+        )
+    }
+
+    handelTagsChanges = (event, values) => {
+        let orderPayloadVal = this.state.orderPayload;
+        orderPayloadVal["tags"] = values;
+        this.setState({ orderPayload: orderPayloadVal });
+    }
+
+
+
     render() {
         const { classes } = this.props;
-        const { showLoader, orderPayload,  commodityList,  errorFields } = this.state;
+        const { showLoader, orderPayload, commodityList, errorFields, showSweetAlert, sweetAlertData, tagsOptions } = this.state;
+        console.log(orderPayload.commodity);
         return (<div>
             <Dialog style={{ zIndex: '1' }}
                 open={this.state.open}
@@ -563,36 +627,6 @@ class EditOrderDataModal extends Component {
 
                             &nbsp;
                             &nbsp;
-                    {/* <div style={{ borderBottom: errorFields["supplierid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-
-                            <AsyncSelect
-                                cacheOptions
-                                value={supplierid}
-                                id={"reactSelectCustom"}
-                                name={"supplierid"}
-                                onChange={(item) => {
-                                    this.setState({ supplierid: item }, function () {
-                                        if (errorFields["supplierid"]) {
-                                            delete errorFields["supplierid"];
-                                        }
-                                        var data = orderPayload;
-                                        if (item && item !== null) {
-                                            data["supplierid"] = tempVar[item["label"]]["id"];
-                                            data["supplier_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["supplierid"] = "";
-                                            data["supplier_mobile"] = "";
-                                        }
-                                        this.setState({ orderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select supplier..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "supplierid")}
-                            />
-                        </div> */}
                             <TextField
                                 margin="dense"
                                 id="supplier_name"
@@ -606,36 +640,7 @@ class EditOrderDataModal extends Component {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            {/* <div style={{ borderBottom: errorFields["brokerid"] ? "2px solid red" : "1px solid gray", width: "49%" }}>
-                            <AsyncSelect
-                                cacheOptions
-                                value={brokerid}
-                                id={"reactSelectCustom"}
-                                name={"brokerid"}
-                                // onChange={( item )=>{ this.setState({ buyerid : item  })}}
-                                onChange={(item) => {
-                                    this.setState({ brokerid: item }, function () {
-                                        var data = orderPayload;
-                                        if (errorFields["brokerid"]) {
-                                            delete errorFields["brokerid"];
-                                        }
-                                        if (item && item !== null) {
-                                            data["brokerid"] = tempVar[item["value"]]["id"];
-                                            // data["buyer_mobile"] = tempVar[item["label"]]["mobile"];
-                                        } else {
-                                            data["brokerid"] = "";
-                                            // data["buyer_mobile"] = "";
-                                        }
-                                        this.setState({ orderPayload: data, errorFields: errorFields })
-                                    })
-                                }}
-                                isSearchable={true}
-                                isClearable={true}
-                                placeholder={`Select broker..`}
-                                defaultOptions={[]}
-                                loadOptions={this.getOptions.bind(this, "brokerid")}
-                            />
-                        </div> */}
+
                             <TextField
                                 select
                                 id="creator_role"
@@ -662,9 +667,9 @@ class EditOrderDataModal extends Component {
                                 label="Commodity"
                                 type="text"
                                 style={{ width: '49%', marginTop: '1%' }}
-                                value={orderPayload.commodity}
+                                value={orderPayload.commodity && orderPayload.commodity !== null ? [orderPayload.commodity] : []} // sql
                                 onChange={this.handleInputChange.bind(this)}>
-                                {commodityList.map((key, i) => (
+                                {commodityList["options"].map((key, i) => (
                                     <MenuItem key={i} value={key} selected={true}>
                                         {key}
                                     </MenuItem>
@@ -918,7 +923,30 @@ class EditOrderDataModal extends Component {
 
 
                         {/*--------------- newly Added ends---------------- */}
-
+                        <div style={{ display: "flex" }} >
+                            <Autocomplete
+                                multiple
+                                id="fixed-demo"
+                                options={tagsOptions}
+                                value={orderPayload.tags && orderPayload.tags !== null? orderPayload.tags : []}
+                                getOptionLabel={e => e}
+                                onChange={this.handelTagsChanges}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip label={option} {...getTagProps({ index })} />
+                                    ))
+                                }
+                                style={{ width: "98%" }}
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Tags"
+                                        placeholder="Search"
+                                        fullWidth
+                                    />
+                                )}
+                            />
+                        </div>
 
                         {/* 
                         <div style={{ display: "flex" }} >
@@ -1073,12 +1101,31 @@ class EditOrderDataModal extends Component {
                         </div>
 
                     </DialogContent>
+                    {this.state.showErrorMsg &&
+                        <div style={{
+                            fontFamily: 'Montserrat, sans-serif',
+                            fontSize: "12px",
+                            color: "red",
+                            textAlign: "right",
+                            paddingRight: "10px"
+                        }}
+                        > Please fill the mandatory fields highlighted</div>}
                     <DialogActions>
                         <Button className={classes.formCancelBtn} onClick={this.updateOrder.bind(this)} color="primary">Update</Button>
                         <Button className={classes.formCancelBtn} onClick={this.handleDialogCancel.bind(this)} color="primary">Cancel</Button>
                     </DialogActions>
                 </div> :
                     <Loader primaryText="Please wait.." />}
+
+                {showSweetAlert &&
+                    <SweetAlertPage
+                        show={true}
+                        type={sweetAlertData.type}
+                        title={sweetAlertData.title}
+                        text={sweetAlertData.text}
+                        sweetAlertClose={() => this.handelSweetAlertClosed()}
+                    />}
+
             </Dialog>
         </div>
         );

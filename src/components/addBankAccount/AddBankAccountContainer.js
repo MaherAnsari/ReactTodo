@@ -14,6 +14,7 @@ import commonService from '../../app/commonService/commonService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
 import Fab from '@material-ui/core/Fab';
 import ConfirmDialog from '../../app/common/ConfirmDialog';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 
 const styles = theme => ({
@@ -56,19 +57,28 @@ class AddBankAccountContainer extends React.Component {
 
             showConfirmDialog: false,
             dialogText: "",
-            dialogTitle:"",
+            dialogTitle: "",
             forceUpdateData: undefined,
 
             deleteAccountObj: undefined,
-            isActDeleteClicked : false
+            isActDeleteClicked: false,
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
     }
 
     getBankDetails = async (userData) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ showLoader: true, currentSelectedUserDetails: userData });
             let param = { "mobile": userData["mobile"] };
             let resp = await commonService.getbankDetail(param);
+
             if (resp.data.status === 1) {
                 if (resp.data.result) {
                     this.setState({ showLoader: false, currentPayoutView: "selectAccount", acctData: resp.data.result || [] });
@@ -76,12 +86,28 @@ class AddBankAccountContainer extends React.Component {
                     this.setState({ showLoader: false, acctData: resp.data.result })
                 }
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
-                this.setState({ showLoader: false });
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details";
+                this.setState({
+                    showLoader: false,
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
+                // this.setState({ showLoader: false });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -101,9 +127,9 @@ class AddBankAccountContainer extends React.Component {
                     addAccountDataVal[id] = val;
                 }
             } else {
-                if( id === "bank_name"){
+                if (id === "bank_name") {
                     addAccountDataVal[id] = val;
-                }else{
+                } else {
                     addAccountDataVal[id] = val ? val.toUpperCase() : val;
                 }
             }
@@ -180,6 +206,7 @@ class AddBankAccountContainer extends React.Component {
 
 
     onNewAccountAddClicked = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             if (this.checkIfAccountInputDetaisAreValid()) {
                 this.setState({ showLoader: true });
@@ -198,131 +225,210 @@ class AddBankAccountContainer extends React.Component {
                 }
                 let resp = await commonService.addbankDetail(payload);
                 if (resp.data.status === 1) {
+
                     if (resp.data.result) {
                         this.setState({ showLoader: false, currentPayoutView: "selectAccount" }, function () {
-                            alert("Successfully Added");
-                            this.getBankDetails(this.state.currentSelectedUserDetails)
+                            // alert("Successfully Added");
+                            // this.getBankDetails(this.state.currentSelectedUserDetails)
+                            sweetAlrtData["type"] = "success";
+                            sweetAlrtData["title"] = "Success";
+                            sweetAlrtData["text"] = "Bank account Successfully";
+                            this.setState({
+                                showSweetAlert: true,
+                                sweetAlertData: sweetAlrtData
+                            });
                         });
                     } else {
-                        this.setState({ showLoader: false })
+                        // this.setState({ showLoader: false })
                         // alert("An error occured while adding the account details");
-                        alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details");
+                        // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details");
+                        sweetAlrtData["type"] = "error";
+                        sweetAlrtData["title"] = "Error";
+                        sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while adding the account details";
+                        this.setState({
+                            showLoader: false,
+                            showSweetAlert: true,
+                            sweetAlertData: sweetAlrtData
+                        });
                     }
                 } else {
-                    this.setState({ showLoader: false })
-                    alert("An error occured while adding the account details. Please check the details and try again");
+                    // this.setState({ showLoader: false })
+                    // alert("An error occured while adding the account details. Please check the details and try again");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = "An error occured while adding the account details. Please check the details and try again";
+                    this.setState({
+                        showLoader: false,
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
                 }
             }
         } catch (err) {
             console.error(err);
-            this.setState({ showLoader: false })
-            alert("An error occured while adding the account details")
+            // this.setState({ showLoader: false })
+            // alert("An error occured while adding the account details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while adding the account details";
+            this.setState({
+                showLoader: false,
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
-    getStatusOfAccount( obj ){
-        if( obj["status"] !== "active"){
+    getStatusOfAccount(obj) {
+        if (obj["status"] !== "active") {
             return (<Fab
                 variant="extended"
-                disabled={ !getAccessAccordingToRole("addBankAccount") }
+                disabled={!getAccessAccordingToRole("addBankAccount")}
                 size="small"
                 aria-label="Force validate"
-                onClick={( event )=> this.setState({ 
+                onClick={(event) => this.setState({
                     dialogTitle: "Are you sure to force validate this account ?",
-                    dialogText: <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
-                <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>, 
-                forceUpdateData : obj, 
-                isActDeleteClicked : false,
-                showConfirmDialog : true
-             })}
-                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0": "gray", color: "#ffffff", padding: "0 8px" }}
+                    dialogText: <div style={{ display: "block" }}><div style={{ fontSize: "13px" }}>{`Name : ${obj["name"]} `}</div>
+                        <div style={{ fontSize: "13px" }}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
+                    forceUpdateData: obj,
+                    isActDeleteClicked: false,
+                    showConfirmDialog: true
+                })}
+                style={{ textTransform: "none", background: getAccessAccordingToRole("addBankAccount") ? "#108ad0" : "gray", color: "#ffffff", padding: "0 8px" }}
             >
                 Force validate
     </Fab>)
-        }else{
+        } else {
             return (<span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span>);
         }
     }
 
-    onForceUpdateBankDetail = async ( ) => {
+    onForceUpdateBankDetail = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
-            this.setState({ showLoader : true , showConfirmDialog : false });
+            this.setState({ showLoader: true, showConfirmDialog: false });
             let data = this.state.forceUpdateData;
-            let payload ={
-                ifsc :data["ifsc"],
-                accountnumber :data["account"],
-                mobile:data["mobile"],
+            let payload = {
+                ifsc: data["ifsc"],
+                accountnumber: data["account"],
+                mobile: data["mobile"],
                 name: data["name"],
             }
             let resp = await commonService.forceUpdateBankDetail(payload);
-            this.setState({ showLoader : false });
-                if (resp.data.status === 1) {
-                    alert("Successfully updated");
-                    this.getBankDetails(this.state.currentSelectedUserDetails)
-                }else{
-                    // alert("Oops an error occured while validating your account details.");
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
-                    
-                }
-            
-        }catch( err ){
-            console.log( err )
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                // alert("Successfully updated");
+                // this.getBankDetails(this.state.currentSelectedUserDetails)
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully updated";
+            } else {
+                // alert("Oops an error occured while validating your account details.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while validating your account details.";
+
+            }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+        } catch (err) {
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = err;
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
-    handelConfirmBtnClicked(){
-        if( this.state.isActDeleteClicked ){
+    handelConfirmBtnClicked() {
+        if (this.state.isActDeleteClicked) {
             this.deleteBankAccountDetailApi();
-        }else{
+        } else {
             this.onForceUpdateBankDetail();
         }
     }
 
-    deleteBankAccountDetailApi = async ( ) => {
+    deleteBankAccountDetailApi = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
-            this.setState({ showLoader : true , showConfirmDialog : false });
+            this.setState({ showLoader: true, showConfirmDialog: false });
             let data = this.state.deleteAccountObj;
-            let payload ={
-                ifsc :data["ifsc"],
-                accountnumber :data["account"],
-                mobile:data["mobile"],
+            let payload = {
+                ifsc: data["ifsc"],
+                accountnumber: data["account"],
+                mobile: data["mobile"],
                 name: data["name"],
                 "is_deleted": true
             }
             // let resp = { data  :{ status : 1}}
             let resp = await commonService.deleteBankDetail(payload);
-            this.setState({ showLoader : false });
-                if (resp.data.status === 1) {
-                    alert("Successfully deleted");
-                    this.getBankDetails(this.state.currentSelectedUserDetails)
-                }else{
-                    // alert("Oops an error occured while deleting the account details.");
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.");
-                }
-            
-        }catch( err ){
-            console.log( err )
+            this.setState({ showLoader: false });
+            if (resp.data.status === 1) {
+                // alert("Successfully deleted");
+                // this.getBankDetails(this.state.currentSelectedUserDetails)
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Bank account deleted Successfully";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+            } else {
+                // alert("Oops an error occured while deleting the account details.");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while deleting the account details.";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+            }
+
+        } catch (err) {
+            console.log(err)
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = err
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
     handelCancelUpdate(event) {
-        this.setState({ showConfirmDialog: false, forceUpdateData : undefined ,deleteAccountObj : undefined, isActDeleteClicked : false  });
-      }
+        this.setState({ showConfirmDialog: false, forceUpdateData: undefined, deleteAccountObj: undefined, isActDeleteClicked: false });
+    }
 
-    onDeleteButtonClicked( obj ){
+    onDeleteButtonClicked(obj) {
         this.setState({
             dialogTitle: "Are you sure to delete this account ?",
-            dialogText: 
-                            <div style={{display: "block"}}><div style={{ fontSize: "13px"}}>{`Name : ${obj["name"]} `}</div>
-                            <div style={{ fontSize: "13px"}}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
-            isActDeleteClicked : true, 
-            deleteAccountObj : obj, 
-            showConfirmDialog : true });
+            dialogText:
+                <div style={{ display: "block" }}><div style={{ fontSize: "13px" }}>{`Name : ${obj["name"]} `}</div>
+                    <div style={{ fontSize: "13px" }}>{`IFSC : ${obj["ifsc"]} , Account no. : ${obj["account"]}`}</div></div>,
+            isActDeleteClicked: true,
+            deleteAccountObj: obj,
+            showConfirmDialog: true
+        });
+    }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.getBankDetails(this.state.currentSelectedUserDetails);
+            }
+        });
     }
 
     render() {
         const { classes } = this.props;
-        const { showLoader, acctData, currentPayoutView, addAccountData, errorFields } = this.state;
+        const { showLoader, acctData, currentPayoutView, addAccountData, errorFields, showSweetAlert, sweetAlertData } = this.state;
         return (
             <div className={classes.root}>
                 <Paper className={classes.card} >
@@ -340,9 +446,9 @@ class AddBankAccountContainer extends React.Component {
                                         <div> No Account added Yet. Click to continue</div>}
                                     <List style={{ padding: "5px 10px" }} >
                                         {acctData && acctData.map((obj, index) => {
-                                            const labelId = `checkbox-list-label-${ index }`;
+                                            const labelId = `checkbox-list-label-${index}`;
                                             return (
-                                                <ListItem key={index } role={undefined} dense  style={{ background: index % 2 === 0 ? "#f1f1f1" : "#f9f9f9" }}>
+                                                <ListItem key={index} role={undefined} dense style={{ background: index % 2 === 0 ? "#f1f1f1" : "#f9f9f9" }}>
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={obj["name"]}
@@ -350,10 +456,10 @@ class AddBankAccountContainer extends React.Component {
                                                     <Icon edge="end" aria-label="comments" style={{ color: this.getStatusIconColor(obj["pending_validation"]) }}>
                                                         {/* {this.getStatusIcon(obj["pending_validation"])} */}
                                                     </Icon>
-                                                    
+
                                                     {/* <span style={{ "textTransform": "capitalize" }}>{obj["status"] ? obj["status"] : ""} </span> */}
-                                                    {this.getStatusOfAccount( obj )}
-                                                    <Icon edge="end" aria-label="comments" style={{ color: "red", cursor:"pointer" }} onClick={()=> this.onDeleteButtonClicked( obj )}>
+                                                    {this.getStatusOfAccount(obj)}
+                                                    <Icon edge="end" aria-label="comments" style={{ color: "red", cursor: "pointer" }} onClick={() => this.onDeleteButtonClicked(obj)}>
                                                         delete_forever
                                                     </Icon>
                                                 </ListItem>
@@ -362,22 +468,25 @@ class AddBankAccountContainer extends React.Component {
                                     </List>
                                     <div style={{ paddingTop: "24px" }}>
                                         <Button variant="contained"
-                                            onClick={(event) =>{
-                                                    if(getAccessAccordingToRole("addBankAccount")){
-                                                        this.setState({
-                                                            errorFields: {},
-                                                            currentPayoutView: "addAccount",
-                                                            addAccountData: {
-                                                                account_number: "",
-                                                                ifsc: "",
-                                                                name: "",
-                                                                bank_name: "-"
-                                                            }
-                                                        }) } }}
-                                            style={{ 
-                                                background: (getAccessAccordingToRole("addBankAccount") ? "blue": "gray"), 
+                                            onClick={(event) => {
+                                                if (getAccessAccordingToRole("addBankAccount")) {
+                                                    this.setState({
+                                                        errorFields: {},
+                                                        currentPayoutView: "addAccount",
+                                                        addAccountData: {
+                                                            account_number: "",
+                                                            ifsc: "",
+                                                            name: "",
+                                                            bank_name: "-"
+                                                        }
+                                                    })
+                                                }
+                                            }}
+                                            style={{
+                                                background: (getAccessAccordingToRole("addBankAccount") ? "blue" : "gray"),
                                                 color: "#fff",
-                                                cursor:(getAccessAccordingToRole("addBankAccount") ? "pointer":"no-drop") }}>Add a new Account</Button>
+                                                cursor: (getAccessAccordingToRole("addBankAccount") ? "pointer" : "no-drop")
+                                            }}>Add a new Account</Button>
 
                                     </div>
 
@@ -387,8 +496,8 @@ class AddBankAccountContainer extends React.Component {
                                 <React.Fragment>
                                     <div> Enter the following details </div>
                                     <div style={{ padding: "0px 20%" }}>
-                                  
-{/* 
+
+                                        {/* 
                                         <TextField
                                             margin="dense"
                                             id="bank_name"
@@ -399,7 +508,7 @@ class AddBankAccountContainer extends React.Component {
                                             value={addAccountData.bank_name}
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth /> */}
-                                              <TextField
+                                        <TextField
                                             margin="dense"
                                             id="name"
                                             label="Name of Account holder"
@@ -412,7 +521,7 @@ class AddBankAccountContainer extends React.Component {
 
 
 
-<TextField
+                                        <TextField
                                             margin="dense"
                                             id="account_number"
                                             error={errorFields["account_number"] ? true : false}
@@ -434,21 +543,21 @@ class AddBankAccountContainer extends React.Component {
                                             onChange={this.handleInputChange.bind(this)}
                                             fullWidth />
 
-                                      
+
                                     </div>
                                     <div style={{ paddingTop: "24px" }}>
                                         <Button variant="contained" onClick={(event) => this.onNewAccountAddClicked(event)}
                                             style={{ background: "blue", color: "#fff" }}> Add </Button>
                                         <Button variant="contained"
-                                            onClick={(event) => 
-                                                    this.setState({
+                                            onClick={(event) =>
+                                                this.setState({
                                                     currentPayoutView: "selectAccount",
                                                     addAccountData: {
                                                         account_number: "",
                                                         ifsc: "",
                                                         name: ""
                                                     }
-                                                }) }
+                                                })}
                                             style={{ marginLeft: "5px", background: "red", color: "#fff" }}>Cancel </Button>
                                     </div>
                                 </React.Fragment>}
@@ -465,13 +574,22 @@ class AddBankAccountContainer extends React.Component {
                                 <Loader />
                             </React.Fragment>}
 
-                            {this.state.showConfirmDialog ?
-                                <ConfirmDialog
-                                    dialogText={this.state.dialogText}
-                                    dialogTitle={this.state.dialogTitle}
-                                    show={this.state.showConfirmDialog}
-                                    onConfirmed={()=>this.handelConfirmBtnClicked()}
-                                    onCanceled={()=>this.handelCancelUpdate()} /> : ""}
+                        {this.state.showConfirmDialog ?
+                            <ConfirmDialog
+                                dialogText={this.state.dialogText}
+                                dialogTitle={this.state.dialogTitle}
+                                show={this.state.showConfirmDialog}
+                                onConfirmed={() => this.handelConfirmBtnClicked()}
+                                onCanceled={() => this.handelCancelUpdate()} /> : ""}
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
 
                     </div>
                 </Paper>

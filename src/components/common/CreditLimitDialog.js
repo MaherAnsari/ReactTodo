@@ -7,8 +7,10 @@ import ConfirmDialog from '../../app/common/ConfirmDialog';
 import Button from '@material-ui/core/Button';
 import creditLimitService from './../../app/creditLimitService/creditLimitService';
 import { getAccessAccordingToRole } from '../../config/appConfig';
-
+import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Loader from './Loader';
 var moment = require('moment');
+
 const theme = createMuiTheme({
   overrides: {
     head: {
@@ -40,7 +42,7 @@ const styles = theme => ({
     fontFamily: 'lato !important',
     marginTop: '50px',
     padding: '8px 24px',
-    height:'60vh'
+    height: '60vh'
 
   },
   button: {
@@ -87,7 +89,16 @@ class CreditLimitDialog extends Component {
       },
       showConfirmDialog: false,
       tableBodyData: [],
-      creditLimit:"-"
+      creditLimit: "-",
+      showLoader: false,
+      showSweetAlert: false,
+      sweetAlertData: {
+        "type": "",
+        "title": "",
+        "text": ""
+      },
+
+      showErrorMsg: false
 
     }
   }
@@ -103,7 +114,7 @@ class CreditLimitDialog extends Component {
   async getCreditLimit() {
     let param = {};
 
-    if (this.props.userdata.mobile ) {
+    if (this.props.userdata.mobile) {
       param['mobile'] = this.props.userdata.mobile;
       // param['id'] = this.props.userdata.id;
 
@@ -115,7 +126,15 @@ class CreditLimitDialog extends Component {
         } else {
           // this.setState({ tableBodyData: [] });
           // alert("Oops an error occured while getting the credit limit");
-          alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+          // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+          let sweetAlrtData = this.state.sweetAlertData;
+          sweetAlrtData["type"] = "error";
+          sweetAlrtData["title"] = "Error";
+          sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit";
+          this.setState({
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData
+          });
         }
       } catch (err) {
         console.error(err)
@@ -137,16 +156,25 @@ class CreditLimitDialog extends Component {
     if (this.props.userdata.mobile && this.props.userdata.id) {
       param['mobile'] = this.props.userdata.mobile;
       param['id'] = this.props.userdata.id;
-
-
       try {
+        this.setState({ showLoader: true });
         let resp = await creditLimitService.getHistory(param);
+        this.setState({ showLoader: false });
         if (resp.data.status === 1 && resp.data.result) {
           this.setState({ tableBodyData: resp.data.result });
         } else {
           // alert("Oops an error occured while getting the list");
-          alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
-          this.setState({ tableBodyData: [] });
+          // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list");
+          // this.setState({ tableBodyData: [] });
+          let sweetAlrtData = this.state.sweetAlertData;
+          sweetAlrtData["type"] = "error";
+          sweetAlrtData["title"] = "Error";
+          sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the list";
+          this.setState({
+            tableBodyData: [],
+            showSweetAlert: true,
+            sweetAlertData: sweetAlrtData
+          });
         }
       } catch (err) {
         console.error(err)
@@ -161,16 +189,17 @@ class CreditLimitDialog extends Component {
     let id = event.target.id;
 
     data[id] = event.target.value;
-
-    this.setState({ obj: data });
+    this.setState({ obj: data, showErrorMsg: false });
   };
 
-  handelCancelUpdate(event) {
+
+  handelCancelUpdate = () => {
     this.setState({ showConfirmDialog: false });
   }
+
   handelConfirmUpdate = async () => {
     console.log(this.state.obj);
-    let limit =  this.state.obj.bijak_credit_limit;
+    let limit = this.state.obj.bijak_credit_limit;
     try {
       let resp = await creditLimitService.updateCreditLimit(this.state.obj);
       if (resp.data.status === 1 && resp.data.result) {
@@ -191,7 +220,8 @@ class CreditLimitDialog extends Component {
     if (this.state.obj.bijak_credit_limit && this.state.obj.bijak_credit_limit !== "" && this.state.obj.remarks && this.state.obj.remarks !== "") {
       this.setState({ dialogText: dialogText, dialogTitle: "Alert", showConfirmDialog: true });
     } else {
-      alert("Please check required field");
+      // alert("Please check required field");
+      this.setState({ showErrorMsg: true });
     }
 
 
@@ -201,45 +231,63 @@ class CreditLimitDialog extends Component {
     var fdate = moment.utc(new Date(dateval)).utcOffset("+05:30").format('DD-MMM-YYYY HH:mm')
     // console.log(fdate);
     return fdate;
-}
+  }
+
+  handelSweetAlertClosed() {
+    this.setState({ showSweetAlert: false }, () => {
+      if (this.state.sweetAlertData.type !== "error") {
+        // this.handelGetData();
+      }
+    });
+  }
 
   render() {
     const { classes } = this.props;
+    const { showSweetAlert, sweetAlertData } = this.state;
     return (
       <MuiThemeProvider>
         <div className={classes.root}>
           {getAccessAccordingToRole("updateCreditLimit") && <div>
 
-            <div style={{fontSize:'20px',textAlign:'center'}}>
-                Available Credit Limit : {this.state.creditLimit}
+            <div style={{ fontSize: '20px', textAlign: 'center' }}>
+              Available Credit Limit : {this.state.creditLimit}
             </div>
-          <TextField
-            margin="dense"
-            id="bijak_credit_limit"
-            label="bijak Credit Limit"
-            type="number"
-            maxLength="10"
-            // disabled={this.state.isUpdate} 
-            style={{ width: '55%' }}
-            value={this.state.obj.bijak_credit_limit}
-            onChange={this.handleChange.bind(this)}
-            fullWidth
-            required
-          />
-          <div style={{ display: "flex" }}>
             <TextField
               margin="dense"
-              id="remarks"
-              label="Remark"
-              type="text"
-              style={{ marginRight: '2%', width: '55%' }}
-              value={this.state.obj.remarks}
+              id="bijak_credit_limit"
+              label="bijak Credit Limit"
+              type="number"
+              maxLength="10"
+              // disabled={this.state.isUpdate} 
+              style={{ width: '55%' }}
+              value={this.state.obj.bijak_credit_limit}
               onChange={this.handleChange.bind(this)}
               fullWidth
               required
             />
-            <Button className={classes.button} onClick={this.handleAddClick.bind(this)} color="primary">UPDATE</Button>
-          </div>
+            <div style={{ display: "flex" }}>
+              <TextField
+                margin="dense"
+                id="remarks"
+                label="Remark"
+                type="text"
+                style={{ marginRight: '2%', width: '55%' }}
+                value={this.state.obj.remarks}
+                onChange={this.handleChange.bind(this)}
+                fullWidth
+                required
+              />
+              {this.state.showErrorMsg &&
+                <div style={{
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontSize: "12px",
+                  color: "red",
+                  textAlign: "right",
+                  paddingRight: "10px"
+                }}
+                > Please check required field</div>}
+              <Button className={classes.button} onClick={this.handleAddClick.bind(this)} color="primary">UPDATE</Button>
+            </div>
           </div>}
           <div className={classes.credit}>Credit History :</div>
           <div className={classes.header}>
@@ -248,17 +296,21 @@ class CreditLimitDialog extends Component {
             <div style={{ width: "20%" }}>Updated Time</div>
             <div style={{ width: "40%" }}>Remark</div>
           </div>
-          {(this.state.tableBodyData && this.state.tableBodyData.length>0) ? <div style={{ maxHeight: "40vh", overflowY: "scroll" }} >
-            {this.state.tableBodyData.map((option, i) => {
-              return (<div className={classes.row} style={{ background: i % 2 === 0 ? '#fff' : '#e8e8e8' }} key={option} >
-                <div style={{ width: "20%", marginLeft: '5px' }}>{option.updateBy}</div>
-                <div style={{ width: "20%" }}>{option.bijak_credit_limit}</div>
-                <div style={{ width: "20%" }}>{this.formatDateAndTime(option.createddate)}</div>
-                <div style={{ width: "40%", textOverflow: "ellipsis", overflow: 'overlay' }}>{option.remarks}</div>
-              </div>
-              )
-            })}
-          </div> :<div style={{textAlign:'center',marginTop:'20px',fontSize:'20px'}}> No History Available</div>}
+          {!this.state.showLoader ? ((this.state.tableBodyData && this.state.tableBodyData.length > 0) ?
+            <div style={{ maxHeight: "40vh", overflowY: "scroll" }} >
+              {this.state.tableBodyData.map((option, i) => {
+                return (<div className={classes.row} style={{ background: i % 2 === 0 ? '#fff' : '#e8e8e8' }} key={option} >
+                  <div style={{ width: "20%", marginLeft: '5px' }}>{option.updateBy}</div>
+                  <div style={{ width: "20%" }}>{option.bijak_credit_limit}</div>
+                  <div style={{ width: "20%" }}>{this.formatDateAndTime(option.createddate)}</div>
+                  <div style={{ width: "40%", textOverflow: "ellipsis", overflow: 'overlay' }}>{option.remarks}</div>
+                </div>
+                )
+              })}
+            </div> :
+            <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '20px' }}>
+              No History Available
+            </div>) : <Loader /> }
           <div>
 
           </div>
@@ -269,7 +321,18 @@ class CreditLimitDialog extends Component {
               show={this.state.showConfirmDialog}
               onConfirmed={this.handelConfirmUpdate}
               onCanceled={this.handelCancelUpdate} /> : ""}
+
+          {showSweetAlert &&
+            <SweetAlertPage
+              show={true}
+              type={sweetAlertData.type}
+              title={sweetAlertData.title}
+              text={sweetAlertData.text}
+              sweetAlertClose={() => this.handelSweetAlertClosed()}
+            />}
         </div>
+
+
 
       </MuiThemeProvider>
     );

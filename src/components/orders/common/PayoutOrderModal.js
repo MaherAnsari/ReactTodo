@@ -16,15 +16,10 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import paymentService from '../../../app/paymentService/paymentService';
 import Loader from '../../common/Loader';
-// import Radio from '@material-ui/core/Radio';
-// import RadioGroup from '@material-ui/core/RadioGroup';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import FormControl from '@material-ui/core/FormControl';
-// import FormLabel from '@material-ui/core/FormLabel';
-// import FormHelperText from '@material-ui/core/FormHelperText';
 import Utils from './../../../app/common/utils';
 import orderService from '../../../app/orderService/orderService';
 import { getAccessAccordingToRole } from '../../../config/appConfig';
+import SweetAlertPage from '../../../app/common/SweetAlertPage';
 
 const styles = theme => ({
 
@@ -76,7 +71,14 @@ class PayoutOrderModal extends Component {
             transactionAmount: 0,
             showAmountexceedError: false,
             availableCreditAmount: 0,
-            availableCreditAmountError: false
+            availableCreditAmountError: false,
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            },
+            showErrorMsg: false
         }
     }
 
@@ -97,15 +99,32 @@ class PayoutOrderModal extends Component {
                 }
             } else {
                 // alert("An error occured while getting the account details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the account details";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the account details")
+            // alert("An error occured while getting the account details")
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the account details";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
     getAvailableCredit = async (mobile) => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             let payload = { "data": { "ca_mobile": mobile } };
             let resp = await orderService.getAvailableCredit(payload);
@@ -117,11 +136,26 @@ class PayoutOrderModal extends Component {
                 }
             } else {
                 // alert("An error occured while getting the available credit details");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the available credit details");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the available credit details");
+
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while getting the available credit details";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
-            alert("An error occured while getting the available credit details")
+            // alert("An error occured while getting the available credit details")
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "An error occured while getting the available credit details";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
     }
 
@@ -166,7 +200,7 @@ class PayoutOrderModal extends Component {
             var addAccountDataVal = this.state.addAccountData;
             if (intejarIds.indexOf(id) > -1) {
                 if (val === "" || !isNaN(val)) {
-                    addAccountDataVal[id] = val; 
+                    addAccountDataVal[id] = val;
                 }
             } else {
                 addAccountDataVal[id] = val ? val.toUpperCase() : "";
@@ -176,6 +210,7 @@ class PayoutOrderModal extends Component {
                 delete errors[id];
             }
             this.setState({
+                showErrorMsg: false,
                 addAccountData: addAccountDataVal,
                 errorFields: errors
             })
@@ -209,7 +244,8 @@ class PayoutOrderModal extends Component {
                 this.setState({ acctDetails: acctDetails })
             });
         } else {
-            alert("Please fill the reqd. fields")
+            // alert("Please fill the reqd. fields");
+            this.setState({ showErrorMsg: true });
         }
     }
 
@@ -225,6 +261,7 @@ class PayoutOrderModal extends Component {
 
 
     onNewBankAccountAdded = async () => {
+        let sweetAlrtData = this.state.sweetAlertData;
         try {
             this.setState({ currentPayoutView: "loading" });
             var payloadData = { "data": [] };
@@ -240,7 +277,7 @@ class PayoutOrderModal extends Component {
                 "transaction_type": "b_out",
                 "transaction_date": this.formateDateForApi(new Date()),
                 "bijak_order_reference_id": pdata["id"],
-                "unsettled_amount_pltf":pdata["unsettled_amount_pltf"],
+                "unsettled_amount_pltf": pdata["unsettled_amount_pltf"],
 
                 "bank_detail": {
                     "account_holder_name": this.state.addAccountData["bank_account_holder_name"],
@@ -252,16 +289,34 @@ class PayoutOrderModal extends Component {
             payloadData["data"].push(payload)
             let resp = await paymentService.addPayemtData(payloadData);
             this.setState({ currentPayoutView: "selectAccount" });
+
             if (resp.data.status === 1) {
-                alert("Successfully added");
-                this.props.onPayoutSuccessfull();
+                // alert("Successfully added");
+                // this.props.onPayoutSuccessfull();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully Added";
             } else {
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details";
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "An error occured while  adding account details");
             }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         } catch (err) {
             console.error(err);
-            this.setState({ currentPayoutView: "selectAccount" });
-            alert("Oops an error occured while adding account details");
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = "Oops an error occured while adding account details";
+            this.setState({
+                currentPayoutView: "selectAccount",
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
+            // alert("Oops an error occured while adding account details");
         }
     }
 
@@ -311,13 +366,21 @@ class PayoutOrderModal extends Component {
         });
     }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                this.props.onPayoutSuccessfull()
+            }
+        })
+    }
+
 
     render() {
         const { classes } = this.props;
         const { availableCreditAmount, availableCreditAmountError, showAmountexceedError, transactionAmount,
             // transferType,
-             acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
-            errorFields } = this.state;
+            acctDetails, payoutData, acctData, selectedAcctInfoIndex, currentPayoutView, addAccountData,
+            errorFields, showSweetAlert, sweetAlertData } = this.state;
         return (<div>
             <Dialog style={{ zIndex: '9999' }}
                 open={this.state.open}
@@ -527,6 +590,15 @@ class PayoutOrderModal extends Component {
                                     onChange={this.handleInputChange.bind(this)}
                                     fullWidth />
                             </div>
+                            {this.state.showErrorMsg &&
+                                <div style={{
+                                    fontFamily: 'Montserrat, sans-serif',
+                                    fontSize: "12px",
+                                    color: "red",
+                                    textAlign: "right",
+                                    paddingRight: "10px"
+                                }}
+                                > Please fill all highlighted fields above </div>}
                             <Button variant="contained" onClick={(event) => this.onNewAccountSaveClicked(event)}
                                 style={{ background: "blue", color: "#fff" }}>Save </Button>
                             <Button variant="contained" onClick={(event) => this.setState({ currentPayoutView: "selectAccount" })}
@@ -541,6 +613,14 @@ class PayoutOrderModal extends Component {
                         <React.Fragment>
                             <Loader primaryText={"Please wait.."} />
                         </React.Fragment>}
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
                 </DialogContent>
             </Dialog>
         </div>

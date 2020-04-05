@@ -256,7 +256,8 @@ class FilterAreaComponent extends React.Component {
                                 </Button>
                                 </Badge></div>
 
-                                {this.state.isFilterDialogOpen && <UserFilterOption
+                                {this.state.isFilterDialogOpen &&
+                                 <UserFilterOption
                                     openModal={this.state.open}
                                     role={this.props.role}
                                     filterData={this.state.filterOptionData}

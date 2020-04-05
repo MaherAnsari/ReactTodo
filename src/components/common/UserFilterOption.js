@@ -12,6 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Chip from '@material-ui/core/Chip';
 import commodityService from './../../app/commodityService/commodityService';
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import Utils from '../../app/common/utils';
 const theme = createMuiTheme({
     overrides: {
       
@@ -56,7 +57,7 @@ class UserFilterOption extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
             open: this.props.openModal,
             dataObj: {},
             roleList: ['All', 'la', 'ca', 'broker'],
@@ -104,13 +105,13 @@ class UserFilterOption extends Component {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList: { options:[], optionN_E :{}, optionE_N:{}} });
         }
     }
 
@@ -141,12 +142,15 @@ class UserFilterOption extends Component {
     }
 
     handelAutoCompleteChange = (event, values) => {
-        // var commoditylist = [];
-        // console.log(values);
+        var commoditylist = [];
         let data = this.state.dataObj;
-        data["default_commodity"] = values.join();
-        // console.log(data);
-        this.setState({ dataObj: data, commodity: values })
+        if (values && values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                commoditylist.push(this.state.commodityList["optionE_N"][values[i]]);
+            }
+        }
+        data["default_commodity"] = commoditylist.join();
+        this.setState({ dataObj: data, commodity: commoditylist })
     }
 
     handleStateChange = (id, event) => {
@@ -233,6 +237,16 @@ class UserFilterOption extends Component {
         this.setState({ filterDataArr: data });
     }
 
+    getCommodityArray(data) {
+        let cList = [];
+        for (let i = 0; i < data.length; i++) {
+            if (this.state.commodityList["optionN_E"].hasOwnProperty(data[i])) {
+                cList.push(this.state.commodityList["optionN_E"][data[i]]);
+            }
+        }
+        return cList;
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -268,9 +282,9 @@ class UserFilterOption extends Component {
                         <Autocomplete
                             multiple
                             id="fixed-tags-demo"
-                            options={this.state.commodityList}
+                            options={this.state.commodityList["options"]}
                             getOptionLabel={e => e}
-                            defaultValue={this.state.commodity}
+                            defaultValue={this.getCommodityArray(this.state.commodity)}
                             onChange={this.handelAutoCompleteChange}
                             renderTags={(value, getTagProps) =>
                                 value.map((option, index) => (

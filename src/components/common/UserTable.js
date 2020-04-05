@@ -24,6 +24,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Loader from './Loader';
 import { Auth } from 'aws-amplify';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
 
 const theme = createMuiTheme({
     overrides: {
@@ -151,7 +152,14 @@ class UserListTable extends Component {
 
             totalDataCount: this.props.totalDataCount || 0,
             isTableDataLoading: this.props.isTableDataLoading || false,
-            subId : ""
+            subId: "",
+
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
 
             // commodityList:["dd"]
 
@@ -179,11 +187,11 @@ class UserListTable extends Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         Auth.currentAuthenticatedUser({
             bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-        }).then(user => this.setState({ subId : user.attributes.sub}))
-        .catch(err => console.log(err));
+        }).then(user => this.setState({ subId: user.attributes.sub }))
+            .catch(err => console.log(err));
 
 
     }
@@ -202,7 +210,7 @@ class UserListTable extends Component {
 
     async handelFilter(data) {
 
-        this.setState({ isTableDataLoading : true });
+        this.setState({ isTableDataLoading: true });
         let rows = [];
         let respData = {};
         data["limit"] = 2000;
@@ -213,13 +221,21 @@ class UserListTable extends Component {
             respData = resp.data.result;
             rows = resp.data.result.data;
         } else {
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data");
+            let sweetAlrtData = this.state.sweetAlertData;
+            sweetAlrtData["type"] = "error";
+            sweetAlrtData["title"] = "Error";
+            sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the data";
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
         }
         this.setState({
             tableBodyData: rows,
             totalDataCount: respData.totalCount && respData.totalCount[0] && respData.totalCount[0]["count"] ? parseInt(respData.totalCount[0]["count"], 10) : 0,
             page: 0,
-            isTableDataLoading : false 
+            isTableDataLoading: false
         });
     }
 
@@ -277,16 +293,31 @@ class UserListTable extends Component {
 
     handelConfirmUpdate = async () => {
 
-        let resp = await userListService.addUserData( this.state.subId , this.state.userId, this.state.payload);
-        this.setState({ showConfirmDialog: false, alertData: {} });
-        if (resp.data.status === 1) {
-            alert("Succesfully submitted");
-            this.props.onClose();
-        } else {
-            // alert("Opps there was an error, while adding");
-            alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
-        }
+        try {
+            let resp = await userListService.addUserData(this.state.subId, this.state.userId, this.state.payload);
+            this.setState({ showConfirmDialog: false, alertData: {} });
+            let sweetAlrtData = this.state.sweetAlertData;
+            if (resp.data.status === 1) {
+                // alert("Succesfully submitted");
+                // this.props.onClose();
+                sweetAlrtData["type"] = "success";
+                sweetAlrtData["title"] = "Success";
+                sweetAlrtData["text"] = "Successfully submitted";
+            } else {
+                // alert("Oops there was an error, while adding");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding");
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops there was an error, while adding";
+            }
+            this.setState({
+                showSweetAlert: true,
+                sweetAlertData: sweetAlrtData
+            });
 
+        } catch (err) {
+            console.log(err);
+        }
     }
     hoverOn() {
         this.setState({ hover: true });
@@ -370,7 +401,7 @@ class UserListTable extends Component {
             return (
                 <p className={classes.commodityDataClass} style={{ fontSize: isTooltip ? "15px" : "12px" }}>
                     {commoditCellList.map((commodity, i) =>
-                        (<span key={i + "_commodity"} style={{ fontSize: isTooltip ? "15px" : "12px", fontFamily: "lato" }}>
+                        (commodity && commodity !== null && <span key={i + "_commodity"} style={{ fontSize: isTooltip ? "15px" : "12px", fontFamily: "lato" }}>
                             <strong style={{ fontSize: isTooltip ? "14px" : "13px", fontFamily: "lato", color: isTooltip ? "#ff" : (colorArray[i < colorArray.length ? i : i % colorArray.length]) }}>
                                 {commodity.charAt(0).toUpperCase()}</strong>{commodity.slice(1) + (i !== commoditCellList.length - 1 ? ", " : "")}
                         </span>)
@@ -384,13 +415,24 @@ class UserListTable extends Component {
 
     changeLimitSucces(event) {
         // alert(event);
-        let obj = this.state.userData;
-        obj['bijak_credit_limit'] = event;
-        this.setState({ userData: obj, isLimitUpdate: true });
+        if (event) {
+            let obj = this.state.userData;
+            obj['bijak_credit_limit'] = event;
+            this.setState({ userData: obj, isLimitUpdate: true });
+        } else {
+            this.setState({ isLimitUpdate: true });
+        }
     }
+
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () =>
+            this.props.onClose()
+        )
+    }
+
     render() {
         const { classes, showLoader } = this.props;
-        const { rowsPerPage, page, totalDataCount, isTableDataLoading } = this.state;
+        const { rowsPerPage, page, totalDataCount, isTableDataLoading, showSweetAlert, sweetAlertData } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <Paper className={classes.root} >
@@ -540,13 +582,15 @@ class UserListTable extends Component {
                         </div>}
 
                     </div>}
-                    {this.state.showUserModal ? <UserDialog openModal={this.state.open}
-                        onEditModalClosed={this.handleClose.bind(this)}
-                        data={this.state.userData}
-                        isInfo={this.state.isInfo}
-                        onLimitUpdate={this.changeLimitSucces.bind(this)}
-                        commodityList={this.props.commodityList}
-                        onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+                    {this.state.showUserModal ?
+                        <UserDialog openModal={this.state.open}
+                            onEditModalClosed={this.handleClose.bind(this)}
+                            data={this.state.userData}
+                            isInfo={this.state.isInfo}
+                            onLimitUpdate={this.changeLimitSucces.bind(this)}
+                            commodityList={this.props.commodityList}
+                            onEditModalCancel={this.onModalCancel.bind(this)} /> : ""}
+
                     {this.state.showConfirmDialog ?
                         <ConfirmDialog
                             dialogText={this.state.dialogText}
@@ -565,6 +609,16 @@ class UserListTable extends Component {
                             <i className="fa fa-cloud-download add-icon" style={{ marginRight: 0, color: "white" }} aria-hidden="true"></i>
                         </div>
                     </div> */}
+
+                    {showSweetAlert &&
+                        <SweetAlertPage
+                            show={true}
+                            type={sweetAlertData.type}
+                            title={sweetAlertData.title}
+                            text={sweetAlertData.text}
+                            sweetAlertClose={() => this.handelSweetAlertClosed()}
+                        />}
+
                 </Paper>
             </MuiThemeProvider>
         );

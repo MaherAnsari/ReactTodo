@@ -16,6 +16,13 @@ import commonService from '../../app/commonService/commonService';
 import Loader from './Loader';
 import BankDetail from './bankDetail';
 import UserDetailsFooter from './UserDetailsFooter';
+import OrderTable from './OrderTable';
+import PaymentTable from './PaymentTable';
+import orderService from '../../app/orderService/orderService';
+import creditLimitService from '../../app/creditLimitService/creditLimitService';
+import paymentService from '../../app/paymentService/paymentService';
+import SweetAlertPage from '../../app/common/SweetAlertPage';
+import Utils from '../../app/common/utils';
 
 const theme = createMuiTheme({
     overrides: {
@@ -63,16 +70,25 @@ class BusinessInfoDialog extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commodityList: [],
+            commodityList: { options:[], optionN_E :{}, optionE_N:{}},
             open: this.props.openModal,
             isUpdate: false,
             isInfo: false,
             currentView: "userInfo",
             userInfoData: {},
-            // orderList: [],
-            // paymentList:[],
-            // orderLabel:"Orders ("+this.props.userInfoData.ordercount+")",
-            // paymentLabel:"Payments ("+this.props.userInfoData.paymentcount+")"
+            orderList: undefined,
+            paymentList: undefined,
+            orderLabel: "Orders (" + 0 + ")",
+            paymentLabel: "Payments (" + 0 + ")",
+            creditLimitData: "",
+            userRole: "",
+            transNumber : "",
+            showSweetAlert: false,
+            sweetAlertData: {
+                "type": "",
+                "title": "",
+                "text": ""
+            }
         }
         console.log(this.props.userInfoData)
         console.log(this.props.data)
@@ -80,21 +96,44 @@ class BusinessInfoDialog extends Component {
 
     componentDidMount() {
         this.getCommodityNames();
-        // let param = {"limit":10000};
-        // if (this.props.userInfoData.role === 'ca') {
-        //     param["buyerid"] = this.props.userInfoData.mobile;
-        // } else if (this.props.userInfoData.role === 'broker') {
-        //     param["brokerid"] = this.props.userInfoData.id;
-        // } else if (this.props.userInfoData.role === 'la') {
-        //     param["supplierid"] = this.props.userInfoData.mobile;
-        // }else{
-        //     param["na"] = this.props.userInfoData.mobile;
-        // }
-        // if (Object.keys(param).length) {
-        //     this.getListData(param);
-        // }
-
         this.getUserInfo(this.props.userId);
+
+    }
+
+    async getCreditLimit(mobileno) {
+        let sweetAlrtData = this.state.sweetAlertData;
+        let param = {};
+        if (mobileno) {
+            param['mobile'] = mobileno;
+            try {
+                let resp = await creditLimitService.getCreditLimit(mobileno);
+                console.log(resp);
+                if (resp.data.status === 1 && resp.data.result) {
+                    this.setState({ creditLimitData: resp.data.result });
+                } else {
+                    // this.setState({ creditLimitData: "" });
+                    // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit");
+                    sweetAlrtData["type"] = "error";
+                    sweetAlrtData["title"] = "Error";
+                    sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the credit limit";
+                    this.setState({
+                        creditLimitData: "",
+                        showSweetAlert: true,
+                        sweetAlertData: sweetAlrtData
+                    });
+                }
+
+            } catch (err) {
+                console.error(err);
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = "Oops an error occured while getting the credit limit";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
+            }
+        }
     }
 
     async getUserInfo(id) {
@@ -102,11 +141,40 @@ class BusinessInfoDialog extends Component {
         try {
             let resp = await commonService.getUserInfo(id);
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ userInfoData: resp.data.result, showLoader: false });
+                this.setState({
+                    userInfoData: resp.data.result,
+                    userRole: resp.data.result.role,
+                    transNumber :   resp.data.result.mobile
+                });
+
+                let param = { "limit": 10000 };
+                if (resp.data.result.role === 'ca') {
+                    param["buyerid"] = resp.data.result.mobile;
+                } else if (resp.data.result.role === 'broker') {
+                    param["brokerid"] = resp.data.result.id;
+                } else if (resp.data.result.role === 'la') {
+                    param["supplierid"] = resp.data.result.mobile;
+                } else {
+                    param["na"] = resp.data.result.mobile;
+                }
+                if (Object.keys(param).length) {
+                    this.getListData(param);
+                    this.getTransactionList(resp.data.result.role, resp.data.result.mobile);
+                    this.getCreditLimit(resp.data.result.mobile);
+                }
+
             } else {
                 // this.setState({ tableBodyData: [] ,showLoader:false});
                 // alert("Oops an error occured while getting the info");
-                alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info");
+                // alert(resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info");
+                let sweetAlrtData = this.state.sweetAlertData;
+                sweetAlrtData["type"] = "error";
+                sweetAlrtData["title"] = "Error";
+                sweetAlrtData["text"] = resp && resp.data && resp.data.message ? resp.data.message : "Oops an error occured while getting the info";
+                this.setState({
+                    showSweetAlert: true,
+                    sweetAlertData: sweetAlrtData
+                });
             }
         } catch (err) {
             console.error(err);
@@ -116,57 +184,45 @@ class BusinessInfoDialog extends Component {
         }
     }
 
-    // async getListData(params) {
-    //     this.setState({ showLoader: true });
-
-    //     try {
-    //         let resp = await orderService.getOrderListData(params);
-
-    //         if (resp.userInfoData.status === 1 && resp.userInfoData.result) {
-    //             this.setState({ orderList: resp.userInfoData.result.userInfoData, showLoader: false });
-    //         } else {
-    //             // this.setState({ tableBodyData: [] ,showLoader:false});
-    //         }
-
-    //     } catch (err) {
-    //         console.error(err);
-    //         if (this.ismounted) {
-    //             // this.setState({ tableBodyData: [],showLoader:false });
-    //         }
-    //     }
-    // }
+    async getListData(params) {
+        // this.setState({ showLoader: true });
+        params["userInfo"] = true;
+        try {
+            let resp = await orderService.getOrderListData(params);
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                this.setState({
+                    orderList: resp.data.result.data,
+                    orderLabel: "Orders (" + resp.data.result.data.length + ")",
+                    showLoader: false
+                });
+            } else {
+                this.setState({
+                    orderList: [] ,
+                    showLoader: false});
+                // this.setState({ tableBodyData: [] ,showLoader:false});
+            }
+        } catch (err) {
+            console.error(err);
+            if (this.ismounted) {
+                // this.setState({ tableBodyData: [],showLoader:false });
+            }
+        }
+    }
 
     async getCommodityNames(txt) {
         try {
             let resp = await commodityService.getCommodityTable();
             if (resp.data.status === 1 && resp.data.result) {
-                this.setState({ commodityList: this.getCommodityNamesArray(resp.data.result.data) });
+                this.setState({ commodityList: Utils.getCommodityNamesArrayKeysMap(resp.data.result.data) });
             } else {
-                this.setState({ commodityList: [] });
+                this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}}  });
             }
         } catch (err) {
             console.error(err)
-            this.setState({ commodityList: [] });
+            this.setState({ commodityList:  { options:[], optionN_E :{}, optionE_N:{}}  });
         }
     }
-
-    getCommodityNamesArray(data) {
-        try {
-            var listData = [];
-            if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i]["name"]) {
-                        listData.push(data[i]["name"])
-                    }
-                }
-            }
-            return listData;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
 
     getHeader() {
         if (this.props.isInfo) {
@@ -199,25 +255,27 @@ class BusinessInfoDialog extends Component {
     handleClose(event) {
         this.props.onEditModalClosed();
     }
-    // getTransactionList = async () => {
-    //     try {
-    //         let param = {"limit":10000,"role":this.props.userInfoData.role}
-    //         let resp = await paymentService.getTransactionDetailsOfBuyer(this.props.userInfoData.mobile, param);
-    //         if (resp.userInfoData.status === 1 && resp.userInfoData.result) {
-    //             var respData = resp.userInfoData.result;
-    //             this.setState({
 
-    //                 paymentList: respData["allTransactions"]
-    //             });
-    //         } else {
-    //             this.setState({
-    //                 paymentList: []
-    //             });
-    //         }
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // }
+    getTransactionList = async (role, mobile) => {
+        try {
+            let param = { "limit": 10000, "role": role, userInfo: true }
+            let resp = await paymentService.getTransactionDetailsOfBuyer(mobile, param);
+            console.log(resp)
+            if (resp.data.status === 1 && resp.data.result) {
+                var respData = resp.data.result;
+                this.setState({
+                    paymentList: respData["allTransactions"],
+                    paymentLabel: "Payments (" + (respData["allTransactions"] ? respData["allTransactions"].length : 0) + ")"
+                });
+            } else {
+                this.setState({
+                    paymentList: []
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
 
     onLimitChange(event) {
@@ -225,23 +283,30 @@ class BusinessInfoDialog extends Component {
         this.props.onLimitUpdate(event);
     }
 
-    onFooterButtonClickedAction( data ){
+    onFooterButtonClickedAction(data) {
         // console.log( data );
-        if( data.type === "redirect" ){
-            this.setState({ currentView  : data.btnName  })
-        }else{
-            this.setState({ 
-                currentView  : data.btnName, 
-                showAddTransactionModal : (data.btnName === "payment" ? true : false ),
-                showAddOrderModal : (data.btnName === "orders"  ? true : false )
-                });
+        if (data.type === "redirect") {
+            this.setState({ currentView: data.btnName })
+        } else {
+            this.setState({
+                currentView: data.btnName,
+                showAddTransactionModal: (data.btnName === "payment" ? true : false),
+                showAddOrderModal: (data.btnName === "orders" ? true : false)
+            });
         }
+    }
 
+    handelSweetAlertClosed() {
+        this.setState({ showSweetAlert: false }, () => {
+            if (this.state.sweetAlertData.type !== "error") {
+                // this.handelGetData();
+            }
+        });
     }
 
     render() {
         const { classes } = this.props;
-        const { showLoader } = this.state;
+        const { showLoader, showSweetAlert, sweetAlertData } = this.state;
         return (
             <MuiThemeProvider theme={theme}>
                 <div>
@@ -265,14 +330,15 @@ class BusinessInfoDialog extends Component {
                                 <Tabs
                                     value={this.state.currentView}
                                     onChange={this.handleChange}
-                                    variant="fullWidth"
+                                    // variant="fullWidth"
+                                    variant="scrollable"
                                     indicatorColor="secondary"
                                     textColor="secondary"
                                     aria-label="icon label tabs example"
                                 >
                                     <Tab label="User Info" value="userInfo" />
-                                    {/* <Tab label={this.state.orderLabel} value="orders" />
-                        <Tab label={this.state.paymentLabel} value="payment" /> */}
+                                    <Tab label={this.state.orderLabel} value="orders" />
+                                    <Tab label={this.state.paymentLabel} value="payment" />
                                     <Tab label="Edit User" value="editUser" />
                                     <Tab label="Credit Limit" value="creditLimit" />
                                     <Tab label="Account Info" value="accountDetail" />
@@ -286,7 +352,38 @@ class BusinessInfoDialog extends Component {
                                         openModal={this.state.open}
                                         onEditModalClosed={this.handleDialogCancel.bind(this)}
                                         onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        creditLimitData={this.state.creditLimitData}
                                         data={this.state.userInfoData}
+                                    /> : ""}
+
+                                {this.state.currentView === 'orders' ?
+                                    <OrderTable openModal={this.state.open}
+                                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        showAddOrderModal={this.state.showAddOrderModal}
+                                        onAddOrderModalClosed={() => this.setState({ showAddOrderModal: false })}
+                                        onOrderAdded={(data) =>{ 
+                                            this.getListData(data);
+                                            this.onLimitChange();
+                                        }}
+                                        data={this.state.orderList}
+                                        userdata={this.state.userInfoData}
+                                        role={this.state.userRole}
+                                    /> : ""}
+
+                                {this.state.currentView === 'payment' ?
+                                    <PaymentTable openModal={this.state.open}
+                                        onEditModalClosed={this.handleDialogCancel.bind(this)}
+                                        onEditModalCancel={this.handleDialogCancel.bind(this)}
+                                        showAddTransactionModal={this.state.showAddTransactionModal}
+                                        onTransactionModalClosed={() => this.setState({ showAddTransactionModal: false })}
+                                        data={this.state.paymentList}
+                                        onPaymentAdded={() => {
+                                            this.getTransactionList( this.state.userRole, this.state.transNumber );
+                                            this.onLimitChange();
+                                        }}
+                                        userdata={this.state.userInfoData}
+                                        role={this.state.userRole}
                                     /> : ""}
 
                                 {this.state.currentView === 'editUser' ?
@@ -295,6 +392,7 @@ class BusinessInfoDialog extends Component {
                                         onEditModalClosed={this.handleClose.bind(this)}
                                         data={this.state.userInfoData}
                                         commodityList={this.state.commodityList}
+                                        onDataEdited={()=> this.onLimitChange()}
                                         onEditModalCancel={this.handleDialogCancel.bind(this)}
                                     /> : ""}
                                 {this.state.currentView === 'creditLimit' ?
@@ -314,20 +412,26 @@ class BusinessInfoDialog extends Component {
                                         userdata={this.state.userInfoData}
 
                                     /> : ""}
-
-
-
                             </div>
                                 :
                                 <Loader />}
 
- {this.state.currentView === 'userInfo' && 
-<UserDetailsFooter
-                                isPaymentInfoModal={ true }
-                                onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
+                            {this.state.currentView === 'userInfo' &&
+                                <UserDetailsFooter
+                                    // isPaymentInfoModal={true}
+                                    onFooterButtonClicked={(data) => this.onFooterButtonClickedAction(data)} />}
 
 
                         </DialogContent>
+
+                        {showSweetAlert &&
+                            <SweetAlertPage
+                                show={true}
+                                type={sweetAlertData.type}
+                                title={sweetAlertData.title}
+                                text={sweetAlertData.text}
+                                sweetAlertClose={() => this.handelSweetAlertClosed()}
+                            />}
 
                     </Dialog>
 
