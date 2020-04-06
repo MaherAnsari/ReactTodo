@@ -53,7 +53,9 @@ class OrdersContainer extends React.Component {
                 offset: 0 // data from which data needs to be get
             },
             resetPageNumber: false,
-            isTableDataLoading : false
+            isTableDataLoading : false,
+            filterParams: {},
+
 
         }
         this.ismounted = true;
@@ -191,7 +193,7 @@ class OrdersContainer extends React.Component {
         param["offset"] = 0;
         param["limit"] = 1000;
 
-        this.setState({ orderedListData: [], showLoader : true, resetPageNumber: true }, () =>
+        this.setState({ orderedListData: [], showLoader : true, resetPageNumber: true , filterParams : param}, () =>
             this.getSearchedOrderListData(param)
         )
     }
@@ -240,7 +242,7 @@ class OrdersContainer extends React.Component {
                         setPageNumber={() => this.setState({ resetPageNumber: false })}
                         totalDataCount={this.state.totalDataCount}
                         isTableDataLoading ={ this.state.isTableDataLoading }
-                        onOrderAdded={() => this.handelGetOrderData({})} />
+                        onOrderAdded={() => this.handelGetOrderData( this.state.filterParams)} />
                     {/* } */}
 
 

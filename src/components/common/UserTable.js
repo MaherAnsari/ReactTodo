@@ -159,7 +159,9 @@ class UserListTable extends Component {
                 "type": "",
                 "title": "",
                 "text": ""
-            }
+            },
+
+            filterParams : {}
 
             // commodityList:["dd"]
 
@@ -210,7 +212,7 @@ class UserListTable extends Component {
 
     async handelFilter(data) {
 
-        this.setState({ isTableDataLoading: true });
+        this.setState({ isTableDataLoading: true , filterParams : data});
         let rows = [];
         let respData = {};
         data["limit"] = 2000;
@@ -285,7 +287,8 @@ class UserListTable extends Component {
     onModalCancel(event) {
         this.setState({ open: false, showUserModal: false, showOrderModal: false, isInfo: false });
         if (this.state.isLimitUpdate) {
-            this.props.handelRefreshButtonClicked();
+            // this.props.handelRefreshButtonClicked();
+            this.handelFilter( this.state.filterParams);
         }
 
     }

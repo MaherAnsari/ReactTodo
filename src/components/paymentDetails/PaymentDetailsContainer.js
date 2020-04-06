@@ -66,7 +66,8 @@ class PaymentDetailsContainer extends React.Component {
 
             showAddTransactionModal: false,
             paymentMetaInfo: undefined,
-            isTableDataLoading: false
+            isTableDataLoading: false,
+            filterOptions: {}
 
         }
         this.ismounted = true;
@@ -231,7 +232,7 @@ class PaymentDetailsContainer extends React.Component {
     handelGetData(param) {
         param["offset"] = 0;
         param["limit"] = 1000;
-        this.setState({ allTransactionsData: [], resetPageNumber: true, showLoader: true }, () =>
+        this.setState({ allTransactionsData: [], resetPageNumber: true, showLoader: true, filterOptions: param }, () =>
             this.getPaymentDetailsData(param)
         )
     }
@@ -283,7 +284,7 @@ class PaymentDetailsContainer extends React.Component {
                     <PaymentDetailsTable
                         allTransactionsData={allTransactionsData}
                         paymentMetaInfo={paymentMetaInfo}
-                        OnPaymentUpdated={() => this.handelGetData({})}
+                        OnPaymentUpdated={() => this.handelGetData(this.state.filterOptions)}
 
                         resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
                         currentOffset={this.state.params["offset"]}

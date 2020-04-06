@@ -191,7 +191,7 @@ class UserDataContainer extends React.Component {
                         downloadAbleFileName="user_list_data"
                         handelRefreshButtonClicked={(event) => this.handelRefreshData(event)}
                         commodityList={this.state.commodityList}
-
+                        // onAnyUpdateComple={()=> this.handelGetData()}
                         resetOffsetAndGetData={() => this.resetOffsetAndGetData()}
                         resetPageNumber={this.state.resetPageNumber}
                         setPageNumber={() => this.setState({ resetPageNumber: false })}

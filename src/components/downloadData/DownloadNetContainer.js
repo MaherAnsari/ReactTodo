@@ -59,7 +59,6 @@ class DownloadNetContainer extends React.Component {
                 "title": "",
                 "text": ""
             },
-
         }
     }
 

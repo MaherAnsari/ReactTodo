@@ -657,7 +657,7 @@ class InfoDialog extends Component {
                                 id="fixed-demo"
                                 disabled={true}
                                 options={[]}
-                                value={this.state.dataObj.tags}
+                                value={this.state.dataObj.tags ?this.state.dataObj.tags  : [] }
                                 getOptionLabel={e => e}
                                 // onChange={this.handelTagsChanges}
                                 renderTags={(value, getTagProps) =>
