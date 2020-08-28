@@ -46,6 +46,10 @@ class TodoList extends Component {
     }
   }
 
+  componentDidMount(){
+    console.log('hell')
+    this.props.onGetAllTodo();
+  }
 
   componentWillMount() {
     this.props.onGetAllTodo();

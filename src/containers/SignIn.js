@@ -1,10 +1,11 @@
 
 import React,{useState,useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {Container,Avatar,Button,CssBaseline,TextField ,FormControlLabel,Checkbox,Link,Grid,Box,Typography,makeStyles}from  '@material-ui/core';
+import {Container,Avatar,Button,CssBaseline,TextField ,Checkbox,Link,Grid,Box,Typography,makeStyles}from  '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
+import Alert from '@material-ui/lab/Alert';
 import {hideMessage,showAuthLoader,userSignIn,} from "../appRedux/actions/AuthActions";
 
 
@@ -69,6 +70,16 @@ export default function SignIn() {
         "username":username?username:'',
         "password":password?password:''
     }
+    if(username ==''){
+      setErrorMsg('Please enter the email')
+      setShowErrorMsg(true);
+      return false;
+    }
+    if(password ==''){
+      setErrorMsg('Please enter the password')
+      setShowErrorMsg(true);
+      return false;
+    }
     console.log(values)
     dispatch(userSignIn(values));
 }
@@ -82,6 +93,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+        {showErrorMsg?<Alert severity="error">{errorMsg}</Alert>:null}
         <form className={classes.form} noValidate onSubmit={handleSigninSubmit}>
           <TextField
             variant="outlined"

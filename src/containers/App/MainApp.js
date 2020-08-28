@@ -20,14 +20,9 @@ const MainApp = () => {
      
         <div className={`gx-layout-content`}>
           <App match={match}/>
-          {/* <footer>
-            <div className="gx-layout-footer-content">
-              hello
-            </div>
-          </footer> */}
         </div>
       </div>
-      {/* <Customizer/> */}
+
     </div>
   )
 };

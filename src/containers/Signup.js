@@ -1,5 +1,6 @@
 
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef } from 'react';
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import PropTypes from 'prop-types';
 import {Container,Avatar,Button,CssBaseline,TextField ,FormControlLabel,Checkbox,Link,Grid,Box,Typography,makeStyles}from  '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -50,19 +51,26 @@ export default function SignIn() {
   const [errorMsg,setErrorMsg]=useState([]);
   const [showErrorMsg,setShowErrorMsg]=useState(false);
   const [disabledLoginBtn,setDisabledLoginBtn]=useState(false);
+  const ref = useRef(null);
 
-  // useEffect(() => {
-  //     console.log(authUser)
-  //   if (showMessage) {
-  //     setTimeout(() => {
-  //       dispatch(hideMessage());
-  //     }, 100);
-  //   }
-  //   if (authUser !== null) {
-  //     setShowErrorMsg(true)
-  //     history.push('/');
-  //   }
-  // },[authUser]);
+  useEffect(() => {
+    if (showMessage) {
+      setTimeout(() => {
+       dispatch(hideMessage());
+      }, 100);
+    }
+    if (authUser !== null) {
+      window.location.href='/todo'
+      history.push('/todo');
+    }
+    ValidatorForm.removeValidationRule('isPasswordMatch');
+    ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
+      if (value !== this.state.user.password) {
+          return false;
+      }
+      return true;
+  });
+  });
   const handleSigninSubmit=(e)=>{
     e.preventDefault()
     let email=document.getElementById('email').value;
@@ -98,18 +106,29 @@ export default function SignIn() {
           Sign up
         </Typography>
         {showErrorMsg?<Alert severity="error">{errorMsg}</Alert>:null}
-        <form className={classes.form} noValidate onSubmit={handleSigninSubmit}>
+        <ValidatorForm
+        ref={ref}
+        className={classes.form}
+        onSubmit={handleSigninSubmit}
+        onError={errors => console.log(errors)}
+        >
+
+        
+        {/* <form 
+         noValidate
+        > */}
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
+            type="email"
             autoFocus
-            
+            validators={['required', 'isEmail']}
+            errorMessages={['this field is required', 'email is not valid']}
           />
            <TextField
             variant="outlined"
@@ -132,6 +151,8 @@ export default function SignIn() {
             label="Password"
             type="password"
             id="password"
+            validators={['required']}
+            errorMessages={['this field is required']}
             autoComplete="current-password"
           />
            <TextField
@@ -144,6 +165,8 @@ export default function SignIn() {
             type="password"
             id="confirmPassword"
             autoComplete="current-password"
+            validators={['isPasswordMatch', 'required']}
+            errorMessages={['password mismatch', 'this field is required']}
           />
          
           <Button
@@ -162,7 +185,8 @@ export default function SignIn() {
               </Link>
             </Grid>
           </Grid>
-        </form>
+        {/* </form> */}
+        </ValidatorForm>
       </div>
       <Box mt={8}>
         <Copyright />
