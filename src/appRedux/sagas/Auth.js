@@ -38,7 +38,7 @@ function* createUserWithEmailPassword({payload}) {
     const signUpUser = yield call(createUserWithEmailPasswordRequest, email, password,username);
     console.log(signUpUser)
     if (signUpUser.status ==false) {
-      yield put(showAuthMessage("Something went error"));
+      yield put(showAuthMessage(signUpUser.message));
     } else {
       console.log(signUpUser.data)
       const userInfo=jwt_decode(signUpUser.data)
@@ -72,9 +72,7 @@ function* signInUserWithEmailPassword({payload}) {
       localStorage.setItem('user_id', userInfo.result.id);
       localStorage.setItem('token', signInUser.token);
       localStorage.setItem("todo_token_ExpTime", userInfo.exp);
-      // localStorage.setItem('userInfo', userInfo.result);
       setAuthorizationToken(signInUser.token);
-      // dispatch(setCurrentUser(jwtDecode(token)));
       yield put(userSignInSuccess(userInfo.result.id));
     }
   } catch (error) {

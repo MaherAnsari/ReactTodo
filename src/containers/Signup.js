@@ -55,6 +55,8 @@ export default function SignIn() {
 
   useEffect(() => {
     if (showMessage) {
+      setErrorMsg(alertMessage)
+      setShowErrorMsg(showMessage)
       setTimeout(() => {
        dispatch(hideMessage());
       }, 100);
