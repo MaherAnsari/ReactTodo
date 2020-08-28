@@ -53,10 +53,13 @@ export default function SignIn() {
   const [showErrorMsg,setShowErrorMsg]=useState(false);
   const [disabledLoginBtn,setDisabledLoginBtn]=useState(false);
   useEffect(() => {
+    console.log(alertMessage)
     if (showMessage) {
+      setErrorMsg(alertMessage)
+      setShowErrorMsg(showMessage)
       setTimeout(() => {
        dispatch(hideMessage());
-      }, 100);
+      }, 400);
     }
     if (authUser !== null) {
       history.push('/todo');

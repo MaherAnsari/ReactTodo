@@ -65,7 +65,7 @@ function* signInUserWithEmailPassword({payload}) {
   try {
     const signInUser = yield call(signInUserWithEmailPasswordRequest, username, password);
     console.log(signInUser)
-    if (signInUser.status == false) {
+    if (signInUser.message) {
       yield put(showAuthMessage(signInUser.message));
     } else {
       const userInfo=jwt_decode(signInUser.token)
