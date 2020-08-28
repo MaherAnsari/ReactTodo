@@ -1,3 +1,0 @@
-supplierid,buyerid,supplier_mobile,buyer_mobile,bank_id,amount,amount_bank_entry,bank_trxn_id,reason,creator_role,payment_mode,transaction_type,transaction_date,images,cashback_value,cashback_allotted_to
-2,3,0099009900,0099009901,112,11111,123,12,re,la,bank,b_in,2019-12-06,"https://abc.png,https://abc.png",22,la
-,,0099009900,0099009901,112,11111,123,12,re,la,bank,b_in,2019-12-06,"https://abc.png,https://abc.png",22,la

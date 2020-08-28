@@ -1,0 +1,38 @@
+
+//Contact Module const
+export const FETCH_START = 'fetch_start';
+export const FETCH_SUCCESS = 'fetch_success';
+export const FETCH_ERROR = 'fetch_error';
+export const SHOW_MESSAGE = 'SHOW_MESSAGE';
+
+export const SIGNUP_USER = 'SIGNUP_USER';
+export const SIGNUP_USER_SUCCESS = 'SIGNUP_USER_SUCCESS';
+export const SIGNIN_USER = 'SIGNIN_USER';
+export const SIGNIN_USER_SUCCESS = 'SIGNIN_USER_SUCCESS';
+export const SIGNOUT_USER = 'SIGNOUT_USER';
+export const SIGNOUT_USER_SUCCESS = 'SIGNOUT_USER_SUCCESS';
+export const INIT_URL = 'INIT_URL';
+export const HIDE_MESSAGE='HIDE_MESSAGE'
+export const ON_HIDE_MESSAGE='ON_HIDE_MESSAGE'
+export const ON_HIDE_LOADER='ON_HIDE_LOADER'
+export const  ON_SHOW_LOADER="ON_SHOW_LOADER"
+
+
+//Contact
+export const GET_All_TODO_SUCCESS = 'GET_All_TODO_SUCCESS';
+
+
+
+export const REQUEST_ADD_TODO = 'REQUEST_ADD_TODO';
+export const RECEIVE_TODO_LIST = 'RECEIVE_TODO_LIST';
+
+export const SET_CURRENT_USER='SET_CURRENT_USER'
+
+export const REQUEST_UPDATE_ITEM='REQUEST_UPDATE_ITEM';
+export const RECEIVE_UPDATE_ITEM="RECEIVE_UPDATE_ITEM"
+
+export const REQUEST_ADD_ITEM='REQUEST_ADD_ITEM';
+export const RECEIVE_ADD_ITEM="RECEIVE_ADD_ITEM";
+
+export const REQUEST_DELETE_ITEM='REQUEST_DELETE_ITEM';
+export const RECEIVE_DELETE_ITEM="RECEIVE_DELETE_ITEM"
